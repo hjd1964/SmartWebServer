@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------------
+// Wifi Web and Cmd servers
+
 #pragma once
 
 #include <Arduino.h>
@@ -37,5 +40,17 @@
   void wifiStart(void);
   void wifiCommandChannel(void);
   void wifiPersistantCommandChannel(void);
+
+  #ifndef LEGACY_TRANSMIT_ON
+    // macros to help with sending webpage data, chunked
+    #define sendHtmlStart() server.setContentLength(CONTENT_LENGTH_UNKNOWN); server.sendHeader("Cache-Control","no-cache"); server.send(200, "text/html", String());
+    #define sendHtml(x) server.sendContent(x); x = ""
+    #define sendHtmlDone(x) server.sendContent("");
+  #else
+    // macros to help with sending webpage data, normal method
+    #define sendHtmlStart()
+    #define sendHtml(x)
+    #define sendHtmlDone(x) server.send(200, "text/html", x)
+  #endif
 
 #endif

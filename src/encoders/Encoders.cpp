@@ -21,29 +21,21 @@ extern NVS nv;
   #endif
 
   #if ENC_AUTO_SYNC_DEFAULT == ON
-    bool encAutoSync=true;
+    char encAutoSync = true;
   #else
-    bool encAutoSync=false;
+    char encAutoSync = false;
   #endif
 
-  double Axis1EncTicksPerDeg= AXIS1_ENC_TICKS_DEG;
-  int  Axis1EncRev          = AXIS1_ENC_REVERSE;
-  long Axis1EncDiffTo       = AXIS1_ENC_DIFF_LIMIT_TO;
-  long Axis1EncDiffFrom     = AXIS1_ENC_DIFF_LIMIT_FROM;
-  long Axis1EncDiffAbs      = 0;
-  double Axis2EncTicksPerDeg= AXIS2_ENC_TICKS_DEG;
-  int  Axis2EncRev          = AXIS2_ENC_REVERSE;
-  long Axis2EncDiffTo       = AXIS2_ENC_DIFF_LIMIT_TO;
-  long Axis2EncDiffFrom     = AXIS2_ENC_DIFF_LIMIT_FROM;
-  long Axis2EncDiffAbs      = 0;
-
-  // encoder position
-  volatile int32_t __p1,__p2;
-
-  // bring in support for the various encoder types
-  #include "Enc_AB.h"
-  #include "Enc_CwCcw.h"
-  #include "Enc_BiSS_C_BC.h"
+  double  Axis1EncTicksPerDeg = AXIS1_ENC_TICKS_DEG;
+  int16_t Axis1EncRev         = AXIS1_ENC_REVERSE;
+  int32_t Axis1EncDiffTo      = AXIS1_ENC_DIFF_LIMIT_TO;
+  int32_t Axis1EncDiffFrom    = AXIS1_ENC_DIFF_LIMIT_FROM;
+  int32_t Axis1EncDiffAbs     = 0;
+  double  Axis2EncTicksPerDeg = AXIS2_ENC_TICKS_DEG;
+  int16_t Axis2EncRev         = AXIS2_ENC_REVERSE;
+  int32_t Axis2EncDiffTo      = AXIS2_ENC_DIFF_LIMIT_TO;
+  int32_t Axis2EncDiffFrom    = AXIS2_ENC_DIFF_LIMIT_FROM;
+  int32_t Axis2EncDiffAbs     = 0;
 
   // encoder polling rate in seconds, default=2.0
   #define POLLING_RATE 2.0
@@ -129,8 +121,8 @@ extern NVS nv;
   // automatically sync the encoders from OnStep's position when at home or parked
   void Encoders::syncFromOnStep() {
     // don't sync if the Encoders vs. OnStep disagree by too much
-    if (Axis1EncDiffFrom != OFF && fabs(_osAxis1-_enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
-    if (Axis2EncDiffFrom != OFF && fabs(_osAxis1-_enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
+    if (Axis1EncDiffFrom != OFF && fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
+    if (Axis2EncDiffFrom != OFF && fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
       
     if (Axis1EncRev == ON)
       axis1Pos.write(-_osAxis1*(double)Axis1EncTicksPerDeg);
@@ -146,7 +138,7 @@ extern NVS nv;
 
   // zero absolute encoders from OnStep's position
   #ifdef ENC_HAS_ABSOLUTE
-    void zeroFromOnStep() {
+    void Encoders::zeroFromOnStep() {
     #ifdef ENC_HAS_ABSOLUTE_AXIS1
       axis1Pos.write(_osAxis1*(double)Axis1EncTicksPerDeg);
     #endif
@@ -157,11 +149,11 @@ extern NVS nv;
   #endif
 
   void Encoders::syncToOnStep() {
-      char s[22];
-      // automatically sync OnStep to the encoders' position
-      Ser.print(":SX40,"); Ser.print(_enAxis1,6); Ser.print("#"); Ser.readBytes(s,1);
-      Ser.print(":SX41,"); Ser.print(_enAxis2,6); Ser.print("#"); Ser.readBytes(s,1);
-      Ser.print(":SX42,1#"); Ser.readBytes(s,1);
+    char s[22];
+    // automatically sync OnStep to the encoders' position
+    Ser.print(":SX40,"); Ser.print(_enAxis1,6); Ser.print("#"); Ser.readBytes(s,1);
+    Ser.print(":SX41,"); Ser.print(_enAxis2,6); Ser.print("#"); Ser.readBytes(s,1);
+    Ser.print(":SX42,1#"); Ser.readBytes(s,1);
   }
 
   void Encoders::poll() {

@@ -16,9 +16,16 @@
 
 // Non-volatile storage ------------------------------------------------------------------------------
 #ifdef NV_DEFAULT
-  #include "../lib/nv/NV.h"
+  // Library FlashStorage defaults to 1024 bytes https://github.com/cmaglie/FlashStorage
+  #define E2END 1023
+  #include "../lib/nv/NV_M0.h"
 #endif
 
 //----------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT { nv.init(0, false, 0, false); }
+#define HAL_INIT() { nv.init(E2END + 1, false, 5000, false); }
+
+//-----------------------------------------------------------------------------------------------------
+// Misc. includes to support this processor's operation
+#define ICACHE_RAM_ATTR
+#define FPSTR

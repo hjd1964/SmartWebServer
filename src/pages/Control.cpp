@@ -12,6 +12,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -171,7 +172,7 @@ boolean Focuser2;
 boolean Rotate;
 boolean DeRotate;
 
-#ifdef OETHS
+#if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 void handleControl(EthernetClient *client) {
 #else
 void handleControl() {
@@ -345,20 +346,20 @@ void handleControl() {
   sendHtmlDone(data);
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void controlAjaxGet(EthernetClient *client) {
 #else
 void controlAjaxGet() {
 #endif
   processControlGet();
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print("");
 #else
   server.send(200, "text/html","");
 #endif
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void controlAjax(EthernetClient *client) {
 #else
 void controlAjax() {
@@ -437,7 +438,7 @@ void controlAjax() {
     if (command(":rG#",temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data += temp; data += "&#39;\n"; } else { data += "?\n"; }
   }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print(data);
 #else
   server.send(200, "text/plain",data);

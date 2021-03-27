@@ -2,6 +2,7 @@
 // The home page, status information
 
 #include <Arduino.h>
+#include <limits.h>
 #include "../../Constants.h"
 #include "../../Config.h"
 #include "../../ConfigX.h"
@@ -12,6 +13,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -71,7 +73,7 @@ const char html_indexWorkload[] PROGMEM = "&nbsp;&nbsp;" L_WORKLOAD ": <font cla
 const char html_indexSignalStrength[] PROGMEM = "&nbsp;&nbsp;" L_WIRELESS_SIGNAL_STRENGTH ": <font class=\"c\">%s</font><br />";
 #endif
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void handleRoot(EthernetClient *client) {
 #else
 void handleRoot() {
@@ -139,83 +141,85 @@ void handleRoot() {
   data += FPSTR(html_settingsBrowserTime);
 
   // UTC Date
-  if (!command(":GX81#",temp1)) strcpy(temp1,"?");
+  if (!command(":GX81#", temp1)) strcpy(temp1, "?");
   stripNum(temp1);
-  sprintf_P(temp,html_indexDate,temp1);
+  sprintf_P(temp, html_indexDate, temp1);
   data += temp;
 
   // UTC Time
-  if (!command(":GX80#",temp1)) strcpy(temp1,"?");
-  sprintf_P(temp,html_indexTime,temp1);
+  if (!command(":GX80#", temp1)) strcpy(temp1, "?");
+  sprintf_P(temp, html_indexTime, temp1);
   data += temp;
 
   // LST
-  if (!command(":GS#",temp1)) strcpy(temp1,"?");
-  sprintf_P(temp,html_indexSidereal,temp1);
+  if (!command(":GS#", temp1)) strcpy(temp1, "?");
+  sprintf_P(temp, html_indexSidereal, temp1);
   data += temp;
 
   // Longitude and Latitude
-  if (!command(":GgH#",temp1)) strcpy(temp1,"?"); temp1[10]=0;
-  if (!command(":GtH#",temp2)) strcpy(temp2,"?"); temp2[9]=0;
+  if (!command(":GgH#", temp1)) strcpy(temp1, "?");
+  temp1[10] = 0;
+  if (!command(":GtH#", temp2)) strcpy(temp2, "?");
+  temp2[9] = 0;
   sprintf_P(temp,html_indexSite,temp1,temp2);
   data += temp;
   sendHtml(data);
 
   // Ambient conditions
-#if DISPLAY_WEATHER == ON
-  if (!command(":GX9A#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_TEMPERATURE ":",temp1,temp2); data+=temp;
-  if (!command(":GX9B#",temp1)) strcpy(temp1,"?"); else localePressure(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_PRESSURE ":",temp1,temp2); data+=temp;
-  if (!command(":GX9C#",temp1)) strcpy(temp1,"?"); sprintf_P(temp,html_indexTPHD,L_HUMIDITY ":",temp1,"%"); data+=temp;
-  if (!command(":GX9E#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_DEW_POINT ":",temp1,temp2); data+=temp;
-#endif
+  #if DISPLAY_WEATHER == ON
+    if (!command(":GX9A#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_TEMPERATURE ":",temp1,temp2); data+=temp;
+    if (!command(":GX9B#",temp1)) strcpy(temp1,"?"); else localePressure(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_PRESSURE ":",temp1,temp2); data+=temp;
+    if (!command(":GX9C#",temp1)) strcpy(temp1,"?"); sprintf_P(temp,html_indexTPHD,L_HUMIDITY ":",temp1,"%"); data+=temp;
+    if (!command(":GX9E#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_DEW_POINT ":",temp1,temp2); data+=temp;
+  #endif
 
   // Focuser/telescope temperature
   if (mountStatus.focuserPresent()) {
-    if (!command(":Ft#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_TELE_TEMPERATURE ":",temp1,temp2); data+=temp;
+    if (!command(":Ft#", temp1)) strcpy(temp1, "?"); else localeTemperature(temp1, temp2); sprintf_P(temp, html_indexTPHD, L_TELE_TEMPERATURE ":",temp1,temp2); data+=temp;
   }
   
-  data+="<br /><b>" L_COORDINATES ":</b><br />";
+  data += "<br /><b>" L_COORDINATES ":</b><br />";
 
-#if DISPLAY_HIGH_PRECISION_COORDS == ON
-  // RA,Dec current
-  if (!command(":GRa#",temp1)) strcpy(temp1,"?");
-  if (!command(":GDe#",temp2)) strcpy(temp2,"?");
-  sprintf_P(temp,html_indexPosition,temp1,temp2); 
-  data += temp;
+  #if DISPLAY_HIGH_PRECISION_COORDS == ON
+    // RA,Dec current
+    if (!command(":GRa#",temp1)) strcpy(temp1,"?");
+    if (!command(":GDe#",temp2)) strcpy(temp2,"?");
+    sprintf_P(temp,html_indexPosition,temp1,temp2); 
+    data += temp;
 
-  // RA,Dec target
-  if (!command(":Gra#",temp1)) strcpy(temp1,"?");
-  if (!command(":Gde#",temp2)) strcpy(temp2,"?");
-  sprintf_P(temp,html_indexTarget,temp1,temp2); 
-  data += temp;
-#else
-  // RA,Dec current
-  if (!command(":GR#",temp1)) strcpy(temp1,"?");
-  if (!command(":GD#",temp2)) strcpy(temp2,"?");
-  sprintf_P(temp,html_indexPosition,temp1,temp2); 
-  data += temp;
+    // RA,Dec target
+    if (!command(":Gra#",temp1)) strcpy(temp1,"?");
+    if (!command(":Gde#",temp2)) strcpy(temp2,"?");
+    sprintf_P(temp,html_indexTarget,temp1,temp2); 
+    data += temp;
+  #else
+    // RA,Dec current
+    if (!command(":GR#",temp1)) strcpy(temp1,"?");
+    if (!command(":GD#",temp2)) strcpy(temp2,"?");
+    sprintf_P(temp,html_indexPosition,temp1,temp2); 
+    data += temp;
 
-  // RA,Dec target
-  if (!command(":Gr#",temp1)) strcpy(temp1,"?");
-  if (!command(":Gd#",temp2)) strcpy(temp2,"?");
-  sprintf_P(temp,html_indexTarget,temp1,temp2); 
-  data += temp;
-#endif
+    // RA,Dec target
+    if (!command(":Gr#",temp1)) strcpy(temp1,"?");
+    if (!command(":Gd#",temp2)) strcpy(temp2,"?");
+    sprintf_P(temp,html_indexTarget,temp1,temp2); 
+    data += temp;
+  #endif
 
-#if ENCODERS == ON
-  // RA,Dec OnStep position
-  double f;
-  f=encoders.getOnStepAxis1(); doubleToDms(temp1,&f,true,true);
-  f=encoders.getOnStepAxis2(); doubleToDms(temp2,&f,true,true);
-  sprintf_P(temp,html_indexEncoder1,temp1,temp2);
-  data += temp;
+  #if ENCODERS == ON
+    // RA,Dec OnStep position
+    double f;
+    f=encoders.getOnStepAxis1(); doubleToDms(temp1,&f,true,true);
+    f=encoders.getOnStepAxis2(); doubleToDms(temp2,&f,true,true);
+    sprintf_P(temp,html_indexEncoder1,temp1,temp2);
+    data += temp;
 
-  // RA,Dec encoder position
-  if (encoders.validAxis1()) { f=encoders.getAxis1(); doubleToDms(temp1,&f,true,true); } else strcpy(temp1," ** " L_FAULT " ** ");
-  if (encoders.validAxis2()) { f=encoders.getAxis2(); doubleToDms(temp2,&f,true,true); } else strcpy(temp2," ** " L_FAULT " ** ");
-  sprintf_P(temp,html_indexEncoder2,temp1,temp2);
-  data += temp;
-#endif
+    // RA,Dec encoder position
+    if (encoders.validAxis1()) { f=encoders.getAxis1(); doubleToDms(temp1,&f,true,true); } else strcpy(temp1," ** " L_FAULT " ** ");
+    if (encoders.validAxis2()) { f=encoders.getAxis2(); doubleToDms(temp2,&f,true,true); } else strcpy(temp2," ** " L_FAULT " ** ");
+    sprintf_P(temp,html_indexEncoder2,temp1,temp2);
+    data += temp;
+  #endif
 
   // pier side and meridian flips
   if ((mountStatus.pierSide()==PierSideFlipWE1) || (mountStatus.pierSide()==PierSideFlipWE2) || (mountStatus.pierSide()==PierSideFlipWE3)) strcpy(temp1,L_MERIDIAN_FLIP_W_TO_E); else
@@ -233,25 +237,25 @@ void handleRoot() {
   data += temp;
   sendHtml(data);
 
-  long lat=LONG_MIN; if (command(":Gt#",temp1)) { temp1[3]=0; if (temp1[0]=='+') temp1[0]='0'; lat=strtol(temp1,NULL,10); }
+  long lat = LONG_MIN; if (command(":Gt#",temp1)) { temp1[3] = 0; if (temp1[0] == '+') temp1[0] = '0'; lat = strtol(temp1, NULL, 10); }
   if (abs(lat)<=89) {
-    long ud=LONG_MIN; if (command(":GX02#",temp1)) { ud=strtol(&temp1[0],NULL,10); if (lat<0) ud=-ud; }
-    long lr=LONG_MIN; if (command(":GX03#",temp1)) { lr=strtol(&temp1[0],NULL,10); lr=lr/cos(lat/57.295); }
+    long ud = LONG_MIN; if (command(":GX02#",temp1)) { ud = strtol(&temp1[0], NULL, 10); if (lat < 0) ud = -ud; }
+    long lr = LONG_MIN; if (command(":GX03#",temp1)) { lr = strtol(&temp1[0], NULL, 10); lr = lr/cos(lat/57.295); }
 
-    if ((lat!=LONG_MIN) && (ud!=LONG_MIN) && (lr!=LONG_MIN)) {
+    if (lat != LONG_MIN && ud != LONG_MIN && lr != LONG_MIN) {
       data+="<br /><b>" L_POLAR_ALIGN ":</b><br />";
 
       // default to arc-minutes unless we get close, then arc-seconds
       char units='"';
-      if ((abs(ud)>=300) || (abs(lr)>=300)) { 
-        ud=ud/60.0; lr=lr/60.0;
+      if (abs(ud) >= 300 || abs(lr) >= 300) { 
+        ud = ud/60.0; lr = lr/60.0;
         units='\'';
       }
 
       if (mountStatus.mountType()==MT_ALTAZM) {
-        strcpy(temp1,L_ZENITH);
+        strcpy(temp1, L_ZENITH);
       } else {
-        if (lat<0) strcpy(temp1,L_SCP); else strcpy(temp1,L_NCP);
+        if (lat<0) strcpy(temp1, L_SCP); else strcpy(temp1, L_NCP);
       }
 
       // show direction
@@ -370,9 +374,10 @@ void handleRoot() {
     data += temp;
   }
 
-#if DISPLAY_INTERNAL_TEMPERATURE == ON
-  if (!command(":GX9F#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_INTERNAL_TEMP ":",temp1,temp2); data+=temp;
-#endif
+  // MCU Temperature
+  #if DISPLAY_INTERNAL_TEMPERATURE == ON
+    if (!command(":GX9F#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_INTERNAL_TEMP ":",temp1,temp2); data+=temp;
+  #endif
 
   // General Error
   if (mountStatus.lastError()!=ERR_NONE) strcpy(temp1,"</font><font class=\"y\">"); else strcpy(temp1,"");
@@ -387,15 +392,15 @@ void handleRoot() {
   sprintf_P(temp,html_indexWorkload,temp1);
   data += temp;
 
-#if DISPLAY_WIFI_SIGNAL_STRENGTH == ON
-  long signal_strength_dbm=WiFi.RSSI();
-  int signal_strength_qty=2*(signal_strength_dbm+100);
-  if (signal_strength_qty>100) signal_strength_qty=100; 
-  else if (signal_strength_qty<0) signal_strength_qty=0;
-  sprintf(temp1,"%idBm (%i%%)",signal_strength_dbm,signal_strength_qty);
-  sprintf_P(temp,html_indexSignalStrength,temp1);
-  data += temp;
-#endif
+  #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
+    long signal_strength_dbm = WiFi.RSSI();
+    long signal_strength_qty = 2*(signal_strength_dbm + 100);
+    if (signal_strength_qty > 100) signal_strength_qty = 100; 
+    else if (signal_strength_qty < 0) signal_strength_qty = 0;
+    sprintf(temp1,"%lddBm (%ld%%)", signal_strength_dbm, signal_strength_qty);
+    sprintf_P(temp, html_indexSignalStrength, temp1);
+    data += temp;
+  #endif
   data += "</div><br class=\"clear\" />\r\n";
   data += "</div></body></html>";
 

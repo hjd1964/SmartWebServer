@@ -11,6 +11,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -37,7 +38,7 @@ const char html_pecControls4[] PROGMEM =
 const char html_pecControls5[] PROGMEM =
 "</form></div><br class='clear' /><br />\r\n";
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void handlePec(EthernetClient *client) {
 #else
 void handlePec() {
@@ -125,7 +126,7 @@ void handlePec() {
   sendHtmlDone(data);
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void pecAjax(EthernetClient *client) {
 #else
 void pecAjax() {
@@ -144,7 +145,7 @@ void pecAjax() {
   } else { data += "?"; }
   data += "\n";
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print(data);
 #else
   server.send(200, "text/plain",data);

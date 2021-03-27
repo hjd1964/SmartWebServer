@@ -12,6 +12,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -51,7 +52,7 @@ const char html_auxAuxE[] PROGMEM = "</div><br class='clear' />\r\n";
 const char html_auxEnd[] PROGMEM = 
 "<br />\r\n";
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void handleAux(EthernetClient *client) {
 #else
 void handleAux() {
@@ -100,16 +101,16 @@ void handleAux() {
   data += FPSTR(html_linksCtrlN);
   if (mountStatus.featureFound()) data += FPSTR(html_linksAuxS);
   data += FPSTR(html_linksLibN);
-#if ENCODERS == ON
-  data += FPSTR(html_linksEncN);
-#endif
+  #if ENCODERS == ON
+    data += FPSTR(html_linksEncN);
+  #endif
   sendHtml(data);
   data += FPSTR(html_linksPecN);
   data += FPSTR(html_linksSetN);
   data += FPSTR(html_linksCfgN);
-#ifndef OETHS
-  data += FPSTR(html_linksWifiN);
-#endif
+  #ifndef OETHS
+    data += FPSTR(html_linksWifiN);
+  #endif
   data += FPSTR(html_onstep_header4);
   sendHtml(data);
 
@@ -274,20 +275,20 @@ void handleAux() {
   sendHtmlDone(data);
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void auxAjaxGet(EthernetClient *client) {
 #else
 void auxAjaxGet() {
 #endif
   processAuxGet();
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print("");
 #else
   server.send(200, "text/html","");
 #endif
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void auxAjax(EthernetClient *client) {
 #else
 void auxAjax() {
@@ -340,7 +341,7 @@ void auxAjax() {
     }
   }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print(data);
 #else
   server.send(200, "text/plain",data);

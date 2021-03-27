@@ -29,7 +29,7 @@ uint8_t timeToByte(float t);
 float byteToTime(uint8_t b);
 
 // convert axis settings string into numeric form
-bool decodeAxisSettings(char* s, AxisSettings a);
+bool decodeAxisSettings(char* s, AxisSettings* a);
 
 // validate axis settings for a given axis and mount type
 bool validateAxisSettings(int axisNum, boolean altAz, AxisSettings a);

@@ -11,6 +11,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -115,7 +116,7 @@ L_CAT_EXAMPLE6 L_CAT_EXAMPLE7
 const char html_libEnd[] PROGMEM =
 "</form>\r\n";
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void handleLibrary(EthernetClient *client) {
 #else
 void handleLibrary() {
@@ -197,20 +198,20 @@ void handleLibrary() {
   sendHtmlDone(data);
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void libraryAjaxGet(EthernetClient *client) {
 #else
 void libraryAjaxGet() {
 #endif
   processLibraryGet();
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print("");
 #else
   server.send(200, "text/html","");
 #endif
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void libraryAjax(EthernetClient *client) {
 #else
 void libraryAjax() {
@@ -297,7 +298,7 @@ void libraryAjax() {
     downloadCatalogData=false;
   }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print(data);
 #else
   server.send(200, "text/plain",data);

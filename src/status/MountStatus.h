@@ -1,3 +1,5 @@
+// -----------------------------------------------------------------------------------
+// Mount status from OnStep
 #pragma once
 
 enum RateCompensation {RC_NONE, RC_REFR_RA, RC_REFR_BOTH, RC_FULL_RA, RC_FULL_BOTH};

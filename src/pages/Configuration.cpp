@@ -12,6 +12,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -132,7 +133,7 @@ const char html_resetNotes[] PROGMEM =
 "<li>" L_DOWN_MESSAGE1 "</li>"
 "</ul>";
 
-#ifdef OETHS
+#if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 void handleConfiguration(EthernetClient *client) {
 #else
 void handleConfiguration() {
@@ -204,7 +205,8 @@ void handleConfiguration() {
   data += "<button type='button' class='collapsible'>" L_LOCATION_TITLE "</button>";
   data += FPSTR(html_configFormBegin);
   // Longitude
-  if (!command(":GgH#",temp1)) strcpy(temp1,"+000*00:00"); temp1[10]=0;
+  if (!command(":GgH#",temp1)) strcpy(temp1,"+000*00:00");
+  temp1[10]=0;
   temp1[4]=0;                      // deg part only
   temp1[7]=0;                      // min part only
   if (temp1[0]=='+') temp1[0]='0'; // remove +
@@ -219,7 +221,8 @@ void handleConfiguration() {
   sendHtml(data);
 
   // Latitude
-  if (!command(":GtH#",temp1)) strcpy(temp1,"+00*00:00"); temp1[9]=0;
+  if (!command(":GtH#",temp1)) strcpy(temp1,"+00*00:00");
+  temp1[9]=0;
   temp1[3]=0;                      // deg part only
   temp1[6]=0;                      // min part only
   if (temp1[0]=='+') temp1[0]='0'; // remove +
@@ -252,10 +255,12 @@ void handleConfiguration() {
   // Overhead and Horizon Limits
   data += "<button type='button' class='collapsible'>" L_LIMITS_TITLE "</button>";
   data += FPSTR(html_configFormBegin);
-  if (!command(":Gh#",temp1)) strcpy(temp1,"0"); int minAlt=(int)strtol(&temp1[0],NULL,10);
+  if (!command(":Gh#",temp1)) strcpy(temp1,"0");
+  int minAlt = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp,html_configMinAlt,minAlt);
   data += temp;
-  if (!command(":Go#",temp1)) strcpy(temp1,"0"); int maxAlt=(int)strtol(&temp1[0],NULL,10);
+  if (!command(":Go#",temp1)) strcpy(temp1,"0");
+  int maxAlt = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp,html_configMaxAlt,maxAlt);
   data += temp;
   data += "<button type='submit'>" L_UPLOAD "</button>\r\n";
@@ -266,7 +271,8 @@ void handleConfiguration() {
   data += "<br /><button type='button' class='collapsible'>Axis1 RA/Azm</button>";
   data += FPSTR(html_configFormBegin);
   // Backlash
-  if (!command(":%BR#",temp1)) strcpy(temp1,"0"); int backlashAxis1=(int)strtol(&temp1[0],NULL,10);
+  if (!command(":%BR#",temp1)) strcpy(temp1,"0");
+  int backlashAxis1 = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp,html_configBlAxis1,backlashAxis1);
   data += temp;
   sendHtml(data);
@@ -290,7 +296,8 @@ void handleConfiguration() {
   data += "<button type='button' class='collapsible'>Axis2 Dec/Alt</button>";
   data += FPSTR(html_configFormBegin);
   // Backlash
-  if (!command(":%BD#",temp1)) strcpy(temp1,"0"); int backlashAxis2=(int)strtol(&temp1[0],NULL,10);
+  if (!command(":%BD#",temp1)) strcpy(temp1,"0");
+  int backlashAxis2 = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp,html_configBlAxis2,backlashAxis2);
   data += temp;
   data += "<button type='submit'>" L_UPLOAD "</button>\r\n";
@@ -306,7 +313,8 @@ void handleConfiguration() {
     data += "<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>";
     data += FPSTR(html_configFormBegin);
     // Backlash
-    if (!command(":rb#",temp1)) strcpy(temp1,"0"); i=(int)strtol(&temp1[0],NULL,10);
+    if (!command(":rb#",temp1)) strcpy(temp1,"0");
+    i = (int)strtol(&temp1[0], NULL, 10);
     sprintf_P(temp,html_configBlAxis3,i);
     data += temp;
     data += "<button type='submit'>" L_UPLOAD "</button>\r\n";
@@ -323,14 +331,16 @@ void handleConfiguration() {
     data += "<button type='button' class='collapsible'>Axis4 " L_FOCUSER " 1</button>";
     data += FPSTR(html_configFormBegin);
     // Backlash
-    if (!command(":Fb#",temp1)) strcpy(temp1,"0"); i=(int)strtol(&temp1[0],NULL,10);
+    if (!command(":Fb#",temp1)) strcpy(temp1,"0");
+    i = (int)strtol(&temp1[0], NULL, 10);
     sprintf_P(temp,html_configBlAxis4,i);
     data += temp;
     // TCF Enable
     if (commandBool(":Fc#")) sprintf_P(temp,html_configTcfEnAxis4,1); else sprintf_P(temp,html_configTcfEnAxis4,0);
     data += temp;
     // TCF Deadband
-    if (!command(":Fd#",temp1)) strcpy(temp1,"0"); i=(int)strtol(&temp1[0],NULL,10);
+    if (!command(":Fd#",temp1)) strcpy(temp1,"0");
+    i = (int)strtol(&temp1[0], NULL, 10);
     sprintf_P(temp,html_configDbAxis4,i);
     data += temp;
     sendHtml(data);
@@ -353,14 +363,16 @@ void handleConfiguration() {
     data += "<button type='button' class='collapsible'>Axis5 " L_FOCUSER " 2</button>";
     data += FPSTR(html_configFormBegin);
     // Backlash
-    if (!command(":fb#",temp1)) strcpy(temp1,"0"); i=(int)strtol(&temp1[0],NULL,10);
+    if (!command(":fb#",temp1)) strcpy(temp1,"0");
+    i = (int)strtol(&temp1[0], NULL, 10);
     sprintf_P(temp,html_configBlAxis5,i);
     data += temp;
     // TCF Enable
     if (commandBool(":Fc#")) sprintf_P(temp,html_configTcfEnAxis5,1); else sprintf_P(temp,html_configTcfEnAxis5,0);
     data += temp;
     // TCF Deadband
-    if (!command(":fd#",temp1)) strcpy(temp1,"0"); i=(int)strtol(&temp1[0],NULL,10);
+    if (!command(":fd#",temp1)) strcpy(temp1,"0");
+    i = (int)strtol(&temp1[0], NULL, 10);
     sprintf_P(temp,html_configDbAxis5,i);
     data += temp;
     sendHtml(data);
@@ -399,26 +411,27 @@ void handleConfiguration() {
     AxisSettings a;
   
     // Axis1 RA/Azm
-    if (!command(":GXA1#",temp1)) strcpy(temp1,"0");
-    if (decodeAxisSettings(temp1,a)) {
+    if (!command(":GXA1#", temp1)) strcpy(temp1,"0");
+    if (decodeAxisSettings(temp1, &a)) {
       data += "<button type='button' class='collapsible'>Axis1 RA/Azm</button>";
       data += FPSTR(html_configFormBegin);
-      if (validateAxisSettings(1,mountStatus.mountType()==MT_ALTAZM,a)) {
-        if (!command(":GXE7#",temp1)) strcpy(temp1,"0"); long spwr=strtol(temp1,NULL,10);
-        sprintf_P(temp,html_configAxisSpwr,spwr,1,0,129600000L); data += temp;
-        dtostrf(a.stepsPerMeasure,1,3,temp1); stripNum(temp1);
-        sprintf_P(temp,html_configAxisSpd,temp1,1,3000,122400L); data += temp;
+      if (validateAxisSettings(1, mountStatus.mountType()==MT_ALTAZM, a)) {
+        if (!command(":GXE7#", temp1)) strcpy(temp1, "0");
+        long spwr = strtol(temp1, NULL, 10);
+        sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L); data += temp;
+        dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
+        sprintf_P(temp, html_configAxisSpd, temp1, 1, 3000, 122400L); data += temp;
         #if DRIVE_MAIN_AXES_MICROSTEPS == ON
-          if (a.microsteps != OFF) { sprintf_P(temp,html_configAxisMicroSteps,a.microsteps,1); data += temp; }
+          if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, a.microsteps, 1); data += temp; }
         #endif
         #if DRIVE_MAIN_AXES_CURRENT == ON
-          if (a.IRUN != OFF) { sprintf_P(temp,html_configAxisCurrent,a.IRUN,1,3000); data += temp; }
+          if (a.IRUN != OFF) { sprintf_P(temp, html_configAxisCurrent, a.IRUN, 1, 3000); data += temp; }
         #endif
         #if DRIVE_MAIN_AXES_REVERSE == ON
-          sprintf_P(temp,html_configAxisReverse,a.reverse==ON?1:0,1); data += temp;
+          sprintf_P(temp, html_configAxisReverse, a.reverse==ON?1:0,1); data += temp;
         #endif
-        sprintf_P(temp,html_configAxisMin,a.min,1,-360,-90,"&deg;,"); data += temp;
-        sprintf_P(temp,html_configAxisMax,a.max,1,90,360,"&deg;,"); data += temp;
+        sprintf_P(temp, html_configAxisMin, a.min, 1, -360, -90, "&deg;,"); data += temp;
+        sprintf_P(temp, html_configAxisMax, a.max, 1, 90, 360, "&deg;,"); data += temp;
         data += "<button type='submit'>" L_UPLOAD "</button> ";
       }
       data += "<button name='revert' value='1' type='submit'>" L_REVERT "</button>\r\n";
@@ -428,7 +441,7 @@ void handleConfiguration() {
 
     // Axis2 Dec/Alt
     if (!command(":GXA2#",temp1)) strcpy(temp1,"0");
-    if (decodeAxisSettings(temp1,a)) {
+    if (decodeAxisSettings(temp1, &a)) {
       data += "<button type='button' class='collapsible'>Axis2 Dec/Alt</button>";
       data += FPSTR(html_configFormBegin);
       if (validateAxisSettings(2,mountStatus.mountType()==MT_ALTAZM,a)) {
@@ -454,7 +467,7 @@ void handleConfiguration() {
     
     // Axis3 Rotator
     if (!command(":GXA3#",temp1)) strcpy(temp1,"0");
-    if (decodeAxisSettings(temp1,a)) {
+    if (decodeAxisSettings(temp1, &a)) {
       data += "<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>";
       data += FPSTR(html_configFormBegin);
       if (validateAxisSettings(3,mountStatus.mountType()==MT_ALTAZM,a)) {
@@ -474,7 +487,7 @@ void handleConfiguration() {
     
     // Axis4 Focuser1
     if (!command(":GXA4#",temp1)) strcpy(temp1,"0");
-    if (decodeAxisSettings(temp1,a)) {
+    if (decodeAxisSettings(temp1, &a)) {
       data += "<button type='button' class='collapsible'>Axis4 " L_FOCUSER " 1</button>";
       data += FPSTR(html_configFormBegin);
       if (validateAxisSettings(4,mountStatus.mountType()==MT_ALTAZM,a)) {
@@ -494,7 +507,7 @@ void handleConfiguration() {
     
     // Axis5 Focuser2
     if (!command(":GXA5#",temp1)) strcpy(temp1,"0");
-    if (decodeAxisSettings(temp1,a)) {
+    if (decodeAxisSettings(temp1, &a)) {
       data += "<button type='button' class='collapsible'>Axis5 " L_FOCUSER " 2</button>";
       data += FPSTR(html_configFormBegin);
       if (validateAxisSettings(5,mountStatus.mountType()==MT_ALTAZM,a)) {
@@ -542,13 +555,13 @@ void handleConfiguration() {
   sendHtmlDone(data);
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void configurationAjaxGet(EthernetClient *client) {
 #else
 void configurationAjaxGet() {
 #endif
   processConfigurationGet();
-  #ifdef OETHS
+  #if OPERATIONAL_MODE != WIFI
     client->print("");
   #else
     server.send(200, "text/html","");
@@ -556,8 +569,8 @@ void configurationAjaxGet() {
 }
 
 bool processConfigurationGet() {
-  String v,v1,v2;
-  char temp[20]="";
+  String v, v1, v2;
+  char temp[80] = "";
 
   // Overhead limit
   v=server.arg("ol");
@@ -740,8 +753,12 @@ bool processConfigurationGet() {
     if (!ss5.equals("")) { axis=5; s1=server.arg("a5spu"); s2=server.arg("a5ustp"); s3=server.arg("a5I"); s4=server.arg("a5rev"); s5=server.arg("a5min"); s6=server.arg("a5max"); }
 
     if (axis > 0 && axis < 6) {
-      if (s2.equals("")) s2="-1"; if (s3.equals("")) s3="-1"; if (s4.equals("")) s4="-1"; if (s5.equals("")) s5="-1"; if (s6.equals("")) s6="-1";
-      if (s4.equals("0")) s4="-1"; else if (s4.equals("1")) s4="-2";
+      if (s2.equals("")) s2 = "-1";
+      if (s3.equals("")) s3 = "-1";
+      if (s4.equals("")) s4 = "-1";
+      if (s5.equals("")) s5 = "-1";
+      if (s6.equals("")) s6 = "-1";
+      if (s4.equals("0")) s4 = "-1"; else if (s4.equals("1")) s4 = "-2";
       v=s1+","+s2+","+s3+","+s4+","+s5+","+s6;
       sprintf(temp,":SXA%d,%s#",axis,v.c_str());
       commandBool(temp);

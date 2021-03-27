@@ -36,22 +36,19 @@
 
 // See Constants.h for version information
 
-#include <limits.h>
 #include "Constants.h"
 
 #include "Config.h"
 #include "ConfigX.h"
-#include "src/pinmaps/Models.h"
-
 #include "src/HAL/HAL.h"
 NVS nv;
-  
 #include "src/debug/Debug.h"
-
 #include "src/tasks/OnTask.h"
 Tasks tasks;
 
+#include "src/pinmaps/Models.h"
 #include "src/commands/Commands.h"
+#include "src/ethernetServers/EthernetServers.h"
 #include "src/wifiServers/WifiServers.h"
 #include "src/pages/Pages.h"
 
@@ -151,17 +148,17 @@ Again:
     if (tb == 16) { tb = 1; if (serialSwap == AUTO_OFF) serialSwap = AUTO_ON; else if (serialSwap == AUTO_ON) serialSwap = AUTO_OFF; }
     if (tb == 1) serialBegin(SERIAL_BAUD_DEFAULT, serialSwap);
     if (tb == 6) serialBegin(serial_baud, serialSwap);
-    if (tb == 11) if (SERIAL_BAUD_DEFAULT == 9600) serialBegin(19200, serialSwap); else tb = 15;
+    if (tb == 11) { if (SERIAL_BAUD_DEFAULT == 9600) serialBegin(19200, serialSwap); else tb = 15; }
     goto Again;
   }
 
   // bring servers up
   clearSerialChannel();
 
+  VLF("WEM: Starting port 80 web svr");
   #if OPERATIONAL_MODE == WIFI
     wifiStart();
   #else
-    VLF("WEM: Starting port 80 web svr");
     server.init();
   #endif
 
@@ -210,8 +207,6 @@ Again:
     #if OPERATIONAL_MODE == WIFI
       persistentCmdSvr.begin();
       persistentCmdSvr.setNoDelay(true);
-    #else
-      cmdSvr.init(9998, 500);
     #endif
   #endif
 

@@ -90,21 +90,21 @@ float byteToTime(uint8_t b) {
   return v;
 }
 
-boolean decodeAxisSettings(char* s, AxisSettings a) {
+boolean decodeAxisSettings(char* s, AxisSettings* a) {
   if (strcmp(s,"0") != 0) {
     char *ws=s;
     char *conv_end;
-    double f=strtod(ws,&conv_end); if (&s[0] != conv_end) a.stepsPerMeasure=f; else return false;
+    double f=strtod(ws, &conv_end); if (&s[0] != conv_end) a->stepsPerMeasure = f; else return false;
     ws=strchr(ws,','); if (ws != NULL) {
-      ws++; a.microsteps=strtol(ws,NULL,10);
+      ws++; a->microsteps = strtol(ws, NULL, 10);
       ws=strchr(ws,','); if (ws != NULL) {
-        ws++; a.IRUN=strtol(ws,NULL,10);
+        ws++; a->IRUN = strtol(ws, NULL, 10);
         ws=strchr(ws,','); if (ws != NULL) {
-          ws++; a.reverse=strtol(ws,NULL,10);
+          ws++; a->reverse = strtol(ws, NULL, 10);
           ws=strchr(ws,','); if (ws != NULL) {
-            ws++; a.min=strtol(ws,NULL,10);
+            ws++; a->min = strtol(ws, NULL, 10);
             ws=strchr(ws,','); if (ws != NULL) {
-              ws++; a.max=strtol(ws,NULL,10);
+              ws++; a->max = strtol(ws, NULL, 10);
               return true;
             }
           }

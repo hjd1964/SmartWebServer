@@ -16,26 +16,13 @@ extern NVS nv;
   #include "../commands/Commands.h"
   #include "../status/MountStatus.h"
   #include "../wifiServers/WifiServers.h"
+  #include "../ethernetServers/ethernetServers.h"
 
   #include "htmlHeaders.h"
   #include "htmlMessages.h"
   #include "htmlScripts.h"
 
   void processEncodersGet();
-
-  extern double Axis1EncTicksPerDeg;
-  extern int    Axis1EncRev;
-  extern long   Axis1EncDiffTo;
-  extern long   Axis1EncDiffFrom;
-  extern long   Axis1EncDiffAbs;
-
-  extern double Axis2EncTicksPerDeg;
-  extern int    Axis2EncRev;
-  extern long   Axis2EncDiffTo;
-  extern long   Axis2EncDiffFrom;
-  extern long   Axis2EncDiffAbs;
-
-  extern bool encAutoSync;
 
   const char html_encScript1[] PROGMEM =
   "<script>"
@@ -205,7 +192,7 @@ extern NVS nv;
   " <input style='width: 7em;' value='%ld' type='number' name='d2' min='0' max='9999'>"
   "&nbsp; " L_ENC_MAX_ANGLE ", " L_ENC_MAX_ANGLE_AXIS2 "<br/>";
 
-  #ifdef OETHS
+  #if OPERATIONAL_MODE != WIFI
   void handleEncoders(EthernetClient *client) {
   #else
   void handleEncoders() {
@@ -380,9 +367,9 @@ extern NVS nv;
     data += "<button type='button' class='collapsible'>Axis1 RA/Azm</button>";
     data += FPSTR(html_encFormBegin);
     dtostrf(Axis1EncTicksPerDeg,1,3,temp1); stripNum(temp1);
-    sprintf_P(temp,html_encAxisTpd,temp1,1,1,100000L); data += temp;        // Encoder counts per degree
-    sprintf_P(temp,html_encAxisReverse,Axis1EncRev==ON?1:0,1); data += temp;// Encode reverse count
-    sprintf_P(temp,html_encMxAxis1,Axis1EncDiffTo); data += temp;           // Encoder sync thresholds
+    sprintf_P(temp,html_encAxisTpd,temp1,1,1,100000L); data += temp;         // Encoder counts per degree
+    sprintf_P(temp,html_encAxisReverse,Axis1EncRev==ON?1:0,1); data += temp; // Encode reverse count
+    sprintf_P(temp,html_encMxAxis1,(long)Axis1EncDiffTo); data += temp;      // Encoder sync thresholds
     sendHtml(data);
     data += "<button type='submit'>" L_UPLOAD "</button>\r\n";
     data += "<button name='revert' value='1' type='submit'>" L_REVERT "</button>";
@@ -393,9 +380,9 @@ extern NVS nv;
     data += "<button type='button' class='collapsible'>Axis2 Dec/Alt</button>";
     data += FPSTR(html_encFormBegin);
     dtostrf(Axis2EncTicksPerDeg,1,3,temp1); stripNum(temp1);
-    sprintf_P(temp,html_encAxisTpd,temp1,2,1,100000L); data += temp;        // Encoder counts per degree
-    sprintf_P(temp,html_encAxisReverse,Axis2EncRev==ON?1:0,2); data += temp;// Encode reverse count
-    sprintf_P(temp,html_encMxAxis2,Axis2EncDiffTo); data += temp;           // Encoder sync thresholds
+    sprintf_P(temp,html_encAxisTpd,temp1,2,1,100000L); data += temp;         // Encoder counts per degree
+    sprintf_P(temp,html_encAxisReverse,Axis2EncRev==ON?1:0,2); data += temp; // Encode reverse count
+    sprintf_P(temp,html_encMxAxis2,(long)Axis2EncDiffTo); data += temp;      // Encoder sync thresholds
     sendHtml(data);
     data += "<button type='submit'>" L_UPLOAD "</button>\r\n";
     data += "<button name='revert' value='2' type='submit'>" L_REVERT "</button>";
@@ -415,7 +402,7 @@ extern NVS nv;
     sendHtmlDone(data);
   }
 
-  #ifdef OETHS
+  #if OPERATIONAL_MODE != WIFI
   void encAjax(EthernetClient *client) {
   #else
   void encAjax() {
@@ -453,20 +440,20 @@ extern NVS nv;
     data += "eas_on|";  if (encAutoSync) data+="disabled"; else data+="enabled"; data+="\n";
     data += "eas_off|"; if (encAutoSync) data+="enabled"; else data+="disabled"; data+="\n";
 
-  #ifdef OETHS
+  #if OPERATIONAL_MODE != WIFI
     client->print(data);
   #else
     server.send(200, "text/plain",data);
   #endif
   }
 
-  #ifdef OETHS
+  #if OPERATIONAL_MODE != WIFI
   void encAjaxGet(EthernetClient *client) {
   #else
   void encAjaxGet() {
   #endif
     processEncodersGet();
-  #ifdef OETHS
+  #if OPERATIONAL_MODE != WIFI
     client->print("");
   #else
     server.send(200, "text/html","");
@@ -474,7 +461,6 @@ extern NVS nv;
   }
 
   void processEncodersGet() {
-    boolean EEwrite=false;
     String v;
     
     v=server.arg("ms");
@@ -491,13 +477,11 @@ extern NVS nv;
     if (v!="") {
       if (v=="on") { 
         encAutoSync=true;
-        if (ENC_AUTO_SYNC_MEMORY == ON) nv.update(EE_ENC_AUTO_SYNC,encAutoSync);
-        EEwrite=true;
+        if (ENC_AUTO_SYNC_MEMORY == ON) nv.update(EE_ENC_AUTO_SYNC, encAutoSync);
       }
       if (v=="off") { 
         encAutoSync=false;
         if (ENC_AUTO_SYNC_MEMORY == ON) nv.update(EE_ENC_AUTO_SYNC, encAutoSync);
-        EEwrite=true;
       }
     }
 
@@ -508,7 +492,6 @@ extern NVS nv;
       if ( (atoi2((char*)v.c_str(),&i)) && ((i>=0) && (i<=9999))) { 
         Axis1EncDiffTo=i;
         nv.update(EE_ENC_A1_DIFF_TO, (int32_t)Axis1EncDiffTo);
-        EEwrite=true;
       }
     }
     v=server.arg("d2");
@@ -517,7 +500,6 @@ extern NVS nv;
       if ( atoi2((char*)v.c_str(),&i) && (i >= 0 && i <= 9999)) { 
         Axis2EncDiffTo=i;
         nv.update(EE_ENC_A2_DIFF_TO, (int32_t)Axis2EncDiffTo);
-        EEwrite=true;
       }
     }
 
@@ -528,7 +510,6 @@ extern NVS nv;
       if (d >= 1.0 && d <= 10000.0) { 
         Axis1EncTicksPerDeg=d;
         nv.update(EE_ENC_A1_TICKS, Axis1EncTicksPerDeg);
-        EEwrite=true;
       }
     }
     v=server.arg("a2cpd");
@@ -537,7 +518,6 @@ extern NVS nv;
       if (d >= 1.0 && d <= 10000.0) { 
         Axis2EncTicksPerDeg=d;
         nv.update(EE_ENC_A2_TICKS, Axis2EncTicksPerDeg);
-        EEwrite=true;
       }
     }
 
@@ -546,12 +526,10 @@ extern NVS nv;
       if (v == "0") {
         Axis1EncRev=OFF;
         nv.update(EE_ENC_A1_REV, Axis1EncRev);
-        EEwrite=true;
       }
       if (v == "1") {
         Axis1EncRev=ON;
         nv.update(EE_ENC_A1_REV, Axis1EncRev);
-        EEwrite=true;
       }
     }
 
@@ -560,12 +538,10 @@ extern NVS nv;
       if (v == "0") {
         Axis2EncRev=OFF;
         nv.update(EE_ENC_A2_REV, Axis2EncRev);
-        EEwrite=true;
       }
       if (v == "1") {
         Axis2EncRev=ON;
         nv.update(EE_ENC_A2_REV, Axis2EncRev);
-        EEwrite=true;
       }
     }
 
@@ -578,7 +554,6 @@ extern NVS nv;
         nv.update(EE_ENC_A1_REV, Axis1EncRev);
         Axis1EncDiffTo=AXIS1_ENC_DIFF_LIMIT_TO;
         nv.update(EE_ENC_A1_DIFF_TO, (int32_t)Axis1EncDiffTo);
-        EEwrite=true;
       }
       if (v == "2") {
         Axis2EncTicksPerDeg=AXIS2_ENC_TICKS_DEG;
@@ -587,7 +562,6 @@ extern NVS nv;
         nv.update(EE_ENC_A2_REV, Axis2EncRev);
         Axis2EncDiffTo=AXIS2_ENC_DIFF_LIMIT_TO;
         nv.update(EE_ENC_A2_DIFF_TO, (int32_t)Axis2EncDiffTo);
-        EEwrite=true;
       }
     }
 
@@ -606,7 +580,6 @@ extern NVS nv;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=1) && (i<=999))) { 
           Axis1EncStaSamples=i;
           nv.update(EE_ENC_RC_STA, (int32_t)Axis1EncStaSamples);
-          EEwrite=true;
         }
       }
       v=server.arg("la");
@@ -615,7 +588,6 @@ extern NVS nv;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=1) && (i<=999))) { 
           Axis1EncLtaSamples=i;
           nv.update(EE_ENC_RC_LTA, (int32_t)Axis1EncLtaSamples);
-          EEwrite=true;
         }
       }
 
@@ -626,7 +598,6 @@ extern NVS nv;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=50) && (i<=5000))) { 
           Axis1EncProp=i;
           nv.update(EE_ENC_RC_PROP, (int32_t)Axis1EncProp);
-          EEwrite=true;
         }
       }
       
@@ -637,7 +608,6 @@ extern NVS nv;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=25) && (i<=1000))) { 
           Axis1EncMinGuide=i;
           nv.update(EE_ENC_MIN_GUIDE, (int32_t)Axis1EncMinGuide);
-          EEwrite=true;
         }
       }
 
@@ -649,7 +619,6 @@ extern NVS nv;
         if ((l>=-99999) && (l<=99999)) {
           axis1EncRateComp=(float)l/1000000.0;
           nv.update(EE_ENC_RC_RCOMP, (int32_t)l);
-          EEwrite=true;
         }
       }
 
@@ -661,7 +630,6 @@ extern NVS nv;
           if ( (atoi2((char*)v.c_str(),&i)) && ((i>=0) && (i<=255))) { 
             Axis1EncIntPolPhase=i;
             nv.update(EE_ENC_RC_INTP_P, (int32_t)i);
-            EEwrite=true;
           }
         }
         v=server.arg("im"); // magnitude
@@ -670,7 +638,6 @@ extern NVS nv;
           if ( (atoi2((char*)v.c_str(),&i)) && ((i>=0) && (i<=29000))) { 
             Axis1EncIntPolMag=i;
             nv.update(EE_ENC_RC_INTP_M, (int32_t)i);
-            EEwrite=true;
           }
         }
       #endif

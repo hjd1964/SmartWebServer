@@ -22,4 +22,6 @@
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes to support this processor's operation
-#include "imxrt.h"
+// #include "imxrt.h"
+#define ICACHE_RAM_ATTR
+#define FPSTR

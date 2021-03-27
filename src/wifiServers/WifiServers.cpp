@@ -1,4 +1,5 @@
-//
+// -----------------------------------------------------------------------------------
+// Wifi Web and Cmd servers
 
 #include <Arduino.h>
 #include "../../Constants.h"
@@ -28,17 +29,17 @@ extern NVS nv;
   char wifi_sta_ssid[40] = "";
   char wifi_sta_pwd[40] = "";
 
-  IPAddress wifi_sta_ip = IPAddress(192,168,0,1);
-  IPAddress wifi_sta_gw = IPAddress(192,168,0,1);
-  IPAddress wifi_sta_sn = IPAddress(255,255,255,0);
+  IPAddress wifi_sta_ip = IPAddress IP_ADDRESS;
+  IPAddress wifi_sta_gw = IPAddress GATEWAY_ADDRESS;
+  IPAddress wifi_sta_sn = IPAddress SUBNET;
 
   char wifi_ap_ssid[40] = "ONSTEP";
   char wifi_ap_pwd[40] = "password";
   byte wifi_ap_ch = 7;
 
-  IPAddress wifi_ap_ip = IPAddress(192,168,0,1);
-  IPAddress wifi_ap_gw = IPAddress(192,168,0,1);
-  IPAddress wifi_ap_sn = IPAddress(255,255,255,0);
+  IPAddress wifi_ap_ip = IPAddress IP_ADDRESS_AP;
+  IPAddress wifi_ap_gw = IPAddress GATEWAY_AP;
+  IPAddress wifi_ap_sn = IPAddress SUBNET_AP;
 
   #if STANDARD_COMMAND_CHANNEL == ON
     WiFiServer cmdSvr(9999);
@@ -112,7 +113,6 @@ extern NVS nv;
   }
 
   void wifiStart(void) {
-    // say hello
     VF("WEM: WiFi Addon "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
     VF("WEM: MCU = "); VLF(MCU_STR);
 
@@ -222,7 +222,7 @@ extern NVS nv;
       // disconnect client
       static unsigned long persistentClientTime = 0;
       if (persistentCmdSvrClient && !persistentCmdSvrClient.connected()) persistentCmdSvrClient.stop();
-      if (persistentCmdSvrClient && (long)(persistentClientTime - millis() < 0)) persistentCmdSvrClient.stop();
+      if (persistentCmdSvrClient && (long)(persistentClientTime - millis()) < 0) persistentCmdSvrClient.stop();
 
       // new client
       if (!persistentCmdSvrClient && persistentCmdSvr.hasClient()) {

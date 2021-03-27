@@ -18,7 +18,7 @@
 
 //----------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT { nv.init(0, false, 0, false); }
+#define HAL_INIT() { nv.init(0, false, 0, false); }
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes to support this processor's operation

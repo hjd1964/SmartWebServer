@@ -1,10 +1,6 @@
 // -----------------------------------------------------------------------------------
 // Constants
 
-//#include "src\locale\Locales.h"
-
-// Configuration options
-
 // On/Off, etc.
 #define OFF                  -1
 #define ON                   -2
@@ -18,7 +14,8 @@
 #define VERBOSE              -9
 #define REMOTE              -10
 #define WIFI                -11
-#define ETHERNET            -12
+#define ETHERNET_W5100      -12
+#define ETHERNET_W5500      -13
 #define INVALID         -999999
 
 // encoder types
@@ -100,25 +97,4 @@
   #if SERIAL_SWAP != OFF
     #error "Configuration (Config.h): Setting DISPLAY_RESET_CONTROLS FWU must be used with SERIAL_SWAP OFF only"
   #endif
-#endif
-
-#if !defined(LED_STATUS_ON_STATE)
-  #define LED_STATUS_ON_STATE LOW
-  #define LED_STATUS_OFF_STATE HIGH
-#elif LED_STATUS_ON_STATE == LOW
-  #define LED_STATUS_OFF_STATE HIGH
-#elif LED_STATUS_ON_STATE == HIGH
-  #define LED_STATUS_OFF_STATE LOW
-#endif
-
-#ifndef LEGACY_TRANSMIT_ON
-  // macros to help with sending webpage data, chunked
-  #define sendHtmlStart() server.setContentLength(CONTENT_LENGTH_UNKNOWN); server.sendHeader("Cache-Control","no-cache"); server.send(200, "text/html", String());
-  #define sendHtml(x) server.sendContent(x); x = ""
-  #define sendHtmlDone(x) server.sendContent("");
-#else
-  // macros to help with sending webpage data, normal method
-  #define sendHtmlStart()
-  #define sendHtml(x)
-  #define sendHtmlDone(x) server.send(200, "text/html", x)
 #endif

@@ -1,4 +1,5 @@
-#pragma once
+// -----------------------------------------------------------------------------------
+// Mount status from OnStep
 
 #include <Arduino.h>
 #include "../../Constants.h"

@@ -11,6 +11,7 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
@@ -89,7 +90,7 @@ const char html_settingsMFPause2[] PROGMEM =
 const char html_settingsEnd[] PROGMEM =
 "</form>\r\n";
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void handleSettings(EthernetClient *client) {
 #else
 void handleSettings() {
@@ -199,20 +200,20 @@ void handleSettings() {
   sendHtmlDone(data);
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void settingsAjaxGet(EthernetClient *client) {
 #else
 void settingsAjaxGet() {
 #endif
   processSettingsGet();
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print("");
 #else
   server.send(200, "text/html","");
 #endif
 }
 
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
 void settingsAjax(EthernetClient *client) {
 #else
 void settingsAjax() {
@@ -332,7 +333,7 @@ void settingsAjax() {
   }
 
   
-#ifdef OETHS
+#if OPERATIONAL_MODE != WIFI
   client->print(data);
 #else
   server.send(200, "text/plain",data);

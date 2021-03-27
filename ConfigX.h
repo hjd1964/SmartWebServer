@@ -12,36 +12,31 @@
 // Note that the SERIAL_DEBUG port cannot be used for normal communication with OnStep
 
 //      Parameter Name              Value        Default  Notes                                                                 Hint
-#define DEBUG                      REMOTE //         OFF, Use ON for background error messages only, use VERBOSE for all      Infreq
+#define DEBUG                         OFF //         OFF, Use ON for background error messages only, use VERBOSE for all      Infreq
                                           //              error and status messages, use PROFILER for VT100 task profiler,
                                           //              use REMOTE to forward debug output to OnStep
-#define SERIAL_DEBUG               Serial //    SERIAL_A, Or use any h/w serial port. Serial1 or Serial2, etc. as supported.  Option
-#define SERIAL_DEBUG_BAUD          115200 //        9600, n. Where n=9600,19200,57600,115200 (common baud rates.)             Option
+#define SERIAL_DEBUG               Serial //      Serial, Or use any h/w serial port. Serial1 or Serial2, etc. as supported.  Option
+#define SERIAL_DEBUG_BAUD            9600 //        9600, n. Where n=9600,19200,57600,115200 (common baud rates.)             Option
 
-// ETHERNET SETTINGS ---------------------------------------------------------------------------------------------------------------
+// STATUS LED ----------------------------------------------------------------------------------------------------------------------
+#define LED_STATUS_ON_STATE          HIGH //        HIGH, Use LOW so indicator stays on when connected if needed.             Option
 
-#if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
-//  #include <Ethernet.h>
+// IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
+// For Wifi these settings are stored in NV (EEPROM) and will not revert to defaults first set from these values unless
+// NV is wiped, these settings can be changed at runtime however.  For Ethernet, settings must be changed below to take effect
+#define IP_ADDRESS         (192,168,1,50) //      ip(,,), Wifi Station/Ethernet default IP Address                            Adjust
+#define DNS_ADDRESS         (192,168,1,1) //   myDns(,,), Wifi Station/Ethernet default DNS Server Address                    Adjust
+#define GATEWAY_ADDRESS     (192,168,1,1) // gateway(,,), Wifi Station/Ethernet default GATEWAY Address                       Adjust
+#define SUBNET            (255,255,255,0) //  subnet(,,), Wifi Station/Ethernet default SUBNET                                Adjust
 
-  // Enter a unique MAC address for your controller if you like:
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+#define IP_ADDRESS_AP       (192,168,0,1) //      ip(,,), Wifi Access Point default IP Address                                Adjust
+#define GATEWAY_AP          (192,168,0,1) // gateway(,,), Wifi Access Point default GATEWAY Address                           Adjust
+#define SUBNET_AP         (255,255,255,0) //  subnet(,,), Wifi Access Point default SUBNET                                    Adjust
 
-  // The IP addresses below will be dependent on your local network:
-  IPAddress ip(192, 168, 1, 55);
-  IPAddress myDns(192,168, 1, 1);
-  IPAddress gateway(192, 168, 1, 1);
-  IPAddress subnet(255, 255, 255, 0);
-
-//  #include "src/ethernetServers/EthernetServers.h"
-//#elif OPERATIONAL_MODE == WIFI
-//  #include "src/wifiServers/WifiServers.h"
-#endif
-
-// PASSWORD -------------------------------------------------------------------------------------------------------------------------
-#define Default_Password       "password" //  "password", Adjust as required, this can be changed at runtime also.             Option
+// PASSWORD ------------------------------------------------------------------------------------------------------------------------
+#define Default_Password       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option
 
 // NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
 #define NV_DEFAULT                     ON //          ON, Uses HAL specified default, for remembering settings when           Infreq
                                           //              powered off.  This is usually done using the microcontrollers
-                                          //              built-in EEPROM or FLASH emulation of EEPROM.  Sometimes (Bluepill)
-                                          //              it uses an DS3231 RTC's onboard EEPROM AT24C32 chip.
+                                          //              built-in EEPROM or FLASH emulation of EEPROM.

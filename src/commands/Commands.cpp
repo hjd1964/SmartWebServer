@@ -31,7 +31,9 @@ void serialBegin(long baudRate, int swap) {
     if (swap) Ser.begin(baudRate,SERIAL_8N1,23,5); else Ser.begin(baudRate,SERIAL_8N1,1,3);
   #else
     Ser.begin(baudRate);
-    if (swap) Ser.swap();
+    #ifdef ESP8266
+      if (swap) Ser.swap();
+    #endif
   #endif
   delay(1000);
 }
