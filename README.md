@@ -1,4 +1,10 @@
 # OnStep Smart Web Server
+
+***
+THIS IS AN PRELIMINARY DESIGN, IT COMPILES CORRECTLY FOR ETHERNET AND WIFI.  OTHER THAN
+THAT IT IS NOT KNOWN WORK!!!
+***
+
 This is the WiFi and Ethernet webserver for OnStep.
 It enables OnStep to be controlled over IP. This access can be over a command channel
 and/or website.
