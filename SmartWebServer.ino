@@ -222,4 +222,6 @@ void loop(void) {
   #else
     ethernetCommandChannel();
   #endif
+
+  tasks.yield();
 }
