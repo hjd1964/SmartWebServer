@@ -1,6 +1,18 @@
 // -----------------------------------------------------------------------------------
 // Constants
 
+// Firmware version ----------------------------------------------------------------------------------------------------------------
+#define Product "Smart Web Server"
+#define FirmwareDate          __DATE__
+#define FirmwareTime          __TIME__
+#define FirmwareVersionMajor  "0"
+#define FirmwareVersionMinor  "5"
+#define FirmwareVersionPatch  "a"
+
+#define Version FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch
+
+// Configuration options -----------------------------------------------------------------------------------------------------------
+
 // On/Off, etc.
 #define OFF                    -1
 #define ON                     -2
@@ -81,15 +93,6 @@
 #define EE_ENC_A2_REV         676   // 2
 #define EE_ENC_AUTO_SYNC      678   // 2
 
-// version info.
-#define Product "Smart Web Server"
-#define FirmwareDate          __DATE__
-#define FirmwareTime          __TIME__
-#define FirmwareVersionMajor  "0"
-#define FirmwareVersionMinor  "5"
-#define FirmwareVersionPatch  "a"
-
-#define Version FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch
 
 // The settings below are for initialization only, afterward they are stored and recalled from EEPROM and must
 // be changed in the web interface OR with a reset (for initialization again) as described in the Config.h comments
