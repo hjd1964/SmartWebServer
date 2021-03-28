@@ -37,7 +37,6 @@
 // See Constants.h for version information
 
 #include "Constants.h"
-
 #include "Config.h"
 #include "ConfigX.h"
 #include "src/HAL/HAL.h"
