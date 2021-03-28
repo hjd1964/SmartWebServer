@@ -1,6 +1,5 @@
 // -----------------------------------------------------------------------------------
 // non-volatile storage (default/built-in, flash emulation for Arduino M0)
-// uses https://github.com/cmaglie/FlashStorage
 
 #include "Arduino.h"
 
@@ -13,7 +12,7 @@
   #include "NV_M0.h"
 
   bool NonVolatileStorageM0::init(uint16_t size, bool cacheEnable, uint16_t wait, bool checkEnable, TwoWire* wire, uint8_t address) {
-    if (size != 1024) return false;
+    if (size != 1024 || wait == false) return false;
 
     // setup size, cache, etc.
     NonVolatileStorage::init(size, cacheEnable, wait, checkEnable);

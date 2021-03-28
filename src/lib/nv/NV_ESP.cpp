@@ -11,6 +11,8 @@
   #include "NV_ESP.h"
 
   bool NonVolatileStorageESP::init(uint16_t size, bool cacheEnable, uint16_t wait, bool checkEnable, TwoWire* wire, uint8_t address) {
+    if (size > 4096 || wait == false) return false;
+
     // setup size, cache, etc.
     NonVolatileStorage::init(size, cacheEnable, wait, checkEnable);
 
