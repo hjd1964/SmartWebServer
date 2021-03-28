@@ -22,6 +22,9 @@ bool atoi2(char *a, int *i);
 // convert to various degrees, minutes, seconds formats
 boolean doubleToDms(char *reply, double *f, boolean fullRange, boolean signPresent);
 
+// convert hex to int, returns -1 on error
+int hexToInt(String s);
+
 // convert time to compact byte representation for intervalometer
 uint8_t timeToByte(float t);
 

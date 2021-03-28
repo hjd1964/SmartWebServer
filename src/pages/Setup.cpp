@@ -53,11 +53,13 @@ extern NVS nv;
   L_WIFI_CMD_TO ": <input style='width:4em' name='ccto' value='%d' type='number' min='100' max='300'> ms<br/>"
   L_WIFI_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number' min='100' max='300'> ms<br/>"
   "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
+
   const char html_wifiSSID1[] PROGMEM =
   "<br/><b>" L_WIFI_STA_TITLE ":</b><br/>"
   "<form method='post' action='/wifi.htm'>"
   "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
   L_WIFI_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='39'> (" L_WIFI_PWD_MSG ")<br/>";
+
   const char html_wifiSSID2[] PROGMEM =
   L_WIFI_EN_DHCP ": <input type='checkbox' name='stadhcp' value='1' %s> (" L_WIFI_EN_DHCP_MSG ")<br/>"
   L_WIFI_EN_STA ": <input type='checkbox' name='staen' value='1' %s><br/>"
@@ -72,12 +74,14 @@ extern NVS nv;
   "<input name='staip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='staip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='staip4' value='%d' type='number' min='0' max='255'></td>";
+
   const char html_wifiSTAGW[] PROGMEM =
   "<tr><td>" L_GATEWAY ": </td><td>"
   "<input name='stagw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stagw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stagw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stagw4' value='%d' type='number' min='0' max='255'></td>";
+
   const char html_wifiSTASN[] PROGMEM =
   "<tr><td>" L_SUBNET ": </td><td>"
   "<input name='stasn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
@@ -89,6 +93,7 @@ extern NVS nv;
   "<br/><b>" L_WIFI_AP ":</b><br/>"
   "<form method='post' action='/wifi.htm'>"
   "SSID: <input style='width:6em' name='apssid' type='text' ";
+
   const char html_wifiSSID3B[] PROGMEM =
   "value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
   L_WIFI_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='39'> " L_WIFI_PWD_MSG "&nbsp;&nbsp;&nbsp;"
@@ -103,12 +108,14 @@ extern NVS nv;
   "<input name='apip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apip4' value='%d' type='number' min='0' max='255'></td>";
+
   const char html_wifiSSID5[] PROGMEM =
   "<tr><td>" L_GATEWAY ": </td><td>"
   "<input name='apgw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apgw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apgw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apgw4' value='%d' type='number' min='0' max='255'></td>";
+
   const char html_wifiSSID6[] PROGMEM =
   "<tr><td>" L_SUBNET ": </td><td>"
   "<input name='apsn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
@@ -186,9 +193,9 @@ extern NVS nv;
     data += FPSTR(html_linksCtrlN);
     if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
     data += FPSTR(html_linksLibN);
-  #if ENCODERS == ON
-    data += FPSTR(html_linksEncN);
-  #endif
+    #if ENCODERS == ON
+      data += FPSTR(html_linksEncN);
+    #endif
     sendHtml(data);
     data += FPSTR(html_linksPecN);
     data += FPSTR(html_linksSetN);
@@ -280,8 +287,7 @@ extern NVS nv;
       nv.update(EE_TIMEOUT_WEB,(int)webTimeout);
     }
 
-    // --------------------------------------------------------------------------------------------------------
-
+    // --------------------------------------------------------------------------
     // Station MAC
     v=server.arg("stmac");
     if (v!="") {
@@ -366,8 +372,7 @@ extern NVS nv;
       restartRequired=true;
     }
 
-    // -------------------------------------------------------------------------------------------
-    
+    // --------------------------------------------------------------------------
     // Access-Point MAC
     v=server.arg("apmac");
     if (v!="") {
@@ -451,22 +456,6 @@ extern NVS nv;
       for (int i=0;i<4;i++) nv.write(EE_AP_SN+i,wifi_ap_sn[i]);
       restartRequired=true;
     }
-  }
-
-  // convert hex to int with error checking
-  // returns -1 on error
-  int hexToInt(String s) {
-    int i0;
-    int i1;
-    if (s.length()!=2) return -1;
-    char c0=s.charAt(0);
-    char c1=s.charAt(1);
-    if ( (((c0>='0') && (c0<='9')) || ((c0>='A') && (c0<='F'))) &&
-        (((c1>='0') && (c1<='9')) || ((c1>='A') && (c1<='F'))) ) {
-      if ((c0>='0') && (c0<='9')) { i0=c0-'0'; } else { i0=(c0-'A')+10; }
-      if ((c1>='0') && (c1<='9')) { i1=c1-'0'; } else { i1=(c1-'A')+10; }
-      return i0*16+i1;
-    } else return -1;
   }
 
 #endif

@@ -58,6 +58,19 @@ bool doubleToDms(char *reply, double *f, boolean fullRange, boolean signPresent)
   return true;
 }
 
+int hexToInt(String s) {
+  int i0;
+  int i1;
+  if (s.length() != 2) return -1;
+  char c0 = s.charAt(0);
+  char c1 = s.charAt(1);
+  if ( ((c0 >= '0' && c0 <= '9') || (c0 >= 'A' && c0 <= 'F')) && ((c1 >= '0' && c1 <= '9') || (c1 >= 'A' && c1 <= 'F')) ) {
+    if (c0 >= '0' && c0 <= '9') { i0 = c0 - '0'; } else { i0 = (c0 - 'A') + 10; }
+    if (c1 >= '0' && c1 <= '9') { i1 = c1 - '0'; } else { i1 = (c1 - 'A') + 10; }
+    return i0*16 + i1;
+  } else return -1;
+}
+
 uint8_t timeToByte(float t) {
   float v = 10;                         // default is 1 second
   if (t <= 0.0162) v=0; else            // 0.0156 (1/64 second)        (0)
