@@ -37,7 +37,8 @@
 
   class Encoders {
   public:
-    inline void init() { }
+    // prepare encoders for operation, init NV if necessary
+    void init();
 
     // automatically sync the encoders from OnStep's position when at home or parked
     void syncFromOnStep();

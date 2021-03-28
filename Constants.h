@@ -34,6 +34,9 @@
 #define INTERVALOMETER          4
 
 // EEPROM contents
+#define NV_KEY_HIGH          8266
+#define NV_KEY_LOW              2
+
 #define EE_KEY_HIGH             0   // 2
 #define EE_KEY_LOW              2   // 2
 

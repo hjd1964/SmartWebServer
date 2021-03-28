@@ -59,10 +59,7 @@ extern NVS nv;
   }
 
   void wifiInit(void) {
-    if (nv.readI(EE_KEY_HIGH) != 8266 || nv.readI(EE_KEY_LOW) != 2) {
-      nv.update(EE_KEY_HIGH, (int16_t)8266);
-      nv.update(EE_KEY_LOW, (int16_t)2);
-
+    if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
       nv.update(EE_AP_EN, (int16_t)accessPointEnabled);
       nv.update(EE_STA_EN, (int16_t)stationEnabled);
       nv.update(EE_DHCP_EN, (int16_t)stationDhcpEnabled);

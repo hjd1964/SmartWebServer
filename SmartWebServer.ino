@@ -71,56 +71,21 @@ void setup(void) {
   VF("MSG: Setup, starting system service task (rate 10ms priority 7)... ");
   if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) VL("success"); else VL("FAILED!");
 
+  // read settings from NV or init. as required
+  #if ENCODERS == ON
+    encodersInit();
+  #endif
+
   #if OPERATIONAL_MODE == WIFI
     wifiInit();
   #endif
 
+  // init is done, write the NV key if necessary
+  nv.update(EE_KEY_HIGH, (int16_t)NV_KEY_HIGH);
+  nv.update(EE_KEY_LOW, (int16_t)NV_KEY_LOW);
+
   #if LED_STATUS != OFF
     pinMode(LED_STATUS_PIN, OUTPUT);
-  #endif
-
-  // EEPROM Init
-  #if ENCODERS == ON
-    if (nv.readI(EE_KEY_HIGH) != 8266 || nv.readI(EE_KEY_LOW) != 2) {
-      nv.writeI(EE_ENC_AUTO_SYNC, ENC_AUTO_SYNC_DEFAULT);
-      nv.writeL(EE_ENC_A1_DIFF_TO, AXIS1_ENC_DIFF_LIMIT_TO);
-      nv.writeL(EE_ENC_A2_DIFF_TO, AXIS2_ENC_DIFF_LIMIT_TO);
-      nv.writeL(EE_ENC_RC_STA, 20);     // enc short term average samples
-      nv.writeL(EE_ENC_RC_LTA, 200);    // enc long term average samples
-      nv.writeL(EE_ENC_RC_RCOMP, 0);    // enc rate comp
-      nv.writeL(EE_ENC_RC_INTP_P, 1);   // intpol phase
-      nv.writeL(EE_ENC_RC_INTP_M, 0);   // intpol mag
-      nv.writeL(EE_ENC_RC_PROP, 10);    // prop
-      nv.writeL(EE_ENC_MIN_GUIDE, 100); // minimum guide duration
-      nv.writeL(EE_ENC_A1_ZERO, 0);     // absolute Encoder Axis1 zero
-      nv.writeL(EE_ENC_A2_ZERO, 0);     // absolute Encoder Axis2 zero
-      nv.writeD(EE_ENC_A1_TICKS, AXIS1_ENC_TICKS_DEG);
-      nv.writeD(EE_ENC_A2_TICKS, AXIS2_ENC_TICKS_DEG);
-      nv.writeI(EE_ENC_A1_REV, AXIS1_ENC_REVERSE);
-      nv.writeI(EE_ENC_A2_REV, AXIS2_ENC_REVERSE);
-    }
-
-    if (ENC_AUTO_SYNC_MEMORY == ON) encAutoSync = nv.readI(EE_ENC_AUTO_SYNC);
-    Axis1EncDiffTo = nv.readL(EE_ENC_A1_DIFF_TO);
-    Axis2EncDiffTo = nv.readL(EE_ENC_A2_DIFF_TO);
-
-    #if AXIS1_ENC_RATE_CONTROL == ON
-      Axis1EncStaSamples = nv.readL(EE_ENC_RC_STA);
-      Axis1EncLtaSamples = nv.readL(EE_ENC_RC_LTA);
-      long l = nv.readLong(EE_ENC_RC_RCOMP);
-      axis1EncRateComp = (float)l/1000000.0;
-      #if AXIS1_ENC_INTPOL_COS == ON
-        Axis1EncIntPolPhase = nv.readL(EE_ENC_RC_INTP_P);
-        Axis1EncIntPolMag = nv.readL(EE_ENC_RC_INTP_M);
-      #endif
-      Axis1EncProp = nv.readL(EE_ENC_RC_PROP);
-      Axis1EncMinGuide = nv.readL(EE_ENC_MIN_GUIDE);
-    #endif
-
-    Axis1EncTicksPerDeg = nv.readD(EE_ENC_A1_TICKS);
-    Axis2EncTicksPerDeg = nv.readD(EE_ENC_A2_TICKS);
-    Axis1EncRev = nv.readI(EE_ENC_A1_REV);
-    Axis2EncRev = nv.readI(EE_ENC_A2_REV);
   #endif
 
   // attempt to connect to OnStep
