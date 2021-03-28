@@ -22,16 +22,16 @@
 #define LED_STATUS_ON_STATE          HIGH //        HIGH, Use LOW so indicator stays on when connected if needed.             Option
 
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
-// For Wifi these settings are stored in NV (EEPROM) and will not revert to defaults first set from these values unless
+// For Wifi these settings are stored in NV (EEPROM) and will not revert to the defaults once first set from these values unless
 // NV is wiped, these settings can be changed at runtime however.  For Ethernet, settings must be changed below to take effect
-#define IP_ADDRESS         (192,168,1,50) //      ip(,,), Wifi Station/Ethernet default IP Address                            Adjust
-#define DNS_ADDRESS         (192,168,1,1) //   myDns(,,), Wifi Station/Ethernet default DNS Server Address                    Adjust
-#define GATEWAY_ADDRESS     (192,168,1,1) // gateway(,,), Wifi Station/Ethernet default GATEWAY Address                       Adjust
-#define SUBNET            (255,255,255,0) //  subnet(,,), Wifi Station/Ethernet default SUBNET                                Adjust
+#define IP_ADDRESS         (192,168,1,55) // ..168,1,55), Wifi Station/Ethernet default IP Address                            Adjust
+#define DNS_ADDRESS         (192,168,1,1) // ..,168,1,1), Wifi Station/Ethernet default DNS Server Address                    Adjust
+#define GATEWAY_ADDRESS     (192,168,1,1) // ..,168,1,1), Wifi Station/Ethernet default GATEWAY Address                       Adjust
+#define SUBNET            (255,255,255,0) // ..55,255,0), Wifi Station/Ethernet default SUBNET                                Adjust
 
-#define IP_ADDRESS_AP       (192,168,0,1) //      ip(,,), Wifi Access Point default IP Address                                Adjust
-#define GATEWAY_AP          (192,168,0,1) // gateway(,,), Wifi Access Point default GATEWAY Address                           Adjust
-#define SUBNET_AP         (255,255,255,0) //  subnet(,,), Wifi Access Point default SUBNET                                    Adjust
+#define IP_ADDRESS_AP       (192,168,0,1) // ..,168,0,1), Wifi Access Point default IP Address                                Adjust
+#define GATEWAY_AP          (192,168,0,1) // ..,168,0,1), Wifi Access Point default GATEWAY Address                           Adjust
+#define SUBNET_AP         (255,255,255,0) // ..55,255,0), Wifi Access Point default SUBNET                                    Adjust
 
 // PASSWORD ------------------------------------------------------------------------------------------------------------------------
 #define Default_Password       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option

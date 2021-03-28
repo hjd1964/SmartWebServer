@@ -17,10 +17,6 @@
 
 #pragma once
 
-#ifndef IRAM_ATTR
-  #define IRAM_ATTR
-#endif
-
 #if defined(_mk20dx128_h_) || defined(__MK20DX128__)
   // Teensy 3.0
   #define MCU_STR "Teensy3.0"

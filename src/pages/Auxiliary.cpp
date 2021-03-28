@@ -115,7 +115,7 @@ void handleAux() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data+= FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
 
   // ajax scripts
   data += FPSTR(html_auxScript1);

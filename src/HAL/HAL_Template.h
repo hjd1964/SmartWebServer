@@ -22,3 +22,6 @@
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes to support this processor's operation
+#define IRAM_ATTR
+#define ICACHE_RAM_ATTR
+#define FPSTR

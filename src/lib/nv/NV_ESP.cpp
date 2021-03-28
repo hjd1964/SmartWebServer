@@ -3,44 +3,45 @@
 
 #if defined(ESP8266) || defined(ESP32)
 
-#include "Arduino.h"
-#include "EEPROM.h"
-#include "../../tasks/OnTask.h"
-extern Tasks tasks;
+  #include "Arduino.h"
+  #include "EEPROM.h"
+  #include "../../tasks/OnTask.h"
+  extern Tasks tasks;
 
-#include "NV_ESP.h"
+  #include "NV_ESP.h"
 
-bool NonVolatileStorageESP::init(uint16_t size, bool cacheEnable, uint16_t wait, bool checkEnable, TwoWire* wire, uint8_t address) {
-  // setup size, cache, etc.
-  NonVolatileStorage::init(size, cacheEnable, wait, checkEnable);
+  bool NonVolatileStorageESP::init(uint16_t size, bool cacheEnable, uint16_t wait, bool checkEnable, TwoWire* wire, uint8_t address) {
+    // setup size, cache, etc.
+    NonVolatileStorage::init(size, cacheEnable, wait, checkEnable);
 
-  EEPROM.begin(size);
-  return true;
-}
-
-void NonVolatileStorageESP::poll() {
-  if (dirty && ((long)(millis() - commitReadyTimeMs) >= 0)) {
-    #if defined(ESP32)
-      timerAlarmsDisable();
-    #endif
-    EEPROM.commit();
-    #if defined(ESP32)
-      timerAlarmsEnable();
-    #endif
-    dirty = false;
+    EEPROM.begin(size);
+    return true;
   }
-}
 
-bool NonVolatileStorageESP::committed() {
-  return !dirty;
-}
+  void NonVolatileStorageESP::poll() {
+    if (dirty && ((long)(millis() - commitReadyTimeMs) >= 0)) {
+      #if defined(ESP32)
+        timerAlarmsDisable();
+      #endif
+      EEPROM.commit();
+      #if defined(ESP32)
+        timerAlarmsEnable();
+      #endif
+      dirty = false;
+    }
+  }
 
-uint8_t NonVolatileStorageESP::readFromStorage(uint16_t i) {
-  return EEPROM.read(i);
-}
+  bool NonVolatileStorageESP::committed() {
+    return !dirty;
+  }
 
-void NonVolatileStorageESP::writeToStorage(uint16_t i,  uint8_t j) {
-  EEPROM.write(i, j);
-  dirty = true;
-}
+  uint8_t NonVolatileStorageESP::readFromStorage(uint16_t i) {
+    return EEPROM.read(i);
+  }
+
+  void NonVolatileStorageESP::writeToStorage(uint16_t i,  uint8_t j) {
+    EEPROM.write(i, j);
+    dirty = true;
+  }
+
 #endif
