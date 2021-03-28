@@ -69,7 +69,7 @@ void setup(void) {
   // System services
   // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
   VF("WEM: Setup, starting system services task (rate 10ms priority 7)... ");
-  if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) VL("success"); else VL("FAILED!");
+  if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
 
   // read settings from NV or init. as required
   #if ENCODERS == ON
