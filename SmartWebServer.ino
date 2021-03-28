@@ -59,16 +59,16 @@ void systemServices() {
 void setup(void) {
 
   // say hello
-  VF("MSG: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
-  VF("MSG: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
+  VF("WEM: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
+  VF("WEM: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
   // call hardware specific initialization
-  VLF("MSG: Init HAL");
+  VLF("WEM: Init HAL");
   HAL_INIT();
 
   // System services
   // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
-  VF("MSG: Setup, starting system service task (rate 10ms priority 7)... ");
+  VF("WEM: Setup, starting system services task (rate 10ms priority 7)... ");
   if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) VL("success"); else VL("FAILED!");
 
   // read settings from NV or init. as required
