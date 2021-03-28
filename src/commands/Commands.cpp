@@ -203,3 +203,39 @@ char *commandString(const char* command) {
   if (!success) strcpy(response,"?");
   return response;
 }
+
+char* commandErrorToStr(int e) {
+  static char reply[40];
+  strcpy(reply,"Error, ");
+  
+  switch (e) {
+    case CE_NONE: strcpy(reply, L_CE_NONE); break;
+    case CE_0: strcpy(reply, L_CE_0); break;
+    case CE_CMD_UNKNOWN: strcat(reply, L_CE_CMD_UNKNOWN); break;
+    case CE_REPLY_UNKNOWN: strcat(reply, L_CE_REPLY_UNKNOWN); break;
+    case CE_PARAM_RANGE: strcat(reply, L_CE_PARAM_RANGE); break;
+    case CE_PARAM_FORM: strcat(reply, L_CE_PARAM_FORM); break;
+    case CE_ALIGN_FAIL: strcat(reply, L_CE_ALIGN_FAIL); break;
+    case CE_ALIGN_NOT_ACTIVE: strcat(reply, L_CE_ALIGN_NOT_ACTIVE); break;
+    case CE_NOT_PARKED_OR_AT_HOME: strcat(reply, L_CE_NOT_PARKED_OR_AT_HOME); break;
+    case CE_PARKED: strcat(reply, L_CE_PARKED); break;
+    case CE_PARK_FAILED: strcat(reply, L_CE_PARK_FAILED); break;
+    case CE_NOT_PARKED: strcat(reply, L_CE_NOT_PARKED); break;
+    case CE_NO_PARK_POSITION_SET: strcat(reply, L_CE_NO_PARK_POSITION_SET); break;
+    case CE_GOTO_FAIL: strcat(reply, L_CE_GOTO_FAIL); break;
+    case CE_LIBRARY_FULL: strcat(reply, L_CE_LIBRARY_FULL); break;
+    case CE_GOTO_ERR_BELOW_HORIZON: strcat(reply, L_CE_GOTO_ERR_BELOW_HORIZON); break;
+    case CE_GOTO_ERR_ABOVE_OVERHEAD: strcat(reply, L_CE_GOTO_ERR_ABOVE_OVERHEAD); break;
+    case CE_SLEW_ERR_IN_STANDBY: strcat(reply, L_CE_SLEW_ERR_IN_STANDBY); break;
+    case CE_SLEW_ERR_IN_PARK: strcat(reply, L_CE_SLEW_ERR_IN_PARK); break;
+    case CE_GOTO_ERR_GOTO: strcat(reply, L_CE_GOTO_ERR_GOTO); break;
+    case CE_GOTO_ERR_OUTSIDE_LIMITS: strcat(reply, L_CE_GOTO_ERR_OUTSIDE_LIMITS); break;
+    case CE_SLEW_ERR_HARDWARE_FAULT: strcat(reply, L_CE_SLEW_ERR_HARDWARE_FAULT); break;
+    case CE_MOUNT_IN_MOTION: strcat(reply, L_CE_MOUNT_IN_MOTION); break;
+    case CE_GOTO_ERR_UNSPECIFIED: strcat(reply, L_CE_GOTO_ERR_UNSPECIFIED); break;
+    case CE_NULL: strcpy(reply,""); break;
+    default: strcat(reply,L_CE_UNK);
+  }
+
+  return reply;
+}
