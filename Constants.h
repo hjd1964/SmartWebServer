@@ -93,7 +93,6 @@
 #define EE_ENC_A2_REV         676   // 2
 #define EE_ENC_AUTO_SYNC      678   // 2
 
-
 // The settings below are for initialization only, afterward they are stored and recalled from EEPROM and must
 // be changed in the web interface OR with a reset (for initialization again) as described in the Config.h comments
 #define TIMEOUT_WEB           200
@@ -104,3 +103,5 @@
     #error "Configuration (Config.h): Setting DISPLAY_RESET_CONTROLS FWU must be used with SERIAL_SWAP OFF only"
   #endif
 #endif
+
+#define EmptyStr               ""

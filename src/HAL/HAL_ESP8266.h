@@ -24,4 +24,4 @@
 #define HAL_INIT() { nv.init(E2END + 1, false, 5000, false); }
 
 //-----------------------------------------------------------------------------------------------------
-// Misc. includes to support this processor's operation
+// Misc. includes and defines to support this processor's operation

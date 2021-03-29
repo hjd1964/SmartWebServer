@@ -22,7 +22,7 @@
 #define HAL_INIT() { analogReadResolution(10); nv.init(E2END + 1, true, 0, false); }
 
 //-----------------------------------------------------------------------------------------------------
-// Misc. includes to support this processor's operation
+// Misc. includes and defines to support this processor's operation
 #define IRAM_ATTR
 #define ICACHE_RAM_ATTR
 #define FPSTR
