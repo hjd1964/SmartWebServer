@@ -22,12 +22,12 @@ extern NVS nv;
   #define ENC_HAS_ABSOLUTE
   
   BiSSC_Encoder::BiSSC_Encoder(int16_t maPin, int16_t sloPin, int16_t axis) {
-    _clkPin=maPin;
-    _sloPin=sloPin;
-    _axis=axis;
-    pinMode(_clkPin,OUTPUT);
-    digitalWrite(_clkPin,LOW);
-    pinMode(_sloPin,INPUT_PULLUP);
+    _clkPin = maPin;
+    _sloPin = sloPin;
+    _axis = axis;
+    pinMode(_clkPin, OUTPUT);
+    digitalWrite(_clkPin, LOW);
+    pinMode(_sloPin, INPUT_PULLUP);
     if (_axis == 1) _offset = nv.readL(EE_ENC_A1_ZERO);
     if (_axis == 2) _offset = nv.readL(EE_ENC_A2_ZERO);
   }
@@ -52,9 +52,9 @@ extern NVS nv;
   }
 
   bool BiSSC_Encoder::readEnc(uint32_t &encPos) {
-    bool foundAck=false;
-    bool foundStart=false;
-    bool foundCds=false;
+    bool foundAck = false;
+    bool foundStart = false;
+    bool foundCds = false;
 
     uint8_t  encErr = 0;
     uint8_t  encWrn = 0;
@@ -63,41 +63,41 @@ extern NVS nv;
     uint32_t encTurns = 0;
 
     // prepare for a reading
-    encPos=0;
-    encErr=0;
-    encWrn=0;
-    encCrc=0;
+    encPos = 0;
+    encErr = 0;
+    encWrn = 0;
+    encCrc = 0;
 
     // rate in microseconds, ie 2+2 = 4 = 250KHz
     int rate = 2;
 
     // sync phase
-    for (int i=0; i<20; i++) {
-      digitalWrite(_clkPin,LOW);
+    for (int i = 0; i < 20; i++) {
+      digitalWrite(_clkPin, LOW);
       if (digitalRead(_sloPin) == LOW) foundAck = true;
       delayMicroseconds(rate);
-      digitalWrite(_clkPin,HIGH);
+      digitalWrite(_clkPin, HIGH);
       delayMicroseconds(rate);
       if (foundAck) break;
     }
 
     // if we have an Ack
     if (foundAck) {
-      for (int i=0; i<20; i++) {
-        digitalWrite(_clkPin,LOW);
+      for (int i = 0; i < 20; i++) {
+        digitalWrite(_clkPin, LOW);
         if (digitalRead(_sloPin) == HIGH) foundStart = true;
         delayMicroseconds(rate);
-        digitalWrite(_clkPin,HIGH);
+        digitalWrite(_clkPin, HIGH);
         delayMicroseconds(rate);
         if (foundStart) break;
       }
 
       // if we have an Start
       if (foundStart) {
-        digitalWrite(_clkPin,LOW);
+        digitalWrite(_clkPin, LOW);
         if (digitalRead(_sloPin) == LOW) foundCds = true;
         delayMicroseconds(rate);
-        digitalWrite(_clkPin,HIGH);
+        digitalWrite(_clkPin, HIGH);
         delayMicroseconds(rate);
       }
 
@@ -105,52 +105,52 @@ extern NVS nv;
       if (foundCds) {
 
         // the first 16 bits are the multi-turn count
-        for (int i=0; i<16; i++) {
-          digitalWrite(_clkPin,LOW);
-          if (digitalRead(_sloPin) == HIGH) bitSet(encTurns,15-i);
+        for (int i = 0; i < 16; i++) {
+          digitalWrite(_clkPin, LOW);
+          if (digitalRead(_sloPin) == HIGH) bitSet(encTurns, 15 - i);
           delayMicroseconds(rate);
-          digitalWrite(_clkPin,HIGH);
+          digitalWrite(_clkPin, HIGH);
           delayMicroseconds(rate);
         }
         
         // the next 23 bits are the encoder absolute position
-        for (int i=0; i<23; i++) {
-          digitalWrite(_clkPin,LOW);
-          if (digitalRead(_sloPin) == HIGH) bitSet(encPos,22-i);
+        for (int i = 0; i < 23; i++) {
+          digitalWrite(_clkPin, LOW);
+          if (digitalRead(_sloPin) == HIGH) bitSet(encPos, 22 - i);
           delayMicroseconds(rate);
-          digitalWrite(_clkPin,HIGH);
+          digitalWrite(_clkPin, HIGH);
           delayMicroseconds(rate);
         }
 
         // the Err bit
-        digitalWrite(_clkPin,LOW);
-        if (digitalRead(_sloPin) == HIGH) encErr=1;
+        digitalWrite(_clkPin, LOW);
+        if (digitalRead(_sloPin) == HIGH) encErr = 1;
         delayMicroseconds(rate);
-        digitalWrite(_clkPin,HIGH);
+        digitalWrite(_clkPin, HIGH);
         delayMicroseconds(rate);
 
         // the Wrn bit
-        digitalWrite(_clkPin,LOW);
-        if (digitalRead(_sloPin) == HIGH) encWrn=1;
+        digitalWrite(_clkPin, LOW);
+        if (digitalRead(_sloPin) == HIGH) encWrn = 1;
         delayMicroseconds(rate);
-        digitalWrite(_clkPin,HIGH);
+        digitalWrite(_clkPin, HIGH);
         delayMicroseconds(rate);
 
         // the last 6 bits are the CRC
-        for (int i=0; i<6; i++) {
-          digitalWrite(_clkPin,LOW);
-          if (digitalRead(_sloPin) == HIGH) bitSet(encCrc,5-i);
+        for (int i = 0; i < 6; i++) {
+          digitalWrite(_clkPin, LOW);
+          if (digitalRead(_sloPin) == HIGH) bitSet(encCrc, 5 - i);
           delayMicroseconds(rate);
-          digitalWrite(_clkPin,HIGH);
+          digitalWrite(_clkPin, HIGH);
           delayMicroseconds(rate);
         }
       }
     }
 
     // send a CDM (invert)
-    digitalWrite(_clkPin,LOW);
+    digitalWrite(_clkPin, LOW);
     delayMicroseconds(rate * 10);
-    digitalWrite(_clkPin,HIGH);
+    digitalWrite(_clkPin, HIGH);
 
     // trap errors
     if (!foundAck) return false;
