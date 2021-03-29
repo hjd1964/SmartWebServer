@@ -98,7 +98,7 @@ void handlePec() {
   data += FPSTR(html_linksSetN);
   data += FPSTR(html_linksCfgN);
 #ifndef OETHS
-  data += FPSTR(html_linksWifiN);
+  data += FPSTR(html_linksSetupN);
 #endif
   data += FPSTR(html_onstep_header4);
   sendHtml(data);

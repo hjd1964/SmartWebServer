@@ -381,40 +381,40 @@
 
 // ----------------------------  WiFi ----------------------------
 
-#define L_WIFI_PERFORMANCE "Leistung und Kompatibilität"
+#define L_NETWORK_PERFORMANCE "Leistung und Kompatibilität"
 
-#define L_WIFI_CMD_TO "Timeout f&uuml;r die serielles Auslesung des Befehlskanals:"
-#define L_WIFI_WWW_TO "Timeout f&uuml;r das serielles Auslesen des Webkanals:"
+#define L_NETWORK_CMD_TO "Timeout f&uuml;r die serielles Auslesung des Befehlskanals:"
+#define L_NETWORK_WWW_TO "Timeout f&uuml;r das serielles Auslesen des Webkanals:"
 
-#define L_WIFI_STA_TITLE "Stationsmodus (Verbunden an einen Access-Point)"
-#define L_WIFI_PWD "Passwort"
-#define L_WIFI_PWD_MSG "mindestens 8 Zeichen"
-#define L_WIFI_EN_DHCP "DHCP aktivieren"
-#define L_WIFI_EN_DHCP_MSG "Hinweis: obige Adressen werden ignoriert wenn DHCP aktiviert ist!"
-#define L_WIFI_EN_STA "Aktiviere Stationsmodus"
+#define L_NETWORK_STA_TITLE "Stationsmodus (Verbunden an einen Access-Point)"
+#define L_NETWORK_PWD "Passwort"
+#define L_NETWORK_PWD_MSG "mindestens 8 Zeichen"
+#define L_NETWORK_EN_DHCP "DHCP aktivieren"
+#define L_NETWORK_EN_DHCP_MSG "Hinweis: obige Adressen werden ignoriert wenn DHCP aktiviert ist!"
+#define L_NETWORK_EN_STA "Aktiviere Stationsmodus"
 #define L_IP_ADDRESS "IP Addresse"
 #define L_GATEWAY "Gateway"
 #define L_SUBNET "Subnetzmaske"
-#define L_WIFI_CHA "Kanal"
-#define L_WIFI_EN_AP_MODE "Aktiviere Access-Point Modus"
+#define L_NETWORK_CHA "Kanal"
+#define L_NETWORK_EN_AP_MODE "Aktiviere Access-Point Modus"
 
-#define L_WIFI_CONFIG_SECURITY "WiFi-Konfiguration Sicherheit"
+#define L_NETWORK_CONFIG_SECURITY "WiFi-Konfiguration Sicherheit"
 
-#define L_WIFI_AP "Access Point Modus"
+#define L_NETWORK_AP "Access Point Modus"
 
-#define L_WIFI_RESTART_MSG "Sie m&uuml;ssen <u>manuell</u> neu starten, damit die &Auml;nderungen wirksam werden."
+#define L_NETWORK_RESTART_MSG "Sie m&uuml;ssen <u>manuell</u> neu starten, damit die &Auml;nderungen wirksam werden."
 
-#define L_WIFI_TITLE "Geben Sie das Passwort ein um die WiFi-Konfiguration zu &auml;ndern:"
+#define L_NETWORK_TITLE "Geben Sie das Passwort ein um die Konfiguration zu &auml;ndern:"
 
-#define L_WIFI_ADVICE1 "Setup:<br/><br/>"
-#define L_WIFI_ADVICE2 "Aktivieren Sie nur einen der beiden Modi <i>Stationsmodus</i> <b>ODER</b> <i>Access Point Modus</i>. Das gleichzeitige Aktivieren beider Optionen kann zu Performanceproblemen f&uuml;hren!<br/><br/>"
-#define L_WIFI_ADVICE3 "Wenn die Steuerung eine Verbindung zu Ihrem Heim-WLAN herstellen soll, aktivieren Sie nur den Stationsmodus und "
-#define L_WIFI_ADVICE4 "deaktivieren Sie den Access Point Modus. Wenn die Steuerung keine Verbindung zu Ihrem Heim-WLAN herstellen kann, wird "
-#define L_WIFI_ADVICE5 "der Access Point Modus automatisch wieder aktiviert. Dies ist n&uuml;tzlich, wenn Sie sich an einem dunklen Ort befinden und/oder "
-#define L_WIFI_ADVICE6 "um sich vor einer Aussperrung zu sch&uuml;tzen.<br/><br/>"
-#define L_WIFI_ADVICE7 "Wenn Sie vom WLAN ausgeschlossen sind, m&uuml;ssen Sie die Arduino IDE verwenden, um den ESP Flash-Speicher zur&uuml;ckzusetzen (und somit zu den Standardeinstellungen zur&uuml;ckzukehren)."
-#define L_WIFI_ADVICE8 "&Auml;ndern Sie im Men&uuml; Arduino Tools die Option Erase Flash 'Only Sketch' auf Erase Flash 'All Flash Contents' "
-#define L_WIFI_ADVICE9 "und laden Sie die WiFi-Bluetooth Firmware erneut hoch."
+#define L_NETWORK_ADVICE1 "Setup:<br/><br/>"
+#define L_NETWORK_ADVICE2 "Aktivieren Sie nur einen der beiden Modi <i>Stationsmodus</i> <b>ODER</b> <i>Access Point Modus</i>. Das gleichzeitige Aktivieren beider Optionen kann zu Performanceproblemen f&uuml;hren!<br/><br/>"
+#define L_NETWORK_ADVICE3 "Wenn die Steuerung eine Verbindung zu Ihrem Heim-WLAN herstellen soll, aktivieren Sie nur den Stationsmodus und "
+#define L_NETWORK_ADVICE4 "deaktivieren Sie den Access Point Modus. Wenn die Steuerung keine Verbindung zu Ihrem Heim-WLAN herstellen kann, wird "
+#define L_NETWORK_ADVICE5 "der Access Point Modus automatisch wieder aktiviert. Dies ist n&uuml;tzlich, wenn Sie sich an einem dunklen Ort befinden und/oder "
+#define L_NETWORK_ADVICE6 "um sich vor einer Aussperrung zu sch&uuml;tzen.<br/><br/>"
+#define L_NETWORK_ADVICE7 "Wenn Sie vom WLAN ausgeschlossen sind, m&uuml;ssen Sie die Arduino IDE verwenden, um den ESP Flash-Speicher zur&uuml;ckzusetzen (und somit zu den Standardeinstellungen zur&uuml;ckzukehren)."
+#define L_NETWORK_ADVICE8 "&Auml;ndern Sie im Men&uuml; Arduino Tools die Option Erase Flash 'Only Sketch' auf Erase Flash 'All Flash Contents' "
+#define L_NETWORK_ADVICE9 "und laden Sie die WiFi-Bluetooth Firmware erneut hoch."
 
 // --------------------------- Constants -------------------------
 
@@ -435,7 +435,7 @@
 #define L_PAGE_PEC "PEC"
 #define L_PAGE_SETTINGS "Einstellungen"
 #define L_PAGE_CONFIG "Konfig."
-#define L_PAGE_WIFI "WiFi"
+#define L_PAGE_SETUP "Netzwerk"
 
 // ------------------------- MountStatus -------------------------
 

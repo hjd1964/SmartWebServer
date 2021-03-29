@@ -32,7 +32,7 @@
   void handlePec();
   void pecAjax();
 
-  void handleWifi();
+  void handleNetwork();
 
   void handleNotFound();
 #else
@@ -65,6 +65,8 @@
 
   void handlePec(EthernetClient *client);
   void pecAjax(EthernetClient *client);
+
+  void handleNetwork(EthernetClient *client);
 
   void handleNotFound(EthernetClient *client);
 #endif

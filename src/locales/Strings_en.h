@@ -370,41 +370,41 @@
 #define L_RESET_FWU "Reboot OnStep for firmware upload"
 #define L_RESET_MSG1 "OnStep must be At Home or Parked, otherwise the reset request is ignored."
 
-// ----------------------------  WiFi ----------------------------
+// ----------------------------  SETUP ----------------------------
 
-#define L_WIFI_PERFORMANCE "Performance and compatibility"
-#define L_WIFI_CMD_TO "Command channel serial read time-out"
-#define L_WIFI_WWW_TO "Web channel serial read time-out"
+#define L_NETWORK_PERFORMANCE "Performance and compatibility"
+#define L_NETWORK_CMD_TO "Command channel serial read time-out"
+#define L_NETWORK_WWW_TO "Web channel serial read time-out"
 
-#define L_WIFI_STA_TITLE "Station mode (connect to an Access-Point)"
-#define L_WIFI_PWD "Password"
-#define L_WIFI_PWD_MSG "8 char min."
-#define L_WIFI_EN_DHCP "Enable DHCP"
-#define L_WIFI_EN_DHCP_MSG "Note: above addresses are ignored if DHCP is enabled"
-#define L_WIFI_EN_STA "Enable Station Mode"
+#define L_NETWORK_STA_TITLE "Station mode (connect to an Access-Point)"
+#define L_NETWORK_PWD "Password"
+#define L_NETWORK_PWD_MSG "8 char min."
+#define L_NETWORK_EN_DHCP "Enable DHCP"
+#define L_NETWORK_EN_DHCP_MSG "Note: above addresses are ignored if DHCP is enabled"
+#define L_NETWORK_EN_STA "Enable Station Mode"
 #define L_IP_ADDRESS "IP Address"
 #define L_GATEWAY "Gateway"
 #define L_SUBNET "Subnet"
-#define L_WIFI_CHA "Channel"
-#define L_WIFI_EN_AP_MODE "Enable Access-Point Mode"
+#define L_NETWORK_CHA "Channel"
+#define L_NETWORK_EN_AP_MODE "Enable Access-Point Mode"
 
-#define L_WIFI_CONFIG_SECURITY "WiFi Configuration Security"
+#define L_NETWORK_CONFIG_SECURITY "WiFi Configuration Security"
 
-#define L_WIFI_AP "Access-Point mode"
+#define L_NETWORK_AP "Access-Point mode"
 
-#define L_WIFI_RESTART_MSG "You must <u>manually</u> restart for changes to take effect."
+#define L_NETWORK_RESTART_MSG "You must <u>manually</u> restart for changes to take effect."
 
-#define L_WIFI_TITLE "Enter password to change WiFi configuration:"
+#define L_NETWORK_TITLE "Enter password to change configuration:"
 
-#define L_WIFI_ADVICE1 "Setup:<br/><br/>"
-#define L_WIFI_ADVICE2 "Enable either Station <b>OR</b> Access Point mode, enabling both can cause performance issues.<br/><br/>"
-#define L_WIFI_ADVICE3 "If you want OnStep to connect to your home WiFi network, enable only Station mode and "
-#define L_WIFI_ADVICE4 "disable Access Point mode. If OnStep cannot connect to your home WiFi network it will "
-#define L_WIFI_ADVICE5 "automatically re-enable Station mode; this is useful when you are away at a dark site and/or "
-#define L_WIFI_ADVICE6 "to guard against becoming locked out.<br/><br/>"
-#define L_WIFI_ADVICE7 "If locked out of WiFi you can use the Arduino IDE to reset the ESP flash memory (and "
-#define L_WIFI_ADVICE8 "hence go back to defaults.) From the Arduino Tools menu, change Erase Flash 'Only Sketch' "
-#define L_WIFI_ADVICE9 "to Erase Flash 'All Flash Contents' and upload the WiFi-Bluetooth sketch again."
+#define L_NETWORK_ADVICE1 "Setup:<br/><br/>"
+#define L_NETWORK_ADVICE2 "Enable either Station <b>OR</b> Access Point mode, enabling both can cause performance issues.<br/><br/>"
+#define L_NETWORK_ADVICE3 "If you want OnStep to connect to your home WiFi network, enable only Station mode and "
+#define L_NETWORK_ADVICE4 "disable Access Point mode. If OnStep cannot connect to your home WiFi network it will "
+#define L_NETWORK_ADVICE5 "automatically re-enable Station mode; this is useful when you are away at a dark site and/or "
+#define L_NETWORK_ADVICE6 "to guard against becoming locked out.<br/><br/>"
+#define L_NETWORK_ADVICE7 "If locked out of WiFi you can use the Arduino IDE to reset the ESP flash memory (and "
+#define L_NETWORK_ADVICE8 "hence go back to defaults.) From the Arduino Tools menu, change Erase Flash 'Only Sketch' "
+#define L_NETWORK_ADVICE9 "to Erase Flash 'All Flash Contents' and upload the WiFi-Bluetooth sketch again."
 
 // --------------------------- Constants -------------------------
 
@@ -425,7 +425,7 @@
 #define L_PAGE_PEC "PEC"
 #define L_PAGE_SETTINGS "Settings"
 #define L_PAGE_CONFIG "Config"
-#define L_PAGE_WIFI "WiFi"
+#define L_PAGE_SETUP "Network"
 
 // ------------------------- MountStatus -------------------------
 

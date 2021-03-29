@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// Wifi Setup
+// Setup Wifi and Ethernet
 
 #include <Arduino.h>
 #include "../../Constants.h"
@@ -9,22 +9,32 @@
 extern NVS nv;
 #include "../debug/Debug.h"
 
+#include "../locales/Locale.h"
+#include "../commands/Commands.h"
+#include "../misc/Misc.h"
+#include "../status/MountStatus.h"
+#include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/ethernetServers.h"
+
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
+
+extern int webTimeout;
+extern int cmdTimeout;
+
+extern char masterPassword[40];
+
+void processNetworkGet();
+
+const char htmL_NETWORKSerial[] PROGMEM =
+"<b>" L_NETWORK_PERFORMANCE ":</b><br/>"
+"<form method='post' action='/net.htm'>"
+L_NETWORK_CMD_TO ": <input style='width:4em' name='ccto' value='%d' type='number' min='100' max='300'> ms<br/>"
+L_NETWORK_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number' min='100' max='300'> ms<br/>"
+"<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
+
 #if OPERATIONAL_MODE == WIFI
-  #include "../locales/Locale.h"
-  #include "../commands/Commands.h"
-  #include "../status/MountStatus.h"
-  #include "../wifiServers/WifiServers.h"
-  #include "../ethernetServers/ethernetServers.h"
-
-  #include "htmlHeaders.h"
-  #include "htmlMessages.h"
-  #include "htmlScripts.h"
-
-  extern int webTimeout;
-  extern int cmdTimeout;
-
-  extern char masterPassword[40];
-
   extern bool accessPointEnabled;
   extern bool stationEnabled;
   extern bool stationDhcpEnabled;
@@ -44,249 +54,251 @@ extern NVS nv;
   extern IPAddress wifi_ap_gw;
   extern IPAddress wifi_ap_sn;
 
-  void processWifiGet();
-  int hexToInt(String s);
-
-  const char html_wifiSerial[] PROGMEM =
-  "<b>" L_WIFI_PERFORMANCE ":</b><br/>"
-  "<form method='post' action='/wifi.htm'>"
-  L_WIFI_CMD_TO ": <input style='width:4em' name='ccto' value='%d' type='number' min='100' max='300'> ms<br/>"
-  L_WIFI_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number' min='100' max='300'> ms<br/>"
-  "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
-
-  const char html_wifiSSID1[] PROGMEM =
-  "<br/><b>" L_WIFI_STA_TITLE ":</b><br/>"
-  "<form method='post' action='/wifi.htm'>"
+  const char htmL_NETWORKSSID1[] PROGMEM =
+  "<br/><b>" L_NETWORK_STA_TITLE ":</b><br/>"
+  "<form method='post' action='/net.htm'>"
   "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
-  L_WIFI_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='39'> (" L_WIFI_PWD_MSG ")<br/>";
+  L_NETWORK_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='39'> (" L_NETWORK_PWD_MSG ")<br/>";
 
-  const char html_wifiSSID2[] PROGMEM =
-  L_WIFI_EN_DHCP ": <input type='checkbox' name='stadhcp' value='1' %s> (" L_WIFI_EN_DHCP_MSG ")<br/>"
-  L_WIFI_EN_STA ": <input type='checkbox' name='staen' value='1' %s><br/>"
+  const char htmL_NETWORKSSID2[] PROGMEM =
+  L_NETWORK_EN_DHCP ": <input type='checkbox' name='stadhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>"
+  L_NETWORK_EN_STA ": <input type='checkbox' name='staen' value='1' %s><br/>"
   "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
 
-  const char html_wifiMAC[] PROGMEM =
+  const char htmL_NETWORKMAC[] PROGMEM =
   "MAC: <input style='width:10em' name='stmac' type='text' value='%s' maxlength='17' disabled><br/>";
 
-  const char html_wifiSTAIP[] PROGMEM =
+  const char htmL_NETWORKSTAIP[] PROGMEM =
   "<table><tr><td>" L_IP_ADDRESS ": </td><td>"
   "<input name='staip1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='staip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='staip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='staip4' value='%d' type='number' min='0' max='255'></td>";
 
-  const char html_wifiSTAGW[] PROGMEM =
+  const char htmL_NETWORKSTAGW[] PROGMEM =
   "<tr><td>" L_GATEWAY ": </td><td>"
   "<input name='stagw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stagw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stagw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stagw4' value='%d' type='number' min='0' max='255'></td>";
 
-  const char html_wifiSTASN[] PROGMEM =
+  const char htmL_NETWORKSTASN[] PROGMEM =
   "<tr><td>" L_SUBNET ": </td><td>"
   "<input name='stasn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stasn2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stasn3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='stasn4' value='%d' type='number' min='0' max='255'></td></tr></table>";
 
-  const char html_wifiSSID3A[] PROGMEM =
-  "<br/><b>" L_WIFI_AP ":</b><br/>"
-  "<form method='post' action='/wifi.htm'>"
+  const char htmL_NETWORKSSID3A[] PROGMEM =
+  "<br/><b>" L_NETWORK_AP ":</b><br/>"
+  "<form method='post' action='/net.htm'>"
   "SSID: <input style='width:6em' name='apssid' type='text' ";
 
-  const char html_wifiSSID3B[] PROGMEM =
+  const char htmL_NETWORKSSID3B[] PROGMEM =
   "value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
-  L_WIFI_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='39'> " L_WIFI_PWD_MSG "&nbsp;&nbsp;&nbsp;"
-  L_WIFI_CHA ": <input style='width:3em' name='apch' value='%d' type='number' min='1' max='11'><br/>";
+  L_NETWORK_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='39'> " L_NETWORK_PWD_MSG "&nbsp;&nbsp;&nbsp;"
+  L_NETWORK_CHA ": <input style='width:3em' name='apch' value='%d' type='number' min='1' max='11'><br/>";
 
-  const char html_wifiApMAC[] PROGMEM =
+  const char htmL_NETWORKApMAC[] PROGMEM =
   "MAC: <input style='width:10em' name='apmac' type='text' value='%s' maxlength='17' disabled><br/>";
 
-  const char html_wifiSSID4[] PROGMEM =
+  const char htmL_NETWORKSSID4[] PROGMEM =
   "<table><tr><td>" L_IP_ADDRESS ": </td><td>"
   "<input name='apip1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apip4' value='%d' type='number' min='0' max='255'></td>";
 
-  const char html_wifiSSID5[] PROGMEM =
+  const char htmL_NETWORKSSID5[] PROGMEM =
   "<tr><td>" L_GATEWAY ": </td><td>"
   "<input name='apgw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apgw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apgw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apgw4' value='%d' type='number' min='0' max='255'></td>";
 
-  const char html_wifiSSID6[] PROGMEM =
+  const char htmL_NETWORKSSID6[] PROGMEM =
   "<tr><td>" L_SUBNET ": </td><td>"
   "<input name='apsn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apsn2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apsn3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
   "<input name='apsn4' value='%d' type='number' min='0' max='255'></td></tr></table>";
 
-  const char html_wifiSSID7[] PROGMEM =
-  L_WIFI_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s> (Note: auto-enabled if Station Mode fails to connect)<br/>"
+  const char htmL_NETWORKSSID7[] PROGMEM =
+  L_NETWORK_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s> (Note: auto-enabled if Station Mode fails to connect)<br/>"
   "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
+#endif
 
-  const char html_logout[] PROGMEM =
-  "<br/><b>" L_WIFI_CONFIG_SECURITY ":</b><br/>"
-  "<form method='post' action='/wifi.htm'>"
-  L_WIFI_PWD ": <input style='width:8em' name='webpwd' type='password' minlength='3' maxlength='39'> "
-  "<button type='submit'>" L_UPLOAD "</button></form>"
-  "<form method='post' action='/wifi.htm'>"
-  "<button type='submit' name='logout' value='1'>" L_LOGOUT "</button></form><br />\r\n";
+const char html_logout[] PROGMEM =
+"<br/><b>" L_NETWORK_CONFIG_SECURITY ":</b><br/>"
+"<form method='post' action='/net.htm'>"
+L_NETWORK_PWD ": <input style='width:8em' name='webpwd' type='password' minlength='3' maxlength='39'> "
+"<button type='submit'>" L_UPLOAD "</button></form>"
+"<form method='post' action='/net.htm'>"
+"<button type='submit' name='logout' value='1'>" L_LOGOUT "</button></form><br />\r\n";
 
-  const char html_reboot[] PROGMEM =
-  "<br/><br/><br/><br/><br/><form method='get' action='/wifi.htm'>"
-  "<b>" L_WIFI_RESTART_MSG "</b><br/><br/>"
-  "<button type='submit'>" L_CONTINUE "</button>"
-  "</form><br/><br/><br/><br/>"
-  "\r\n";
+const char html_reboot[] PROGMEM =
+"<br/><br/><br/><br/><br/><form method='get' action='/net.htm'>"
+"<b>" L_NETWORK_RESTART_MSG "</b><br/><br/>"
+"<button type='submit'>" L_CONTINUE "</button>"
+"</form><br/><br/><br/><br/>"
+"\r\n";
 
-  const char html_login[] PROGMEM =
-  "<br/><form method='post' action='/wifi.htm'>"
-  "<br/>" L_WIFI_TITLE "<br />"
-  "<input style='width:8em' name='login' type='password' minlength='3' maxlength='39'>"
-  "<button type='submit'>" L_OK "</button>"
-  "</form><br/><br/><br/>"
-  L_WIFI_ADVICE1 L_WIFI_ADVICE2 L_WIFI_ADVICE3 L_WIFI_ADVICE4 L_WIFI_ADVICE5 L_WIFI_ADVICE6 L_WIFI_ADVICE7 L_WIFI_ADVICE8 L_WIFI_ADVICE9 
-  "<br/><br/>\r\n";
+const char html_login[] PROGMEM =
+"<br/><form method='post' action='/net.htm'>"
+"<br/>" L_NETWORK_TITLE "<br />"
+"<input style='width:8em' name='login' type='password' minlength='3' maxlength='39'>"
+"<button type='submit'>" L_OK "</button>"
+"</form><br/><br/><br/>"
+#if OPERATIONAL_MODE == WIFI
+  L_NETWORK_ADVICE1 L_NETWORK_ADVICE2 L_NETWORK_ADVICE3 L_NETWORK_ADVICE4 L_NETWORK_ADVICE5 L_NETWORK_ADVICE6 L_NETWORK_ADVICE7 L_NETWORK_ADVICE8 L_NETWORK_ADVICE9 
+  "<br/><br/>"
+#endif
+"\r\n";
 
-  bool restartRequired=false;
-  bool loginRequired=true;
+bool restartRequired = false;
+bool loginRequired = true;
 
-  void handleWifi() {
-    Ser.setTimeout(webTimeout);
-    serialRecvFlush();
+#if OPERATIONAL_MODE != WIFI
+void handleNetwork(EthernetClient *client) {
+#else
+void handleNetwork() {
+#endif
+  Ser.setTimeout(webTimeout);
+  serialRecvFlush();
+  
+  mountStatus.update(true);
+
+  char temp[420]  = "";
+  char temp1[140] = "";
+  
+  processNetworkGet();
+
+  sendHtmlStart();
+
+  // send a standard http response header
+  String data=FPSTR(html_headB);
+  data += FPSTR(html_main_cssB);
+  data += FPSTR(html_main_css1);
+  data += FPSTR(html_main_css2);
+  data += FPSTR(html_main_css3);
+  data += FPSTR(html_main_css4);
+  data += FPSTR(html_main_css5);
+  sendHtml(data);
+  data += FPSTR(html_main_css6);
+  data += FPSTR(html_main_css7);
+  data += FPSTR(html_main_css8);
+  data += FPSTR(html_main_cssE);
+  data += FPSTR(html_headE);
+  data += FPSTR(html_bodyB);
+  sendHtml(data);
+
+  // finish the standard http response header
+  data += FPSTR(html_onstep_header1); data += "OnStep";
+  data += FPSTR(html_onstep_header2);
+  if (mountStatus.getVer(temp1)) data += temp1; else data += "?";
+  data += FPSTR(html_onstep_header3);
+  data += FPSTR(html_linksStatN);
+  data += FPSTR(html_linksCtrlN);
+  if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
+  data += FPSTR(html_linksLibN);
+  #if ENCODERS == ON
+    data += FPSTR(html_linksEncN);
+  #endif
+  sendHtml(data);
+  data += FPSTR(html_linksPecN);
+  data += FPSTR(html_linksSetN);
+  data += FPSTR(html_linksCfgN);
+  data += FPSTR(html_linksSetupS);
+  data += FPSTR(html_onstep_header4);
+  sendHtml(data);
+
+  // OnStep wasn't found, show warning and info.
+  if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+
+  data+="<div>";
+
+  if (restartRequired) {
+    restartRequired = false;
+    data += FPSTR(html_reboot);
+  } else
+  if (loginRequired) {
+    restartRequired = false;
+    data += FPSTR(html_login);
+  } else {
+    sprintf_P(temp, htmL_NETWORKSerial, cmdTimeout, webTimeout); data += temp;
     
-    mountStatus.update(true);
-
-    char temp[420]="";
-    char temp1[140]="";
-    
-    processWifiGet();
-
-    sendHtmlStart();
-
-    // send a standard http response header
-    String data=FPSTR(html_headB);
-    data += FPSTR(html_main_cssB);
-    data += FPSTR(html_main_css1);
-    data += FPSTR(html_main_css2);
-    data += FPSTR(html_main_css3);
-    data += FPSTR(html_main_css4);
-    data += FPSTR(html_main_css5);
-    sendHtml(data);
-    data += FPSTR(html_main_css6);
-    data += FPSTR(html_main_css7);
-    data += FPSTR(html_main_css8);
-    data += FPSTR(html_main_cssE);
-    data += FPSTR(html_headE);
-    data += FPSTR(html_bodyB);
-    sendHtml(data);
-
-    // finish the standard http response header
-    data += FPSTR(html_onstep_header1); data += "OnStep";
-    data += FPSTR(html_onstep_header2);
-    if (mountStatus.getVer(temp1)) data += temp1; else data += "?";
-    data += FPSTR(html_onstep_header3);
-    data += FPSTR(html_linksStatN);
-    data += FPSTR(html_linksCtrlN);
-    if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
-    data += FPSTR(html_linksLibN);
-    #if ENCODERS == ON
-      data += FPSTR(html_linksEncN);
-    #endif
-    sendHtml(data);
-    data += FPSTR(html_linksPecN);
-    data += FPSTR(html_linksSetN);
-    data += FPSTR(html_linksCfgN);
-    data += FPSTR(html_linksWifiS);
-    data += FPSTR(html_onstep_header4);
-    sendHtml(data);
-
-    // OnStep wasn't found, show warning and info.
-    if (!mountStatus.valid()) { data+= FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
-
-    data+="<div>";
-
-    if (restartRequired) {
-      restartRequired=false;
-      data+=FPSTR(html_reboot);
-    } else
-    if (loginRequired) {
-      restartRequired=false;
-      data+=FPSTR(html_login);
-    } else {
+    #if OPERATIONAL_MODE == WIFI
+      sprintf_P(temp, htmL_NETWORKSSID1, wifi_sta_ssid, ""); data += temp;
       nv.readBytes(EE_STA_SSID, wifi_sta_ssid, -40);
       nv.readBytes(EE_STA_PWD, wifi_sta_pwd, -40);
-        
-      sprintf_P(temp,html_wifiSerial,cmdTimeout,webTimeout); data += temp;
-      sprintf_P(temp,html_wifiSSID1,wifi_sta_ssid,""); data += temp;
-      
+
       uint8_t mac[6] = {0,0,0,0,0,0}; WiFi.macAddress(mac);
       char wifi_sta_mac[80]="";
       for (int i=0; i<6; i++) { sprintf(wifi_sta_mac,"%s%02x:",wifi_sta_mac,mac[i]); } wifi_sta_mac[strlen(wifi_sta_mac)-1]=0;
-      sprintf_P(temp,html_wifiMAC,wifi_sta_mac); data += temp;
+      sprintf_P(temp,htmL_NETWORKMAC,wifi_sta_mac); data += temp;
     
-      sprintf_P(temp,html_wifiSTAIP,wifi_sta_ip[0],wifi_sta_ip[1],wifi_sta_ip[2],wifi_sta_ip[3]); data += temp;
-      sprintf_P(temp,html_wifiSTAGW,wifi_sta_gw[0],wifi_sta_gw[1],wifi_sta_gw[2],wifi_sta_gw[3]); data += temp;
-      sprintf_P(temp,html_wifiSTASN,wifi_sta_sn[0],wifi_sta_sn[1],wifi_sta_sn[2],wifi_sta_sn[3]); data += temp;
-      sprintf_P(temp,html_wifiSSID2,stationDhcpEnabled?"checked":"",stationEnabled?"checked":""); data += temp;
-      data += FPSTR(html_wifiSSID3A);
-      sprintf_P(temp,html_wifiSSID3B,wifi_ap_ssid,"",wifi_ap_ch); data += temp;
+      sprintf_P(temp,htmL_NETWORKSTAIP,wifi_sta_ip[0],wifi_sta_ip[1],wifi_sta_ip[2],wifi_sta_ip[3]); data += temp;
+      sprintf_P(temp,htmL_NETWORKSTAGW,wifi_sta_gw[0],wifi_sta_gw[1],wifi_sta_gw[2],wifi_sta_gw[3]); data += temp;
+      sprintf_P(temp,htmL_NETWORKSTASN,wifi_sta_sn[0],wifi_sta_sn[1],wifi_sta_sn[2],wifi_sta_sn[3]); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID2,stationDhcpEnabled?"checked":"",stationEnabled?"checked":""); data += temp;
+      data += FPSTR(htmL_NETWORKSSID3A);
+      sprintf_P(temp,htmL_NETWORKSSID3B,wifi_ap_ssid,"",wifi_ap_ch); data += temp;
       sendHtml(data);
     
       uint8_t macap[6] = {0,0,0,0,0,0}; WiFi.softAPmacAddress(macap);
       char wifi_ap_mac[80]="";
       for (int i=0; i<6; i++) { sprintf(wifi_ap_mac,"%s%02x:",wifi_ap_mac,macap[i]); } wifi_ap_mac[strlen(wifi_ap_mac)-1]=0;
-      sprintf_P(temp,html_wifiApMAC,wifi_ap_mac); data += temp;
+      sprintf_P(temp,htmL_NETWORKApMAC,wifi_ap_mac); data += temp;
       
-      sprintf_P(temp,html_wifiSSID4,wifi_ap_ip[0],wifi_ap_ip[1],wifi_ap_ip[2],wifi_ap_ip[3]); data += temp;
-      sprintf_P(temp,html_wifiSSID5,wifi_ap_gw[0],wifi_ap_gw[1],wifi_ap_gw[2],wifi_ap_gw[3]); data += temp;
-      sprintf_P(temp,html_wifiSSID6,wifi_ap_sn[0],wifi_ap_sn[1],wifi_ap_sn[2],wifi_ap_sn[3]); data += temp;
-      sprintf_P(temp,html_wifiSSID7,accessPointEnabled?"checked":""); data += temp;
-      data += FPSTR(html_logout);
-    }
-    
-    strcpy(temp,"</div></div></body></html>");
-    data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID4,wifi_ap_ip[0],wifi_ap_ip[1],wifi_ap_ip[2],wifi_ap_ip[3]); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID5,wifi_ap_gw[0],wifi_ap_gw[1],wifi_ap_gw[2],wifi_ap_gw[3]); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID6,wifi_ap_sn[0],wifi_ap_sn[1],wifi_ap_sn[2],wifi_ap_sn[3]); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID7,accessPointEnabled?"checked":""); data += temp;
+    #endif
 
-    sendHtml(data);
-    sendHtmlDone(data);
+    data += FPSTR(html_logout);
+  }
+  
+  strcpy(temp,"</div></div></body></html>");
+  data += temp;
+
+  sendHtml(data);
+  sendHtmlDone(data);
+}
+
+void processNetworkGet() {
+  String v, v1;
+  
+  // Login --------------------------------------------------------------------
+  v=server.arg("login");
+  if (v != "") {
+    if (!strcmp(masterPassword, (char*)v.c_str())) loginRequired = false;
+  }
+  v = server.arg("logout");
+  if (v != "") loginRequired = true;
+  if (loginRequired) return;
+  v = server.arg("webpwd");
+  if (v != "") {
+    strcpy(masterPassword, (char*)v.c_str());
+    nv.readBytes(EE_PASSWORD, masterPassword, -40);
   }
 
-  void processWifiGet() {
-    String v, v1;
-    
-    // Login --------------------------------------------------------------------
-    v=server.arg("login");
-    if (v!="") {
-      if (!strcmp(masterPassword,(char*)v.c_str())) loginRequired=false;
-    }
-    v=server.arg("logout");
-    if (v!="") loginRequired=true;
-    if (loginRequired) return;
-    v=server.arg("webpwd");
-    if (v!="") {
-      strcpy(masterPassword,(char*)v.c_str());
-      nv.readBytes(EE_PASSWORD, masterPassword, -40);
-    }
+  // Timeouts -----------------------------------------------------------------
+  // Cmd channel timeout
+  v=server.arg("ccto");
+  if (v!="") {
+    cmdTimeout = v.toInt();
+    nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
+  }
 
-    // Timeouts -----------------------------------------------------------------
-    // Cmd channel timeout
-    v=server.arg("ccto");
-    if (v!="") {
-      cmdTimeout = v.toInt();
-      nv.update(EE_TIMEOUT_CMD, (int)cmdTimeout);
-    }
+  // Web channel timeout
+  v=server.arg("wcto");
+  if (v!="") {
+    webTimeout = v.toInt();
+    nv.update(EE_TIMEOUT_WEB,(int16_t)webTimeout);
+  }
 
-    // Web channel timeout
-    v=server.arg("wcto");
-    if (v!="") {
-      webTimeout = v.toInt();
-      nv.update(EE_TIMEOUT_WEB,(int)webTimeout);
-    }
-
+  #if OPERATIONAL_MODE == WIFI
     // --------------------------------------------------------------------------
     // Station MAC
     v=server.arg("stmac");
@@ -456,6 +468,5 @@ extern NVS nv;
       for (int i=0;i<4;i++) nv.write(EE_AP_SN+i,wifi_ap_sn[i]);
       restartRequired=true;
     }
-  }
-
-#endif
+  #endif
+}

@@ -186,9 +186,7 @@ void handleConfiguration() {
   data += FPSTR(html_linksPecN);
   data += FPSTR(html_linksSetN);
   data += FPSTR(html_linksCfgS);
-  #ifndef OETHS
-    data += FPSTR(html_linksWifiN);
-  #endif
+  data += FPSTR(html_linksSetupN);
   data += FPSTR(html_onstep_header4);
   sendHtml(data);
   
@@ -421,6 +419,7 @@ void handleConfiguration() {
         sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L); data += temp;
         dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
         sprintf_P(temp, html_configAxisSpd, temp1, 1, 3000, 122400L); data += temp;
+        sendHtml(data);
         #if DRIVE_MAIN_AXES_MICROSTEPS == ON
           if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, a.microsteps, 1); data += temp; }
         #endif
@@ -430,12 +429,14 @@ void handleConfiguration() {
         #if DRIVE_MAIN_AXES_REVERSE == ON
           sprintf_P(temp, html_configAxisReverse, a.reverse==ON?1:0,1); data += temp;
         #endif
+        sendHtml(data);
         sprintf_P(temp, html_configAxisMin, a.min, 1, -360, -90, "&deg;,"); data += temp;
         sprintf_P(temp, html_configAxisMax, a.max, 1, 90, 360, "&deg;,"); data += temp;
         data += "<button type='submit'>" L_UPLOAD "</button> ";
       }
       data += "<button name='revert' value='1' type='submit'>" L_REVERT "</button>\r\n";
       data += FPSTR(html_configFormEnd);
+      sendHtml(data);
       numShown++;
     }
 
@@ -447,6 +448,7 @@ void handleConfiguration() {
       if (validateAxisSettings(2,mountStatus.mountType()==MT_ALTAZM,a)) {
         dtostrf(a.stepsPerMeasure,1,3,temp1); stripNum(temp1);
         sprintf_P(temp,html_configAxisSpd,temp1,2,3000,122400L); data += temp;
+        sendHtml(data);
         #if DRIVE_MAIN_AXES_MICROSTEPS == ON
           if (a.microsteps != OFF) { sprintf_P(temp,html_configAxisMicroSteps,a.microsteps,2); data += temp; }
         #endif
@@ -456,12 +458,15 @@ void handleConfiguration() {
         #if DRIVE_MAIN_AXES_REVERSE == ON
           sprintf_P(temp,html_configAxisReverse,a.reverse==ON?1:0,2); data += temp;
         #endif
+        sendHtml(data);
         sprintf_P(temp,html_configAxisMin,a.min,2,-90,0,"&deg;,"); data += temp;
         sprintf_P(temp,html_configAxisMax,a.max,2,0,90,"&deg;,"); data += temp;
         data += "<button type='submit'>" L_UPLOAD "</button> ";
+        sendHtml(data);
       }
       data += "<button name='revert' value='2' type='submit'>" L_REVERT "</button>";
       data += FPSTR(html_configFormEnd);
+      sendHtml(data);
       numShown++;
     }
     
@@ -473,15 +478,19 @@ void handleConfiguration() {
       if (validateAxisSettings(3,mountStatus.mountType()==MT_ALTAZM,a)) {
         dtostrf(a.stepsPerMeasure,1,3,temp1); stripNum(temp1);
         sprintf_P(temp,html_configAxisSpd,temp1,3,10,3600L); data += temp;
+        sendHtml(data);
         if (a.microsteps != OFF) { sprintf_P(temp,html_configAxisMicroSteps,a.microsteps,3); data += temp; }
         if (a.IRUN != OFF) { sprintf_P(temp,html_configAxisCurrent,a.IRUN,3,1000); data += temp; }
+        sendHtml(data);
         sprintf_P(temp,html_configAxisReverse,a.reverse==ON?1:0,3); data += temp;
         sprintf_P(temp,html_configAxisMin,a.min,3,-360,0,"&deg;,"); data += temp;
         sprintf_P(temp,html_configAxisMax,a.max,3,0,360,"&deg;,"); data += temp;
         data += "<button type='submit'>" L_UPLOAD "</button> ";
+        sendHtml(data);
       }
       data += "<button name='revert' value='3' type='submit'>" L_REVERT "</button>";
       data += FPSTR(html_configFormEnd);
+      sendHtml(data);
       numShown++;
     }
     
@@ -493,15 +502,19 @@ void handleConfiguration() {
       if (validateAxisSettings(4,mountStatus.mountType()==MT_ALTAZM,a)) {
         dtostrf(a.stepsPerMeasure,1,3,temp1); stripNum(temp1);
         sprintf_P(temp,html_configAxisSpu,temp1,4); data += temp;
+        sendHtml(data);
         if (a.microsteps != OFF) { sprintf_P(temp,html_configAxisMicroSteps,a.microsteps,4); data += temp; }
         if (a.IRUN != OFF) { sprintf_P(temp,html_configAxisCurrent,a.IRUN,4,1000); data += temp; }
+        sendHtml(data);
         sprintf_P(temp,html_configAxisReverse,a.reverse==ON?1:0,4); data += temp;
         sprintf_P(temp,html_configAxisMin,a.min,4,0,500,"mm,"); data += temp;
         sprintf_P(temp,html_configAxisMax,a.max,4,0,500,"mm,"); data += temp;
         data += "<button type='submit'>" L_UPLOAD "</button> ";
+        sendHtml(data);
       }
       data += "<button name='revert' value='4' type='submit'>" L_REVERT "</button>";
       data += FPSTR(html_configFormEnd);
+      sendHtml(data);
       numShown++;
     }
     
@@ -513,15 +526,19 @@ void handleConfiguration() {
       if (validateAxisSettings(5,mountStatus.mountType()==MT_ALTAZM,a)) {
         dtostrf(a.stepsPerMeasure,1,3,temp1); stripNum(temp1);
         sprintf_P(temp,html_configAxisSpu,temp1,5); data += temp;
+        sendHtml(data);
         if (a.microsteps != OFF) { sprintf_P(temp,html_configAxisMicroSteps,a.microsteps,5); data += temp; }
         if (a.IRUN != OFF) { sprintf_P(temp,html_configAxisCurrent,a.IRUN,5,1000); data += temp; }
+        sendHtml(data);
         sprintf_P(temp,html_configAxisReverse,a.reverse==ON?1:0,5); data += temp;
         sprintf_P(temp,html_configAxisMin,a.min,5,0,500,"mm,"); data += temp;
         sprintf_P(temp,html_configAxisMax,a.max,5,0,500,"mm,"); data += temp;
         data += "<button type='submit'>" L_UPLOAD "</button> ";
+        sendHtml(data);
       }
       data += "<button name='revert' value='5' type='submit'>" L_REVERT "</button>";
       data += FPSTR(html_configFormEnd);
+      sendHtml(data);
       numShown++;
     }
     if (numShown == 0) data += L_ADV_SET_NO_EDIT "<br />";

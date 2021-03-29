@@ -372,39 +372,39 @@
 
 // ----------------------------  WiFi ----------------------------
 
-#define L_WIFI_PERFORMANCE "性能和兼容性"
-#define L_WIFI_CMD_TO "命令通道的串行读取超时:"
-#define L_WIFI_WWW_TO "网络频道的串行读取超时："
+#define L_NETWORK_PERFORMANCE "性能和兼容性"
+#define L_NETWORK_CMD_TO "命令通道的串行读取超时:"
+#define L_NETWORK_WWW_TO "网络频道的串行读取超时："
 
-#define L_WIFI_STA_TITLE "工作站模式（已连接到接入点）"
-#define L_WIFI_PWD "密码"
-#define L_WIFI_PWD_MSG "至少8个字符."
-#define L_WIFI_EN_DHCP "开启DHCP"
-#define L_WIFI_EN_DHCP_MSG "注意：如果开启了DHCP，以上地址将被忽略"
-#define L_WIFI_EN_STA "开启工作站模式"
+#define L_NETWORK_STA_TITLE "工作站模式（已连接到接入点）"
+#define L_NETWORK_PWD "密码"
+#define L_NETWORK_PWD_MSG "至少8个字符."
+#define L_NETWORK_EN_DHCP "开启DHCP"
+#define L_NETWORK_EN_DHCP_MSG "注意：如果开启了DHCP，以上地址将被忽略"
+#define L_NETWORK_EN_STA "开启工作站模式"
 #define L_IP_ADDRESS "IP地址"
 #define L_GATEWAY "网关"
 #define L_SUBNET "子网掩码"
-#define L_WIFI_CHA "频道"
-#define L_WIFI_EN_AP_MODE "开启接入点模式"
+#define L_NETWORK_CHA "频道"
+#define L_NETWORK_EN_AP_MODE "开启接入点模式"
 
-#define L_WIFI_CONFIG_SECURITY "无线 配置安全性"
+#define L_NETWORK_CONFIG_SECURITY "无线 配置安全性"
 
-#define L_WIFI_AP "访问点模式"
+#define L_NETWORK_AP "访问点模式"
 
-#define L_WIFI_RESTART_MSG "您必须手动<u>重新启动</ u>才能使更改生效."
+#define L_NETWORK_RESTART_MSG "您必须手动<u>重新启动</ u>才能使更改生效."
 
-#define L_WIFI_TITLE "输入密码以更改 无线 配置:"
+#define L_NETWORK_TITLE "输入密码以更改 无线 配置:"
 
-#define L_WIFI_ADVICE1 "设置：<br/> <br/>"
-#define L_WIFI_ADVICE2 "仅激活两种模式<i>站点模式</ i> <b>或</ b> <i>接入点模式</ i>之一。同时激活这两个选项可能会导致性能问题！ <BR/>"
-#define L_WIFI_ADVICE3 "如果控制器应连接到您的家庭WiFi，只需激活站点模式，然后 "
-#define L_WIFI_ADVICE4 "停用接入点模式。如果控制器无法连接到您的家庭WLAN "
-#define L_WIFI_ADVICE5 "接入点模式会自动重新激活。如果您在黑暗的地方和/或，这很有用 "
-#define L_WIFI_ADVICE6 "保护自己不受锁定。<br/> <br/>"
-#define L_WIFI_ADVICE7 "如果您不属于WLAN，则必须使用Arduino IDE重置ESP闪存（并因此返回默认设置）"
-#define L_WIFI_ADVICE8 "在Arduino工具菜单中，将“擦除Flash'仅草图'”选项更改为“擦除Flash'所有Flash内容 "
-#define L_WIFI_ADVICE9 "然后再次上传WiFi蓝牙固件."
+#define L_NETWORK_ADVICE1 "设置：<br/> <br/>"
+#define L_NETWORK_ADVICE2 "仅激活两种模式<i>站点模式</ i> <b>或</ b> <i>接入点模式</ i>之一。同时激活这两个选项可能会导致性能问题！ <BR/>"
+#define L_NETWORK_ADVICE3 "如果控制器应连接到您的家庭WiFi，只需激活站点模式，然后 "
+#define L_NETWORK_ADVICE4 "停用接入点模式。如果控制器无法连接到您的家庭WLAN "
+#define L_NETWORK_ADVICE5 "接入点模式会自动重新激活。如果您在黑暗的地方和/或，这很有用 "
+#define L_NETWORK_ADVICE6 "保护自己不受锁定。<br/> <br/>"
+#define L_NETWORK_ADVICE7 "如果您不属于WLAN，则必须使用Arduino IDE重置ESP闪存（并因此返回默认设置）"
+#define L_NETWORK_ADVICE8 "在Arduino工具菜单中，将“擦除Flash'仅草图'”选项更改为“擦除Flash'所有Flash内容 "
+#define L_NETWORK_ADVICE9 "然后再次上传WiFi蓝牙固件."
 
 // --------------------------- Constants -------------------------
 
@@ -425,7 +425,7 @@
 #define L_PAGE_PEC "定期校正"
 #define L_PAGE_SETTINGS "设置"
 #define L_PAGE_CONFIG "配置"
-#define L_PAGE_WIFI "无线"
+#define L_PAGE_SETUP "网络"
 
 // ------------------------- MountStatus -------------------------
 

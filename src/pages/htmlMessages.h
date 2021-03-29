@@ -1,4 +1,6 @@
 #pragma once
+#include "../../Constants.h"
+#include "../../Config.h"
 
 const char html_bad_comms_message[] PROGMEM =
 "<br /><bigger><font class=\"y\">" L_DOWN_TITLE "</font></bigger><br /><br />"
@@ -36,5 +38,5 @@ const char html_linksSetS[] PROGMEM = "<a href='/settings.htm' style='background
 const char html_linksSetN[] PROGMEM = "<a href='/settings.htm'>" L_PAGE_SETTINGS "</a>";
 const char html_linksCfgS[] PROGMEM = "<a href='/configuration.htm' style='background-color: #552222;'>" L_PAGE_CONFIG "</a>";
 const char html_linksCfgN[] PROGMEM = "<a href='/configuration.htm'>" L_PAGE_CONFIG "</a>";
-const char html_linksWifiS[] PROGMEM = "<a href='/wifi.htm' style='background-color: #552222;'>" L_PAGE_WIFI "</a><br />";
-const char html_linksWifiN[] PROGMEM = "<a href='/wifi.htm'>" L_PAGE_WIFI "</a><br />";
+const char html_linksSetupS[] PROGMEM = "<a href='/net.htm' style='background-color: #552222;'>" L_PAGE_SETUP "</a>";
+const char html_linksSetupN[] PROGMEM = "<a href='/net.htm'>" L_PAGE_SETUP "</a>";

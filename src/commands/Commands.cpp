@@ -28,11 +28,23 @@ void serialBegin(long baudRate, int swap) {
     // wemos d1 mini esp32
     // not swapped: TX and RX on default pins
     //     swapped: TX on gpio 5 and RX on gpio 23
-    if (swap) Ser.begin(baudRate,SERIAL_8N1,23,5); else Ser.begin(baudRate,SERIAL_8N1,1,3);
+    if (swap) { 
+        VLF("WEM: Attempting connect on swapped port");
+        Ser.begin(baudRate,SERIAL_8N1,23,5); 
+      } else {
+        VLF("WEM: Attempting connect on non-swapped port");
+        Ser.begin(baudRate,SERIAL_8N1,1,3);
+      }
   #else
+    if (DEBUG == ON || DEBUG == VERBOSE)  { VF("WEM: Set baud rate to "); VL(baudRate); }
     Ser.begin(baudRate);
     #ifdef ESP8266
-      if (swap) Ser.swap();
+      if (swap) {
+        VLF("WEM: Attempting connect on swapped port");
+        Ser.swap();
+      } else {
+        VLF("WEM: Attempting connect on non-swapped port");
+      }
     #endif
   #endif
   delay(1000);

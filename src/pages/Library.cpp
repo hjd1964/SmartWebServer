@@ -160,16 +160,14 @@ void handleLibrary() {
   data += FPSTR(html_linksCtrlN);
   if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
   data += FPSTR(html_linksLibS);
-#if ENCODERS == ON
-  data += FPSTR(html_linksEncN);
-#endif
+  #if ENCODERS == ON
+    data += FPSTR(html_linksEncN);
+  #endif
   sendHtml(data);
   data += FPSTR(html_linksPecN);
   data += FPSTR(html_linksSetN);
   data += FPSTR(html_linksCfgN);
-#ifndef OETHS
-  data += FPSTR(html_linksWifiN);
-#endif
+  data += FPSTR(html_linksSetupN);
   data += FPSTR(html_onstep_header4);
   sendHtml(data);
 
@@ -180,13 +178,17 @@ void handleLibrary() {
   data +="<script>var ajaxPage='library.txt';</script>\n";
   data +=FPSTR(html_ajax_active);
   data +="<script>auto2Rate=2;</script>";
- 
+  sendHtml(data);
+
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data+= FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+
+  sendHtml(data);
 
   data += FPSTR(html_libCatalogSelect1);
   data += FPSTR(html_libCatalogSelect2);
   data += FPSTR(html_libSubmitCatalog);
+  sendHtml(data);
   data += FPSTR(html_libShowMessage);
   data += FPSTR(html_libEditCatalog);
   data += FPSTR(html_libCatalogForm);
@@ -204,9 +206,9 @@ void libraryAjaxGet(EthernetClient *client) {
 void libraryAjaxGet() {
 #endif
   processLibraryGet();
-#if OPERATIONAL_MODE != WIFI
-  client->print("");
-#else
+  #if OPERATIONAL_MODE != WIFI
+    client->print("");
+  #else
   server.send(200, "text/html","");
 #endif
 }

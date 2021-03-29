@@ -150,7 +150,7 @@ void handleSettings() {
   data += FPSTR(html_linksSetS);
   data += FPSTR(html_linksCfgN);
 #ifndef OETHS
-  data += FPSTR(html_linksWifiN);
+  data += FPSTR(html_linksSetupN);
 #endif
   data += FPSTR(html_onstep_header4);
   sendHtml(data);
@@ -173,6 +173,7 @@ void handleSettings() {
     data += FPSTR(html_settingsTrackComp2);
     data += FPSTR(html_settingsTrackComp3);
   }
+  sendHtml(data);
 
   data += FPSTR(html_settingsTrack1);
   data += FPSTR(html_settingsTrack2);

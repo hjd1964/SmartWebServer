@@ -56,6 +56,11 @@ void systemServices() {
 }
 
 void setup(void) {
+  // start debug serial port
+  #if DEBUG == ON || DEBUG == VERBOSE
+    SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
+    delay(1000);
+  #endif
 
   // say hello
   VF("WEM: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
@@ -72,10 +77,12 @@ void setup(void) {
 
   // read settings from NV or init. as required
   #if ENCODERS == ON
+    VLF("WEM: Encoders Init");
     encodersInit();
   #endif
 
   #if OPERATIONAL_MODE == WIFI
+    VLF("WEM: Wifi Init");
     wifiInit();
   #endif
 
@@ -88,6 +95,7 @@ void setup(void) {
   #endif
 
   // attempt to connect to OnStep
+  VLF("WEM: Attempting to connect to OnStep");
   int serialSwap = OFF;
   if (OPERATIONAL_MODE == WIFI) serialSwap = SERIAL_SWAP;
   if (serialSwap == AUTO) serialSwap = AUTO_OFF;
@@ -97,9 +105,11 @@ void setup(void) {
   uint8_t tb = 1;
 
 Again:
+  if (DEBUG == ON || DEBUG == VERBOSE) VLF("WEM: Clearing serial channel");
   clearSerialChannel();
 
   // look for OnStep
+  if (DEBUG == ON || DEBUG == VERBOSE) VLF("WEM: Attempting to contact OnStep");
   Ser.print(":GVP#"); delay(100);
   String s = Ser.readString();
   if (s == "On-Step#" || s == "OnStepX#") {
@@ -107,7 +117,9 @@ Again:
     Ser.print(":GB#"); delay(100);
     if (Ser.available() != 1) { serialRecvFlush(); goto Again; }
     // Mega2560 returns '4' for 19200 baud recommended
-    if (Ser.read() == '4' && serial_baud > 19200) serial_baud = 19200;
+    if (Ser.read() == '4' && serial_baud > 19200) {
+      serial_baud = 19200;
+    }
 
     // set fastest baud rate
     Ser.print(highSpeedCommsStr(serial_baud)); delay(100);
@@ -116,8 +128,9 @@ Again:
     
     // we're all set, just change the baud rate to match OnStep
     serialBegin(serial_baud, serialSwap);
-    VLF("WEM: WiFi Connection established");
+    VLF("WEM: OnStep Connection established");
   } else {
+    if (DEBUG == ON || DEBUG == VERBOSE) { VF("WEM: No valid reply found ("); V(s); VL(")"); }
     #if LED_STATUS == ON
       digitalWrite(LED_STATUS_PIN, LED_STATUS_OFF_STATE);
     #endif
@@ -127,7 +140,7 @@ Again:
     if (tb == 16) { tb = 1; if (serialSwap == AUTO_OFF) serialSwap = AUTO_ON; else if (serialSwap == AUTO_ON) serialSwap = AUTO_OFF; }
     if (tb == 1) serialBegin(SERIAL_BAUD_DEFAULT, serialSwap);
     if (tb == 6) serialBegin(serial_baud, serialSwap);
-    if (tb == 11) { if (SERIAL_BAUD_DEFAULT == 9600) serialBegin(19200, serialSwap); else tb = 15; }
+    if (tb == 11) { if (SERIAL_BAUD_DEFAULT == 9600) { serialBegin(19200, serialSwap); } else tb = 15; }
     goto Again;
   }
 
@@ -142,7 +155,6 @@ Again:
   #endif
 
   VLF("WEM: Connecting web-page handlers");
-  server.on("/", handleRoot);
   server.on("/index.htm", handleRoot);
   server.on("/configuration.htm", handleConfiguration);
   server.on("/configurationA.txt", configurationAjaxGet);
@@ -165,9 +177,8 @@ Again:
   server.on("/auxiliary.txt", auxAjax);
   server.on("/pec.htm", handlePec);
   server.on("/pec.txt", pecAjax);
-  #if OPERATIONAL_MODE == WIFI
-    server.on("/wifi.htm", handleWifi);
-  #endif
+  server.on("/net.htm", handleNetwork);
+  server.on("/", handleRoot);
   
   server.onNotFound(handleNotFound);
 
@@ -181,12 +192,10 @@ Again:
     #endif
   #endif
 
-  #if PERSISTENT_COMMAND_CHANNEL == ON
+  #if PERSISTENT_COMMAND_CHANNEL == ON && OPERATIONAL_MODE == WIFI
     VLF("WEM: Starting port 9998 persistant cmd svr");
-    #if OPERATIONAL_MODE == WIFI
-      persistentCmdSvr.begin();
-      persistentCmdSvr.setNoDelay(true);
-    #endif
+    persistentCmdSvr.begin();
+    persistentCmdSvr.setNoDelay(true);
   #endif
 
   #if OPERATIONAL_MODE == WIFI
