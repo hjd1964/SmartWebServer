@@ -194,37 +194,37 @@ extern NVS nv;
   void Encoders::syncToOnStep() {
     char s[22];
     // automatically sync OnStep to the encoders' position
-    Ser.print(":SX40,"); Ser.print(_enAxis1,6); Ser.print("#"); Ser.readBytes(s,1);
-    Ser.print(":SX41,"); Ser.print(_enAxis2,6); Ser.print("#"); Ser.readBytes(s,1);
-    Ser.print(":SX42,1#"); Ser.readBytes(s,1);
+    Ser.print(":SX40,"); Ser.print(_enAxis1, 6); Ser.print("#"); Ser.readBytes(s, 1);
+    Ser.print(":SX41,"); Ser.print(_enAxis2, 6); Ser.print("#"); Ser.readBytes(s, 1);
+    Ser.print(":SX42,1#"); Ser.readBytes(s, 1);
   }
 
   void Encoders::poll() {
     // check encoders and sync OnStep if diff is too great, checks every 2 seconds
-    static unsigned long nextEncCheckMs=millis()+(unsigned long)(POLLING_RATE*1000.0);
-    unsigned long temp=millis();
+    static unsigned long nextEncCheckMs = millis() + (unsigned long)(POLLING_RATE*1000.0);
+    unsigned long temp = millis();
     char *conv_end;
-    if ((long)(temp-nextEncCheckMs)>0) {
-      nextEncCheckMs=temp+(unsigned long)(POLLING_RATE*1000.0);
+    if ((long)(temp-nextEncCheckMs) > 0) {
+      nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
       char s[22];
       
       if (command(":GX42#",s) && strlen(s) > 1) {
         double f=strtod(s,&conv_end);
-        if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1=f;
+        if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1 = f;
       }
       
       if (command(":GX43#",s) && strlen(s) > 1) {
         double f=strtod(s,&conv_end);
-        if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis2=f;
+        if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis2 = f;
       }
       
       long pos=axis1Pos.read();
-      if (pos == INT32_MAX) _enAxis1Fault = true; else _enAxis1Fault=false;
+      if (pos == INT32_MAX) _enAxis1Fault = true; else _enAxis1Fault = false;
       _enAxis1=(double)pos/(double)Axis1EncTicksPerDeg;
       if (Axis1EncRev == ON) _enAxis1=-_enAxis1;
 
       pos=axis2Pos.read();
-      if (pos == INT32_MAX) _enAxis2Fault = true; else _enAxis2Fault=false;
+      if (pos == INT32_MAX) _enAxis2Fault = true; else _enAxis2Fault = false;
       _enAxis2=(double)pos/(double)Axis2EncTicksPerDeg;
       if (Axis2EncRev == ON) _enAxis2=-_enAxis2;
 
@@ -233,11 +233,11 @@ extern NVS nv;
         if (mountStatus.atHome() || mountStatus.parked() || mountStatus.aligning() || mountStatus.syncToEncodersOnly()) {
           syncFromOnStep();
           // re-enable normal operation once we're updated here
-          if (mountStatus.syncToEncodersOnly()) { Ser.print(":SX43,1#"); Ser.readBytes(s,1); }
+          if (mountStatus.syncToEncodersOnly()) { Ser.print(":SX43,1#"); Ser.readBytes(s, 1); }
         } else
           if (!mountStatus.slewing() && !mountStatus.guiding()) {
-            if ((fabs(_osAxis1-_enAxis1)>(double)(Axis1EncDiffTo/3600.0)) ||
-                (fabs(_osAxis2-_enAxis2)>(double)(Axis2EncDiffTo/3600.0))) syncToOnStep();
+            if ((fabs(_osAxis1-_enAxis1) > (double)(Axis1EncDiffTo/3600.0)) ||
+                (fabs(_osAxis2-_enAxis2) > (double)(Axis2EncDiffTo/3600.0))) syncToOnStep();
           }
       }
 
@@ -246,89 +246,89 @@ extern NVS nv;
 
         // get the averages
         #if AXIS1_ENC_BIN_AVG > 0
-          Tsta=0; Tlta=0;
-          for (int i=0; i<AXIS1_ENC_BIN_AVG; i++) { Tsta+=StaBins[i]; Tlta+=LtaBins[i]; }
-          Tsta/=AXIS1_ENC_BIN_AVG; // average
-          Tlta/=AXIS1_ENC_BIN_AVG;
-          Tsta/=AXIS1_ENC_BIN_AVG; // each period is AXIS1_ENC_BIN_AVG X longer than the step to step frequency
-          Tlta/=AXIS1_ENC_BIN_AVG;
+          Tsta = 0; Tlta = 0;
+          for (int i = 0; i < AXIS1_ENC_BIN_AVG; i++) { Tsta += StaBins[i]; Tlta += LtaBins[i]; }
+          Tsta /= AXIS1_ENC_BIN_AVG; // average
+          Tlta /= AXIS1_ENC_BIN_AVG;
+          Tsta /= AXIS1_ENC_BIN_AVG; // each period is AXIS1_ENC_BIN_AVG X longer than the step to step frequency
+          Tlta /= AXIS1_ENC_BIN_AVG;
         #endif
-        axis1EncRateSta=(usPerTick/Tsta)+axis1EncRateComp;
-        axis1EncRateLta=(usPerTick/Tlta)+axis1EncRateComp;
+        axis1EncRateSta = usPerTick/Tsta + axis1EncRateComp;
+        axis1EncRateLta = usPerTick/Tlta + axis1EncRateComp;
 
         // get the tracking rate OnStep thinks it has once every ten seconds
-        static int pass=-1;
+        static int pass = -1;
         pass++;
-        if (pass%5==0) {
-          Ser.print(":GX49#"); s[Ser.readBytesUntil('#',s,20)]=0;
-          if (strlen(s)>1) axis1Rate=atof(s); else axis1Rate=0;
+        if (pass%5 == 0) {
+          Ser.print(":GX49#"); s[Ser.readBytesUntil('#',s,20)] = 0;
+          if (strlen(s) > 1) axis1Rate = atof(s); else axis1Rate = 0;
         }
 
         // reset averages if rate is too fast or too slow
-        static unsigned long resetTimeout=0;
-        if (fastMotion() || slowMotion()) resetTimeout=millis();
+        static unsigned long resetTimeout = 0;
+        if (fastMotion() || slowMotion()) resetTimeout = millis();
 
         // keep things reset for 15 seconds if just starting up again
-        if ((long)(millis()-resetTimeout)<15000L) { clearAverages(); return; }
+        if ((long)(millis() - resetTimeout) < 15000L) { clearAverages(); return; }
 
         // encoder rate control disabled
         if (!encRateControl) return;
         
         #if AXIS1_ENC_INTPOL_COS == ON
-          long a1=axis1Pos.read();
-          intpolPhase=(a1+Axis1EncIntPolPhase) % Axis1EncIntPolPeriod;
-          float a3=(intpolPhase/(float)Axis1EncIntPolPeriod)*3.1415*2.0;
-          intpolComp=cos(a3)*(Axis1EncIntPolMag/1000000.0);
-          axis1EncRateSta=axis1EncRateSta+intpolComp;
+          long a1 = axis1Pos.read();
+          intpolPhase=(a1 + Axis1EncIntPolPhase)%Axis1EncIntPolPeriod;
+          float a3 = (intpolPhase/(float)Axis1EncIntPolPeriod)*3.1415*2.0;
+          intpolComp = cos(a3)*(Axis1EncIntPolMag/1000000.0);
+          axis1EncRateSta = axis1EncRateSta+intpolComp;
         #endif
 
         #if AXIS1_ENC_RATE_AUTO > 0
-          if ((long)(millis()-nextWormPeriod)>=0) {
-            nextWormPeriod=millis()+(unsigned long)(AXIS1_ENC_RATE_AUTO)*997UL;
-            axis1EncRateComp+=axis1RateDelta/(double)(AXIS1_ENC_RATE_AUTO);
-            if (axis1EncRateComp>+0.01) axis1EncRateComp=+0.01;
-            if (axis1EncRateComp<-0.01) axis1EncRateComp=-0.01;
-            axis1RateDelta=0;
+          if ((long)(millis() - nextWormPeriod) >= 0) {
+            nextWormPeriod = millis()+(unsigned long)(AXIS1_ENC_RATE_AUTO)*997UL;
+            axis1EncRateComp += axis1RateDelta/(double)(AXIS1_ENC_RATE_AUTO);
+            if (axis1EncRateComp > +0.01) axis1EncRateComp = +0.01;
+            if (axis1EncRateComp < -0.01) axis1EncRateComp = -0.01;
+            axis1RateDelta = 0;
           }
-          axis1RateDelta+=(axis1Rate-axis1EncRateSta)*POLLING_RATE;
+          axis1RateDelta += (axis1Rate - axis1EncRateSta)*POLLING_RATE;
         #endif
 
         // accumulate tracking rate departures for pulse-guide, rate delta * 2 seconds
-        guideCorrection+=(axis1Rate-axis1EncRateSta)*((float)Axis1EncProp/100.0)*POLLING_RATE;
+        guideCorrection += (axis1Rate - axis1EncRateSta)*((float)Axis1EncProp/100.0)*POLLING_RATE;
 
-        if (guideCorrection>POLLING_RATE) clearAverages(); else
-        if (guideCorrection<-POLLING_RATE) clearAverages(); else
-        if (guideCorrection>Axis1EncMinGuide/1000.0) {
-          guideCorrectionMillis=round(guideCorrection*1000.0);
+        if (guideCorrection > POLLING_RATE) clearAverages(); else
+        if (guideCorrection < -POLLING_RATE) clearAverages(); else
+        if (guideCorrection > Axis1EncMinGuide/1000.0) {
+          guideCorrectionMillis = round(guideCorrection*1000.0);
           Ser.print(":Mgw"); Ser.print(guideCorrectionMillis); Ser.print("#");
-          guideCorrection=0;
+          guideCorrection = 0;
         } else
-        if (guideCorrection<-Axis1EncMinGuide/1000.0) {
-          guideCorrectionMillis=round(guideCorrection*1000.0);
+        if (guideCorrection < -Axis1EncMinGuide/1000.0) {
+          guideCorrectionMillis = round(guideCorrection*1000.0);
           Ser.print(":Mge"); Ser.print(-guideCorrectionMillis); Ser.print("#");
-          guideCorrection=0;
+          guideCorrection = 0;
         } else 
-          guideCorrectionMillis=0;
+          guideCorrectionMillis = 0;
       #endif
     }
   }
 
   #if AXIS1_ENC_RATE_CONTROL == ON
     void Encoders::clearAverages() {
-      double d=usPerTick*axis1Rate;
+      double d = usPerTick*axis1Rate;
       #if AXIS1_ENC_BIN_AVG > 0
-        for (int i=0; i<AXIS1_ENC_BIN_AVG; i++) { StaBins[i]=d*AXIS1_ENC_BIN_AVG; LtaBins[i]=d*AXIS1_ENC_BIN_AVG; }
+        for (int i = 0; i < AXIS1_ENC_BIN_AVG; i++) { StaBins[i] = d*AXIS1_ENC_BIN_AVG; LtaBins[i] = d*AXIS1_ENC_BIN_AVG; }
       #endif
-      Tsta=d;
-      Tlta=d;
-      axis1EncRateSta=usPerTick/d;
-      axis1EncRateLta=usPerTick/d;
-      guideCorrection=0.0;
-      guideCorrectionMillis=0;
+      Tsta = d;
+      Tlta = d;
+      axis1EncRateSta = usPerTick/d;
+      axis1EncRateLta = usPerTick/d;
+      guideCorrection = 0.0;
+      guideCorrectionMillis = 0;
       #if AXIS1_ENC_RATE_AUTO > 0
-        axis1EncRateComp=0.0;
-        axis1RateDelta=0;
-        nextWormPeriod=millis()+(unsigned long)(AXIS1_ENC_RATE_AUTO)*997UL;;
+        axis1EncRateComp = 0.0;
+        axis1RateDelta = 0;
+        nextWormPeriod = millis() + (unsigned long)(AXIS1_ENC_RATE_AUTO)*997UL;;
       #endif
     }
   #endif
