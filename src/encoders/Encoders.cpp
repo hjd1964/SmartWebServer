@@ -145,6 +145,11 @@ extern NVS nv;
     Axis1EncDiffTo = nv.readL(EE_ENC_A1_DIFF_TO);
     Axis2EncDiffTo = nv.readL(EE_ENC_A2_DIFF_TO);
 
+    Axis1EncTicksPerDeg = nv.readD(EE_ENC_A1_TICKS);
+    Axis2EncTicksPerDeg = nv.readD(EE_ENC_A2_TICKS);
+    Axis1EncRev = nv.readI(EE_ENC_A1_REV);
+    Axis2EncRev = nv.readI(EE_ENC_A2_REV);
+
     #if AXIS1_ENC_RATE_CONTROL == ON
       Axis1EncStaSamples = nv.readL(EE_ENC_RC_STA);
       Axis1EncLtaSamples = nv.readL(EE_ENC_RC_LTA);
@@ -157,11 +162,6 @@ extern NVS nv;
       Axis1EncProp = nv.readL(EE_ENC_RC_PROP);
       Axis1EncMinGuide = nv.readL(EE_ENC_MIN_GUIDE);
     #endif
-
-    Axis1EncTicksPerDeg = nv.readD(EE_ENC_A1_TICKS);
-    Axis2EncTicksPerDeg = nv.readD(EE_ENC_A2_TICKS);
-    Axis1EncRev = nv.readI(EE_ENC_A1_REV);
-    Axis2EncRev = nv.readI(EE_ENC_A2_REV);
   }
 
   void Encoders::syncFromOnStep() {
@@ -198,12 +198,12 @@ extern NVS nv;
     Ser.print(":SX42,1#"); Ser.readBytes(s, 1);
   }
 
+  // check encoders and auto sync OnStep if diff is too great, checks every 2 seconds
   void Encoders::poll() {
-    // check encoders and sync OnStep if diff is too great, checks every 2 seconds
     static unsigned long nextEncCheckMs = millis() + (unsigned long)(POLLING_RATE*1000.0);
     unsigned long temp = millis();
     char *conv_end;
-    if ((long)(temp-nextEncCheckMs) > 0) {
+    if ((long)(temp - nextEncCheckMs) > 0) {
       nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
       char s[22];
       
@@ -220,7 +220,7 @@ extern NVS nv;
       long pos = axis1Pos.read();
       if (pos == INT32_MAX) _enAxis1Fault = true; else _enAxis1Fault = false;
       _enAxis1 = (double)pos/(double)Axis1EncTicksPerDeg;
-      if (Axis1EncRev == ON) _enAxis1=-_enAxis1;
+      if (Axis1EncRev == ON) _enAxis1 = -_enAxis1;
 
       pos = axis2Pos.read();
       if (pos == INT32_MAX) _enAxis2Fault = true; else _enAxis2Fault = false;
