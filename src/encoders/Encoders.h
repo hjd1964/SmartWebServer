@@ -47,7 +47,8 @@
     #ifdef ENC_HAS_ABSOLUTE
       void zeroFromOnStep();
     #endif
-        
+
+    // automatically sync OnStep to the encoders' position
     void syncToOnStep();
     void poll();
 

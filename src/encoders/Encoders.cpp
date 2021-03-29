@@ -44,74 +44,74 @@ extern NVS nv;
   #if AXIS1_ENC_RATE_CONTROL == ON
 
     // user interface and settings
-    bool encSweep=true;
-    bool encRateControl=false;
-    long Axis1EncProp=10;
-    long Axis1EncMinGuide=100;
+    bool encSweep = true;
+    bool encRateControl = false;
+    long Axis1EncProp = 10;
+    long Axis1EncMinGuide = 100;
 
     // timing related
-    volatile uint32_t T0=0;
-    volatile uint32_t T1=0;
-    volatile uint32_t Telapsed=0;
+    volatile uint32_t T0 = 0;
+    volatile uint32_t T1 = 0;
+    volatile uint32_t Telapsed = 0;
 
     #define MIN_ENC_PERIOD 0.2
     #define MAX_ENC_PERIOD 5.0
-    float arcSecondsPerTick=(1.0/Axis1EncTicksPerDeg)*3600.0; // (0.0018)*3600 = 6.48
-    float usPerTick=(arcSecondsPerTick/15.041)*1000000.0;     // 6.48/15.041 = 0.4308 seconds per tick
+    float arcSecondsPerTick = (1.0/Axis1EncTicksPerDeg)*3600.0; // (0.0018)*3600 = 6.48
+    float usPerTick = (arcSecondsPerTick/15.041)*1000000.0;     // 6.48/15.041 = 0.4308 seconds per tick
 
-    unsigned long msPerTickMax =(arcSecondsPerTick/15.041)*1000.0*MAX_ENC_PERIOD;
+    unsigned long msPerTickMax = (arcSecondsPerTick/15.041)*1000.0*MAX_ENC_PERIOD;
     #if AXIS1_ENC_BIN_AVG > 0
-      volatile uint32_t usPerBinTickMin =(double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MIN_ENC_PERIOD;
-      volatile uint32_t usPerBinTickMax =(double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MAX_ENC_PERIOD;
+      volatile uint32_t usPerBinTickMin = (double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MIN_ENC_PERIOD;
+      volatile uint32_t usPerBinTickMax = (double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MAX_ENC_PERIOD;
     #endif
     #if defined(ESP8266) || defined(ESP32)
-      volatile uint32_t clocksPerTickMin=(double)usPerTick*(double)ESP.getCpuFreqMHz()*MIN_ENC_PERIOD;
-      volatile uint32_t clocksPerTickMax=(double)usPerTick*(double)ESP.getCpuFreqMHz()*MAX_ENC_PERIOD;
+      volatile uint32_t clocksPerTickMin = (double)usPerTick*(double)ESP.getCpuFreqMHz()*MIN_ENC_PERIOD;
+      volatile uint32_t clocksPerTickMax = (double)usPerTick*(double)ESP.getCpuFreqMHz()*MAX_ENC_PERIOD;
       #define GetClockCount ESP.getCycleCount()
       #define ClockCountToMicros ((uint32_t)ESP.getCpuFreqMHz())
     #elif defined(__MK20DX256__)
-      volatile uint32_t clocksPerTickMin=(double)usPerTick*(double)(F_CPU/1000000L)*MIN_ENC_PERIOD;
-      volatile uint32_t clocksPerTickMax=(double)usPerTick*(double)(F_CPU/1000000L)*MAX_ENC_PERIOD;
+      volatile uint32_t clocksPerTickMin = (double)usPerTick*(double)(F_CPU/1000000L)*MIN_ENC_PERIOD;
+      volatile uint32_t clocksPerTickMax = (double)usPerTick*(double)(F_CPU/1000000L)*MAX_ENC_PERIOD;
       #define GetClockCount ARM_DWT_CYCCNT
       #define ClockCountToMicros (F_CPU/1000000L)
     #else
-      volatile uint32_t clocksPerTickMin=(double)usPerTick*MIN_ENC_PERIOD;
-      volatile uint32_t clocksPerTickMax=(double)usPerTick*MAX_ENC_PERIOD;
+      volatile uint32_t clocksPerTickMin = (double)usPerTick*MIN_ENC_PERIOD;
+      volatile uint32_t clocksPerTickMax = (double)usPerTick*MAX_ENC_PERIOD;
       #define GetClockCount micros()
       #define ClockCountToMicros (1L)
     #endif
     
     // averages & rate calculation
-    volatile long Axis1EncStaSamples=20;
-    volatile long Axis1EncLtaSamples=200;
-    volatile int32_t Tsta=0;
-    volatile int32_t Tlta=0;
+    volatile long Axis1EncStaSamples = 20;
+    volatile long Axis1EncLtaSamples = 200;
+    volatile int32_t Tsta = 0;
+    volatile int32_t Tlta = 0;
     #if AXIS1_ENC_BIN_AVG > 0
       volatile uint32_t StaBins[AXIS1_ENC_BIN_AVG];
       volatile uint32_t LtaBins[AXIS1_ENC_BIN_AVG];
       volatile uint32_t T1Bins[AXIS1_ENC_BIN_AVG];
     #endif
-    float axis1EncRateSta=1.0;
-    float axis1EncRateLta=1.0;
-    float axis1EncRateComp=0.0;
-    float axis1Rate=1.0;
+    float axis1EncRateSta = 1.0;
+    float axis1EncRateLta = 1.0;
+    float axis1EncRateComp = 0.0;
+    float axis1Rate = 1.0;
 
     #if AXIS1_ENC_INTPOL_COS == ON
-      long Axis1EncIntPolPeriod=AXIS1_ENC_BIN_AVG;
-      long Axis1EncIntPolPhase=1;
-      long Axis1EncIntPolMag=0;
-      float intpolComp=0;
-      float intpolPhase=0;
+      long Axis1EncIntPolPeriod = AXIS1_ENC_BIN_AVG;
+      long Axis1EncIntPolPhase = 1;
+      long Axis1EncIntPolMag = 0;
+      float intpolComp = 0;
+      float intpolPhase = 0;
     #endif
 
     #if AXIS1_ENC_RATE_AUTO > 0
-      static unsigned long nextWormPeriod=0;
-      static float axis1RateDelta=0;
+      static unsigned long nextWormPeriod = 0;
+      static float axis1RateDelta = 0;
     #endif
 
     // guiding
-    float guideCorrection=0;
-    long guideCorrectionMillis=0;
+    float guideCorrection = 0;
+    long guideCorrectionMillis = 0;
 
   #endif
 
@@ -121,11 +121,13 @@ extern NVS nv;
   void Encoders::init() { 
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
       nv.write(EE_ENC_AUTO_SYNC, (int16_t)ENC_AUTO_SYNC_DEFAULT);
+
       nv.write(EE_ENC_A1_DIFF_TO, (int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
-      nv.write(EE_ENC_A2_DIFF_TO, (int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
       nv.write(EE_ENC_A1_TICKS, (double)AXIS1_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A2_TICKS, (double)AXIS2_ENC_TICKS_DEG);
       nv.write(EE_ENC_A1_REV, (int16_t)AXIS1_ENC_REVERSE);
+
+      nv.write(EE_ENC_A2_DIFF_TO, (int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
+      nv.write(EE_ENC_A2_TICKS, (double)AXIS2_ENC_TICKS_DEG);
       nv.write(EE_ENC_A2_REV, (int16_t)AXIS2_ENC_REVERSE);
 
       nv.write(EE_ENC_RC_STA, 20L);     // enc short term average samples
@@ -162,7 +164,6 @@ extern NVS nv;
     Axis2EncRev = nv.readI(EE_ENC_A2_REV);
   }
 
-  // automatically sync the encoders from OnStep's position when at home or parked
   void Encoders::syncFromOnStep() {
     // don't sync if the Encoders vs. OnStep disagree by too much
     if (Axis1EncDiffFrom != OFF && fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
@@ -177,10 +178,8 @@ extern NVS nv;
       axis2Pos.write(-_osAxis2*(double)Axis2EncTicksPerDeg);
     else
       axis2Pos.write(_osAxis2*(double)Axis2EncTicksPerDeg);
-
   }
 
-  // zero absolute encoders from OnStep's position
   #ifdef ENC_HAS_ABSOLUTE
     void Encoders::zeroFromOnStep() {
     #ifdef ENC_HAS_ABSOLUTE_AXIS1
@@ -194,7 +193,6 @@ extern NVS nv;
 
   void Encoders::syncToOnStep() {
     char s[22];
-    // automatically sync OnStep to the encoders' position
     Ser.print(":SX40,"); Ser.print(_enAxis1, 6); Ser.print("#"); Ser.readBytes(s, 1);
     Ser.print(":SX41,"); Ser.print(_enAxis2, 6); Ser.print("#"); Ser.readBytes(s, 1);
     Ser.print(":SX42,1#"); Ser.readBytes(s, 1);
@@ -209,25 +207,25 @@ extern NVS nv;
       nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
       char s[22];
       
-      if (command(":GX42#",s) && strlen(s) > 1) {
-        double f=strtod(s,&conv_end);
+      if (command(":GX42#", s) && strlen(s) > 1) {
+        double f = strtod(s, &conv_end);
         if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1 = f;
       }
       
-      if (command(":GX43#",s) && strlen(s) > 1) {
-        double f=strtod(s,&conv_end);
+      if (command(":GX43#", s) && strlen(s) > 1) {
+        double f = strtod(s, &conv_end);
         if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis2 = f;
       }
       
-      long pos=axis1Pos.read();
+      long pos = axis1Pos.read();
       if (pos == INT32_MAX) _enAxis1Fault = true; else _enAxis1Fault = false;
-      _enAxis1=(double)pos/(double)Axis1EncTicksPerDeg;
+      _enAxis1 = (double)pos/(double)Axis1EncTicksPerDeg;
       if (Axis1EncRev == ON) _enAxis1=-_enAxis1;
 
-      pos=axis2Pos.read();
+      pos = axis2Pos.read();
       if (pos == INT32_MAX) _enAxis2Fault = true; else _enAxis2Fault = false;
-      _enAxis2=(double)pos/(double)Axis2EncTicksPerDeg;
-      if (Axis2EncRev == ON) _enAxis2=-_enAxis2;
+      _enAxis2 = (double)pos/(double)Axis2EncTicksPerDeg;
+      if (Axis2EncRev == ON) _enAxis2 = -_enAxis2;
 
       mountStatus.update();
       if (encAutoSync && mountStatus.valid() && !_enAxis1Fault && !_enAxis2Fault) {
@@ -237,8 +235,8 @@ extern NVS nv;
           if (mountStatus.syncToEncodersOnly()) { Ser.print(":SX43,1#"); Ser.readBytes(s, 1); }
         } else
           if (!mountStatus.slewing() && !mountStatus.guiding()) {
-            if ((fabs(_osAxis1-_enAxis1) > (double)(Axis1EncDiffTo/3600.0)) ||
-                (fabs(_osAxis2-_enAxis2) > (double)(Axis2EncDiffTo/3600.0))) syncToOnStep();
+            if ((fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffTo/3600.0)) ||
+                (fabs(_osAxis2 - _enAxis2) > (double)(Axis2EncDiffTo/3600.0))) syncToOnStep();
           }
       }
 
