@@ -271,14 +271,14 @@ void processNetworkGet() {
   
   // Login --------------------------------------------------------------------
   v=server.arg("login");
-  if (v != "") {
+  if (!v.equals(EmptyStr)) {
     if (!strcmp(masterPassword, (char*)v.c_str())) loginRequired = false;
   }
   v = server.arg("logout");
-  if (v != "") loginRequired = true;
+  if (!v.equals(EmptyStr)) loginRequired = true;
   if (loginRequired) return;
   v = server.arg("webpwd");
-  if (v != "") {
+  if (!v.equals(EmptyStr)) {
     strcpy(masterPassword, (char*)v.c_str());
     nv.readBytes(EE_PASSWORD, masterPassword, -40);
   }
@@ -286,14 +286,14 @@ void processNetworkGet() {
   // Timeouts -----------------------------------------------------------------
   // Cmd channel timeout
   v=server.arg("ccto");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     cmdTimeout = v.toInt();
     nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
   }
 
   // Web channel timeout
   v=server.arg("wcto");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     webTimeout = v.toInt();
     nv.update(EE_TIMEOUT_WEB,(int16_t)webTimeout);
   }
@@ -302,7 +302,7 @@ void processNetworkGet() {
     // --------------------------------------------------------------------------
     // Station MAC
     v=server.arg("stmac");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       // 5c:cf:7f:0f:ad:85
       // first the length should be 17
       if (v.length()==17) {
@@ -324,7 +324,7 @@ void processNetworkGet() {
 
     // Station SSID
     v = server.arg("stssid"); v1=v;
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_sta_ssid,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_sta_ssid,(char*)v.c_str());
 
@@ -335,43 +335,43 @@ void processNetworkGet() {
 
     // Station password
     v=server.arg("stpwd");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_sta_pwd,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_sta_pwd,(char*)v.c_str());
     }
 
     // Station dhcp enabled
     v=server.arg("stadhcp");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       stationDhcpEnabled=v.toInt();
     }
 
     // Station enabled
     v=server.arg("staen");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       stationEnabled=v.toInt();
     }
 
     // Access-Point ip
     IPAddress old_ip=wifi_sta_ip;
-    v=server.arg("staip1"); if (v!="") wifi_sta_ip[0]=v.toInt();
-    v=server.arg("staip2"); if (v!="") wifi_sta_ip[1]=v.toInt();
-    v=server.arg("staip3"); if (v!="") wifi_sta_ip[2]=v.toInt();
-    v=server.arg("staip4"); if (v!="") wifi_sta_ip[3]=v.toInt();
+    v=server.arg("staip1"); if (!v.equals(EmptyStr)) wifi_sta_ip[0]=v.toInt();
+    v=server.arg("staip2"); if (!v.equals(EmptyStr)) wifi_sta_ip[1]=v.toInt();
+    v=server.arg("staip3"); if (!v.equals(EmptyStr)) wifi_sta_ip[2]=v.toInt();
+    v=server.arg("staip4"); if (!v.equals(EmptyStr)) wifi_sta_ip[3]=v.toInt();
 
     // Access-Point SubNet
     old_ip=wifi_sta_sn;
-    v=server.arg("stasn1"); if (v!="") wifi_sta_sn[0]=v.toInt();
-    v=server.arg("stasn2"); if (v!="") wifi_sta_sn[1]=v.toInt();
-    v=server.arg("stasn3"); if (v!="") wifi_sta_sn[2]=v.toInt();
-    v=server.arg("stasn4"); if (v!="") wifi_sta_sn[3]=v.toInt();
+    v=server.arg("stasn1"); if (!v.equals(EmptyStr)) wifi_sta_sn[0]=v.toInt();
+    v=server.arg("stasn2"); if (!v.equals(EmptyStr)) wifi_sta_sn[1]=v.toInt();
+    v=server.arg("stasn3"); if (!v.equals(EmptyStr)) wifi_sta_sn[2]=v.toInt();
+    v=server.arg("stasn4"); if (!v.equals(EmptyStr)) wifi_sta_sn[3]=v.toInt();
 
     // Access-Point Gateway
     old_ip=wifi_sta_gw;
-    v=server.arg("stagw1"); if (v!="") wifi_sta_gw[0]=v.toInt();
-    v=server.arg("stagw2"); if (v!="") wifi_sta_gw[1]=v.toInt();
-    v=server.arg("stagw3"); if (v!="") wifi_sta_gw[2]=v.toInt();
-    v=server.arg("stagw4"); if (v!="") wifi_sta_gw[3]=v.toInt();
+    v=server.arg("stagw1"); if (!v.equals(EmptyStr)) wifi_sta_gw[0]=v.toInt();
+    v=server.arg("stagw2"); if (!v.equals(EmptyStr)) wifi_sta_gw[1]=v.toInt();
+    v=server.arg("stagw3"); if (!v.equals(EmptyStr)) wifi_sta_gw[2]=v.toInt();
+    v=server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3]=v.toInt();
       
     if (v1!="") {
       nv.writeBytes(EE_STA_SSID, wifi_sta_ssid, -40);
@@ -387,7 +387,7 @@ void processNetworkGet() {
     // --------------------------------------------------------------------------
     // Access-Point MAC
     v=server.arg("apmac");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       // 5c:cf:7f:0f:ad:85
       // first the length should be 17
       if (v.length()==17) {
@@ -409,7 +409,7 @@ void processNetworkGet() {
 
     // Access-Point SSID
     v=server.arg("apssid");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_ap_ssid,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_ap_ssid,(char*)v.c_str());
 
@@ -419,50 +419,50 @@ void processNetworkGet() {
 
     // Access-Point password
     v=server.arg("appwd");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_ap_pwd,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_ap_pwd,(char*)v.c_str());
     }
 
     // Access-Point channel
     v=server.arg("apch");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       if (wifi_ap_ch!=v.toInt()) restartRequired=true;
       wifi_ap_ch=v.toInt();
     }
 
     // Access-Point enabled
     v=server.arg("apen");
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       accessPointEnabled=v.toInt();
     }
 
     // Access-Point ip
     old_ip=wifi_ap_ip;
-    v=server.arg("apip1"); if (v!="") wifi_ap_ip[0]=v.toInt();
-    v=server.arg("apip2"); if (v!="") wifi_ap_ip[1]=v.toInt();
-    v=server.arg("apip3"); if (v!="") wifi_ap_ip[2]=v.toInt();
-    v=server.arg("apip4"); if (v!="") wifi_ap_ip[3]=v.toInt();
+    v=server.arg("apip1"); if (!v.equals(EmptyStr)) wifi_ap_ip[0]=v.toInt();
+    v=server.arg("apip2"); if (!v.equals(EmptyStr)) wifi_ap_ip[1]=v.toInt();
+    v=server.arg("apip3"); if (!v.equals(EmptyStr)) wifi_ap_ip[2]=v.toInt();
+    v=server.arg("apip4"); if (!v.equals(EmptyStr)) wifi_ap_ip[3]=v.toInt();
 
     // Access-Point SubNet
     old_ip=wifi_ap_sn;
-    v=server.arg("apsn1"); if (v!="") wifi_ap_sn[0]=v.toInt();
-    v=server.arg("apsn2"); if (v!="") wifi_ap_sn[1]=v.toInt();
-    v=server.arg("apsn3"); if (v!="") wifi_ap_sn[2]=v.toInt();
-    v=server.arg("apsn4"); if (v!="") wifi_ap_sn[3]=v.toInt();
+    v=server.arg("apsn1"); if (!v.equals(EmptyStr)) wifi_ap_sn[0]=v.toInt();
+    v=server.arg("apsn2"); if (!v.equals(EmptyStr)) wifi_ap_sn[1]=v.toInt();
+    v=server.arg("apsn3"); if (!v.equals(EmptyStr)) wifi_ap_sn[2]=v.toInt();
+    v=server.arg("apsn4"); if (!v.equals(EmptyStr)) wifi_ap_sn[3]=v.toInt();
 
     // Access-Point Gateway
     old_ip=wifi_ap_gw;
-    v=server.arg("apgw1"); if (v!="") wifi_ap_gw[0]=v.toInt();
-    v=server.arg("apgw2"); if (v!="") wifi_ap_gw[1]=v.toInt();
-    v=server.arg("apgw3"); if (v!="") wifi_ap_gw[2]=v.toInt();
-    v=server.arg("apgw4"); if (v!="") wifi_ap_gw[3]=v.toInt();
+    v=server.arg("apgw1"); if (!v.equals(EmptyStr)) wifi_ap_gw[0]=v.toInt();
+    v=server.arg("apgw2"); if (!v.equals(EmptyStr)) wifi_ap_gw[1]=v.toInt();
+    v=server.arg("apgw3"); if (!v.equals(EmptyStr)) wifi_ap_gw[2]=v.toInt();
+    v=server.arg("apgw4"); if (!v.equals(EmptyStr)) wifi_ap_gw[3]=v.toInt();
 
-    if (v!="") {
+    if (!v.equals(EmptyStr)) {
       nv.writeBytes(EE_AP_SSID, wifi_ap_ssid, -40);
       nv.writeBytes(EE_AP_PWD, wifi_ap_pwd, -40);
-      nv.write(EE_AP_CH, (int)wifi_ap_ch);
-      nv.write(EE_AP_EN, (int)accessPointEnabled);
+      nv.write(EE_AP_CH, (int16_t)wifi_ap_ch);
+      nv.write(EE_AP_EN, (int16_t)accessPointEnabled);
       for (int i=0;i<4;i++) nv.write(EE_AP_IP+i,wifi_ap_ip[i]);
       for (int i=0;i<4;i++) nv.write(EE_AP_GW+i,wifi_ap_gw[i]);
       for (int i=0;i<4;i++) nv.write(EE_AP_SN+i,wifi_ap_sn[i]);

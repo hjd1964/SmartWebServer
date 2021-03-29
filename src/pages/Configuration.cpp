@@ -591,7 +591,7 @@ bool processConfigurationGet() {
 
   // Overhead limit
   v=server.arg("ol");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 60 && v.toInt() <= 90) { 
       sprintf(temp,":So%d#",(int16_t)v.toInt());
       commandBool(temp);
@@ -600,7 +600,7 @@ bool processConfigurationGet() {
 
   // Horizon limit
   v=server.arg("hl");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= -30 && v.toInt() <= 30) { 
       sprintf(temp,":Sh%d#",(int16_t)v.toInt());
       commandBool(temp);
@@ -609,7 +609,7 @@ bool processConfigurationGet() {
 
   // Meridian limit E
   v=server.arg("el");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= -270 && v.toInt() <= 270) { 
       sprintf(temp,":SXE9,%d#",(int16_t)round((v.toInt()*60.0)/15.0));
       commandBool(temp);
@@ -618,7 +618,7 @@ bool processConfigurationGet() {
 
   // Meridian limit W
   v=server.arg("wl");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= -270 && v.toInt() <= 270) { 
       sprintf(temp,":SXEA,%d#",(int16_t)round((v.toInt()*60.0)/15.0));
       commandBool(temp);
@@ -627,35 +627,35 @@ bool processConfigurationGet() {
 
   // Backlash
   v=server.arg("b1");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 3600) { 
       sprintf(temp,":$BR%d#",(int16_t)v.toInt());
       commandBool(temp);
     }
   }
   v=server.arg("b2");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 3600) { 
       sprintf(temp,":$BD%d#",(int16_t)v.toInt());
       commandBool(temp);
     }
   }
   v=server.arg("b3");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
       sprintf(temp,":rb%d#",(int16_t)v.toInt());
       commandBool(temp);
     }
   }
   v=server.arg("b4");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
       sprintf(temp,":Fb%d#",(int16_t)v.toInt());
       commandBool(":FA1#"); commandBool(temp);
     }
   }
   v=server.arg("b5");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
       sprintf(temp,":fb%d#",(int16_t)v.toInt());
       commandBool(":FA1#"); commandBool(temp);
@@ -664,14 +664,14 @@ bool processConfigurationGet() {
 
   // TCF deadband
   v=server.arg("d4");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 1 && v.toInt() <= 32767) { 
       sprintf(temp,":Fd%d#",(int16_t)v.toInt());
       commandBool(":FA1#"); commandBool(temp);
     }
   }
   v=server.arg("d5");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 1 && v.toInt() <= 32767) { 
       sprintf(temp,":fd%d#",(int16_t)v.toInt());
       commandBool(":FA1#"); commandBool(temp);
@@ -680,14 +680,14 @@ bool processConfigurationGet() {
 
   // TCF Coef
   v=server.arg("tc4");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toFloat() >= -999.0 && v.toFloat() <= 999.0) { 
       sprintf(temp,":FC%s#",v.c_str());
       commandBool(":FA1#"); commandBool(temp);
     }
   }
   v=server.arg("tc5");
-  if (v!="") {
+  if (!v.equals(EmptyStr)) {
     if (v.toFloat() >= -999.0 && v.toFloat() <= 999.0) { 
       sprintf(temp,":fC%s#",v.c_str());
       commandBool(":FA1#"); commandBool(temp);
@@ -710,7 +710,7 @@ bool processConfigurationGet() {
   v=server.arg("g1"); // long deg
   v1=server.arg("g2"); // long min
   v2=server.arg("g3"); // long sec
-  if (v != "" && v1 != "" && v2 != "") {
+  if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
     if (v.toInt() >= -180 && v.toInt() <= 180 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
       sprintf(temp,":Sg%+04d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
       commandBool(temp);
@@ -719,7 +719,7 @@ bool processConfigurationGet() {
   v=server.arg("t1"); // lat deg
   v1=server.arg("t2"); // lat min
   v2=server.arg("t3"); // lat sec
-  if (v != "" && v1 != "" && v2 != "") {
+  if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
     if (v.toInt() >= -90 && v.toInt() <= 90 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
       sprintf(temp,":St%+03d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
       commandBool(temp);
@@ -727,7 +727,7 @@ bool processConfigurationGet() {
   }
   v=server.arg("u1"); // UT hrs
   v1=server.arg("u2"); // UT min
-  if (v != "" && v1 != "") {
+  if (!v.equals(EmptyStr) && !v1.equals(EmptyStr)) {
     if (v.toInt() >= -14 && v.toInt() <= 12 && (v1.toInt() == 0 || v1.toInt() == 30 || v1.toInt() == 45)) {
       sprintf(temp,":SG%+03d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt());
       commandBool(temp);
@@ -741,7 +741,7 @@ bool processConfigurationGet() {
       if (ssa.equals("fwu")) { pinMode(BOOT0_PIN,OUTPUT); digitalWrite(BOOT0_PIN,HIGH); commandBlind(":ERESET#"); delay(500); pinMode(BOOT0_PIN,INPUT); return false; }
     #endif
   #endif
-  String ssm=server.arg("mountt"); if (!ssm.equals("")) { sprintf(temp,":SXEM,%s#",ssm.c_str()); commandBool(temp); }
+  String ssm=server.arg("mountt"); if (!ssm.equals(EmptyStr)) { sprintf(temp,":SXEM,%s#",ssm.c_str()); commandBool(temp); }
 
   #if DRIVE_CONFIGURATION == ON
     // Axis settings
@@ -749,7 +749,7 @@ bool processConfigurationGet() {
     if (ssa.equals("disable")) { commandBool(":SXAC,1#"); return true; }
 
     String ssr=server.arg("revert");
-    if (!ssr.equals("")) {
+    if (!ssr.equals(EmptyStr)) {
       int axis=ssr.toInt();
       if (axis > 0 && axis < 5) { sprintf(temp,":SXA%d,R#",axis); commandBool(temp); }
       if (axis == 0) { strcpy(temp,":SXEM,0#"); commandBool(temp); }
@@ -763,24 +763,24 @@ bool processConfigurationGet() {
     ss3=server.arg("a3spd");
     ss4=server.arg("a4spu");
     ss5=server.arg("a5spu");
-    if (!ss1.equals("")) { axis=1; s1=server.arg("a1spd"); s2=server.arg("a1ustp"); s3=server.arg("a1I"); s4=server.arg("a1rev"); s5=server.arg("a1min"); s6=server.arg("a1max"); } else
-    if (!ss2.equals("")) { axis=2; s1=server.arg("a2spd"); s2=server.arg("a2ustp"); s3=server.arg("a2I"); s4=server.arg("a2rev"); s5=server.arg("a2min"); s6=server.arg("a2max"); } else
-    if (!ss3.equals("")) { axis=3; s1=server.arg("a3spd"); s2=server.arg("a3ustp"); s3=server.arg("a3I"); s4=server.arg("a3rev"); s5=server.arg("a3min"); s6=server.arg("a3max"); } else
-    if (!ss4.equals("")) { axis=4; s1=server.arg("a4spu"); s2=server.arg("a4ustp"); s3=server.arg("a4I"); s4=server.arg("a4rev"); s5=server.arg("a4min"); s6=server.arg("a4max"); } else
-    if (!ss5.equals("")) { axis=5; s1=server.arg("a5spu"); s2=server.arg("a5ustp"); s3=server.arg("a5I"); s4=server.arg("a5rev"); s5=server.arg("a5min"); s6=server.arg("a5max"); }
+    if (!ss1.equals(EmptyStr)) { axis=1; s1=server.arg("a1spd"); s2=server.arg("a1ustp"); s3=server.arg("a1I"); s4=server.arg("a1rev"); s5=server.arg("a1min"); s6=server.arg("a1max"); } else
+    if (!ss2.equals(EmptyStr)) { axis=2; s1=server.arg("a2spd"); s2=server.arg("a2ustp"); s3=server.arg("a2I"); s4=server.arg("a2rev"); s5=server.arg("a2min"); s6=server.arg("a2max"); } else
+    if (!ss3.equals(EmptyStr)) { axis=3; s1=server.arg("a3spd"); s2=server.arg("a3ustp"); s3=server.arg("a3I"); s4=server.arg("a3rev"); s5=server.arg("a3min"); s6=server.arg("a3max"); } else
+    if (!ss4.equals(EmptyStr)) { axis=4; s1=server.arg("a4spu"); s2=server.arg("a4ustp"); s3=server.arg("a4I"); s4=server.arg("a4rev"); s5=server.arg("a4min"); s6=server.arg("a4max"); } else
+    if (!ss5.equals(EmptyStr)) { axis=5; s1=server.arg("a5spu"); s2=server.arg("a5ustp"); s3=server.arg("a5I"); s4=server.arg("a5rev"); s5=server.arg("a5min"); s6=server.arg("a5max"); }
 
     if (axis > 0 && axis < 6) {
-      if (s2.equals("")) s2 = "-1";
-      if (s3.equals("")) s3 = "-1";
-      if (s4.equals("")) s4 = "-1";
-      if (s5.equals("")) s5 = "-1";
-      if (s6.equals("")) s6 = "-1";
+      if (s2.equals(EmptyStr)) s2 = "-1";
+      if (s3.equals(EmptyStr)) s3 = "-1";
+      if (s4.equals(EmptyStr)) s4 = "-1";
+      if (s5.equals(EmptyStr)) s5 = "-1";
+      if (s6.equals(EmptyStr)) s6 = "-1";
       if (s4.equals("0")) s4 = "-1"; else if (s4.equals("1")) s4 = "-2";
       v=s1+","+s2+","+s3+","+s4+","+s5+","+s6;
       sprintf(temp,":SXA%d,%s#",axis,v.c_str());
       commandBool(temp);
     }
-    ss1=server.arg("a1spwr"); if (!ss1.equals("")) { sprintf(temp,":SXE7,%s#",ss1.c_str()); commandBool(temp); }
+    ss1=server.arg("a1spwr"); if (!ss1.equals(EmptyStr)) { sprintf(temp,":SXE7,%s#",ss1.c_str()); commandBool(temp); }
   #endif
 
   return true;

@@ -64,8 +64,10 @@
     static int cmdBufferPos = 0;
     while (cmdSvr.available()) {
       byte b = cmdSvr.read();
-      cmdBuffer[cmdBufferPos] = b; cmdBufferPos++;
-      if (cmdBufferPos > 39) cmdBufferPos = 39; cmdBuffer[cmdBufferPos] = 0;
+      cmdBuffer[cmdBufferPos] = b;
+      cmdBufferPos++;
+      if (cmdBufferPos > 39) cmdBufferPos = 39;
+      cmdBuffer[cmdBufferPos] = 0;
 
       if (b == '#' || (strlen(cmdBuffer) == 1 && b == (char)6)) {
         char result[40] = "";
