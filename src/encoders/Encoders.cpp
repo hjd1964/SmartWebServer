@@ -123,6 +123,11 @@ extern NVS nv;
       nv.write(EE_ENC_AUTO_SYNC, (int16_t)ENC_AUTO_SYNC_DEFAULT);
       nv.write(EE_ENC_A1_DIFF_TO, (int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
       nv.write(EE_ENC_A2_DIFF_TO, (int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
+      nv.write(EE_ENC_A1_TICKS, (double)AXIS1_ENC_TICKS_DEG);
+      nv.write(EE_ENC_A2_TICKS, (double)AXIS2_ENC_TICKS_DEG);
+      nv.write(EE_ENC_A1_REV, (int16_t)AXIS1_ENC_REVERSE);
+      nv.write(EE_ENC_A2_REV, (int16_t)AXIS2_ENC_REVERSE);
+
       nv.write(EE_ENC_RC_STA, 20L);     // enc short term average samples
       nv.write(EE_ENC_RC_LTA, 200L);    // enc long term average samples
       nv.write(EE_ENC_RC_RCOMP, 0L);    // enc rate comp
@@ -132,10 +137,6 @@ extern NVS nv;
       nv.write(EE_ENC_MIN_GUIDE, 100L); // minimum guide duration
       nv.write(EE_ENC_A1_ZERO, 0L);     // absolute Encoder Axis1 zero
       nv.write(EE_ENC_A2_ZERO, 0L);     // absolute Encoder Axis2 zero
-      nv.write(EE_ENC_A1_TICKS, (double)AXIS1_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A2_TICKS, (double)AXIS2_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A1_REV, (int16_t)AXIS1_ENC_REVERSE);
-      nv.write(EE_ENC_A2_REV, (int16_t)AXIS2_ENC_REVERSE);
     }
 
     if (ENC_AUTO_SYNC_MEMORY == ON) encAutoSync = nv.readI(EE_ENC_AUTO_SYNC);
