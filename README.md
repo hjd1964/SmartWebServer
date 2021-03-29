@@ -25,7 +25,7 @@ The exact flashing procedure depends on which device you will be using.
 
 In the Arduino IDE, pick your device from "Tools, Boards" menu.
 
-Most devices have a USB port you plug into then a virtual serial port appears, direct the Arduino IDE to use that serial port and upload.  Be sure the device is not electrically connect to anything but the USB cable when said USB cable is plugged it.
+Most devices have a USB port you plug into then a virtual serial port appears, direct the Arduino IDE to use that serial port and upload.  Be sure the device is not electrically connected to anything but the USB cable when it is plugged in.
 
 # Starting Up
 The servers will only start if OnStep is detected on the designated device serial port.  Usually there is an device LED that will flash while the SWS attempts to connect then turn steady on once the connection is established.
