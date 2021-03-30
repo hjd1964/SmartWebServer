@@ -63,6 +63,10 @@
 #define EE_STA_GW              24   // 4
 #define EE_STA_SN              28   // 4
 
+#define EE_ETH_IP              32   // 4
+#define EE_ETH_GW              36   // 4
+#define EE_ETH_SN              40   // 4
+
 #define EE_AP_CH               50   // 2
 #define EE_AP_IP               60   // 4
 #define EE_AP_GW               70   // 4
