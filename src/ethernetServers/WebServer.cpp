@@ -6,6 +6,8 @@
 #include "../../Config.h"
 #include "../../ConfigX.h"
 #include "../HAL/HAL.h"
+#include "../debug/Debug.h"
+#include "../pinmaps/Models.h"
 
 #include <Ethernet.h>
 
@@ -40,15 +42,17 @@
     _server.begin();
 
     WF("WEM: WWW Server started at = "); WL(Ethernet.localIP());
-    
+
     #if SD_CARD == ON
-      SDfound = SD.begin(4);
+      SDfound = SD.begin(SD_CARD_CS_PIN);
     #else
       // disable the SDCARD CS pin
-      pinMode(4, OUTPUT);
-      digitalWrite(4, HIGH);
+      if (SD_CARD_CS_PIN != OFF) {
+        pinMode(SD_CARD_CS_PIN, OUTPUT);
+        digitalWrite(SD_CARD_CS_PIN, HIGH);
+      }
     #endif
-    
+
     handler_count = 0;
   }
 
