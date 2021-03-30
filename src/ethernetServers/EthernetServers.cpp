@@ -6,6 +6,7 @@
 #include "../../Config.h"
 #include "../../ConfigX.h"
 #include "../HAL/HAL.h"
+extern NVS nv;
 #include "../pinmaps/Models.h"
 #include "../debug/Debug.h"
 
@@ -34,6 +35,29 @@
     #endif
   }
   
+  void ethernetInit(void) {
+    if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
+      nv.update(EE_TIMEOUT_WEB, (int16_t)webTimeout);
+      nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
+
+      for (int i = 0; i < 4; i++) nv.update(EE_ETH_IP + i, eth_ip[i]);
+      for (int i = 0; i < 4; i++) nv.update(EE_ETH_GW + i, eth_gw[i]);
+      for (int i = 0; i < 4; i++) nv.update(EE_ETH_SN + i, eth_sn[i]);
+    }
+
+    webTimeout = nv.readI(EE_TIMEOUT_WEB);
+    if (webTimeout > 300) webTimeout = 300;
+    if (webTimeout < 100) webTimeout = 100;
+    cmdTimeout = nv.readI(EE_TIMEOUT_CMD);
+    if (cmdTimeout > 300) cmdTimeout = 300;
+    if (cmdTimeout < 100) cmdTimeout = 100;
+
+    for (int i = 0; i < 4; i++) eth_ip[i] = nv.read(EE_ETH_IP + i);
+    for (int i = 0; i < 4; i++) eth_gw[i] = nv.read(EE_ETH_GW + i);
+    for (int i = 0; i < 4; i++) eth_dns[i] = nv.read(EE_ETH_GW + i);
+    for (int i = 0; i < 4; i++) eth_sn[i] = nv.read(EE_ETH_SN + i);
+  }
+
   void ethernetStart(void) {
     VF("WEM: Ethernet Addon "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
     VF("WEM: MCU = "); VLF(MCU_STR);

@@ -33,6 +33,7 @@
   #if PERSISTENT_COMMAND_CHANNEL == ON
   #endif
 
+  void ethernetInit(void);
   void ethernetStart(void);
   void ethernetCommandChannel(void);
 

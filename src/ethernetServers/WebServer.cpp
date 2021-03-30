@@ -20,13 +20,14 @@
   #endif
 
   // Enter a unique MAC address for your controller if you like:
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+  byte eth_mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 
   // The IP addresses below will be dependent on your local network:
-  IPAddress ip IP_ADDRESS;
-  IPAddress myDns DNS_ADDRESS;
-  IPAddress gateway GATEWAY_ADDRESS;
-  IPAddress subnet SUBNET;
+  IPAddress eth_ip = IPAddress IP_ADDRESS;
+  IPAddress eth_dns= IPAddress GATEWAY_ADDRESS;
+  IPAddress eth_gw = IPAddress GATEWAY_ADDRESS;
+  IPAddress eth_sn = IPAddress SUBNET;
+
   EthernetServer _server(80);
 
   const char http_defaultHeader[] PROGMEM = "HTTP/1.1 200 OK\r\n" "Content-Type: text/html\r\n" "Connection: close\r\n" "\r\n";
@@ -34,10 +35,10 @@
   void WebServer::init() {
     // start the Ethernet connection and the server:
     setResponseHeader(http_defaultHeader);
-    
-    Ethernet.begin(mac, ip, myDns, gateway, subnet);
+
+    Ethernet.begin(eth_mac, eth_ip, eth_dns, eth_gw, eth_sn);
     _server.begin();
-    
+
     WF("WEM: WWW Server started at = "); WL(Ethernet.localIP());
     
     #if SD_CARD == ON
