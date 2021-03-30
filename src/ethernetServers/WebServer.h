@@ -27,19 +27,20 @@
     #define WL(x)
     #define WLF(x)
   #endif
-  
+
   // Enter a unique MAC address for your controller if you like:
-  extern byte mac[];
+  extern byte eth_mac[];
 
   // The IP addresses below will be dependent on your local network:
-  extern IPAddress ip;
-  extern IPAddress myDns;
-  extern IPAddress gateway;
-  extern IPAddress subnet;
+  extern IPAddress eth_ip;
+  extern IPAddress eth_dns;
+  extern IPAddress eth_gw;
+  extern IPAddress eth_sn;
 
   // misc.
-  #define WebSocketTimeOut   10000
-  #define HANDLER_COUNT_MAX     21
+  #define WEB_SOCKET_TIMEOUT    10000
+  #define HANDLER_COUNT_MAX     25
+  #define PARAMETER_COUNT_MAX   20
   
   typedef void (* webFunction) (EthernetClient *client);
   
@@ -56,24 +57,28 @@
       String arg(String id);
   
       bool SDfound = false;
+
     private:
+      int  getHandler(String* line);
+      void processGet(String* line);
+      void processPost(String* line);
+ 
       #if SD_CARD == ON
         void sdPage(String fn, EthernetClient* client);
       #endif
   
-      String inputBuffer;
       char responseHeader[200] = "";
       #if SD_CARD == ON
         bool modifiedSinceFound=false;
       #endif
   
-      webFunction notFoundHandler=NULL;
+      webFunction notFoundHandler = NULL;
       webFunction handlers[HANDLER_COUNT_MAX];
       String handlers_fn[HANDLER_COUNT_MAX];
       int handler_count;
       
-      String parameters[HANDLER_COUNT_MAX];
-      String values[HANDLER_COUNT_MAX];
+      String parameters[PARAMETER_COUNT_MAX];
+      String values[PARAMETER_COUNT_MAX];
       int parameter_count;
   };
 

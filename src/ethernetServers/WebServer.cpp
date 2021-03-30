@@ -57,124 +57,181 @@
   }
 
   void WebServer::handleClient() {
-    // listen for incoming clients
-    EthernetClient _client;
-    _client = _server.available();
-    if (_client) {
-      WL("New client");
-      // an http request ends with a blank line
-      boolean currentLineIsBlank = true;
-      unsigned long to = millis() + WebSocketTimeOut;
-      while (_client.connected() && (long)(millis() - to) < 0) {
-      if (_client.available()) {
-          char c = _client.read(); // W(c);
-          if (inputBuffer.length() < 128) inputBuffer += c;
-  
-          // if you've gotten to the end of the line (received a newline character) and the line is blank, the http request has ended, send a reply
-          if (c == '\n' && currentLineIsBlank) {
-  
-          // grab the URL
-          int url_start = inputBuffer.indexOf("GET ");
-          int url_end = inputBuffer.indexOf("HTTP/");
-          if (url_start != -1 && url_end != -1) {
-            String command = inputBuffer.substring(url_start,url_end);
-            WL(command);
-	    
+    EthernetClient client;
+    client = _server.available();
+    if (client) {
+      WL("WEM WEBSERVER: New client");
+
+      parameter_count = 0;
+      String line = "";
+      int currentSection = 1;
+      int handler_number = -1;
+      bool isGet = false;
+      bool isPost = false;
+
+      unsigned long to = millis() + WEB_SOCKET_TIMEOUT;
+      while (client.connected() && (long)(millis() - to) < 0 && currentSection <= 2) {
+        if (client.available()) {
+          // read in a char
+          char c = client.read(); if (c == '\r') continue;
+
+          // build up ea. line
+          if (line.length() <= 128) line += c;
+
+          // loop until an entire line is present
+          if (c != '\n' && client.available()) continue;
+
+          // look for end of sections
+          if (line.equals("\n")) { line = ""; currentSection++; continue; }
+
+          // scan the header
+          if (currentSection == 1) {
             #if SD_CARD == ON
-              // watch for cache requests
-              if (!modifiedSinceFound && command.indexOf("If-Modified-Since:") >= 0) modifiedSinceFound = true;
+              if (!modifiedSinceFound && line.indexOf("If-Modified-Since:") >= 0) modifiedSinceFound = true;
             #endif
-	    
-            // pass to handlers
-            bool handlerFound=false;
-            for (int i = 0; i < handler_count; i++) {
-              if (command.indexOf(handlers_fn[i]) >= 0) {
-                // but first, isolate any get parameters and their values
-                command = command.substring(command.indexOf(handlers_fn[i]) + handlers_fn[i].length());
-                W(command.length()); W("  *"); W(command); WL("*");
-	    
-                // trim white space
-                while (command.length() > 0 && command[0] == ' ') { if (command.length() > 1) command = command.substring(1); else command = ""; }
-                while (command.length() > 0 && command[command.length() - 1] == ' ') command = command.substring(0, command.length() - 1);
-	    
-                W(command.length()); W("  *"); W(command); WL("*");
-	    
-                if (handlers[i] != NULL) {
-                  // check to see if there's a ?a=1& or &a=1
-                  parameter_count = 0;
-                  while (command[0] == '?' || command[0] == '&') {
-                    command = command.substring(1);
-                    int j  = command.indexOf('='); if (j == -1) j = command.length(); if (j == -1) break; // invalid formatting
-                    int j1 = command.indexOf('&'); if (j1 == -1) j1 = command.length() + 1;
-                    String thisArg = command.substring(0, j);
-                    String thisVal = command.substring(j+1, j1);
-                    if (thisArg != "") {
-                      parameter_count++;
-                      parameters[parameter_count - 1] = thisArg;
-                     values[parameter_count-1] = thisVal;
-                    }
-                    if (int(command.length()) > j1) command = command.substring(j1); else command = "";
-                    W(thisArg); W(" = "); WL(thisVal);
-                    W("Handler = "); WL(i);
-                  }
-                  _client.print(responseHeader);
-                  (*handlers[i])(&_client); // send page content
-                  handlerFound = true;
-                  break;
-                } else {
-                  #if SD_CARD == ON
-                    // send a 304 header
-                    if (modifiedSinceFound && true ) {
-                     char temp[255]; strcpy_P(temp, http_js304Header); _client.print(temp);
-                     handlerFound = true;
-                     break;
-                    } else {
-                      if (handlers_fn[i].indexOf(".js") > 0) {
-                        char temp[255]; strcpy_P(temp, http_jsHeader); _client.print(temp); 
-                      } else client.print(responseHeader);
-                      sdPage(handlers_fn[i], &client);
-                      handlerFound = true;
-                      break;
-                    }
-                    #endif
-                  }
+            if (!isGet && !isPost) {
+              int index = line.indexOf("GET ");
+              if (index >= 0) {
+                isGet = true;
+                line = line.substring(index + 4);
+                handler_number = getHandler(&line);
+                if (handler_number >= 0) processGet(&line);
+              } else {
+                index = line.indexOf("POST ");
+                if (index >= 0) {
+                  isPost = true;
+                  line = line.substring(index + 5);
+                  handler_number = getHandler(&line);
                 }
               }
-              // handle not found
-              if (!handlerFound && notFoundHandler != NULL) (*notFoundHandler)(&_client);
-	    
-            } else {
-              WL("Invalid response");
             }
-            inputBuffer = "";
-            break;
+          } else
+
+          // scan the request
+          if (currentSection == 2 && isPost) {
+            if (handler_number >= 0) processPost(&line);
           }
-          if (c == '\n') {
-            // starting a new line
-            currentLineIsBlank = true;
-          } else if (c != '\r') {
-            // have a character on the current line
-            currentLineIsBlank = false;
-          }
+
+          line = "";
+        } else break;
+      }
+
+      // process get or post request
+      bool handlerFound = false;
+      if (handler_number >= 0) {
+        if (handlers[handler_number] != NULL) {
+          WF("WEM WEBSERVER: Running handler# "); WL(handler_number);
+          client.print(responseHeader);
+          (*handlers[handler_number])(&client);
+          handlerFound = true;
+        } else {
+          #if SD_CARD == ON
+            if (modifiedSinceFound) {
+              WLF("WEM WEBSERVER: Sending js304Header");
+              char temp[255]; strcpy_P(temp, http_js304Header); _client.print(temp);
+              handlerFound = true;
+            } else {
+              if (handlers_fn[handler].indexOf(".js") > 0) {
+                WLF("WEM WEBSERVER: Sending jsHeader");
+                char temp[255]; strcpy_P(temp, http_jsHeader); _client.print(temp); 
+              } else client.print(responseHeader);
+              WLF("WEM WEBSERVER: Sending SD file");
+              sdPage(handlers_fn[handler], &client);
+              handlerFound = true;
+            }
+          #endif
         }
       }
+      
+      // handle 404 page not found
+      if (!handlerFound && notFoundHandler != NULL) (*notFoundHandler)(&client);
+
       // give the web browser time to receive the data
       delay(1);
   
       // close the connection:
-      _client.stop();
-  
-      // clear the input buffer
-      inputBuffer = "";
+      client.stop();
   
       #if SD_CARD == ON
-      modifiedSinceFound = false;
+        modifiedSinceFound = false;
       #endif
   
-      WL("Client disconnected");
+      WL("WEM WEBSERVER: Client disconnected");
     }
   }
-  
+
+  int WebServer::getHandler(String* line) {
+    int url_end = line->indexOf("HTTP/");
+    if (url_end <= 0) return -1;
+
+    WLF("WEM WEBSERVER: processing header GET/POST handler");
+    WF("WEM WEBSERVER: ["); W(line->substring(0, 8)); WL("...]");
+
+    // isolate the content
+    *line = line->substring(0, url_end);
+
+    for (int i = 0; i < handler_count; i++) {
+      int j = line->indexOf(handlers_fn[i]);
+      if (j >= 0) {
+        // success, isolate any parameters and return
+        WF("WEM WEBSERVER: found handler "); W(i); W(" ["); W(handlers_fn[i]); WL("]");
+        *line = line->substring(j + handlers_fn[i].length());
+        line->trim();
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  void WebServer::processGet(String* line) {
+    WLF("WEM WEBSERVER: processing header GET parameters");
+    WF("WEM WEBSERVER: ["); W(line->substring(0, 8)); WL("...]");
+
+    // isolate any parameters, get their values
+    // look for form "?a=1&" or "&a=1"
+    while ((*line)[0] == '?' || (*line)[0] == '&') {
+      *line = line->substring(1);
+      int j  = line->indexOf('='); if (j == -1) j = line->length(); if (j == -1) break; // invalid formatting
+      int j1 = line->indexOf('&'); if (j1 == -1) j1 = line->length() + 1;
+      String thisArg = line->substring(0, j);
+      String thisVal = line->substring(j + 1, j1);
+      if (thisArg != "") {
+        if (++parameter_count > PARAMETER_COUNT_MAX) parameter_count = PARAMETER_COUNT_MAX;
+        parameters[parameter_count - 1] = thisArg;
+        values[parameter_count - 1] = thisVal;
+      }
+      if ((int)line->length() > j1) *line = line->substring(j1); else *line = "";
+
+      WF("WEM WEBSERVER: param. "); W(thisArg); W(" = "); WL(thisVal);
+    }
+  }
+
+  void WebServer::processPost(String* line) {
+    WLF("WEM WEBSERVER: processing header POST parameter");
+    WF("WEM WEBSERVER: ["); W(line->substring(0, 8)); WL("...]");
+
+    // make all tokens start with '&'
+    *line = "&" + *line;
+
+    // isolate any parameters, get their values
+    // look for form "&a=1"
+    while ((*line)[0] == '&') {
+      *line = line->substring(1);
+      int j  = line->indexOf('='); if (j == -1) j = line->length(); if (j == -1) break; // invalid formatting
+      int j1 = line->indexOf('&'); if (j1 == -1) j1 = line->length() + 1;
+      String thisArg = line->substring(0, j);
+      String thisVal = line->substring(j + 1, j1);
+      if (thisArg != "") {
+        if (++parameter_count > PARAMETER_COUNT_MAX) parameter_count = PARAMETER_COUNT_MAX;
+        parameters[parameter_count - 1] = thisArg;
+        values[parameter_count - 1] = thisVal;
+      }
+      if ((int)line->length() > j1) *line = line->substring(j1); else *line = "";
+
+      WF("WEM WEBSERVER: param. "); W(thisArg); W(" = "); WL(thisVal);
+    }
+  }
+
   void WebServer::setResponseHeader(const char* str) {
     if (!str) return;
     strcpy_P(responseHeader,str);
