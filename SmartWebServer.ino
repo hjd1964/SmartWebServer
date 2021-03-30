@@ -80,13 +80,15 @@ void setup(void) {
 
   // read settings from NV or init. as required
   #if ENCODERS == ON
-    VLF("WEM: Encoders Init");
+    VLF("WEM: Init Encoders");
     encodersInit();
   #endif
 
+  VLF("WEM: Init Webserver");
   #if OPERATIONAL_MODE == WIFI
-    VLF("WEM: Wifi Init");
     wifiInit();
+  #else
+    ethernetInit();
   #endif
 
   // init is done, write the NV key if necessary
@@ -156,7 +158,7 @@ Again:
     server.init();
   #endif
 
-  VLF("WEM: Connecting web-page handlers");
+  VLF("WEM: Set webpage handlers");
   server.on("/index.htm", handleRoot);
   server.on("/configuration.htm", handleConfiguration);
   server.on("/configurationA.txt", configurationAjaxGet);
@@ -212,11 +214,11 @@ Again:
   clearSerialChannel();
 
   #if ENCODERS == ON
-    VLF("WEM: Starting Encoders");
+    VLF("WEM: Starting encoders");
     encoders.init();
   #endif
     
-  VLF("WEM: SmartWebServer is ready");
+  VLF("WEM: SmartWebServer ready");
 }
 
 void loop(void) {
