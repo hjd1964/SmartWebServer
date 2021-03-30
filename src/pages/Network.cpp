@@ -34,6 +34,30 @@ L_NETWORK_CMD_TO ": <input style='width:4em' name='ccto' value='%d' type='number
 L_NETWORK_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number' min='100' max='300'> ms<br/>"
 "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
 
+const char htmL_NET_MAC[] PROGMEM =
+"MAC: <input style='width:10em' name='%s' type='text' value='%s' maxlength='17' disabled><br/>";
+
+const char htmL_NET_IP[] PROGMEM =
+"<table><tr><td>" L_IP_ADDRESS ": </td><td>"
+"<input name='%sip1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%sip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%sip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%sip4' value='%d' type='number' min='0' max='255'></td>";
+
+const char htmL_NET_GW[] PROGMEM =
+"<tr><td>" L_GATEWAY ": </td><td>"
+"<input name='%sgw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%sgw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%sgw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%sgw4' value='%d' type='number' min='0' max='255'></td>";
+
+const char htmL_NET_SN[] PROGMEM =
+"<tr><td>" L_SUBNET ": </td><td>"
+"<input name='%ssn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%ssn2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%ssn3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
+"<input name='%ssn4' value='%d' type='number' min='0' max='255'></td></tr></table>";
+
 #if OPERATIONAL_MODE == WIFI
   extern bool accessPointEnabled;
   extern bool stationEnabled;
@@ -65,30 +89,6 @@ L_NETWORK_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number
   L_NETWORK_EN_STA ": <input type='checkbox' name='staen' value='1' %s><br/>"
   "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
 
-  const char htmL_NETWORKMAC[] PROGMEM =
-  "MAC: <input style='width:10em' name='stmac' type='text' value='%s' maxlength='17' disabled><br/>";
-
-  const char htmL_NETWORKSTAIP[] PROGMEM =
-  "<table><tr><td>" L_IP_ADDRESS ": </td><td>"
-  "<input name='staip1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='staip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='staip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='staip4' value='%d' type='number' min='0' max='255'></td>";
-
-  const char htmL_NETWORKSTAGW[] PROGMEM =
-  "<tr><td>" L_GATEWAY ": </td><td>"
-  "<input name='stagw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='stagw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='stagw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='stagw4' value='%d' type='number' min='0' max='255'></td>";
-
-  const char htmL_NETWORKSTASN[] PROGMEM =
-  "<tr><td>" L_SUBNET ": </td><td>"
-  "<input name='stasn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='stasn2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='stasn3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='stasn4' value='%d' type='number' min='0' max='255'></td></tr></table>";
-
   const char htmL_NETWORKSSID3A[] PROGMEM =
   "<br/><b>" L_NETWORK_AP ":</b><br/>"
   "<form method='post' action='/net.htm'>"
@@ -99,32 +99,15 @@ L_NETWORK_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number
   L_NETWORK_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='39'> " L_NETWORK_PWD_MSG "&nbsp;&nbsp;&nbsp;"
   L_NETWORK_CHA ": <input style='width:3em' name='apch' value='%d' type='number' min='1' max='11'><br/>";
 
-  const char htmL_NETWORKApMAC[] PROGMEM =
-  "MAC: <input style='width:10em' name='apmac' type='text' value='%s' maxlength='17' disabled><br/>";
-
-  const char htmL_NETWORKSSID4[] PROGMEM =
-  "<table><tr><td>" L_IP_ADDRESS ": </td><td>"
-  "<input name='apip1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apip2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apip3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apip4' value='%d' type='number' min='0' max='255'></td>";
-
-  const char htmL_NETWORKSSID5[] PROGMEM =
-  "<tr><td>" L_GATEWAY ": </td><td>"
-  "<input name='apgw1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apgw2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apgw3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apgw4' value='%d' type='number' min='0' max='255'></td>";
-
-  const char htmL_NETWORKSSID6[] PROGMEM =
-  "<tr><td>" L_SUBNET ": </td><td>"
-  "<input name='apsn1' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apsn2' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apsn3' value='%d' type='number' min='0' max='255'>&nbsp;.&nbsp;"
-  "<input name='apsn4' value='%d' type='number' min='0' max='255'></td></tr></table>";
-
   const char htmL_NETWORKSSID7[] PROGMEM =
   L_NETWORK_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s> (Note: auto-enabled if Station Mode fails to connect)<br/>"
+  "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
+#else
+  const char htmL_NETWORK_ETH_BEG[] PROGMEM =
+  "<br/><b>Ethernet:</b><br/>"
+  "<form method='post' action='/net.htm'><br />\r\n";
+
+  const char htmL_NETWORK_ETH_END[] PROGMEM =
   "<button type='submit'>" L_UPLOAD "</button></form><br />\r\n";
 #endif
 
@@ -137,7 +120,7 @@ L_NETWORK_PWD ": <input style='width:8em' name='webpwd' type='password' minlengt
 "<button type='submit' name='logout' value='1'>" L_LOGOUT "</button></form><br />\r\n";
 
 const char html_reboot[] PROGMEM =
-"<br/><br/><br/><br/><br/><form method='get' action='/net.htm'>"
+"<br/><br/><br/><br/><br/><form method='post' action='/net.htm'>"
 "<b>" L_NETWORK_RESTART_MSG "</b><br/><br/>"
 "<button type='submit'>" L_CONTINUE "</button>"
 "</form><br/><br/><br/><br/>"
@@ -157,6 +140,9 @@ const char html_login[] PROGMEM =
 
 bool restartRequired = false;
 bool loginRequired = true;
+byte temp_ip[4] = {0,0,0,0};
+byte temp_sn[4] = {0,0,0,0};
+byte temp_gw[4] = {0,0,0,0};
 
 #if OPERATIONAL_MODE != WIFI
 void handleNetwork(EthernetClient *client) {
@@ -229,31 +215,49 @@ void handleNetwork() {
     
     #if OPERATIONAL_MODE == WIFI
       sprintf_P(temp, htmL_NETWORKSSID1, wifi_sta_ssid, ""); data += temp;
-      nv.readBytes(EE_STA_SSID, wifi_sta_ssid, -40);
-      nv.readBytes(EE_STA_PWD, wifi_sta_pwd, -40);
+      nv.readStr(EE_STA_SSID, wifi_sta_ssid, 40);
+      nv.readStr(EE_STA_PWD, wifi_sta_pwd, 40);
 
-      uint8_t mac[6] = {0,0,0,0,0,0}; WiFi.macAddress(mac);
-      char wifi_sta_mac[80]="";
-      for (int i=0; i<6; i++) { sprintf(wifi_sta_mac,"%s%02x:",wifi_sta_mac,mac[i]); } wifi_sta_mac[strlen(wifi_sta_mac)-1]=0;
-      sprintf_P(temp,htmL_NETWORKMAC,wifi_sta_mac); data += temp;
-    
-      sprintf_P(temp,htmL_NETWORKSTAIP,wifi_sta_ip[0],wifi_sta_ip[1],wifi_sta_ip[2],wifi_sta_ip[3]); data += temp;
-      sprintf_P(temp,htmL_NETWORKSTAGW,wifi_sta_gw[0],wifi_sta_gw[1],wifi_sta_gw[2],wifi_sta_gw[3]); data += temp;
-      sprintf_P(temp,htmL_NETWORKSTASN,wifi_sta_sn[0],wifi_sta_sn[1],wifi_sta_sn[2],wifi_sta_sn[3]); data += temp;
-      sprintf_P(temp,htmL_NETWORKSSID2,stationDhcpEnabled?"checked":"",stationEnabled?"checked":""); data += temp;
+      uint8_t macsta[6] = {0,0,0,0,0,0}; WiFi.macAddress(macsta); temp1[0] = 0;
+      for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, macsta[i]); } temp1[strlen(temp1) - 1] = 0;
+
+      sprintf_P(temp,htmL_NET_MAC,"sta", temp1); data += temp;
+      sendHtml(data);
+      sprintf_P(temp,htmL_NET_IP, "sta", wifi_sta_ip[0], "sta", wifi_sta_ip[1], "sta", wifi_sta_ip[2], "sta", wifi_sta_ip[3]); data += temp;
+      sprintf_P(temp,htmL_NET_GW, "sta", wifi_sta_gw[0], "sta", wifi_sta_gw[1], "sta", wifi_sta_gw[2], "sta", wifi_sta_gw[3]); data += temp;
+      sprintf_P(temp,htmL_NET_SN, "sta", wifi_sta_sn[0], "sta", wifi_sta_sn[1], "sta", wifi_sta_sn[2], "sta", wifi_sta_sn[3]); data += temp;
+
+      sprintf_P(temp,htmL_NETWORKSSID2, stationDhcpEnabled?"checked":"",stationEnabled?"checked":""); data += temp;
       data += FPSTR(htmL_NETWORKSSID3A);
-      sprintf_P(temp,htmL_NETWORKSSID3B,wifi_ap_ssid,"",wifi_ap_ch); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID3B, wifi_ap_ssid, "", wifi_ap_ch); data += temp;
       sendHtml(data);
     
-      uint8_t macap[6] = {0,0,0,0,0,0}; WiFi.softAPmacAddress(macap);
-      char wifi_ap_mac[80]="";
-      for (int i=0; i<6; i++) { sprintf(wifi_ap_mac,"%s%02x:",wifi_ap_mac,macap[i]); } wifi_ap_mac[strlen(wifi_ap_mac)-1]=0;
-      sprintf_P(temp,htmL_NETWORKApMAC,wifi_ap_mac); data += temp;
+      uint8_t macap[6] = {0,0,0,0,0,0}; WiFi.softAPmacAddress(macap); temp1[0] = 0;
+      for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, macap[i]); } temp1[strlen(temp1) - 1] = 0;
       
-      sprintf_P(temp,htmL_NETWORKSSID4,wifi_ap_ip[0],wifi_ap_ip[1],wifi_ap_ip[2],wifi_ap_ip[3]); data += temp;
-      sprintf_P(temp,htmL_NETWORKSSID5,wifi_ap_gw[0],wifi_ap_gw[1],wifi_ap_gw[2],wifi_ap_gw[3]); data += temp;
-      sprintf_P(temp,htmL_NETWORKSSID6,wifi_ap_sn[0],wifi_ap_sn[1],wifi_ap_sn[2],wifi_ap_sn[3]); data += temp;
-      sprintf_P(temp,htmL_NETWORKSSID7,accessPointEnabled?"checked":""); data += temp;
+      sprintf_P(temp,htmL_NET_MAC,"ap", temp1); data += temp;
+      sendHtml(data);
+      sprintf_P(temp,htmL_NET_IP, "ap", wifi_sta_ip[0], "ap", wifi_sta_ip[1], "ap", wifi_sta_ip[2], "ap", wifi_sta_ip[3]); data += temp;
+      sprintf_P(temp,htmL_NET_GW, "ap", wifi_sta_gw[0], "ap", wifi_sta_gw[1], "ap", wifi_sta_gw[2], "ap", wifi_sta_gw[3]); data += temp;
+      sprintf_P(temp,htmL_NET_SN, "ap", wifi_sta_sn[0], "ap", wifi_sta_sn[1], "ap", wifi_sta_sn[2], "ap", wifi_sta_sn[3]); data += temp;
+
+      sprintf_P(temp,htmL_NETWORKSSID7, accessPointEnabled?"checked":""); data += temp;
+    #else
+      nv.readBytes(EE_ETH_IP, temp_ip, 4);
+      nv.readBytes(EE_ETH_SN, temp_sn, 4);
+      nv.readBytes(EE_ETH_GW, temp_gw, 4);
+
+      data += FPSTR(htmL_NETWORK_ETH_BEG); temp1[0] = 0;
+      for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, eth_mac[i]); } temp1[strlen(temp1) - 1] = 0;
+
+      sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data += temp;
+      sendHtml(data);
+      sprintf_P(temp,htmL_NET_IP, "eth", temp_ip[0], "eth", temp_ip[1], "eth", temp_ip[2], "eth", temp_ip[3]); data += temp;
+      sprintf_P(temp,htmL_NET_GW, "eth", temp_gw[0], "eth", temp_gw[1], "eth", temp_gw[2], "eth", temp_gw[3]); data += temp;
+      sprintf_P(temp,htmL_NET_SN, "eth", temp_sn[0], "eth", temp_sn[1], "eth", temp_sn[2], "eth", temp_sn[3]); data += temp;
+
+      data += FPSTR(htmL_NETWORK_ETH_END);
+      sendHtml(data);
     #endif
 
     data += FPSTR(html_logout);
@@ -270,32 +274,34 @@ void processNetworkGet() {
   String v, v1;
   
   // Login --------------------------------------------------------------------
-  v=server.arg("login");
+  v = server.arg("login");
   if (!v.equals(EmptyStr)) {
     if (!strcmp(masterPassword, (char*)v.c_str())) loginRequired = false;
   }
+
   v = server.arg("logout");
   if (!v.equals(EmptyStr)) loginRequired = true;
   if (loginRequired) return;
+
   v = server.arg("webpwd");
   if (!v.equals(EmptyStr)) {
     strcpy(masterPassword, (char*)v.c_str());
-    nv.readBytes(EE_PASSWORD, masterPassword, -40);
+    nv.write(EE_PASSWORD, masterPassword);
   }
 
   // Timeouts -----------------------------------------------------------------
   // Cmd channel timeout
-  v=server.arg("ccto");
+  v = server.arg("ccto");
   if (!v.equals(EmptyStr)) {
     cmdTimeout = v.toInt();
     nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
   }
 
   // Web channel timeout
-  v=server.arg("wcto");
+  v = server.arg("wcto");
   if (!v.equals(EmptyStr)) {
     webTimeout = v.toInt();
-    nv.update(EE_TIMEOUT_WEB,(int16_t)webTimeout);
+    nv.update(EE_TIMEOUT_WEB, (int16_t)webTimeout);
   }
 
   #if OPERATIONAL_MODE == WIFI
@@ -373,14 +379,14 @@ void processNetworkGet() {
     v=server.arg("stagw3"); if (!v.equals(EmptyStr)) wifi_sta_gw[2]=v.toInt();
     v=server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3]=v.toInt();
       
-    if (v1!="") {
+    if (!v1.equals(EmptyStr)) {
       nv.writeBytes(EE_STA_SSID, wifi_sta_ssid, -40);
       nv.writeBytes(EE_STA_PWD, wifi_sta_pwd, -40);
-      nv.write(EE_DHCP_EN,(int)stationDhcpEnabled);
-      nv.write(EE_STA_EN,(int)stationEnabled);
-      for (int i=0;i<4;i++) nv.write(EE_STA_IP+i,wifi_sta_ip[i]);
-      for (int i=0;i<4;i++) nv.write(EE_STA_GW+i,wifi_sta_gw[i]);
-      for (int i=0;i<4;i++) nv.write(EE_STA_SN+i,wifi_sta_sn[i]);
+      nv.write(EE_DHCP_EN, (int)stationDhcpEnabled);
+      nv.write(EE_STA_EN, (int)stationEnabled);
+      nv.writeBytes(EE_STA_IP, wifi_sta_ip, 4);
+      nv.writeBytes(EE_STA_SN, wifi_sta_sn, 4);
+      nv.writeBytes(EE_STA_GW, wifi_sta_gw, 4);
       restartRequired=true;
     }
 
@@ -463,10 +469,35 @@ void processNetworkGet() {
       nv.writeBytes(EE_AP_PWD, wifi_ap_pwd, -40);
       nv.write(EE_AP_CH, (int16_t)wifi_ap_ch);
       nv.write(EE_AP_EN, (int16_t)accessPointEnabled);
-      for (int i=0;i<4;i++) nv.write(EE_AP_IP+i,wifi_ap_ip[i]);
-      for (int i=0;i<4;i++) nv.write(EE_AP_GW+i,wifi_ap_gw[i]);
-      for (int i=0;i<4;i++) nv.write(EE_AP_SN+i,wifi_ap_sn[i]);
+      nv.writeBytes(EE_AP_IP, wifi_ap_ip, 4);
+      nv.writeBytes(EE_AP_SN, wifi_ap_sn, 4);
+      nv.writeBytes(EE_AP_GW, wifi_ap_gw, 4);
       restartRequired=true;
+    }
+  #else
+    // Ethernet ip
+    v = server.arg("ethip1"); if (!v.equals(EmptyStr)) temp_ip[0] = v.toInt();
+    v = server.arg("ethip2"); if (!v.equals(EmptyStr)) temp_ip[1] = v.toInt();
+    v = server.arg("ethip3"); if (!v.equals(EmptyStr)) temp_ip[2] = v.toInt();
+    v = server.arg("ethip4"); if (!v.equals(EmptyStr)) temp_ip[3] = v.toInt();
+
+    // Ethernet SubNet
+    v = server.arg("ethsn1"); if (!v.equals(EmptyStr)) temp_sn[0] = v.toInt();
+    v = server.arg("ethsn2"); if (!v.equals(EmptyStr)) temp_sn[1] = v.toInt();
+    v = server.arg("ethsn3"); if (!v.equals(EmptyStr)) temp_sn[2] = v.toInt();
+    v = server.arg("ethsn4"); if (!v.equals(EmptyStr)) temp_sn[3] = v.toInt();
+
+    // Ethernet Gateway
+    v = server.arg("ethgw1"); if (!v.equals(EmptyStr)) temp_gw[0] = v.toInt();
+    v = server.arg("ethgw2"); if (!v.equals(EmptyStr)) temp_gw[1] = v.toInt();
+    v = server.arg("ethgw3"); if (!v.equals(EmptyStr)) temp_gw[2] = v.toInt();
+    v = server.arg("ethgw4"); if (!v.equals(EmptyStr)) temp_gw[3] = v.toInt();
+
+    if (!v.equals(EmptyStr)) {
+      nv.writeBytes(EE_ETH_IP, temp_ip, 4);
+      nv.writeBytes(EE_ETH_SN, temp_sn, 4);
+      nv.writeBytes(EE_ETH_GW, temp_gw, 4);
+      restartRequired = true;
     }
   #endif
 }

@@ -388,7 +388,7 @@
 #define L_NETWORK_CHA "Channel"
 #define L_NETWORK_EN_AP_MODE "Enable Access-Point Mode"
 
-#define L_NETWORK_CONFIG_SECURITY "WiFi Configuration Security"
+#define L_NETWORK_CONFIG_SECURITY "Network Configuration Security"
 
 #define L_NETWORK_AP "Access-Point mode"
 

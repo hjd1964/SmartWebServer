@@ -388,7 +388,7 @@
 #define L_NETWORK_CHA "频道"
 #define L_NETWORK_EN_AP_MODE "开启接入点模式"
 
-#define L_NETWORK_CONFIG_SECURITY "无线 配置安全性"
+#define L_NETWORK_CONFIG_SECURITY "网络配置安全"
 
 #define L_NETWORK_AP "访问点模式"
 
