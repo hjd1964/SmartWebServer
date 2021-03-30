@@ -37,6 +37,12 @@
 #define Default_Password       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option
 
 // NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
+#define NV_WIPE                       OFF //          ON, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
+                                          //              ***     IMPORTANT: ENABLE THIS OPTION THEN UPLOAD, WAIT A MINUTE    ***
+// Warning --->                           //              ***     OR TWO THEN SET THIS OPTION TO OFF AND UPLOAD AGAIN.        ***
+                                          //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
+                                          //              ***     WARE AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
+
 #define NV_DEFAULT                     ON //          ON, Uses HAL specified default, for remembering settings when           Infreq
                                           //              powered off.  This is usually done using the microcontrollers
                                           //              built-in EEPROM or FLASH emulation of EEPROM.

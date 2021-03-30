@@ -75,6 +75,9 @@ void setup(void) {
   VF("WEM: Setup, starting system services task (rate 10ms priority 7)... ");
   if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
 
+  // if requested, cause defaults to be written back into NV
+  if (NV_WIPE == ON) { nv.update(EE_KEY_HIGH, (int16_t)0); nv.update(EE_KEY_LOW, (int16_t)0); }
+
   // read settings from NV or init. as required
   #if ENCODERS == ON
     VLF("WEM: Encoders Init");
@@ -87,8 +90,7 @@ void setup(void) {
   #endif
 
   // init is done, write the NV key if necessary
-  nv.update(EE_KEY_HIGH, (int16_t)NV_KEY_HIGH);
-  nv.update(EE_KEY_LOW, (int16_t)NV_KEY_LOW);
+  nv.update(EE_KEY_HIGH, (int16_t)NV_KEY_HIGH); nv.update(EE_KEY_LOW, (int16_t)NV_KEY_LOW);
 
   #if LED_STATUS != OFF
     pinMode(LED_STATUS_PIN, OUTPUT);
