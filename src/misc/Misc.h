@@ -19,6 +19,9 @@ void stripNum(char* s);
 // integer numeric conversion with error checking
 bool atoi2(char *a, int *i);
 
+// sprintf like function for float type, limited to one parameter
+void sprintF(char *result, const char *source, float f);
+
 // convert to various degrees, minutes, seconds formats
 boolean doubleToDms(char *reply, double *f, boolean fullRange, boolean signPresent);
 
