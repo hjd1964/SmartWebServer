@@ -73,16 +73,14 @@ void handlePec() {
   data += FPSTR(html_linksCtrlN);
   if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
   data += FPSTR(html_linksLibN);
-#if ENCODERS == ON
-  data += FPSTR(html_linksEncN);
-#endif
+  #if ENCODERS == ON
+    data += FPSTR(html_linksEncN);
+  #endif
   sendHtml(data);
   data += FPSTR(html_linksPecS);
   data += FPSTR(html_linksSetN);
   data += FPSTR(html_linksCfgN);
-#ifndef OETHS
   data += FPSTR(html_linksSetupN);
-#endif
   data += FPSTR(html_onstep_header4);
   sendHtml(data);
 
