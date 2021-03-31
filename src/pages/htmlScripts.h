@@ -1,16 +1,15 @@
 #pragma once
 
-const char html_libScript2[] PROGMEM =
+// Javascript for Ajax return
+const char html_ajaxScript[] PROGMEM =
 "<script>\n"
-"function t(key,v) { if (v.length==0) v='DELETE'; s(key,v.replace(/ /g, '_')); }\n"
-"function busy() {\n"
-  "document.getElementById('message').innerHTML='Working...';"
-  "document.getElementById('up').disabled=true;"
-  "document.getElementById('down').disabled=true;"
-"}\n"
-"</script>\n";
+"function s(key,v1) {"
+  "var xhttp = new XMLHttpRequest();"
+  "xhttp.open('GET','%s?'+key+'='+v1+'&x='+new Date().getTime(), true);"
+  "xhttp.send();"
+"}</script>\n";
 
-const char html_libScript1[] PROGMEM =
+const char html_ajaxLibScript[] PROGMEM =
 "<script>\n"
 "function s(key,v) {\n"
   "var xhttp = new XMLHttpRequest();\n"
@@ -20,44 +19,7 @@ const char html_libScript1[] PROGMEM =
 "}\n"
 "</script>\n";
 
-const char html_settingsScript[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {\n"
-  "var xhttp = new XMLHttpRequest();\n"
-  "xhttp.open('GET', 'settingsA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);\n"
-  "xhttp.send();\n"
-"}\n"
-"</script>\n";
-
-// Javascript for Ajax return
-const char html_encScript1[] PROGMEM =
-"<script>"
-"function s(key,v1) {"
-  "var xhttp = new XMLHttpRequest();"
-  "xhttp.open('GET', 'encA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);"
-  "xhttp.send();"
-"}"
-"</script>\n";
-
-// Javascript for Ajax return
-const char html_configScript1[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {"
-  "var xhttp = new XMLHttpRequest();"
-  "xhttp.open('GET', 'configurationA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);"
-  "xhttp.send();"
-"}</script>\n";
-
-// Javascript for Ajax return
-const char html_controlScript1[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {"
-  "var xhttp = new XMLHttpRequest();"
-  "xhttp.open('GET', 'controlA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);"
-  "xhttp.send();"
-"}</script>\n";
-
-const char html_controlScript2[] PROGMEM =
+const char html_ajaxScriptShort[] PROGMEM =
 "<script>\n"
 "function g(v1){s('dr',v1);}"
 "function gf(v1){s('dr',v1);autoFastRun();}"
@@ -65,22 +27,33 @@ const char html_controlScript2[] PROGMEM =
 "</script>\n";
 
 // Javascript for Date/Time return
-const char html_controlScript3A[] PROGMEM =
+const char html_dateTimeScriptA[] PROGMEM =
 "<script>\r\n"
 "function SetDateTime() {"
 "var d1 = new Date();"
 "var jan = new Date(d1.getFullYear(), 0, 1);"
 "var d = new Date(d1.getTime()-(jan.getTimezoneOffset()-d1.getTimezoneOffset())*60*1000);";
-const char html_controlScript3B[] PROGMEM =
+const char html_dateTimeScriptB[] PROGMEM =
 "document.getElementById('dd').value = d.getDate();"
 "document.getElementById('dm').value = d.getMonth();"
 "document.getElementById('dy').value = d.getFullYear();";
-const char html_controlScript3C[] PROGMEM =
+const char html_dateTimeScriptC[] PROGMEM =
 "document.getElementById('th').value = d.getHours();"
 "document.getElementById('tm').value = d.getMinutes();"
 "document.getElementById('ts').value = d.getSeconds();"
 "}\r\n"
 "</script>\r\n";
+
+// Javascript for library status
+const char html_libStatusScript[] PROGMEM =
+"<script>\n"
+"function t(key,v) { if (v.length==0) v='DELETE'; s(key,v.replace(/ /g, '_')); }\n"
+"function busy() {\n"
+  "document.getElementById('message').innerHTML='Working...';"
+  "document.getElementById('up').disabled=true;"
+  "document.getElementById('down').disabled=true;"
+"}\n"
+"</script>\n";
 
 // Javascript for Collapsibles
 const char html_collapseScript[] PROGMEM =
@@ -96,7 +69,7 @@ const char html_collapseScript[] PROGMEM =
 "}"
 "</script>\n";
 
-// Javascript for Ajax
+// Javascript for Ajax active refresh of controls
 // be sure to define "var ajaxPage='control.txt';" etc.
 const char html_ajax_active[] PROGMEM =
 "<script>\n"
@@ -104,7 +77,6 @@ const char html_ajax_active[] PROGMEM =
 "var auto2Tick=0;\n"
 "var auto2Rate=" DEFAULT_AJAX_RATE ";\n"
 "var auto1=setInterval(autoRun1s,1000);\n"
-// update once a second for 15 seconds then drop back to once every 5 seconds
 "function autoFastRun() {\n"
   "auto2Rate=" DEFAULT_FAST_AJAX_RATE "\n"
   "auto2Tick=" DEFAULT_AJAX_SHED_TIME ";\n"

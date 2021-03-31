@@ -189,8 +189,8 @@ void handleConfiguration() {
   // OnStep wasn't found, show warning and info.
   if (!mountStatus.valid() || !success) { data+= FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
   
-  // ajax scripts
-  data += FPSTR(html_configScript1);
+  // scripts
+  sprintf_P(temp, html_ajaxScript, "configurationA.txt"); data += temp;
   
   data+="<div style='width: 35em;'>";
   data += L_BASIC_SET_TITLE "<br /><br />";

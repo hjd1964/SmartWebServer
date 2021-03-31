@@ -153,8 +153,8 @@ void handleLibrary() {
   sendHtml(data);
 
   // Scripts
-  data += FPSTR(html_libScript1);
-  data += FPSTR(html_libScript2);
+  data += FPSTR(html_ajaxLibScript);
+  data += FPSTR(html_libStatusScript);
 
   // active ajax page is: settingsAjax();
   data +="<script>var ajaxPage='library.txt';</script>\n";

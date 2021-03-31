@@ -91,7 +91,7 @@ void handleSettings() {
 
   mountStatus.update(true);
 
-  char temp1[120]="";
+  char temp[240]="";
 
   processSettingsGet();
   
@@ -117,32 +117,33 @@ void handleSettings() {
 
   data += FPSTR(html_bodyB);
   sendHtml(data);
-  
+
+  // scripts
   // active ajax page is: settingsAjax();
   data += "<script>var ajaxPage='settings.txt';</script>\n";
   data += FPSTR(html_ajax_active);
   data += "<script>auto2Rate=2;</script>";
-  data += FPSTR(html_settingsScript);
+  sprintf_P(temp, html_ajaxScript, "settingsA.txt"); data += temp;
 
   // finish the standard http response header
   data += FPSTR(html_onstep_header1); data += "OnStep";
   data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
+  if (mountStatus.getVersionStr(temp)) data += temp; else data += "?";
   data += FPSTR(html_onstep_header3);
   data += FPSTR(html_linksStatN);
   data += FPSTR(html_linksCtrlN);
   if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
   data += FPSTR(html_linksLibN);
-#if ENCODERS == ON
-  data += FPSTR(html_linksEncN);
-#endif
+  #if ENCODERS == ON
+    data += FPSTR(html_linksEncN);
+  #endif
   sendHtml(data);
   data += FPSTR(html_linksPecN);
   data += FPSTR(html_linksSetS);
   data += FPSTR(html_linksCfgN);
-#ifndef OETHS
-  data += FPSTR(html_linksSetupN);
-#endif
+  #ifndef OETHS
+    data += FPSTR(html_linksSetupN);
+  #endif
   data += FPSTR(html_onstep_header4);
   sendHtml(data);
  

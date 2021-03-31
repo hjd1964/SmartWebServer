@@ -208,6 +208,8 @@ extern NVS nv;
     data +="<script>auto2Rate=2;</script>";
     sendHtml(data);
 
+    // scripts
+    sprintf_P(temp, html_ajaxScript, "encA.txt"); data += temp;
     data += html_encScript1;
     sendHtml(data);
 

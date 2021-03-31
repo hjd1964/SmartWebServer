@@ -148,12 +148,12 @@ void handleControl(EthernetClient *client) {
 #else
 void handleControl() {
 #endif
+  char temp[240] = "";
+
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
 
   mountStatus.update(true);
-
-  char temp1[80]="";
 
   processControlGet();
 
@@ -187,7 +187,7 @@ void handleControl() {
   // finish the standard http response header
   data += FPSTR(html_onstep_header1); data += "OnStep";
   data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
+  if (mountStatus.getVersionStr(temp)) data += temp; else data += "?";
   data += FPSTR(html_onstep_header3);
   data += FPSTR(html_linksStatN);
   data += FPSTR(html_linksCtrlS);
@@ -209,13 +209,12 @@ void handleControl() {
   // OnStep wasn't found, show warning and info.
   if (!mountStatus.valid()) { data+= FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
 
-  // ajax scripts
-  data += FPSTR(html_controlScript1);
-  data += FPSTR(html_controlScript2);
-  // clock script
-  data += FPSTR(html_controlScript3A);
-  data += FPSTR(html_controlScript3B);
-  data += FPSTR(html_controlScript3C);
+  // scripts
+  sprintf_P(temp, html_ajaxScript, "controlA.txt"); data += temp;
+  data += FPSTR(html_ajaxScriptShort);
+  data += FPSTR(html_dateTimeScriptA);
+  data += FPSTR(html_dateTimeScriptB);
+  data += FPSTR(html_dateTimeScriptC);
 
   // active ajax page is: controlAjax();
   data +="<script>var ajaxPage='control.txt';</script>\n";
@@ -285,9 +284,9 @@ void handleControl() {
   // Rotate/De-Rotate ----------------------------------------
   Rotate=false;
   DeRotate=false;
-  if (command(":GX98#",temp1)) {
-    if (temp1[0]=='R') Rotate=true;
-    if (temp1[0]=='D') { Rotate=true; DeRotate=true; }
+  if (command(":GX98#", temp)) {
+    if (temp[0] == 'R') Rotate = true;
+    if (temp[0] == 'D') { Rotate = true; DeRotate = true; }
   }
   if (Rotate) {
     data += FPSTR(html_controlRotate0);
