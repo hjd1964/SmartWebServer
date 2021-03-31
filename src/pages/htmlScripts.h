@@ -5,19 +5,9 @@ const char html_ajaxScript[] PROGMEM =
 "<script>\n"
 "function s(key,v1) {"
   "var xhttp = new XMLHttpRequest();"
-  "xhttp.open('GET','%s?'+key+'='+v1+'&x='+new Date().getTime(), true);"
+  "xhttp.open('GET','%s?'+key+'='+encodeURIComponent(v1)+'&x='+new Date().getTime(), true);"
   "xhttp.send();"
 "}</script>\n";
-
-const char html_ajaxLibScript[] PROGMEM =
-"<script>\n"
-"function s(key,v) {\n"
-  "var xhttp = new XMLHttpRequest();\n"
-  "var res = 'libraryA.txt?'+key+'='+encodeURIComponent(v)+'&x='+new Date().getTime();\n"
-  "xhttp.open('GET', res, true);\n"
-  "xhttp.send();\n"
-"}\n"
-"</script>\n";
 
 const char html_ajaxScriptShort[] PROGMEM =
 "<script>\n"

@@ -153,10 +153,10 @@ void handleLibrary() {
   sendHtml(data);
 
   // Scripts
-  data += FPSTR(html_ajaxLibScript);
+  sprintf_P(temp, html_ajaxScript, "libraryA.txt"); data += temp;
   data += FPSTR(html_libStatusScript);
 
-  // active ajax page is: settingsAjax();
+  // active ajax page is: libraryAjax();
   data +="<script>var ajaxPage='library.txt';</script>\n";
   data +=FPSTR(html_ajax_active);
   data +="<script>auto2Rate=2;</script>";
