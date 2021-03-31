@@ -1,7 +1,7 @@
 // Platform setup ------------------------------------------------------------------------------------
-
 // We define a more generic symbol, in case more Teensy boards based on different lines are supported
 #define __TEENSYDUINO__
+#pragma once
 
 // New symbol for the default I2C port ---------------------------------------------------------------
 #include <Wire.h>
@@ -26,5 +26,7 @@
 #define IRAM_ATTR
 #define ICACHE_RAM_ATTR
 #define FPSTR
-#undef EmptyStr
+#ifdef EmptyStr
+  #undef EmptyStr
+#endif
 #define EmptyStr "\1"

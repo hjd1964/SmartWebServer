@@ -1,4 +1,6 @@
 // Platform setup ------------------------------------------------------------------------------------
+// ESP8266
+#pragma once
 
 // We define a more generic symbol, in case more Platform_Name boards based on different lines are supported
 

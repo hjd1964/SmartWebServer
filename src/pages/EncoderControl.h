@@ -13,6 +13,8 @@ extern NVS nv;
 #include "../encoders/Encoders.h"
 
 #if ENCODERS == ON
+  #include "../locales/Locale.h"
+
   const char html_encScript2[] PROGMEM =
   "<script>"
     "var autoG=setInterval(autoRunG,1000);"

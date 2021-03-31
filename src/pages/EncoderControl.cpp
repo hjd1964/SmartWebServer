@@ -9,6 +9,8 @@
 extern NVS nv;
 #include "../debug/Debug.h"
 
+#include "EncoderControl.h"
+
 #include "../encoders/Encoders.h"
 #if ENCODERS == ON
   #include "../locales/Locale.h"
@@ -51,7 +53,6 @@ extern NVS nv;
 
     // scripts
     sprintf_P(temp, html_ajaxScript, "encA.txt"); data += temp;
-    data += html_encScript1;
     sendHtml(data);
 
     #if AXIS1_ENC_RATE_CONTROL == ON

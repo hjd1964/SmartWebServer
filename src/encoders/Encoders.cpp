@@ -122,23 +122,23 @@ extern NVS nv;
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
       nv.write(EE_ENC_AUTO_SYNC, (int16_t)ENC_AUTO_SYNC_DEFAULT);
 
-      nv.write(EE_ENC_A1_DIFF_TO, (int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
-      nv.write(EE_ENC_A1_TICKS, (double)AXIS1_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A1_REV, (int16_t)AXIS1_ENC_REVERSE);
+      nv.write(EE_ENC_A1_DIFF_TO,(int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
+      nv.write(EE_ENC_A1_TICKS,  (double)AXIS1_ENC_TICKS_DEG);
+      nv.write(EE_ENC_A1_REV,    (int16_t)AXIS1_ENC_REVERSE);
 
-      nv.write(EE_ENC_A2_DIFF_TO, (int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
-      nv.write(EE_ENC_A2_TICKS, (double)AXIS2_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A2_REV, (int16_t)AXIS2_ENC_REVERSE);
+      nv.write(EE_ENC_A2_DIFF_TO,(int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
+      nv.write(EE_ENC_A2_TICKS,  (double)AXIS2_ENC_TICKS_DEG);
+      nv.write(EE_ENC_A2_REV,    (int16_t)AXIS2_ENC_REVERSE);
 
-      nv.write(EE_ENC_RC_STA, 20L);     // enc short term average samples
-      nv.write(EE_ENC_RC_LTA, 200L);    // enc long term average samples
-      nv.write(EE_ENC_RC_RCOMP, 0L);    // enc rate comp
-      nv.write(EE_ENC_RC_INTP_P, 1L);   // intpol phase
-      nv.write(EE_ENC_RC_INTP_M, 0L);   // intpol mag
-      nv.write(EE_ENC_RC_PROP, 10L);    // prop
-      nv.write(EE_ENC_MIN_GUIDE, 100L); // minimum guide duration
-      nv.write(EE_ENC_A1_ZERO, 0L);     // absolute Encoder Axis1 zero
-      nv.write(EE_ENC_A2_ZERO, 0L);     // absolute Encoder Axis2 zero
+      nv.write(EE_ENC_RC_STA,    (int32_t)20);   // enc short term average samples
+      nv.write(EE_ENC_RC_LTA,    (int32_t)200);  // enc long term average samples
+      nv.write(EE_ENC_RC_RCOMP,  (int32_t)0);    // enc rate comp
+      nv.write(EE_ENC_RC_INTP_P, (int32_t)1);    // intpol phase
+      nv.write(EE_ENC_RC_INTP_M, (int32_t)0);    // intpol mag
+      nv.write(EE_ENC_RC_PROP,   (int32_t)10);   // prop
+      nv.write(EE_ENC_MIN_GUIDE, (int32_t)100);  // minimum guide duration
+      nv.write(EE_ENC_A1_ZERO,   (int32_t)0);    // absolute Encoder Axis1 zero
+      nv.write(EE_ENC_A2_ZERO,   (int32_t)0);    // absolute Encoder Axis2 zero
     }
 
     if (ENC_AUTO_SYNC_MEMORY == ON) encAutoSync = nv.readI(EE_ENC_AUTO_SYNC);

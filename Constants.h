@@ -108,4 +108,7 @@
   #endif
 #endif
 
+#ifdef EmptyStr
+  #undef EmptyStr
+#endif
 #define EmptyStr               ""

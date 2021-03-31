@@ -1,5 +1,6 @@
 // Platform setup ------------------------------------------------------------------------------------
 // Teensy3.6
+#pragma once
 
 // We define a more generic symbol, in case more Teensy boards based on different lines are supported
 #define __TEENSYDUINO__
