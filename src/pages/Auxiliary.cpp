@@ -20,18 +20,6 @@
 
 void processAuxGet();
 
-const char html_auxScript1[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {\n"
-  "var xhttp = new XMLHttpRequest();\n"
-  "xhttp.open('GET', 'auxiliaryA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);\n"
-  "xhttp.send();\n"
-"}\n"
-"function g(v1){s('dr',v1);}\n"
-"function gf(v1){s('dr',v1);autoFastRun();}\n"
-"function sf(key,v1){s(key,v1);autoFastRun();}\n"
-"</script>\n";
-
 const char html_auxAuxB[] PROGMEM = "<div class='b1' style='width: 27em'>\r\n<div align='left'>" L_AUX_FEATURES ":<br /><br /></div>\r\n";
 const char html_auxOnSwitch[] PROGMEM = 
 "<button id='sw%d_on' class='btns_right' style='line-height: 1.2rem' onpointerdown=\"s('x%dv1','1')\" type='button' disabled>" L_ON "</button>";
@@ -62,8 +50,8 @@ void handleAux() {
 
   mountStatus.update(true);
     
-  char temp1[240]="";
-  char temp2[80]="";
+  char temp[240]="";
+  char temp1[80]="";
 
   processAuxGet();
 
@@ -95,7 +83,7 @@ void handleAux() {
   // finish the standard http response header
   data += FPSTR(html_onstep_header1); data += "OnStep";
   data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
+  if (mountStatus.getVersionStr(temp)) data += temp; else data += "?";
   data += FPSTR(html_onstep_header3);
   data += FPSTR(html_linksStatN);
   data += FPSTR(html_linksCtrlN);
@@ -117,8 +105,9 @@ void handleAux() {
   // OnStep wasn't found, show warning and info.
   if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
 
-  // ajax scripts
-  data += FPSTR(html_auxScript1);
+  // scripts
+  sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt"); data += temp;
+  data += FPSTR(html_ajaxScriptShort);
 
   // active ajax page is: auxAjax();
   data +="<script>var ajaxPage='auxiliary.txt';</script>\n";
@@ -141,8 +130,8 @@ void handleAux() {
         data += mountStatus.featureName();
         data += "&bull;";
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        sprintf_P(temp1,html_auxOnSwitch,i+1,i+1); data += temp1;
-        sprintf_P(temp1,html_auxOffSwitch,i+1,i+1); data += temp1;
+        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data += temp;
+        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
         data += "</div>\r\n";
         sendHtml(data);
@@ -154,11 +143,11 @@ void handleAux() {
         data += "&bull;";
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxAnalog);
-        sprintf(temp1,"%d' onchange=\"sf('x%dv1',this.value)\">",mountStatus.featureValue1(),i+1);
-        data += temp1;
+        sprintf(temp,"%d' onchange=\"sf('x%dv1',this.value)\">",mountStatus.featureValue1(),i+1);
+        data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        sprintf(temp1,"<span id='x%dv1'>%d</span>%%",i+1,(int)lround((mountStatus.featureValue1()/255.0)*100.0));
-        data += temp1;
+        sprintf(temp,"<span id='x%dv1'>%d</span>%%",i+1,(int)lround((mountStatus.featureValue1()/255.0)*100.0));
+        data += temp;
         data += "</div>\r\n";
         sendHtml(data);
         j++;
@@ -168,36 +157,36 @@ void handleAux() {
         data += mountStatus.featureName();
         data += "&bull;";
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        sprintf_P(temp1,html_auxOnSwitch,i+1,i+1); data += temp1;
-        sprintf_P(temp1,html_auxOffSwitch,i+1,i+1); data += temp1;
+        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data += temp;
+        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        dtostrf(mountStatus.featureValue4(),3,1,temp2);
-        sprintf(temp1,"&Delta;<span id='x%dv4'>%s</span>&deg;C\r\n",i+1,temp2);
-        data += temp1;
+        dtostrf(mountStatus.featureValue4(),3,1,temp1);
+        sprintf(temp,"&Delta;<span id='x%dv4'>%s</span>&deg;C\r\n",i+1,temp1);
+        data += temp;
         data += "</div>\r\n";
 
         data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
         data += L_ZERO " (100% " L_POWER ")";
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxHeater);
-        sprintf(temp1,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)lround(mountStatus.featureValue2()*10.0),i+1);
-        data += temp1;
+        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)lround(mountStatus.featureValue2()*10.0),i+1);
+        data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        dtostrf(mountStatus.featureValue2(),3,1,temp2);
-        sprintf(temp1,"<span id='x%dv2'>%s</span>&deg;C\r\n",i+1,temp2);
-        data += temp1;
+        dtostrf(mountStatus.featureValue2(),3,1,temp1);
+        sprintf(temp,"<span id='x%dv2'>%s</span>&deg;C\r\n",i+1,temp1);
+        data += temp;
         data += "</div>\r\n";
         
         data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
         data += L_SPAN " (0% " L_POWER ")";
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxHeater);
-        sprintf(temp1,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)lround(mountStatus.featureValue3()*10.0),i+1);
-        data += temp1;
+        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)lround(mountStatus.featureValue3()*10.0),i+1);
+        data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        dtostrf(mountStatus.featureValue3(),3,1,temp2);
-        sprintf(temp1,"<span id='x%dv3'>%s</span>&deg;C\r\n",i+1,temp2);
-        data += temp1;
+        dtostrf(mountStatus.featureValue3(),3,1,temp1);
+        sprintf(temp,"<span id='x%dv3'>%s</span>&deg;C\r\n",i+1,temp1);
+        data += temp;
         data += "</div>\r\n";
 
         sendHtml(data);
@@ -209,54 +198,54 @@ void handleAux() {
         data += "&bull;";
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxStartStop1);
-        sprintf(temp1,"x%dv1",i+1);
-        data += temp1;
+        sprintf(temp,"x%dv1",i+1);
+        data += temp;
         data += FPSTR(html_auxStartStop2);
-        sprintf(temp1,"x%dv1",i+1);
-        data += temp1;
+        sprintf(temp,"x%dv1",i+1);
+        data += temp;
         data += FPSTR(html_auxStartStop3);
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        sprintf(temp1,"<span id='x%dv1'>-</span>\r\n",i+1);
-        data += temp1;
+        sprintf(temp,"<span id='x%dv1'>-</span>\r\n",i+1);
+        data += temp;
         data += "</div>\r\n";
 
         data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
         data += L_CAMERA_COUNT;
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxCount);
-        sprintf(temp1,"%d' onchange=\"sf('x%dv4',this.value)\">",(int)mountStatus.featureValue4(),i+1);
-        data += temp1;
+        sprintf(temp,"%d' onchange=\"sf('x%dv4',this.value)\">",(int)mountStatus.featureValue4(),i+1);
+        data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        dtostrf(mountStatus.featureValue4(),0,0,temp2);
-        sprintf(temp1,"<span id='x%dv4'>%s</span> x\r\n",i+1,temp2);
-        data += temp1;
+        dtostrf(mountStatus.featureValue4(),0,0,temp1);
+        sprintf(temp,"<span id='x%dv4'>%s</span> x\r\n",i+1,temp1);
+        data += temp;
         data += "</div>\r\n";
 
         data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
         data += L_CAMERA_EXPOSURE;
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxExposure);
-        sprintf(temp1,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)timeToByte(mountStatus.featureValue2()),i+1);
-        data += temp1;
+        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)timeToByte(mountStatus.featureValue2()),i+1);
+        data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
         float v; int d;
         v=mountStatus.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
-        dtostrf(v,0,d,temp2);
-        sprintf(temp1,"<span id='x%dv2'>%s</span> sec\r\n",i+1,temp2);
-        data += temp1;
+        dtostrf(v,0,d,temp1);
+        sprintf(temp,"<span id='x%dv2'>%s</span> sec\r\n",i+1,temp1);
+        data += temp;
         data += "</div>\r\n";
 
         data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
         data += L_CAMERA_DELAY;
         data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
         data += FPSTR(html_auxDelay);
-        sprintf(temp1,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)timeToByte(mountStatus.featureValue3()),i+1);
-        data += temp1;
+        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)timeToByte(mountStatus.featureValue3()),i+1);
+        data += temp;
         data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
         v=mountStatus.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
-        dtostrf(v,0,d,temp2);
-        sprintf(temp1,"<span id='x%dv3'>%s</span> sec\r\n",i+1,temp2);
-        data += temp1;
+        dtostrf(v,0,d,temp1);
+        sprintf(temp,"<span id='x%dv3'>%s</span> sec\r\n",i+1,temp1);
+        data += temp;
         data += "</div>\r\n";
 
         sendHtml(data);

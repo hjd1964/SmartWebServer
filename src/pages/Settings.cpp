@@ -86,12 +86,12 @@ void handleSettings(EthernetClient *client) {
 #else
 void handleSettings() {
 #endif
+  char temp[240] = "";
+
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
 
   mountStatus.update(true);
-
-  char temp[240]="";
 
   processSettingsGet();
   

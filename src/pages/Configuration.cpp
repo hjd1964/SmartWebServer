@@ -134,15 +134,15 @@ void handleConfiguration(EthernetClient *client) {
 #else
 void handleConfiguration() {
 #endif
+  char temp[400] = "";
+  char temp1[120] = "";
+  char temp2[120] = "";
+
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
   
   mountStatus.update();
-
-  char temp[400]="";
-  char temp1[120]="";
-  char temp2[120]="";
-  
+ 
   bool success=processConfigurationGet();
 
   sendHtmlStart();

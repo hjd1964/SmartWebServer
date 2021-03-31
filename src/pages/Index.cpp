@@ -78,14 +78,14 @@ void handleRoot(EthernetClient *client) {
 #else
 void handleRoot() {
 #endif
+  char temp[400] = "";
+  char temp1[120] = "";
+  char temp2[120] = "";
+
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
 
   mountStatus.update(true);
-
-  char temp[400]="";
-  char temp1[120]="";
-  char temp2[120]="";
 
   sendHtmlStart();
 

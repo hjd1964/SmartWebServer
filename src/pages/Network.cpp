@@ -149,13 +149,13 @@ void handleNetwork(EthernetClient *client) {
 #else
 void handleNetwork() {
 #endif
+  char temp[420]  = "";
+  char temp1[140] = "";
+
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
   
   mountStatus.update(true);
-
-  char temp[420]  = "";
-  char temp1[140] = "";
   
   processNetworkGet();
 

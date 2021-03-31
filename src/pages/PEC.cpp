@@ -43,12 +43,12 @@ void handlePec(EthernetClient *client) {
 #else
 void handlePec() {
 #endif
+  char temp[120] = "";
+
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
       
   mountStatus.update();
-
-  char temp1[120] = "";
 
   processPecGet();
 
@@ -84,7 +84,7 @@ void handlePec() {
   // finish the standard http response header
   data += FPSTR(html_onstep_header1); data += "OnStep";
   data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
+  if (mountStatus.getVersionStr(temp)) data += temp; else data += "?";
   data += FPSTR(html_onstep_header3);
   data += FPSTR(html_linksStatN);
   data += FPSTR(html_linksCtrlN);

@@ -102,15 +102,15 @@ void handleLibrary(EthernetClient *client) {
 #else
 void handleLibrary() {
 #endif
+  char temp[400] = "";
+  char temp1[120] = "";
+
   currentCatalog=0;
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
   
   mountStatus.update();
 
-  char temp[400]="";
-  char temp1[120]="";
-  
   processLibraryGet();
 
   sendHtmlStart();

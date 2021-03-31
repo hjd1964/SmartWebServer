@@ -188,14 +188,14 @@ extern NVS nv;
   #else
   void handleEncoders() {
   #endif
+    char temp[400] = "";
+    char temp1[80] = "";
+
     Ser.setTimeout(webTimeout);
     serialRecvFlush();
     
     mountStatus.update();
 
-    char temp[400]="";
-    char temp1[80]="";
-    
     processEncodersGet();
 
     sendHtmlStart();
