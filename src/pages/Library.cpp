@@ -26,25 +26,6 @@ bool downloadCatalogData = false;
 bool uploadCatalogData = false;
 String showMessage = "";
       
-const char html_libScript1[] PROGMEM =
-"<script>\n"
-"function s(key,v) {\n"
-  "var xhttp = new XMLHttpRequest();\n"
-  "var res = 'libraryA.txt?'+key+'='+encodeURIComponent(v)+'&x='+new Date().getTime();\n"
-  "xhttp.open('GET', res, true);\n"
-  "xhttp.send();\n"
-"}\n"
-"function t(key,v) {"
-  "if (v.length==0) v='DELETE';"
-  "s(key,v.replace(/ /g, '_'));"
-"}\n"
-"function busy() {\n"
-  "document.getElementById('message').innerHTML='Working...';"
-  "document.getElementById('up').disabled=true;"
-  "document.getElementById('down').disabled=true;"
-"}\n"
-"</script>\n";
-
 const char html_libStart[] PROGMEM =
 "<form method='get' action='/lib.htm'>";
 
@@ -173,6 +154,7 @@ void handleLibrary() {
 
   // Scripts
   data += FPSTR(html_libScript1);
+  data += FPSTR(html_libScript2);
 
   // active ajax page is: settingsAjax();
   data +="<script>var ajaxPage='library.txt';</script>\n";

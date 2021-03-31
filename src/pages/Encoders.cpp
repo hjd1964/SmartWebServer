@@ -24,15 +24,6 @@ extern NVS nv;
 
   void processEncodersGet();
 
-  const char html_encScript1[] PROGMEM =
-  "<script>"
-  "function s(key,v1) {"
-    "var xhttp = new XMLHttpRequest();"
-    "xhttp.open('GET', 'encA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);"
-    "xhttp.send();"
-  "}"
-  "</script>\n";
-
   const char html_encScript2[] PROGMEM =
   "<script>"
     "var autoG=setInterval(autoRunG,1000);"

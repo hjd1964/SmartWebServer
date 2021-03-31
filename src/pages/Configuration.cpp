@@ -20,14 +20,6 @@
 
 bool processConfigurationGet();
 
-const char html_configScript1[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {"
-  "var xhttp = new XMLHttpRequest();"
-  "xhttp.open('GET', 'configurationA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);"
-  "xhttp.send();"
-"}</script>\n";
-
 // Misc
 const char html_configFormBegin[] PROGMEM = "<div class='content'><br />\r\n<form method='get' action='/configuration.htm'>";
 const char html_configFormEnd[] PROGMEM = "\r\n</form><br />\r\n</div><br />\r\n";

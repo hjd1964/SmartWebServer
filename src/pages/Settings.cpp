@@ -19,15 +19,6 @@
 
 void processSettingsGet();
 
-const char html_settingsScript[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {\n"
-  "var xhttp = new XMLHttpRequest();\n"
-  "xhttp.open('GET', 'settingsA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);\n"
-  "xhttp.send();\n"
-"}\n"
-"</script>\n";
-
 const char html_settingsStart[] PROGMEM =
 "<form method='get' action='/settings.htm'>";
 

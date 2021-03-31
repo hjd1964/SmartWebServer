@@ -20,35 +20,6 @@
 
 void processControlGet();
 
-const char html_controlScript1[] PROGMEM =
-"<script>\n"
-"function s(key,v1) {"
-  "var xhttp = new XMLHttpRequest();"
-  "xhttp.open('GET', 'controlA.txt?'+key+'='+v1+'&x='+new Date().getTime(), true);"
-  "xhttp.send();"
-"}"
-"function g(v1){s('dr',v1);}"
-"function gf(v1){s('dr',v1);autoFastRun();}"
-"function sf(key,v1){s(key,v1);autoFastRun();}\n"
-"</script>\n";
-
-const char html_controlScript2[] PROGMEM =
-"<script>\r\n"
-"function SetDateTime() {"
-"var d1 = new Date();"
-"var jan = new Date(d1.getFullYear(), 0, 1);"
-"var d = new Date(d1.getTime()-(jan.getTimezoneOffset()-d1.getTimezoneOffset())*60*1000);";
-const char html_controlScript3[] =
-"document.getElementById('dd').value = d.getDate();"
-"document.getElementById('dm').value = d.getMonth();"
-"document.getElementById('dy').value = d.getFullYear();";
-const char html_controlScript4[] =
-"document.getElementById('th').value = d.getHours();"
-"document.getElementById('tm').value = d.getMinutes();"
-"document.getElementById('ts').value = d.getSeconds();"
-"}\r\n"
-"</script>\r\n";
-
 const char html_controlQuick1[] PROGMEM =
 "<div style='text-align: center; width: 30em'>"
 "<form style='display: inline;' method='get' action='/control.htm'>"
@@ -240,10 +211,11 @@ void handleControl() {
 
   // ajax scripts
   data += FPSTR(html_controlScript1);
-  // clock script
   data += FPSTR(html_controlScript2);
-  data += FPSTR(html_controlScript3);
-  data += FPSTR(html_controlScript4);
+  // clock script
+  data += FPSTR(html_controlScript3A);
+  data += FPSTR(html_controlScript3B);
+  data += FPSTR(html_controlScript3C);
 
   // active ajax page is: controlAjax();
   data +="<script>var ajaxPage='control.txt';</script>\n";
