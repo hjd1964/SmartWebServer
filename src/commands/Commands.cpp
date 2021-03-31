@@ -183,7 +183,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
 
 bool command(const char* command, char* response) {
   bool success = processCommand(command, response, webTimeout);
-  int l = strlen(response)-1; if (l >= 0 && response[l] == '#') response[l]=0;
+  int l = strlen(response)-1; if (l >= 0 && response[l] == '#') response[l] = 0;
   return success;
 }
 
