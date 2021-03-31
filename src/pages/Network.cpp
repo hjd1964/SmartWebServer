@@ -382,11 +382,11 @@ void processNetworkGet() {
     if (!v1.equals(EmptyStr)) {
       nv.writeBytes(EE_STA_SSID, wifi_sta_ssid, -40);
       nv.writeBytes(EE_STA_PWD, wifi_sta_pwd, -40);
-      nv.write(EE_DHCP_EN, (int)stationDhcpEnabled);
-      nv.write(EE_STA_EN, (int)stationEnabled);
-      nv.writeBytes(EE_STA_IP, wifi_sta_ip, 4);
-      nv.writeBytes(EE_STA_SN, wifi_sta_sn, 4);
-      nv.writeBytes(EE_STA_GW, wifi_sta_gw, 4);
+      nv.write(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
+      nv.write(EE_STA_EN, (int16_t)stationEnabled);
+      for (int i = 0; i < 4; i++) { nv.update(EE_STA_IP + i, wifi_sta_ip[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_STA_SN + i, wifi_sta_sn[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_STA_GW + i, wifi_sta_gw[i]); }
       restartRequired=true;
     }
 
@@ -469,9 +469,9 @@ void processNetworkGet() {
       nv.writeBytes(EE_AP_PWD, wifi_ap_pwd, -40);
       nv.write(EE_AP_CH, (int16_t)wifi_ap_ch);
       nv.write(EE_AP_EN, (int16_t)accessPointEnabled);
-      nv.writeBytes(EE_AP_IP, wifi_ap_ip, 4);
-      nv.writeBytes(EE_AP_SN, wifi_ap_sn, 4);
-      nv.writeBytes(EE_AP_GW, wifi_ap_gw, 4);
+      for (int i = 0; i < 4; i++) { nv.update(EE_STA_IP + i, wifi_sta_ip[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_STA_SN + i, wifi_sta_sn[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_STA_GW + i, wifi_sta_gw[i]); }
       restartRequired=true;
     }
   #else
@@ -494,9 +494,9 @@ void processNetworkGet() {
     v = server.arg("ethgw4"); if (!v.equals(EmptyStr)) temp_gw[3] = v.toInt();
 
     if (!v.equals(EmptyStr)) {
-      nv.writeBytes(EE_ETH_IP, temp_ip, 4);
-      nv.writeBytes(EE_ETH_SN, temp_sn, 4);
-      nv.writeBytes(EE_ETH_GW, temp_gw, 4);
+      for (int i = 0; i < 4; i++) { nv.update(EE_ETH_IP + i, temp_ip[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_ETH_SN + i, temp_sn[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_ETH_GW + i, temp_gw[i]); }
       restartRequired = true;
     }
   #endif
