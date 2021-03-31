@@ -252,7 +252,7 @@ extern NVS nv;
       char temp1[40]="";
       data += FPSTR(html_onstep_header1); data += "OnStep";
       data += FPSTR(html_onstep_header2);
-      if (mountStatus.getVer(temp1)) data += temp1; else data += "?";
+      if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
       data += FPSTR(html_onstep_header3);
     }
     data += FPSTR(html_linksStatN);

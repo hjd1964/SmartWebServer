@@ -15,10 +15,17 @@
 bool MountStatus::update(bool all) {
   char s[40] = "";
   if (!_valid) {
-    if (!command(":GVP#",s) || s[0] == 0 || (!strstr(s,"On-Step") && !strstr(s,"OnStepX"))) { _valid = false; return false; }
-    if (!command(":GVN#",s) || s[0] == 0 ) { _valid = false; return false; }
-    strcpy(_id,"OnStep");
-    strcpy(_ver,s);
+    if (!command(":GVP#", s) || s[0] == 0 || (!strstr(s, "On-Step") && !strstr(s, "OnStepX"))) { _valid = false; return false; }
+    if (!command(":GVN#", s) || s[0] == 0 ) { _valid = false; return false; }
+    strcpy(_id, "OnStep");
+    strcpy(_ver, s);
+    // get patch
+    if (strlen(s) > 0) { _ver_patch = s[strlen(s) - 1]; s[strlen(s) - 1] = 0; }
+    char *s1 = strchr(_ver, '.'); s1 = 0;
+    // get major
+    _ver_maj = atol(s);
+    // get minor
+    _ver_min = atol(++s1);
   }
 
   if (!command(":GU#",s) || s[0] == 0) { _valid = false; return false; }
@@ -115,7 +122,10 @@ bool MountStatus::update(bool all) {
 }
 
 bool MountStatus::getId(char id[]) { if (!_valid) return false; else { strcpy(id,_id); return true; } }
-bool MountStatus::getVer(char ver[]) { if (!_valid) return false; else { strcpy(ver,_ver); return true; } }
+bool MountStatus::getVersionStr(char ver[]) { if (!_valid) return false; else { strcpy(ver, _ver); return true; } }
+int  MountStatus::getVersionMajor() { if (!_valid) return -1; else return _ver_maj; }
+int  MountStatus::getVersionMinor() { if (!_valid) return -1; else return _ver_min; }
+char MountStatus::getVersionPatch() { if (!_valid) return 0; else return _ver_patch; }
 bool MountStatus::valid() { return _valid; }
 bool MountStatus::aligning() { char s[20]=""; if (command(":A?#",s) && strlen(s) == 3 && s[1] <= s[2] && s[1] != '0') return true; else return false; }
 bool MountStatus::tracking() { return _tracking; }
