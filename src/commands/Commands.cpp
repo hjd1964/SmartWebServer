@@ -36,7 +36,7 @@ void serialBegin(long baudRate, int swap) {
         Ser.begin(baudRate,SERIAL_8N1,1,3);
       }
   #else
-    if (DEBUG == ON || DEBUG == VERBOSE)  { VF("WEM: Set baud rate to "); VL(baudRate); }
+    VF("WEM: Set baud rate to "); VL(baudRate);
     Ser.begin(baudRate);
     #ifdef ESP8266
       if (swap) {

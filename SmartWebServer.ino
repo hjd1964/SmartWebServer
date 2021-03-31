@@ -51,18 +51,17 @@ Tasks tasks;
 #include "src/wifiServers/WifiServers.h"
 #include "src/pages/Pages.h"
 
+bool connected = false;
+
 void systemServices() {
   nv.poll();
 }
 
 void setup(void) {
   // start debug serial port
-  #if DEBUG == ON || DEBUG == VERBOSE
-    SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
-    delay(1000);
-  #endif
+  if (DEBUG == ON || DEBUG == VERBOSE) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
+  delay(2000);
 
-  // say hello
   VF("WEM: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
   VF("WEM: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
@@ -99,7 +98,6 @@ void setup(void) {
   #endif
 
   // attempt to connect to OnStep
-  VLF("WEM: Attempting to connect to OnStep");
   int serialSwap = OFF;
   if (OPERATIONAL_MODE == WIFI) serialSwap = SERIAL_SWAP;
   if (serialSwap == AUTO) serialSwap = AUTO_OFF;
@@ -109,11 +107,11 @@ void setup(void) {
   uint8_t tb = 1;
 
 Again:
-  if (DEBUG == ON || DEBUG == VERBOSE) VLF("WEM: Clearing serial channel");
+  VLF("WEM: Clearing serial channel");
   clearSerialChannel();
 
   // look for OnStep
-  if (DEBUG == ON || DEBUG == VERBOSE) VLF("WEM: Attempting to contact OnStep");
+  VLF("WEM: Attempting to contact OnStep");
   Ser.print(":GVP#"); delay(100);
   String s = Ser.readString();
   if (s == "On-Step#" || s == "OnStepX#") {
@@ -132,6 +130,8 @@ Again:
     
     // we're all set, just change the baud rate to match OnStep
     serialBegin(serial_baud, serialSwap);
+
+    connected = true;
     VLF("WEM: OnStep Connection established");
   } else {
     if (DEBUG == ON || DEBUG == VERBOSE) { VF("WEM: No valid reply found ("); V(s); VL(")"); }

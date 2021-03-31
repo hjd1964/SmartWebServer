@@ -7,15 +7,17 @@
 #include "../../ConfigX.h"
 #include "../HAL/HAL.h"
 
+extern bool connected;
+
 #if DEBUG != OFF
   #if DEBUG == REMOTE
     // echo strings to OnStep debug interface (supports embedded spaces and cr/lf)
     extern void debugPrint(const char* s);
 
-    #define D(x)       { Ser.print(":EC"); Ser.print(x); Ser.print("#"); }
-    #define DF(x)      { Ser.print(":EC"); debugPrint(x); Ser.print("#"); }
-    #define DL(x)      { Ser.print(":EC"); Ser.print(x); Ser.print("&#"); }
-    #define DLF(x)     { Ser.print(":EC"); debugPrint(x); Ser.print("&#"); }
+    #define D(x)       { if (connected) { Ser.print(":EC"); Ser.print(x); Ser.print("#"); } }
+    #define DF(x)      { if (connected) { Ser.print(":EC"); debugPrint(x); Ser.print("#"); } }
+    #define DL(x)      { if (connected) { Ser.print(":EC"); Ser.print(x); Ser.print("&#"); } }
+    #define DLF(x)     { if (connected) { Ser.print(":EC"); debugPrint(x); Ser.print("&#"); } }
   #else
     #define D(x)       SERIAL_DEBUG.print(x)
     #define DF(x)      SERIAL_DEBUG.print(F(x))
