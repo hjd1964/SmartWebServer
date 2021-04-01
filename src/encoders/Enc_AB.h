@@ -9,7 +9,7 @@
 
 // this is for Quadrature A/B type encoders (library based)
 #if AXIS1_ENC_RATE_CONTROL != ON && (AXIS1_ENC == AB || AXIS2_ENC == AB)
-  #include <Encoder.h> // from https://github.com/PaulStoffregen/Encoder 
+  #include <Encoder.h> // from https://github.com/hjd1964/Encoder 
   #if AXIS1_ENC == AB
     extern Encoder axis1Pos;
   #endif
