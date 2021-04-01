@@ -19,7 +19,7 @@
 #define SERIAL_DEBUG_BAUD            9600 //        9600, n. Where n=9600,19200,57600,115200 (common baud rates.)             Option
 
 // STATUS LED ----------------------------------------------------------------------------------------------------------------------
-#define LED_STATUS_ON_STATE          HIGH //        HIGH, Use LOW so indicator stays on when connected if needed.             Option
+#define LED_STATUS_ON_STATE           LOW //         LOW, Use HIGH so indicator stays on when connected if needed.            Option
 
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
 // For Wifi these settings are stored in NV (EEPROM) and will not revert to the defaults once first set from these values unless
