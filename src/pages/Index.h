@@ -38,21 +38,29 @@ const char html_settingsBrowserTime[] PROGMEM =
 const char html_indexDate[] PROGMEM = "&nbsp;&nbsp;<font class='c'>%s</font>";
 const char html_indexTime[] PROGMEM = "&nbsp;<font class='c'>%s</font>&nbsp;" L_UT;
 const char html_indexSidereal[] PROGMEM = "&nbsp;(<font class='c'>%s</font>&nbsp; " L_LST ")<br />";
-const char html_indexSite[] PROGMEM = "&nbsp;&nbsp;" L_LONG " = <font class='c'>%s</font>, " L_LAT " = <font class='c'>%s</font><br />";
+const char html_indexSite[] PROGMEM =
+"&nbsp;&nbsp;" L_LONG " <font class='c'>%s</font>, " L_LAT " <font class='c'>%s</font><br />";
 
-const char html_indexPosition[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT ": " Axis1 "=<font class='c'>%s</font>, " Axis2 "=<font class='c'>%s</font><br />";
-const char html_indexTarget[] PROGMEM = "&nbsp;&nbsp;" L_TARGET ": " Axis1 "=<font class='c'>%s</font>, " Axis2 "=<font class='c'>%s</font><br />";
+const char html_indexPosition[] PROGMEM =
+"&nbsp;&nbsp;" L_CURRENT ": " Axis1 " <font class='c'>%s</font>, " Axis2 " <font class='c'>%s</font><br />";
+const char html_indexTarget[] PROGMEM =
+"&nbsp;&nbsp;" L_TARGET ": " Axis1 " <font class='c'>%s</font>, " Axis2 " <font class='c'>%s</font><br />";
 #if ENCODERS == ON
-  const char html_indexEncoder1[] PROGMEM = "&nbsp;&nbsp;OnStep: Ax1=<font class='c'>%s</font>, Ax2=<font class='c'>%s</font><br />";
-  const char html_indexEncoder2[] PROGMEM = "&nbsp;&nbsp;" L_ENCODER ": Ax1=<font class='c'>%s</font>, Ax2=<font class='c'>%s</font><br />";
+  const char html_indexEncoder1[] PROGMEM =
+  "&nbsp;&nbsp;OnStep: Ax1 <font class='c'>%s</font>, Ax2 <font class='c'>%s</font><br />";
+  const char html_indexEncoder2[] PROGMEM =
+  "&nbsp;&nbsp;" L_ENCODER ": Ax1 <font class='c'>%s</font>, Ax2 <font class='c'>%s</font><br />";
 #endif
-const char html_indexPier[] PROGMEM = "&nbsp;&nbsp;" L_PIER_SIDE "=<font class='c'>%s</font> (" L_MERIDIAN_FLIPS " <font class='c'>%s</font>)<br />";
+const char html_indexPier[] PROGMEM =
+"&nbsp;&nbsp;" L_PIER_SIDE ": <font class='c'>%s</font> (" L_MERIDIAN_FLIPS " <font class='c'>%s</font>)<br />";
 
-const char html_indexCorPolar[] PROGMEM = "&nbsp;&nbsp;%s <font class='c'>%ld</font>%c &nbsp; %s <font class='c'>%ld</font>%c &nbsp;(" L_ALIGN_MESSAGE " %s)<br />";
+const char html_indexCorPolar[] PROGMEM =
+"&nbsp;&nbsp;%s <font class='c'>%ld</font>%c &nbsp; %s <font class='c'>%ld</font>%c &nbsp;(" L_ALIGN_MESSAGE " %s)<br />";
 
 const char html_indexPark[] PROGMEM = "&nbsp;&nbsp;" L_PARKING ": <font class='c'>%s</font><br />";
 const char html_indexTracking[] PROGMEM = "&nbsp;&nbsp;" L_TRACKING ": <font class='c'>%s %s</font><br />";
-const char html_indexMaxRate[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXRATE ": <font class='c'>%ld</font> (" L_DEFAULT_MAXRATE ": <font class='c'>%ld</font>)<br />";
+const char html_indexMaxRate[] PROGMEM =
+"&nbsp;&nbsp;" L_CURRENT_MAXRATE ": <font class='c'>%ld</font> (" L_DEFAULT_MAXRATE ": <font class='c'>%ld</font>)<br />";
 const char html_indexMaxSpeed[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXSLEW ": <font class='c'>%s</font>&deg;/s<br />";
 
 const char html_indexTPHD[] PROGMEM = "&nbsp;&nbsp;%s <font class='c'>%s</font>%s<br />";

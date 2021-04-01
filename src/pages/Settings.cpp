@@ -11,14 +11,14 @@
 #include "../commands/Commands.h"
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/ethernetServers.h"
-#include "../encoders/encoders.h"
+#include "../ethernetServers/EthernetServers.h"
+#include "../encoders/Encoders.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
 #include "htmlScripts.h"
 
-#include "settings.h"
+#include "Settings.h"
 
 void processSettingsGet();
 

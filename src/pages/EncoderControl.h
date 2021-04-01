@@ -11,7 +11,6 @@ extern NVS nv;
 #include "../debug/Debug.h"
 
 #include "../encoders/Encoders.h"
-
 #if ENCODERS == ON
   #include "../locales/Locale.h"
 

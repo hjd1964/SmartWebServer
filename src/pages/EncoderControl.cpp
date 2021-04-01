@@ -9,8 +9,6 @@
 extern NVS nv;
 #include "../debug/Debug.h"
 
-#include "EncoderControl.h"
-
 #include "../encoders/Encoders.h"
 #if ENCODERS == ON
   #include "../locales/Locale.h"
@@ -18,12 +16,13 @@ extern NVS nv;
   #include "../commands/Commands.h"
   #include "../status/MountStatus.h"
   #include "../wifiServers/WifiServers.h"
-  #include "../ethernetServers/ethernetServers.h"
-  #include "../encoders/encoders.h"
+  #include "../ethernetServers/EthernetServers.h"
 
   #include "htmlHeaders.h"
   #include "htmlMessages.h"
   #include "htmlScripts.h"
+
+  #include "EncoderControl.h"
 
   void processEncodersGet();
 
