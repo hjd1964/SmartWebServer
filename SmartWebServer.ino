@@ -49,6 +49,7 @@ Tasks tasks;
 #include "src/commands/Commands.h"
 #include "src/ethernetServers/EthernetServers.h"
 #include "src/wifiServers/WifiServers.h"
+#include "src/encoders/encoders.h"
 #include "src/pages/Pages.h"
 
 bool connected = false;
@@ -80,7 +81,7 @@ void setup(void) {
   // read settings from NV or init. as required
   #if ENCODERS == ON
     VLF("WEM: Init Encoders");
-    encodersInit();
+    encoders.init();
   #endif
 
   VLF("WEM: Init Webserver");

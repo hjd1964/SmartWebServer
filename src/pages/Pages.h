@@ -1,6 +1,13 @@
 // -----------------------------------------------------------------------------------
 // Display and process data from webpages
 
+#include <Arduino.h>
+#include "../../Constants.h"
+#include "../../Config.h"
+#include "../../ConfigX.h"
+
+#include "EncoderControl.h"
+
 #if OPERATIONAL_MODE == WIFI
   void handleRoot();
 
