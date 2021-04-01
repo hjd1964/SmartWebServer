@@ -36,7 +36,7 @@ void handleLibrary() {
   char temp[400] = "";
   char temp1[120] = "";
 
-  currentCatalog=0;
+  currentCatalog = 0;
   Ser.setTimeout(webTimeout);
   serialRecvFlush();
   
@@ -88,26 +88,28 @@ void handleLibrary() {
   data += FPSTR(html_libStatusScript);
 
   // active ajax page is: libraryAjax();
-  data +="<script>var ajaxPage='library.txt';</script>\n";
-  data +=FPSTR(html_ajax_active);
-  data +="<script>auto2Rate=2;</script>";
+  data += "<script>var ajaxPage='library.txt';</script>\n";
+  data += FPSTR(html_ajax_active);
+  data += "<script>auto2Rate=2;</script>";
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
   if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
 
-  sendHtml(data);
-
   data += FPSTR(html_libCatalogSelect1);
+  sendHtml(data);
   data += FPSTR(html_libCatalogSelect2);
+  sendHtml(data);
   data += FPSTR(html_libSubmitCatalog);
   sendHtml(data);
   data += FPSTR(html_libShowMessage);
   data += FPSTR(html_libEditCatalog);
-  data += FPSTR(html_libCatalogForm);
+  sendHtml(data);
+  data += FPSTR(html_libCatalogForm1);
+  sendHtml(data);
+  data += FPSTR(html_libCatalogForm2);
 
-  strcpy(temp,"</div></body></html>");
-  data += temp;
+  data += "</div></body></html>";
 
   sendHtml(data);
   sendHtmlDone(data);

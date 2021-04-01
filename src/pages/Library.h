@@ -15,15 +15,15 @@ const char html_libStart[] PROGMEM =
 "<form method='get' action='/lib.htm'>";
 
 const char html_libCatalogSelect1[] PROGMEM =
-L_CATALOGS " (<span id='libFree'>?";
-const char html_libCatalogSelect2[] PROGMEM =
+L_CATALOGS " (<span id='libFree'>?"
 "</span> " L_RECS_AVAIL ":)<br /><br />Number <select name='selBox' onchange=\"busy(); s('ci',this.value);\">"
 "<option value='0' %s>-</option>"
 "<option value='1' %s>1</option>"
 "<option value='2' %s>2</option>"
 "<option value='3' %s>3</option>"
 "<option value='4' %s>4</option>"
-"<option value='5' %s>5</option>"
+"<option value='5' %s>5</option>";
+const char html_libCatalogSelect2[] PROGMEM =
 "<option value='6' %s>6</option>"
 "<option value='7' %s>7</option>"
 "<option value='8' %s>8</option>"
@@ -49,7 +49,7 @@ L_CAT_DATA "<br />"
 "<textarea id='catData' style='background-color: #222222; color: #ffffff; border: 1px solid #551111;' "
 "rows='10' cols='40' oninput=\"document.getElementById('up').disabled=false;\"></textarea><br /><br />\n";
 
-const char html_libCatalogForm[] PROGMEM =
+const char html_libCatalogForm1[] PROGMEM =
 "Data format:<br /><pre>"
 "  Object Name Cat    RA       Dec   <br />"
 "  ccccccccccc,ccc,HH:MM:SS,sDD*MM:SS<br /></pre>"
@@ -62,7 +62,8 @@ const char html_libCatalogForm[] PROGMEM =
 L_CAT_EXAMPLE1 L_CAT_EXAMPLE2 L_CAT_EXAMPLE3 L_CAT_EXAMPLE4 L_CAT_EXAMPLE5
 "    UNK = Unknown<br />"
 "    OC  = Open Cluster<br />"
-"    GC  = Globular Cluster<br />"
+"    GC  = Globular Cluster<br />";
+const char html_libCatalogForm2[] PROGMEM =
 "    PN  = Planetary Nebula<br />"
 "    DN  = Dark Nebula<br />"
 "    SG  = Spiral Galaxy<br />"
