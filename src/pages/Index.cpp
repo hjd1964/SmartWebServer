@@ -104,8 +104,8 @@ void handleRoot() {
 
   // Longitude and Latitude
   if (mountStatus.getVersionMajor() > 3) {
-    if (!command(":GgH#", temp1)) strcpy(temp1, "?");
-    if (!command(":GtH#", temp2)) strcpy(temp2, "?");
+    if (!command(":GgH#", temp1)) strcpy(temp1, "?"); temp1[10] = 0;
+    if (!command(":GtH#", temp2)) strcpy(temp2, "?"); temp2[9] = 0;
   } else {
     if (!command(":Gg#", temp1)) strcpy(temp1, "?");
     if (!command(":Gt#", temp2)) strcpy(temp2, "?");
@@ -113,6 +113,12 @@ void handleRoot() {
   sprintf_P(temp,html_indexSite,temp1,temp2);
   data += temp;
   sendHtml(data);
+
+  // keep numeric latitude for later, in degrees
+  long lat = LONG_MIN;
+  temp2[3] = 0;
+  if (temp2[0] == '+') temp2[0] = '0';
+  lat = atol(temp2);
 
   // Ambient conditions
   #if DISPLAY_WEATHER == ON
@@ -186,8 +192,7 @@ void handleRoot() {
   data += temp;
   sendHtml(data);
 
-  long lat = LONG_MIN; if (command(":Gt#",temp1)) { temp1[3] = 0; if (temp1[0] == '+') temp1[0] = '0'; lat = strtol(temp1, NULL, 10); }
-  if (abs(lat)<=89) {
+  if (abs(lat) <= 89) {
     long ud = LONG_MIN; if (command(":GX02#",temp1)) { ud = strtol(&temp1[0], NULL, 10); if (lat < 0) ud = -ud; }
     long lr = LONG_MIN; if (command(":GX03#",temp1)) { lr = strtol(&temp1[0], NULL, 10); lr = lr/cos(lat/57.295); }
 
