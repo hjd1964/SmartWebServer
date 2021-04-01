@@ -19,13 +19,14 @@ bool MountStatus::update(bool all) {
     if (!command(":GVN#", s) || s[0] == 0 ) { _valid = false; return false; }
     strcpy(_id, "OnStep");
     strcpy(_ver, s);
-    // get patch
     if (strlen(s) > 0) { _ver_patch = s[strlen(s) - 1]; s[strlen(s) - 1] = 0; }
-    char *s1 = strchr(_ver, '.'); s1 = 0;
-    // get major
-    _ver_maj = atol(s);
-    // get minor
-    _ver_min = atol(++s1);
+    char *s1 = strchr(_ver, '.');
+    if (s1 != NULL) { s1[0] = 0; s1++; _ver_maj = atol(s); _ver_min = atol(s1); }
+    if (_ver_maj < 0 || _ver_maj > 99 || _ver_min < 0 || _ver_min > 99 || _ver_patch < 'a' || _ver_patch > 'z') {
+      _ver_maj = -1;
+      _ver_min = -1;
+      _ver_patch = 0;
+    }
   }
 
   if (!command(":GU#",s) || s[0] == 0) { _valid = false; return false; }
