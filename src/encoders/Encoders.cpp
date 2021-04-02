@@ -120,6 +120,7 @@ extern NVS nv;
 
   void Encoders::init() { 
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
+      VLF("WEM: NV key invalid, resetting Encoder defaults");
       nv.write(EE_ENC_AUTO_SYNC, (int16_t)ENC_AUTO_SYNC_DEFAULT);
 
       nv.write(EE_ENC_A1_DIFF_TO,(int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
@@ -141,6 +142,7 @@ extern NVS nv;
       nv.write(EE_ENC_A2_ZERO,   (int32_t)0);    // absolute Encoder Axis2 zero
     }
 
+    VLF("WEM: NV reading Encoder settings");
     if (ENC_AUTO_SYNC_MEMORY == ON) encAutoSync = nv.readI(EE_ENC_AUTO_SYNC);
     Axis1EncDiffTo = nv.readL(EE_ENC_A1_DIFF_TO);
     Axis2EncDiffTo = nv.readL(EE_ENC_A2_DIFF_TO);

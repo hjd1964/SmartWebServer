@@ -38,6 +38,7 @@ extern NVS nv;
   
   void ethernetInit(void) {
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
+      VLF("WEM: NV key invalid, resetting Ethernet defaults");
       nv.update(EE_TIMEOUT_WEB, (int16_t)webTimeout);
       nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
 
@@ -46,6 +47,7 @@ extern NVS nv;
       for (int i = 0; i < 4; i++) nv.update(EE_ETH_SN + i, eth_sn[i]);
     }
 
+    VLF("WEM: NV reading Ethernet settings");
     webTimeout = nv.readI(EE_TIMEOUT_WEB);
     if (webTimeout > 300) webTimeout = 300;
     if (webTimeout < 100) webTimeout = 100;
@@ -60,8 +62,7 @@ extern NVS nv;
   }
 
   void ethernetStart(void) {
-    VF("WEM: Ethernet Addon "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
-    VF("WEM: MCU = "); VLF(MCU_STR);
+    VLF("WEM: Ethernet Server start");
 
     VF("WEM: Web Channel Timeout ms= "); VL(webTimeout);
     VF("WEM: Cmd Channel Timeout ms= "); VL(cmdTimeout);
