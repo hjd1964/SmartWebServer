@@ -20,8 +20,9 @@ extern NVS nv;
 
   char masterPassword[40] = Default_Password;
 
+  WebServer server;
+
   #if STANDARD_COMMAND_CHANNEL == ON
-    WebServer server;
     CmdServer cmdSvr;
   #endif
 
