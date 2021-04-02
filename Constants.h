@@ -4,8 +4,8 @@
 // Firmware version ----------------------------------------------------------------------------------------------------------------
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "0"
-#define FirmwareVersionMinor  "6"
-#define FirmwareVersionPatch  "d"
+#define FirmwareVersionMinor  "7"
+#define FirmwareVersionPatch  "a"
 #define FirmwareDate     __DATE__
 #define FirmwareTime     __TIME__
 
