@@ -107,8 +107,8 @@ void handleNetwork() {
     
     #if OPERATIONAL_MODE == WIFI
       sprintf_P(temp, htmL_NETWORKSSID1, wifi_sta_ssid, ""); data.concat(temp);
-      nv.readStr(EE_STA_SSID, wifi_sta_ssid, 40);
-      nv.readStr(EE_STA_PWD, wifi_sta_pwd, 40);
+      nv.readBytes(EE_STA_SSID, wifi_sta_ssid, -40);
+      nv.readBytes(EE_STA_PWD, wifi_sta_pwd, -40);
 
       uint8_t macsta[6] = {0,0,0,0,0,0}; WiFi.macAddress(macsta); temp1[0] = 0;
       for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, macsta[i]); } temp1[strlen(temp1) - 1] = 0;
@@ -272,10 +272,11 @@ void processNetworkGet() {
     v = server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3]=v.toInt();
       
     if (!v1.equals(EmptyStr)) {
-      nv.writeBytes(EE_STA_SSID, wifi_sta_ssid, -40);
-      nv.writeBytes(EE_STA_PWD, wifi_sta_pwd, -40);
-      nv.write(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
-      nv.write(EE_STA_EN, (int16_t)stationEnabled);
+      VLF(wifi_sta_ssid);
+      nv.updateBytes(EE_STA_SSID, wifi_sta_ssid, -40);
+      nv.updateBytes(EE_STA_PWD, wifi_sta_pwd, -40);
+      nv.update(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
+      nv.update(EE_STA_EN, (int16_t)stationEnabled);
       for (int i = 0; i < 4; i++) { nv.update(EE_STA_IP + i, wifi_sta_ip[i]); }
       for (int i = 0; i < 4; i++) { nv.update(EE_STA_SN + i, wifi_sta_sn[i]); }
       for (int i = 0; i < 4; i++) { nv.update(EE_STA_GW + i, wifi_sta_gw[i]); }

@@ -60,6 +60,7 @@ extern NVS nv;
 
   void wifiInit(void) {
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
+      VLF("WEM: NV key invalid, resetting Wifi defaults");
       nv.update(EE_AP_EN, (int16_t)accessPointEnabled);
       nv.update(EE_STA_EN, (int16_t)stationEnabled);
       nv.update(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
@@ -82,6 +83,7 @@ extern NVS nv;
       for (int i = 0; i < 4; i++) nv.update(EE_AP_SN + i, wifi_ap_sn[i]);
     }
 
+    VLF("WEM: NV reading Wifi settings");
     accessPointEnabled = nv.readI(EE_AP_EN);
     stationEnabled = nv.readI(EE_STA_EN);
     if (!accessPointEnabled && !stationEnabled) accessPointEnabled = true;
@@ -110,8 +112,7 @@ extern NVS nv;
   }
 
   void wifiStart(void) {
-    VF("WEM: WiFi Addon "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
-    VF("WEM: MCU = "); VLF(MCU_STR);
+    VLF("WEM: WiFi Server start");
 
     VF("WEM: Access Point Enabled  = "); VL(accessPointEnabled);
     VF("WEM: Station Enabled       = "); VL(stationEnabled);
