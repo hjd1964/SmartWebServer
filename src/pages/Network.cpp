@@ -55,108 +55,108 @@ void handleNetwork() {
 
   // send a standard http response header
   String data=FPSTR(html_headB);
-  data += FPSTR(html_main_cssB);
-  data += FPSTR(html_main_css1);
-  data += FPSTR(html_main_css2);
-  data += FPSTR(html_main_css3);
-  data += FPSTR(html_main_css4);
-  data += FPSTR(html_main_css5);
+  data.concat(FPSTR(html_main_cssB));
+  data.concat(FPSTR(html_main_css1));
+  data.concat(FPSTR(html_main_css2));
+  data.concat(FPSTR(html_main_css3));
+  data.concat(FPSTR(html_main_css4));
+  data.concat(FPSTR(html_main_css5));
   sendHtml(data);
-  data += FPSTR(html_main_css6);
-  data += FPSTR(html_main_css7);
-  data += FPSTR(html_main_css8);
-  data += FPSTR(html_main_cssE);
-  data += FPSTR(html_headE);
-  data += FPSTR(html_bodyB);
+  data.concat(FPSTR(html_main_css6));
+  data.concat(FPSTR(html_main_css7));
+  data.concat(FPSTR(html_main_css8));
+  data.concat(FPSTR(html_main_cssE));
+  data.concat(FPSTR(html_headE));
+  data.concat(FPSTR(html_bodyB));
   sendHtml(data);
 
   // finish the standard http response header
-  data += FPSTR(html_onstep_header1); data += "OnStep";
-  data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
-  data += FPSTR(html_onstep_header3);
-  data += FPSTR(html_linksStatN);
-  data += FPSTR(html_linksCtrlN);
-  if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
-  data += FPSTR(html_linksLibN);
+  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
+  data.concat(FPSTR(html_onstep_header3));
+  data.concat(FPSTR(html_linksStatN));
+  data.concat(FPSTR(html_linksCtrlN));
+  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
-    data += FPSTR(html_linksEncN);
+    data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  data += FPSTR(html_linksPecN);
-  data += FPSTR(html_linksSetN);
-  data += FPSTR(html_linksCfgN);
-  data += FPSTR(html_linksSetupS);
-  data += FPSTR(html_onstep_header4);
+  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  data.concat(FPSTR(html_linksSetN));
+  data.concat(FPSTR(html_linksCfgN));
+  data.concat(FPSTR(html_linksSetupS));
+  data.concat(FPSTR(html_onstep_header4));
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
 
-  data+="<div>";
+  data.concat("<div>");
 
   if (restartRequired) {
     restartRequired = false;
-    data += FPSTR(html_reboot);
+    data.concat(FPSTR(html_reboot));
   } else
   if (loginRequired) {
     restartRequired = false;
-    data += FPSTR(html_login);
+    data.concat(FPSTR(html_login));
   } else {
-    sprintf_P(temp, htmL_NETWORKSerial, cmdTimeout, webTimeout); data += temp;
+    sprintf_P(temp, htmL_NETWORKSerial, cmdTimeout, webTimeout); data.concat(temp);
     
     #if OPERATIONAL_MODE == WIFI
-      sprintf_P(temp, htmL_NETWORKSSID1, wifi_sta_ssid, ""); data += temp;
+      sprintf_P(temp, htmL_NETWORKSSID1, wifi_sta_ssid, ""); data.concat(temp);
       nv.readStr(EE_STA_SSID, wifi_sta_ssid, 40);
       nv.readStr(EE_STA_PWD, wifi_sta_pwd, 40);
 
       uint8_t macsta[6] = {0,0,0,0,0,0}; WiFi.macAddress(macsta); temp1[0] = 0;
       for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, macsta[i]); } temp1[strlen(temp1) - 1] = 0;
 
-      sprintf_P(temp,htmL_NET_MAC,"sta", temp1); data += temp;
+      sprintf_P(temp,htmL_NET_MAC,"sta", temp1); data.concat(temp);
       sendHtml(data);
-      sprintf_P(temp,htmL_NET_IP, "sta", wifi_sta_ip[0], "sta", wifi_sta_ip[1], "sta", wifi_sta_ip[2], "sta", wifi_sta_ip[3]); data += temp;
-      sprintf_P(temp,htmL_NET_GW, "sta", wifi_sta_gw[0], "sta", wifi_sta_gw[1], "sta", wifi_sta_gw[2], "sta", wifi_sta_gw[3]); data += temp;
-      sprintf_P(temp,htmL_NET_SN, "sta", wifi_sta_sn[0], "sta", wifi_sta_sn[1], "sta", wifi_sta_sn[2], "sta", wifi_sta_sn[3]); data += temp;
+      sprintf_P(temp,htmL_NET_IP, "sta", wifi_sta_ip[0], "sta", wifi_sta_ip[1], "sta", wifi_sta_ip[2], "sta", wifi_sta_ip[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_GW, "sta", wifi_sta_gw[0], "sta", wifi_sta_gw[1], "sta", wifi_sta_gw[2], "sta", wifi_sta_gw[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_SN, "sta", wifi_sta_sn[0], "sta", wifi_sta_sn[1], "sta", wifi_sta_sn[2], "sta", wifi_sta_sn[3]); data.concat(temp);
 
-      sprintf_P(temp,htmL_NETWORKSSID2, stationDhcpEnabled?"checked":"",stationEnabled?"checked":""); data += temp;
-      data += FPSTR(htmL_NETWORKSSID3A);
-      sprintf_P(temp,htmL_NETWORKSSID3B, wifi_ap_ssid, "", wifi_ap_ch); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID2, stationDhcpEnabled?"checked":"",stationEnabled?"checked":""); data.concat(temp);
+      data.concat(FPSTR(htmL_NETWORKSSID3A));
+      sprintf_P(temp,htmL_NETWORKSSID3B, wifi_ap_ssid, "", wifi_ap_ch); data.concat(temp);
       sendHtml(data);
     
       uint8_t macap[6] = {0,0,0,0,0,0}; WiFi.softAPmacAddress(macap); temp1[0] = 0;
       for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, macap[i]); } temp1[strlen(temp1) - 1] = 0;
       
-      sprintf_P(temp,htmL_NET_MAC,"ap", temp1); data += temp;
+      sprintf_P(temp,htmL_NET_MAC,"ap", temp1); data.concat(temp);
       sendHtml(data);
-      sprintf_P(temp,htmL_NET_IP, "ap", wifi_sta_ip[0], "ap", wifi_sta_ip[1], "ap", wifi_sta_ip[2], "ap", wifi_sta_ip[3]); data += temp;
-      sprintf_P(temp,htmL_NET_GW, "ap", wifi_sta_gw[0], "ap", wifi_sta_gw[1], "ap", wifi_sta_gw[2], "ap", wifi_sta_gw[3]); data += temp;
-      sprintf_P(temp,htmL_NET_SN, "ap", wifi_sta_sn[0], "ap", wifi_sta_sn[1], "ap", wifi_sta_sn[2], "ap", wifi_sta_sn[3]); data += temp;
+      sprintf_P(temp,htmL_NET_IP, "ap", wifi_sta_ip[0], "ap", wifi_sta_ip[1], "ap", wifi_sta_ip[2], "ap", wifi_sta_ip[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_GW, "ap", wifi_sta_gw[0], "ap", wifi_sta_gw[1], "ap", wifi_sta_gw[2], "ap", wifi_sta_gw[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_SN, "ap", wifi_sta_sn[0], "ap", wifi_sta_sn[1], "ap", wifi_sta_sn[2], "ap", wifi_sta_sn[3]); data.concat(temp);
 
-      sprintf_P(temp,htmL_NETWORKSSID7, accessPointEnabled?"checked":""); data += temp;
+      sprintf_P(temp,htmL_NETWORKSSID7, accessPointEnabled?"checked":""); data.concat(temp);
     #else
       nv.readBytes(EE_ETH_IP, temp_ip, 4);
       nv.readBytes(EE_ETH_SN, temp_sn, 4);
       nv.readBytes(EE_ETH_GW, temp_gw, 4);
 
-      data += FPSTR(htmL_NETWORK_ETH_BEG); temp1[0] = 0;
+      data.concat(FPSTR(htmL_NETWORK_ETH_BEG)); temp1[0] = 0;
       for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, eth_mac[i]); } temp1[strlen(temp1) - 1] = 0;
 
-      sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data += temp;
+      sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data.concat(temp);
       sendHtml(data);
-      sprintf_P(temp,htmL_NET_IP, "eth", temp_ip[0], "eth", temp_ip[1], "eth", temp_ip[2], "eth", temp_ip[3]); data += temp;
-      sprintf_P(temp,htmL_NET_GW, "eth", temp_gw[0], "eth", temp_gw[1], "eth", temp_gw[2], "eth", temp_gw[3]); data += temp;
-      sprintf_P(temp,htmL_NET_SN, "eth", temp_sn[0], "eth", temp_sn[1], "eth", temp_sn[2], "eth", temp_sn[3]); data += temp;
+      sprintf_P(temp,htmL_NET_IP, "eth", temp_ip[0], "eth", temp_ip[1], "eth", temp_ip[2], "eth", temp_ip[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_GW, "eth", temp_gw[0], "eth", temp_gw[1], "eth", temp_gw[2], "eth", temp_gw[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_SN, "eth", temp_sn[0], "eth", temp_sn[1], "eth", temp_sn[2], "eth", temp_sn[3]); data.concat(temp);
 
-      data += FPSTR(htmL_NETWORK_ETH_END);
+      data.concat(FPSTR(htmL_NETWORK_ETH_END));
       sendHtml(data);
     #endif
 
-    data += FPSTR(html_logout);
+    data.concat(FPSTR(html_logout));
   }
   
   strcpy(temp,"</div></div></body></html>");
-  data += temp;
+  data.concat(temp);
 
   sendHtml(data);
   sendHtmlDone(data);
@@ -199,7 +199,7 @@ void processNetworkGet() {
   #if OPERATIONAL_MODE == WIFI
     // --------------------------------------------------------------------------
     // Station MAC
-    v=server.arg("stmac");
+    v = server.arg("stmac");
     if (!v.equals(EmptyStr)) {
       // 5c:cf:7f:0f:ad:85
       // first the length should be 17
@@ -232,44 +232,44 @@ void processNetworkGet() {
     }
 
     // Station password
-    v=server.arg("stpwd");
+    v = server.arg("stpwd");
     if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_sta_pwd,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_sta_pwd,(char*)v.c_str());
     }
 
     // Station dhcp enabled
-    v=server.arg("stadhcp");
+    v = server.arg("stadhcp");
     if (!v.equals(EmptyStr)) {
       stationDhcpEnabled=v.toInt();
     }
 
     // Station enabled
-    v=server.arg("staen");
+    v = server.arg("staen");
     if (!v.equals(EmptyStr)) {
       stationEnabled=v.toInt();
     }
 
     // Access-Point ip
-    IPAddress old_ip=wifi_sta_ip;
-    v=server.arg("staip1"); if (!v.equals(EmptyStr)) wifi_sta_ip[0]=v.toInt();
-    v=server.arg("staip2"); if (!v.equals(EmptyStr)) wifi_sta_ip[1]=v.toInt();
-    v=server.arg("staip3"); if (!v.equals(EmptyStr)) wifi_sta_ip[2]=v.toInt();
-    v=server.arg("staip4"); if (!v.equals(EmptyStr)) wifi_sta_ip[3]=v.toInt();
+    IPAddress old_ip = wifi_sta_ip;
+    v = server.arg("staip1"); if (!v.equals(EmptyStr)) wifi_sta_ip[0]=v.toInt();
+    v = server.arg("staip2"); if (!v.equals(EmptyStr)) wifi_sta_ip[1]=v.toInt();
+    v = server.arg("staip3"); if (!v.equals(EmptyStr)) wifi_sta_ip[2]=v.toInt();
+    v = server.arg("staip4"); if (!v.equals(EmptyStr)) wifi_sta_ip[3]=v.toInt();
 
     // Access-Point SubNet
-    old_ip=wifi_sta_sn;
-    v=server.arg("stasn1"); if (!v.equals(EmptyStr)) wifi_sta_sn[0]=v.toInt();
-    v=server.arg("stasn2"); if (!v.equals(EmptyStr)) wifi_sta_sn[1]=v.toInt();
-    v=server.arg("stasn3"); if (!v.equals(EmptyStr)) wifi_sta_sn[2]=v.toInt();
-    v=server.arg("stasn4"); if (!v.equals(EmptyStr)) wifi_sta_sn[3]=v.toInt();
+    old_ip = wifi_sta_sn;
+    v = server.arg("stasn1"); if (!v.equals(EmptyStr)) wifi_sta_sn[0]=v.toInt();
+    v = server.arg("stasn2"); if (!v.equals(EmptyStr)) wifi_sta_sn[1]=v.toInt();
+    v = server.arg("stasn3"); if (!v.equals(EmptyStr)) wifi_sta_sn[2]=v.toInt();
+    v = server.arg("stasn4"); if (!v.equals(EmptyStr)) wifi_sta_sn[3]=v.toInt();
 
     // Access-Point Gateway
-    old_ip=wifi_sta_gw;
-    v=server.arg("stagw1"); if (!v.equals(EmptyStr)) wifi_sta_gw[0]=v.toInt();
-    v=server.arg("stagw2"); if (!v.equals(EmptyStr)) wifi_sta_gw[1]=v.toInt();
-    v=server.arg("stagw3"); if (!v.equals(EmptyStr)) wifi_sta_gw[2]=v.toInt();
-    v=server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3]=v.toInt();
+    old_ip = wifi_sta_gw;
+    v = server.arg("stagw1"); if (!v.equals(EmptyStr)) wifi_sta_gw[0]=v.toInt();
+    v = server.arg("stagw2"); if (!v.equals(EmptyStr)) wifi_sta_gw[1]=v.toInt();
+    v = server.arg("stagw3"); if (!v.equals(EmptyStr)) wifi_sta_gw[2]=v.toInt();
+    v = server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3]=v.toInt();
       
     if (!v1.equals(EmptyStr)) {
       nv.writeBytes(EE_STA_SSID, wifi_sta_ssid, -40);
@@ -284,7 +284,7 @@ void processNetworkGet() {
 
     // --------------------------------------------------------------------------
     // Access-Point MAC
-    v=server.arg("apmac");
+    v = server.arg("apmac");
     if (!v.equals(EmptyStr)) {
       // 5c:cf:7f:0f:ad:85
       // first the length should be 17
@@ -306,7 +306,7 @@ void processNetworkGet() {
     }
 
     // Access-Point SSID
-    v=server.arg("apssid");
+    v = server.arg("apssid");
     if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_ap_ssid,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_ap_ssid,(char*)v.c_str());
@@ -316,45 +316,45 @@ void processNetworkGet() {
     }
 
     // Access-Point password
-    v=server.arg("appwd");
+    v = server.arg("appwd");
     if (!v.equals(EmptyStr)) {
       if (!strcmp(wifi_ap_pwd,(char*)v.c_str())) restartRequired=true;
       strcpy(wifi_ap_pwd,(char*)v.c_str());
     }
 
     // Access-Point channel
-    v=server.arg("apch");
+    v = server.arg("apch");
     if (!v.equals(EmptyStr)) {
       if (wifi_ap_ch!=v.toInt()) restartRequired=true;
       wifi_ap_ch=v.toInt();
     }
 
     // Access-Point enabled
-    v=server.arg("apen");
+    v = server.arg("apen");
     if (!v.equals(EmptyStr)) {
       accessPointEnabled=v.toInt();
     }
 
     // Access-Point ip
-    old_ip=wifi_ap_ip;
-    v=server.arg("apip1"); if (!v.equals(EmptyStr)) wifi_ap_ip[0]=v.toInt();
-    v=server.arg("apip2"); if (!v.equals(EmptyStr)) wifi_ap_ip[1]=v.toInt();
-    v=server.arg("apip3"); if (!v.equals(EmptyStr)) wifi_ap_ip[2]=v.toInt();
-    v=server.arg("apip4"); if (!v.equals(EmptyStr)) wifi_ap_ip[3]=v.toInt();
+    old_ip = wifi_ap_ip;
+    v = server.arg("apip1"); if (!v.equals(EmptyStr)) wifi_ap_ip[0]=v.toInt();
+    v = server.arg("apip2"); if (!v.equals(EmptyStr)) wifi_ap_ip[1]=v.toInt();
+    v = server.arg("apip3"); if (!v.equals(EmptyStr)) wifi_ap_ip[2]=v.toInt();
+    v = server.arg("apip4"); if (!v.equals(EmptyStr)) wifi_ap_ip[3]=v.toInt();
 
     // Access-Point SubNet
     old_ip=wifi_ap_sn;
-    v=server.arg("apsn1"); if (!v.equals(EmptyStr)) wifi_ap_sn[0]=v.toInt();
-    v=server.arg("apsn2"); if (!v.equals(EmptyStr)) wifi_ap_sn[1]=v.toInt();
-    v=server.arg("apsn3"); if (!v.equals(EmptyStr)) wifi_ap_sn[2]=v.toInt();
-    v=server.arg("apsn4"); if (!v.equals(EmptyStr)) wifi_ap_sn[3]=v.toInt();
+    v = server.arg("apsn1"); if (!v.equals(EmptyStr)) wifi_ap_sn[0]=v.toInt();
+    v = server.arg("apsn2"); if (!v.equals(EmptyStr)) wifi_ap_sn[1]=v.toInt();
+    v = server.arg("apsn3"); if (!v.equals(EmptyStr)) wifi_ap_sn[2]=v.toInt();
+    v = server.arg("apsn4"); if (!v.equals(EmptyStr)) wifi_ap_sn[3]=v.toInt();
 
     // Access-Point Gateway
-    old_ip=wifi_ap_gw;
-    v=server.arg("apgw1"); if (!v.equals(EmptyStr)) wifi_ap_gw[0]=v.toInt();
-    v=server.arg("apgw2"); if (!v.equals(EmptyStr)) wifi_ap_gw[1]=v.toInt();
-    v=server.arg("apgw3"); if (!v.equals(EmptyStr)) wifi_ap_gw[2]=v.toInt();
-    v=server.arg("apgw4"); if (!v.equals(EmptyStr)) wifi_ap_gw[3]=v.toInt();
+    old_ip = wifi_ap_gw;
+    v = server.arg("apgw1"); if (!v.equals(EmptyStr)) wifi_ap_gw[0]=v.toInt();
+    v = server.arg("apgw2"); if (!v.equals(EmptyStr)) wifi_ap_gw[1]=v.toInt();
+    v = server.arg("apgw3"); if (!v.equals(EmptyStr)) wifi_ap_gw[2]=v.toInt();
+    v = server.arg("apgw4"); if (!v.equals(EmptyStr)) wifi_ap_gw[3]=v.toInt();
 
     if (!v.equals(EmptyStr)) {
       nv.writeBytes(EE_AP_SSID, wifi_ap_ssid, -40);

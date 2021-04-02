@@ -41,54 +41,54 @@ void handleAux() {
   sendHtmlStart();
   
   String data=FPSTR(html_headB);
-  data += FPSTR(html_main_cssB);
-  data += FPSTR(html_main_css1);
-  data += FPSTR(html_main_css2);
-  data += FPSTR(html_main_css3);
-  data += FPSTR(html_main_css4);
-  data += FPSTR(html_main_css5);
-  data += FPSTR(html_main_css6);
+  data.concat(FPSTR(html_main_cssB));
+  data.concat(FPSTR(html_main_css1));
+  data.concat(FPSTR(html_main_css2));
+  data.concat(FPSTR(html_main_css3));
+  data.concat(FPSTR(html_main_css4));
+  data.concat(FPSTR(html_main_css5));
+  data.concat(FPSTR(html_main_css6));
   sendHtml(data);
-  data += FPSTR(html_main_css7);
-  data += FPSTR(html_main_css8);
-  data += FPSTR(html_main_css_control1);
-  data += FPSTR(html_main_css_control2);
-  data += FPSTR(html_main_css_control3);
-  data += FPSTR(html_main_css_btns1);
+  data.concat(FPSTR(html_main_css7));
+  data.concat(FPSTR(html_main_css8));
+  data.concat(FPSTR(html_main_css_control1));
+  data.concat(FPSTR(html_main_css_control2));
+  data.concat(FPSTR(html_main_css_control3));
+  data.concat(FPSTR(html_main_css_btns1));
   sendHtml(data);
-  data += FPSTR(html_main_css_btns2);
-  data += FPSTR(html_main_css_btns3);
-  data += FPSTR(html_main_cssE);
-  data += FPSTR(html_headE);
-  data += FPSTR(html_bodyB);
+  data.concat(FPSTR(html_main_css_btns2));
+  data.concat(FPSTR(html_main_css_btns3));
+  data.concat(FPSTR(html_main_cssE));
+  data.concat(FPSTR(html_headE));
+  data.concat(FPSTR(html_bodyB));
   sendHtml(data);
 
   // finish the standard http response header
-  data += FPSTR(html_onstep_header1); data += "OnStep";
-  data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp)) data += temp; else data += "?";
-  data += FPSTR(html_onstep_header3);
-  data += FPSTR(html_linksStatN);
-  data += FPSTR(html_linksCtrlN);
-  if (mountStatus.featureFound()) data += FPSTR(html_linksAuxS);
-  data += FPSTR(html_linksLibN);
+  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
+  data.concat(FPSTR(html_onstep_header3));
+  data.concat(FPSTR(html_linksStatN));
+  data.concat(FPSTR(html_linksCtrlN));
+  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxS));
+  data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
-    data += FPSTR(html_linksEncN);
+    data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  data += FPSTR(html_linksPecN);
-  data += FPSTR(html_linksSetN);
-  data += FPSTR(html_linksCfgN);
-  data += FPSTR(html_linksSetupN);
-  data += FPSTR(html_onstep_header4);
+  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  data.concat(FPSTR(html_linksSetN));
+  data.concat(FPSTR(html_linksCfgN));
+  data.concat(FPSTR(html_linksSetupN));
+  data.concat(FPSTR(html_onstep_header4));
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
 
   // scripts
-  sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt"); data += temp;
-  data += FPSTR(html_ajaxScriptShort);
+  sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt"); data.concat(temp);
+  data.concat(FPSTR(html_ajaxScriptShort));
 
   // active ajax page is: auxAjax();
   data +="<script>var ajaxPage='auxiliary.txt';</script>\n";
@@ -98,148 +98,148 @@ void handleAux() {
   // Auxiliary Features --------------------------------------
   int j = 0;
   if (mountStatus.featureFound()) {
-    data += FPSTR(html_auxAuxB);
+    data.concat(FPSTR(html_auxAuxB));
 
     for (int i=0; i<8; i++) {
       mountStatus.selectFeature(i);
 
       if (mountStatus.featurePurpose() != 0 && j > 0) {
-        data += F("<br/><div style='float: left; width: 26em'><hr></div>\r\n");
+        data.concat(F("<br/><div style='float: left; width: 26em'><hr></div>\r\n"));
       }
       if (mountStatus.featurePurpose() == SWITCH) {
-        data += F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;");
-        data += mountStatus.featureName();
-        data += "&bull;";
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data += temp;
-        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
-        data += "</div>\r\n";
+        data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
+        data.concat(mountStatus.featureName());
+        data.concat("&bull;");
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data.concat(temp);
+        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
+        data.concat("</div>\r\n");
         sendHtml(data);
         j++;
       } else
       if (mountStatus.featurePurpose() == ANALOG_OUTPUT) {
-        data += F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;");
-        data += mountStatus.featureName();
-        data += "&bull;";
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxAnalog);
+        data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
+        data.concat(mountStatus.featureName());
+        data.concat("&bull;");
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxAnalog));
         sprintf(temp,"%d' onchange=\"sf('x%dv1',this.value)\">",mountStatus.featureValue1(),i+1);
-        data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         sprintf(temp,"<span id='x%dv1'>%d</span>%%",i+1,(int)lround((mountStatus.featureValue1()/255.0)*100.0));
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
         sendHtml(data);
         j++;
       } else
       if (mountStatus.featurePurpose() == DEW_HEATER) {
-        data += F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;");
-        data += mountStatus.featureName();
-        data += "&bull;";
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data += temp;
-        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
+        data.concat(mountStatus.featureName());
+        data.concat("&bull;");
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data.concat(temp);
+        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(mountStatus.featureValue4(),3,1,temp1);
         sprintf(temp,"&Delta;<span id='x%dv4'>%s</span>&deg;C\r\n",i+1,temp1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
 
-        data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
-        data += L_ZERO " (100% " L_POWER ")";
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxHeater);
+        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_ZERO " (100% " L_POWER ")");
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxHeater));
         sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)lround(mountStatus.featureValue2()*10.0),i+1);
-        data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(mountStatus.featureValue2(),3,1,temp1);
         sprintf(temp,"<span id='x%dv2'>%s</span>&deg;C\r\n",i+1,temp1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
         
-        data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
-        data += L_SPAN " (0% " L_POWER ")";
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxHeater);
+        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_SPAN " (0% " L_POWER ")");
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxHeater));
         sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)lround(mountStatus.featureValue3()*10.0),i+1);
-        data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(mountStatus.featureValue3(),3,1,temp1);
         sprintf(temp,"<span id='x%dv3'>%s</span>&deg;C\r\n",i+1,temp1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
 
         sendHtml(data);
         j++;
       } else
       if (mountStatus.featurePurpose() == INTERVALOMETER) {
-        data += F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;");
-        data += mountStatus.featureName();
-        data += "&bull;";
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxStartStop1);
+        data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
+        data.concat(mountStatus.featureName());
+        data.concat("&bull;");
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxStartStop1));
         sprintf(temp,"x%dv1",i+1);
-        data += temp;
-        data += FPSTR(html_auxStartStop2);
+        data.concat(temp);
+        data.concat(FPSTR(html_auxStartStop2));
         sprintf(temp,"x%dv1",i+1);
-        data += temp;
-        data += FPSTR(html_auxStartStop3);
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(FPSTR(html_auxStartStop3));
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         sprintf(temp,"<span id='x%dv1'>-</span>\r\n",i+1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
 
-        data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
-        data += L_CAMERA_COUNT;
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxCount);
+        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_CAMERA_COUNT);
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxCount));
         sprintf(temp,"%d' onchange=\"sf('x%dv4',this.value)\">",(int)mountStatus.featureValue4(),i+1);
-        data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(mountStatus.featureValue4(),0,0,temp1);
         sprintf(temp,"<span id='x%dv4'>%s</span> x\r\n",i+1,temp1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
 
-        data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
-        data += L_CAMERA_EXPOSURE;
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxExposure);
+        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_CAMERA_EXPOSURE);
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxExposure));
         sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)timeToByte(mountStatus.featureValue2()),i+1);
-        data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         float v; int d;
         v=mountStatus.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,temp1);
         sprintf(temp,"<span id='x%dv2'>%s</span> sec\r\n",i+1,temp1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
 
-        data += F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>");
-        data += L_CAMERA_DELAY;
-        data += F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>");
-        data += FPSTR(html_auxDelay);
+        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_CAMERA_DELAY);
+        data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
+        data.concat(FPSTR(html_auxDelay));
         sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)timeToByte(mountStatus.featureValue3()),i+1);
-        data += temp;
-        data += F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>");
+        data.concat(temp);
+        data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         v=mountStatus.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,temp1);
         sprintf(temp,"<span id='x%dv3'>%s</span> sec\r\n",i+1,temp1);
-        data += temp;
-        data += "</div>\r\n";
+        data.concat(temp);
+        data.concat("</div>\r\n");
 
         sendHtml(data);
         j++;
       }
     }
 
-    data += FPSTR(html_auxAuxE);
+    data.concat(FPSTR(html_auxAuxE));
   }
 
-  data += FPSTR(html_auxEnd);
+  data.concat(FPSTR(html_auxEnd));
   
-  data += "</div></body></html>";
+  data.concat("</div></body></html>");
 
   sendHtml(data);
   sendHtmlDone(data);
@@ -273,40 +273,40 @@ void auxAjax() {
       mountStatus.selectFeature(i);
       if (mountStatus.featurePurpose() == SWITCH) {
         if (mountStatus.featureValue1() == 0) {
-          sprintf(temp,"sw%d_on|%s\n",i+1,"enabled"); data += temp;
-          sprintf(temp,"sw%d_off|%s\n",i+1,"disabled"); data += temp;
+          sprintf(temp,"sw%d_on|%s\n",i+1,"enabled"); data.concat(temp);
+          sprintf(temp,"sw%d_off|%s\n",i+1,"disabled"); data.concat(temp);
         } else {
-          sprintf(temp,"sw%d_on|%s\n",i+1,"disabled"); data += temp;
-          sprintf(temp,"sw%d_off|%s\n",i+1,"enabled"); data += temp;
+          sprintf(temp,"sw%d_on|%s\n",i+1,"disabled"); data.concat(temp);
+          sprintf(temp,"sw%d_off|%s\n",i+1,"enabled"); data.concat(temp);
         }
       } else
       if (mountStatus.featurePurpose() == ANALOG_OUTPUT) {
-        sprintf(temp,"x%dv1|%d\n",i+1,(int)lround((mountStatus.featureValue1()/255.0)*100.0)); data += temp;
+        sprintf(temp,"x%dv1|%d\n",i+1,(int)lround((mountStatus.featureValue1()/255.0)*100.0)); data.concat(temp);
       } else
       if (mountStatus.featurePurpose() == DEW_HEATER) {
-        char s[20];
+        char s[40];
         if (mountStatus.featureValue1() == 0) {
-          sprintf(temp,"sw%d_on|%s\n",i+1,"enabled"); data += temp;
-          sprintf(temp,"sw%d_off|%s\n",i+1,"disabled"); data += temp;
+          sprintf(temp,"sw%d_on|%s\n",i+1,"enabled"); data.concat(temp);
+          sprintf(temp,"sw%d_off|%s\n",i+1,"disabled"); data.concat(temp);
         } else {
-          sprintf(temp,"sw%d_on|%s\n",i+1,"disabled"); data += temp;
-          sprintf(temp,"sw%d_off|%s\n",i+1,"enabled"); data += temp;
+          sprintf(temp,"sw%d_on|%s\n",i+1,"disabled"); data.concat(temp);
+          sprintf(temp,"sw%d_off|%s\n",i+1,"enabled"); data.concat(temp);
         }
-        dtostrf(mountStatus.featureValue2(),3,1,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data += temp;
-        dtostrf(mountStatus.featureValue3(),3,1,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data += temp;
-        dtostrf(mountStatus.featureValue4(),3,1,s); sprintf(temp,"x%dv4|%s\n",i+1,s); data += temp;
+        dtostrf(mountStatus.featureValue2(),3,1,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
+        dtostrf(mountStatus.featureValue3(),3,1,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
+        dtostrf(mountStatus.featureValue4(),3,1,s); sprintf(temp,"x%dv4|%s\n",i+1,s); data.concat(temp);
       } else
       if (mountStatus.featurePurpose() == INTERVALOMETER) {
-        char s[20];
+        char s[40];
         float v; int d;
         
         v=mountStatus.featureValue1();
-        if (abs(v) < 0.001) sprintf(temp,"x%dv1|-\n",i+1); else sprintf(temp,"x%dv1|%d\n",i+1,(int)v); data += temp;
+        if (abs(v) < 0.001) sprintf(temp,"x%dv1|-\n",i+1); else sprintf(temp,"x%dv1|%d\n",i+1,(int)v); data.concat(temp);
         v=mountStatus.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
-        dtostrf(v,0,d,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data += temp;
+        dtostrf(v,0,d,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
         v=mountStatus.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
-        dtostrf(v,0,d,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data += temp;
-        sprintf(temp,"x%dv4|%d\n",i+1,(int)mountStatus.featureValue4()); data += temp;
+        dtostrf(v,0,d,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
+        sprintf(temp,"x%dv4|%d\n",i+1,(int)mountStatus.featureValue4()); data.concat(temp);
       }
     }
   }

@@ -49,68 +49,68 @@ void handleLibrary() {
 
   // send a standard http response header
   String data=FPSTR(html_headB);
-  data += FPSTR(html_main_cssB);
-  data += FPSTR(html_main_css1);
-  data += FPSTR(html_main_css2);
-  data += FPSTR(html_main_css3);
-  data += FPSTR(html_main_css4);
+  data.concat(FPSTR(html_main_cssB));
+  data.concat(FPSTR(html_main_css1));
+  data.concat(FPSTR(html_main_css2));
+  data.concat(FPSTR(html_main_css3));
+  data.concat(FPSTR(html_main_css4));
   sendHtml(data);
-  data += FPSTR(html_main_css5);
-  data += FPSTR(html_main_css6);
-  data += FPSTR(html_main_css7);
-  data += FPSTR(html_main_css8);
-  data += FPSTR(html_main_cssE);
-  data += FPSTR(html_headE);
-  data += FPSTR(html_bodyB);
+  data.concat(FPSTR(html_main_css5));
+  data.concat(FPSTR(html_main_css6));
+  data.concat(FPSTR(html_main_css7));
+  data.concat(FPSTR(html_main_css8));
+  data.concat(FPSTR(html_main_cssE));
+  data.concat(FPSTR(html_headE));
+  data.concat(FPSTR(html_bodyB));
   sendHtml(data);
 
   // finish the standard http response header
-  data += FPSTR(html_onstep_header1); data += "OnStep";
-  data += FPSTR(html_onstep_header2);
-  if (mountStatus.getVersionStr(temp1)) data += temp1; else data += "?";
-  data += FPSTR(html_onstep_header3);
-  data += FPSTR(html_linksStatN);
-  data += FPSTR(html_linksCtrlN);
-  if (mountStatus.featureFound()) data += FPSTR(html_linksAuxN);
-  data += FPSTR(html_linksLibS);
+  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
+  data.concat(FPSTR(html_onstep_header3));
+  data.concat(FPSTR(html_linksStatN));
+  data.concat(FPSTR(html_linksCtrlN));
+  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  data.concat(FPSTR(html_linksLibS));
   #if ENCODERS == ON
-    data += FPSTR(html_linksEncN);
+    data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  data += FPSTR(html_linksPecN);
-  data += FPSTR(html_linksSetN);
-  data += FPSTR(html_linksCfgN);
-  data += FPSTR(html_linksSetupN);
-  data += FPSTR(html_onstep_header4);
+  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  data.concat(FPSTR(html_linksSetN));
+  data.concat(FPSTR(html_linksCfgN));
+  data.concat(FPSTR(html_linksSetupN));
+  data.concat(FPSTR(html_onstep_header4));
   sendHtml(data);
 
   // Scripts
-  sprintf_P(temp, html_ajaxScript, "libraryA.txt"); data += temp;
-  data += FPSTR(html_libStatusScript);
+  sprintf_P(temp, html_ajaxScript, "libraryA.txt"); data.concat(temp);
+  data.concat(FPSTR(html_libStatusScript));
 
   // active ajax page is: libraryAjax();
-  data += "<script>var ajaxPage='library.txt';</script>\n";
-  data += FPSTR(html_ajax_active);
-  data += "<script>auto2Rate=2;</script>";
+  data.concat("<script>var ajaxPage='library.txt';</script>\n");
+  data.concat(FPSTR(html_ajax_active));
+  data.concat("<script>auto2Rate=2;</script>");
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data += FPSTR(html_bad_comms_message); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
 
-  data += FPSTR(html_libCatalogSelect1);
+  data.concat(FPSTR(html_libCatalogSelect1));
   sendHtml(data);
-  data += FPSTR(html_libCatalogSelect2);
+  data.concat(FPSTR(html_libCatalogSelect2));
   sendHtml(data);
-  data += FPSTR(html_libSubmitCatalog);
+  data.concat(FPSTR(html_libSubmitCatalog));
   sendHtml(data);
-  data += FPSTR(html_libShowMessage);
-  data += FPSTR(html_libEditCatalog);
+  data.concat(FPSTR(html_libShowMessage));
+  data.concat(FPSTR(html_libEditCatalog));
   sendHtml(data);
-  data += FPSTR(html_libCatalogForm1);
+  data.concat(FPSTR(html_libCatalogForm1));
   sendHtml(data);
-  data += FPSTR(html_libCatalogForm2);
+  data.concat(FPSTR(html_libCatalogForm2));
 
-  data += "</div></body></html>";
+  data.concat("</div></body></html>");
 
   sendHtml(data);
   sendHtmlDone(data);
@@ -135,16 +135,16 @@ void libraryAjax(EthernetClient *client) {
 void libraryAjax() {
 #endif
   String data="";
-  data += "libFree|"; data += commandString(":L?#"); data+="\n";
+  data.concat("libFree|"); data.concat(commandString(":L?#")); data+="\n";
 
   if (showMessage != "") {
-    data += "message|" + showMessage + "\n";
+    data.concat("message|" + showMessage + "\n");
     showMessage="";
   }
   
   if (catalogIndexChanged) {
-    if (currentCatalog == 0) data += "clr_btn|" L_CAT_CLEAR_LIB "\n"; else data += "clr_btn|" L_CAT_CLEAR "\n";
-    data += "up|disabled\n";
+    if (currentCatalog == 0) data.concat("clr_btn|" L_CAT_CLEAR_LIB "\n"); else data.concat("clr_btn|" L_CAT_CLEAR "\n");
+    data.concat("up|disabled\n");
     strcpy(currentCatName,"");
     if (currentCatalog != 0) {
       if (commandBool(":L$#")) {
@@ -159,26 +159,26 @@ void libraryAjax() {
           if (currentCatName[0] == 0) {
             showMessage = F(L_CAT_NO_NAME);
           } else {
-            data += "down|enabled\n";
+            data.concat("down|enabled\n");
             showMessage = L_CATALOG " "; showMessage += currentCatName; showMessage += " " L_SELECTED ".";
           }
-        } else { data += "down|disabled\n"; showMessage = F(L_CAT_NO_NAME); }
-      } else { data += "down|disabled\n"; showMessage = F(L_CAT_GET_NAME_FAIL); }
-    } else { data += "down|disabled\n"; showMessage = F(L_CAT_NO_CAT); }
-    data += "catData&\n";
+        } else { data.concat("down|disabled\n"); showMessage = F(L_CAT_NO_NAME); }
+      } else { data.concat("down|disabled\n"); showMessage = F(L_CAT_GET_NAME_FAIL); }
+    } else { data.concat("down|disabled\n"); showMessage = F(L_CAT_NO_CAT); }
+    data.concat("catData&\n");
     catalogIndexChanged=false;
   } else
 
   if (downloadCatalogData) {
     if (currentCatalog != 0) {
-      data += "catData&";
+      data.concat("catData&");
       bool success=false;
       char temp[40]="";
       sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
       if (commandBool(temp)) {
-        data+="$";
-        data+=currentCatName;
-        data+="\r";
+        data.concat("$");
+        data.concat(currentCatName);
+        data.concat("\r");
 
         while (true) {
           command(":LR#",temp);
@@ -205,13 +205,13 @@ void libraryAjax() {
 
           r=nameS+","+catS+","+raS+","+decS;
 
-          data+=r;
-          data+="\r";
+          data.concat(r);
+          data.concat("\r");
         }
         if (!success) showMessage = F(L_CAT_DOWNLOAD_FAIL); else showMessage = F(L_CAT_DOWNLOAD_SUCCESS);
       } else showMessage = F(L_CAT_DOWNLOAD_INDEX_FAIL);
     } else showMessage = F(L_CAT_DOWNLOAD_INDEX_FAIL);
-    data+="\n";
+    data.concat("\n");
 
     downloadCatalogData=false;
   }
@@ -271,7 +271,7 @@ void processLibraryGet() {
       if (commandBool(temp)) {
         v.replace("_"," ");
         int lineNum = 0;
-        if (v=="DELETE") { v=""; showMessage=L_CAT_DATA_REMOVED "."; }
+        if (v.equals("DELETE")) { v = ""; showMessage = L_CAT_DATA_REMOVED "."; }
         commandBlind(":LL#");  // clear this catalog
         while (v.length() > 0) { // any data left?
           lineNum++;

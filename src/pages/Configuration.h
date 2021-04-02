@@ -110,3 +110,9 @@ const char html_configMountType[] PROGMEM =
   "<li>" L_ADV_SET_FOOTER_MSG4 "</li>"
   "</ul>";
 #endif
+
+const char html_resetNotes[] PROGMEM =
+"<br />Notes:<ul>"
+"<li>" L_RESET_MSG1 "</li>"
+"<li>" L_DOWN_MESSAGE1 "</li>"
+"</ul>";
