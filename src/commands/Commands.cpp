@@ -30,9 +30,11 @@ void serialBegin(long baudRate, int swap) {
     //     swapped: TX on gpio 5 and RX on gpio 23
     if (swap) { 
         VLF("WEM: Attempting connect on swapped port");
+        delay(500);
         Ser.begin(baudRate,SERIAL_8N1,23,5); 
       } else {
         VLF("WEM: Attempting connect on non-swapped port");
+        delay(500);
         Ser.begin(baudRate,SERIAL_8N1,1,3);
       }
   #else
@@ -41,13 +43,14 @@ void serialBegin(long baudRate, int swap) {
     #ifdef ESP8266
       if (swap) {
         VLF("WEM: Attempting connect on swapped port");
+        delay(500);
         Ser.swap();
       } else {
         VLF("WEM: Attempting connect on non-swapped port");
       }
     #endif
   #endif
-  delay(1000);
+  delay(500);
 }
 
 const char* highSpeedCommsStr(long baud) {
