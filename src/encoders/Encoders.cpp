@@ -6,9 +6,9 @@
 #include "../../Config.h"
 #include "../../ConfigX.h"
 #include "../pinmaps/Models.h"
-
 #include "../HAL/HAL.h"
 extern NVS nv;
+#include "../debug/Debug.h"
 
 #include "../status/MountStatus.h"
 #include "../commands/Commands.h"
