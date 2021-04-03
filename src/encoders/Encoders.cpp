@@ -14,134 +14,133 @@ extern NVS nv;
 #include "../commands/Commands.h"
 #include "Encoders.h"
 
-#if ENCODERS == ON
+#if defined(ESP8266) || defined(ESP32)
+  #include <Esp.h>
+#endif
 
+#if ENC_AUTO_SYNC_DEFAULT == ON
+  char encAutoSync = true;
+#else
+  char encAutoSync = false;
+#endif
+
+double  Axis1EncTicksPerDeg = AXIS1_ENC_TICKS_DEG;
+int16_t Axis1EncRev         = AXIS1_ENC_REVERSE;
+int32_t Axis1EncDiffTo      = AXIS1_ENC_DIFF_LIMIT_TO;
+int32_t Axis1EncDiffFrom    = AXIS1_ENC_DIFF_LIMIT_FROM;
+int32_t Axis1EncDiffAbs     = 0;
+double  Axis2EncTicksPerDeg = AXIS2_ENC_TICKS_DEG;
+int16_t Axis2EncRev         = AXIS2_ENC_REVERSE;
+int32_t Axis2EncDiffTo      = AXIS2_ENC_DIFF_LIMIT_TO;
+int32_t Axis2EncDiffFrom    = AXIS2_ENC_DIFF_LIMIT_FROM;
+int32_t Axis2EncDiffAbs     = 0;
+
+// encoder polling rate in seconds, default=2.0
+#define POLLING_RATE 2.0
+
+// encoder rate control
+#if AXIS1_ENC_RATE_CONTROL == ON
+
+  // user interface and settings
+  bool encSweep = true;
+  bool encRateControl = false;
+  long Axis1EncProp = 10;
+  long Axis1EncMinGuide = 100;
+
+  // timing related
+  volatile uint32_t T0 = 0;
+  volatile uint32_t T1 = 0;
+  volatile uint32_t Telapsed = 0;
+
+  #define MIN_ENC_PERIOD 0.2
+  #define MAX_ENC_PERIOD 5.0
+  float arcSecondsPerTick = (1.0/Axis1EncTicksPerDeg)*3600.0; // (0.0018)*3600 = 6.48
+  float usPerTick = (arcSecondsPerTick/15.041)*1000000.0;     // 6.48/15.041 = 0.4308 seconds per tick
+
+  unsigned long msPerTickMax = (arcSecondsPerTick/15.041)*1000.0*MAX_ENC_PERIOD;
+  #if AXIS1_ENC_BIN_AVG > 0
+    volatile uint32_t usPerBinTickMin = (double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MIN_ENC_PERIOD;
+    volatile uint32_t usPerBinTickMax = (double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MAX_ENC_PERIOD;
+  #endif
   #if defined(ESP8266) || defined(ESP32)
-    #include <Esp.h>
-  #endif
-
-  #if ENC_AUTO_SYNC_DEFAULT == ON
-    char encAutoSync = true;
+    volatile uint32_t clocksPerTickMin = (double)usPerTick*(double)ESP.getCpuFreqMHz()*MIN_ENC_PERIOD;
+    volatile uint32_t clocksPerTickMax = (double)usPerTick*(double)ESP.getCpuFreqMHz()*MAX_ENC_PERIOD;
+    #define GetClockCount ESP.getCycleCount()
+    #define ClockCountToMicros ((uint32_t)ESP.getCpuFreqMHz())
+  #elif defined(__MK20DX256__)
+    volatile uint32_t clocksPerTickMin = (double)usPerTick*(double)(F_CPU/1000000L)*MIN_ENC_PERIOD;
+    volatile uint32_t clocksPerTickMax = (double)usPerTick*(double)(F_CPU/1000000L)*MAX_ENC_PERIOD;
+    #define GetClockCount ARM_DWT_CYCCNT
+    #define ClockCountToMicros (F_CPU/1000000L)
   #else
-    char encAutoSync = false;
+    volatile uint32_t clocksPerTickMin = (double)usPerTick*MIN_ENC_PERIOD;
+    volatile uint32_t clocksPerTickMax = (double)usPerTick*MAX_ENC_PERIOD;
+    #define GetClockCount micros()
+    #define ClockCountToMicros (1L)
+  #endif
+  
+  // averages & rate calculation
+  volatile long Axis1EncStaSamples = 20;
+  volatile long Axis1EncLtaSamples = 200;
+  volatile int32_t Tsta = 0;
+  volatile int32_t Tlta = 0;
+  #if AXIS1_ENC_BIN_AVG > 0
+    volatile uint32_t StaBins[AXIS1_ENC_BIN_AVG];
+    volatile uint32_t LtaBins[AXIS1_ENC_BIN_AVG];
+    volatile uint32_t T1Bins[AXIS1_ENC_BIN_AVG];
+  #endif
+  float axis1EncRateSta = 1.0;
+  float axis1EncRateLta = 1.0;
+  float axis1EncRateComp = 0.0;
+  float axis1Rate = 1.0;
+
+  #if AXIS1_ENC_INTPOL_COS == ON
+    long Axis1EncIntPolPeriod = AXIS1_ENC_BIN_AVG;
+    long Axis1EncIntPolPhase = 1;
+    long Axis1EncIntPolMag = 0;
+    float intpolComp = 0;
+    float intpolPhase = 0;
   #endif
 
-  double  Axis1EncTicksPerDeg = AXIS1_ENC_TICKS_DEG;
-  int16_t Axis1EncRev         = AXIS1_ENC_REVERSE;
-  int32_t Axis1EncDiffTo      = AXIS1_ENC_DIFF_LIMIT_TO;
-  int32_t Axis1EncDiffFrom    = AXIS1_ENC_DIFF_LIMIT_FROM;
-  int32_t Axis1EncDiffAbs     = 0;
-  double  Axis2EncTicksPerDeg = AXIS2_ENC_TICKS_DEG;
-  int16_t Axis2EncRev         = AXIS2_ENC_REVERSE;
-  int32_t Axis2EncDiffTo      = AXIS2_ENC_DIFF_LIMIT_TO;
-  int32_t Axis2EncDiffFrom    = AXIS2_ENC_DIFF_LIMIT_FROM;
-  int32_t Axis2EncDiffAbs     = 0;
-
-  // encoder polling rate in seconds, default=2.0
-  #define POLLING_RATE 2.0
-
-  // encoder rate control
-  #if AXIS1_ENC_RATE_CONTROL == ON
-
-    // user interface and settings
-    bool encSweep = true;
-    bool encRateControl = false;
-    long Axis1EncProp = 10;
-    long Axis1EncMinGuide = 100;
-
-    // timing related
-    volatile uint32_t T0 = 0;
-    volatile uint32_t T1 = 0;
-    volatile uint32_t Telapsed = 0;
-
-    #define MIN_ENC_PERIOD 0.2
-    #define MAX_ENC_PERIOD 5.0
-    float arcSecondsPerTick = (1.0/Axis1EncTicksPerDeg)*3600.0; // (0.0018)*3600 = 6.48
-    float usPerTick = (arcSecondsPerTick/15.041)*1000000.0;     // 6.48/15.041 = 0.4308 seconds per tick
-
-    unsigned long msPerTickMax = (arcSecondsPerTick/15.041)*1000.0*MAX_ENC_PERIOD;
-    #if AXIS1_ENC_BIN_AVG > 0
-      volatile uint32_t usPerBinTickMin = (double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MIN_ENC_PERIOD;
-      volatile uint32_t usPerBinTickMax = (double)usPerTick*(double)AXIS1_ENC_BIN_AVG*MAX_ENC_PERIOD;
-    #endif
-    #if defined(ESP8266) || defined(ESP32)
-      volatile uint32_t clocksPerTickMin = (double)usPerTick*(double)ESP.getCpuFreqMHz()*MIN_ENC_PERIOD;
-      volatile uint32_t clocksPerTickMax = (double)usPerTick*(double)ESP.getCpuFreqMHz()*MAX_ENC_PERIOD;
-      #define GetClockCount ESP.getCycleCount()
-      #define ClockCountToMicros ((uint32_t)ESP.getCpuFreqMHz())
-    #elif defined(__MK20DX256__)
-      volatile uint32_t clocksPerTickMin = (double)usPerTick*(double)(F_CPU/1000000L)*MIN_ENC_PERIOD;
-      volatile uint32_t clocksPerTickMax = (double)usPerTick*(double)(F_CPU/1000000L)*MAX_ENC_PERIOD;
-      #define GetClockCount ARM_DWT_CYCCNT
-      #define ClockCountToMicros (F_CPU/1000000L)
-    #else
-      volatile uint32_t clocksPerTickMin = (double)usPerTick*MIN_ENC_PERIOD;
-      volatile uint32_t clocksPerTickMax = (double)usPerTick*MAX_ENC_PERIOD;
-      #define GetClockCount micros()
-      #define ClockCountToMicros (1L)
-    #endif
-    
-    // averages & rate calculation
-    volatile long Axis1EncStaSamples = 20;
-    volatile long Axis1EncLtaSamples = 200;
-    volatile int32_t Tsta = 0;
-    volatile int32_t Tlta = 0;
-    #if AXIS1_ENC_BIN_AVG > 0
-      volatile uint32_t StaBins[AXIS1_ENC_BIN_AVG];
-      volatile uint32_t LtaBins[AXIS1_ENC_BIN_AVG];
-      volatile uint32_t T1Bins[AXIS1_ENC_BIN_AVG];
-    #endif
-    float axis1EncRateSta = 1.0;
-    float axis1EncRateLta = 1.0;
-    float axis1EncRateComp = 0.0;
-    float axis1Rate = 1.0;
-
-    #if AXIS1_ENC_INTPOL_COS == ON
-      long Axis1EncIntPolPeriod = AXIS1_ENC_BIN_AVG;
-      long Axis1EncIntPolPhase = 1;
-      long Axis1EncIntPolMag = 0;
-      float intpolComp = 0;
-      float intpolPhase = 0;
-    #endif
-
-    #if AXIS1_ENC_RATE_AUTO > 0
-      static unsigned long nextWormPeriod = 0;
-      static float axis1RateDelta = 0;
-    #endif
-
-    // guiding
-    float guideCorrection = 0;
-    long guideCorrectionMillis = 0;
-
+  #if AXIS1_ENC_RATE_AUTO > 0
+    static unsigned long nextWormPeriod = 0;
+    static float axis1RateDelta = 0;
   #endif
 
-  // ----------------------------------------------------------------------------------------------------------------
-  // background process position/rate control for encoders 
+  // guiding
+  float guideCorrection = 0;
+  long guideCorrectionMillis = 0;
 
-  void Encoders::init() { 
-    if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
-      VLF("WEM: NV key invalid, resetting Encoder defaults");
-      nv.write(EE_ENC_AUTO_SYNC, (int16_t)ENC_AUTO_SYNC_DEFAULT);
+#endif
 
-      nv.write(EE_ENC_A1_DIFF_TO,(int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
-      nv.write(EE_ENC_A1_TICKS,  (double)AXIS1_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A1_REV,    (int16_t)AXIS1_ENC_REVERSE);
+// ----------------------------------------------------------------------------------------------------------------
+// background process position/rate control for encoders 
 
-      nv.write(EE_ENC_A2_DIFF_TO,(int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
-      nv.write(EE_ENC_A2_TICKS,  (double)AXIS2_ENC_TICKS_DEG);
-      nv.write(EE_ENC_A2_REV,    (int16_t)AXIS2_ENC_REVERSE);
+void Encoders::init() { 
+  if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
+    VLF("WEM: bad NV key, reset Encoder defaults");
+    nv.write(EE_ENC_AUTO_SYNC, (int16_t)ENC_AUTO_SYNC_DEFAULT);
 
-      nv.write(EE_ENC_RC_STA,    (int32_t)20);   // enc short term average samples
-      nv.write(EE_ENC_RC_LTA,    (int32_t)200);  // enc long term average samples
-      nv.write(EE_ENC_RC_RCOMP,  (int32_t)0);    // enc rate comp
-      nv.write(EE_ENC_RC_INTP_P, (int32_t)1);    // intpol phase
-      nv.write(EE_ENC_RC_INTP_M, (int32_t)0);    // intpol mag
-      nv.write(EE_ENC_RC_PROP,   (int32_t)10);   // prop
-      nv.write(EE_ENC_MIN_GUIDE, (int32_t)100);  // minimum guide duration
-      nv.write(EE_ENC_A1_ZERO,   (int32_t)0);    // absolute Encoder Axis1 zero
-      nv.write(EE_ENC_A2_ZERO,   (int32_t)0);    // absolute Encoder Axis2 zero
-    }
+    nv.write(EE_ENC_A1_DIFF_TO,(int32_t)AXIS1_ENC_DIFF_LIMIT_TO);
+    nv.write(EE_ENC_A1_TICKS,  (double)AXIS1_ENC_TICKS_DEG);
+    nv.write(EE_ENC_A1_REV,    (int16_t)AXIS1_ENC_REVERSE);
 
+    nv.write(EE_ENC_A2_DIFF_TO,(int32_t)AXIS2_ENC_DIFF_LIMIT_TO);
+    nv.write(EE_ENC_A2_TICKS,  (double)AXIS2_ENC_TICKS_DEG);
+    nv.write(EE_ENC_A2_REV,    (int16_t)AXIS2_ENC_REVERSE);
+
+    nv.write(EE_ENC_RC_STA,    (int32_t)20);   // enc short term average samples
+    nv.write(EE_ENC_RC_LTA,    (int32_t)200);  // enc long term average samples
+    nv.write(EE_ENC_RC_RCOMP,  (int32_t)0);    // enc rate comp
+    nv.write(EE_ENC_RC_INTP_P, (int32_t)1);    // intpol phase
+    nv.write(EE_ENC_RC_INTP_M, (int32_t)0);    // intpol mag
+    nv.write(EE_ENC_RC_PROP,   (int32_t)10);   // prop
+    nv.write(EE_ENC_MIN_GUIDE, (int32_t)100);  // minimum guide duration
+    nv.write(EE_ENC_A1_ZERO,   (int32_t)0);    // absolute Encoder Axis1 zero
+    nv.write(EE_ENC_A2_ZERO,   (int32_t)0);    // absolute Encoder Axis2 zero
+  }
+
+  #if ENCODERS == ON
     VLF("WEM: NV reading Encoder settings");
     if (ENC_AUTO_SYNC_MEMORY == ON) encAutoSync = nv.readI(EE_ENC_AUTO_SYNC);
     Axis1EncDiffTo = nv.readL(EE_ENC_A1_DIFF_TO);
@@ -164,8 +163,10 @@ extern NVS nv;
       Axis1EncProp = nv.readL(EE_ENC_RC_PROP);
       Axis1EncMinGuide = nv.readL(EE_ENC_MIN_GUIDE);
     #endif
-  }
+  #endif
+}
 
+#if ENCODERS == ON
   void Encoders::syncFromOnStep() {
     // don't sync if the Encoders vs. OnStep disagree by too much
     if (Axis1EncDiffFrom != OFF && fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
@@ -340,7 +341,7 @@ extern NVS nv;
   bool Encoders::validAxis2() { return !_enAxis2Fault; }
   double Encoders::getOnStepAxis1() { return _osAxis1; }
   double Encoders::getOnStepAxis2() { return _osAxis2; }
-
-  Encoders encoders;
-
 #endif
+
+Encoders encoders;
+

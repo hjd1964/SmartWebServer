@@ -79,10 +79,8 @@ void setup(void) {
   if (NV_WIPE == ON) { nv.update(EE_KEY_HIGH, (int16_t)0); nv.update(EE_KEY_LOW, (int16_t)0); }
 
   // read settings from NV or init. as required
-  #if ENCODERS == ON
-    VLF("WEM: Init Encoders");
-    encoders.init();
-  #endif
+  VLF("WEM: Init Encoders");
+  encoders.init();
 
   VLF("WEM: Init Webserver");
   #if OPERATIONAL_MODE == WIFI
