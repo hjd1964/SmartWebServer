@@ -60,7 +60,7 @@ extern NVS nv;
 
   void wifiInit(void) {
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
-      VLF("WEM: NV key invalid, resetting Wifi defaults");
+      VLF("WEM: bad NV key, reset Wifi defaults");
       nv.update(EE_AP_EN, (int16_t)accessPointEnabled);
       nv.update(EE_STA_EN, (int16_t)stationEnabled);
       nv.update(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
@@ -112,27 +112,27 @@ extern NVS nv;
   }
 
   void wifiStart(void) {
-    VLF("WEM: WiFi Server start");
+    VF("WEM: Master Pwd = "); VL(masterPassword);
 
-    VF("WEM: Access Point Enabled  = "); VL(accessPointEnabled);
-    VF("WEM: Station Enabled       = "); VL(stationEnabled);
-    VF("WEM: Station DHCP Enabled  = "); VL(stationDhcpEnabled);
+    VF("WEM: Web Ch Timeout ms = "); VL(webTimeout);
+    VF("WEM: Cmd Ch Timeout ms = "); VL(cmdTimeout);
 
-    VF("WEM: Web Channel Timeout ms= "); VL(webTimeout);
-    VF("WEM: Cmd Channel Timeout ms= "); VL(cmdTimeout);
+    VF("WEM: WiFi AP Enabled  = "); VL(accessPointEnabled);
+    VF("WEM: WiFi Sta Enabled = "); VL(stationEnabled);
+    VF("WEM: WiFi Sta DHCP En = "); VL(stationDhcpEnabled);
 
-    VF("WEM: WiFi STA SSID   = "); VL(wifi_sta_ssid);
-    VF("WEM: WiFi STA PWD    = "); VL(wifi_sta_pwd);
-    VF("WEM: WiFi STA IP     = "); VL(wifi_sta_ip.toString());
-    VF("WEM: WiFi STA GATEWAY= "); VL(wifi_sta_gw.toString());
-    VF("WEM: WiFi STA SN     = "); VL(wifi_sta_sn.toString());
+    VF("WEM: WiFi STA SSID    = "); VL(wifi_sta_ssid);
+    VF("WEM: WiFi STA PWD     = "); VL(wifi_sta_pwd);
+    VF("WEM: WiFi STA IP      = "); VL(wifi_sta_ip.toString());
+    VF("WEM: WiFi STA GATEWAY = "); VL(wifi_sta_gw.toString());
+    VF("WEM: WiFi STA SN      = "); VL(wifi_sta_sn.toString());
 
-    VF("WEM: WiFi AP SSID    = "); VL(wifi_ap_ssid);
-    VF("WEM: WiFi AP PWD     = "); VL(wifi_ap_pwd);
-    VF("WEM: WiFi AP CH      = "); VL(wifi_ap_ch);
-    VF("WEM: WiFi AP IP      = "); VL(wifi_ap_ip.toString());
-    VF("WEM: WiFi AP GATEWAY = "); VL(wifi_ap_gw.toString());
-    VF("WEM: WiFi AP SN      = "); VL(wifi_ap_sn.toString());
+    VF("WEM: WiFi AP SSID     = "); VL(wifi_ap_ssid);
+    VF("WEM: WiFi AP PWD      = "); VL(wifi_ap_pwd);
+    VF("WEM: WiFi AP CH       = "); VL(wifi_ap_ch);
+    VF("WEM: WiFi AP IP       = "); VL(wifi_ap_ip.toString());
+    VF("WEM: WiFi AP GATEWAY  = "); VL(wifi_ap_gw.toString());
+    VF("WEM: WiFi AP SN       = "); VL(wifi_ap_sn.toString());
 
   TryAgain:
     if (accessPointEnabled && !stationEnabled) {

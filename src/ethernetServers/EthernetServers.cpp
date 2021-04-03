@@ -38,7 +38,7 @@ extern NVS nv;
   
   void ethernetInit(void) {
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
-      VLF("WEM: NV key invalid, resetting Ethernet defaults");
+      VLF("WEM: bad NV key, reset Eth defaults");
       nv.update(EE_TIMEOUT_WEB, (int16_t)webTimeout);
       nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
 
@@ -64,14 +64,14 @@ extern NVS nv;
   }
 
   void ethernetStart(void) {
-    VLF("WEM: Ethernet Server start");
+    VF("WEM: Master Pwd = "); VL(masterPassword);
 
-    VF("WEM: Web Channel Timeout ms= "); VL(webTimeout);
-    VF("WEM: Cmd Channel Timeout ms= "); VL(cmdTimeout);
+    VF("WEM: Web Ch Timeout ms = "); VL(webTimeout);
+    VF("WEM: Cmd Ch Timeout ms = "); VL(cmdTimeout);
 
-    // VF("WEM: Ethernet IP     = "); VL(ip.toString());
-    // VF("WEM: Ethernet GATEWAY= "); VL(gateway.toString());
-    // VF("WEM: Ethernet SUBNET = "); VL(subnet.toString());
+    VF("WEM: Eth IP = "); V(eth_ip[0]); V("."); V(eth_ip[1]); V("."); V(eth_ip[2]); V("."); VL(eth_ip[3]);
+    VF("WEM: Eth GW = "); V(eth_gw[0]); V("."); V(eth_gw[1]); V("."); V(eth_gw[2]); V("."); VL(eth_gw[3]);
+    VF("WEM: Eth SN = "); V(eth_sn[0]); V("."); V(eth_sn[1]); V("."); V(eth_sn[2]); V("."); VL(eth_sn[3]);
 
     #if OPERATIONAL_MODE == ETHERNET_W5500
       VF("WEM: Resetting W5500 using BOOT0_PIN ("); V(BOOT0_PIN); VL(")");
