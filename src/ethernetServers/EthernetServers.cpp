@@ -82,6 +82,7 @@ extern NVS nv;
       delayMicroseconds(1000);
       delay(1000);
     #endif
+    server.init();
   }
 
   void ethernetCommandChannel(void) {

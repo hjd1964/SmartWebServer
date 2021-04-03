@@ -154,7 +154,7 @@ Again:
   #if OPERATIONAL_MODE == WIFI
     wifiStart();
   #else
-    server.init();
+    ethernetStart();
   #endif
 
   VLF("WEM: Set webpage handlers");
