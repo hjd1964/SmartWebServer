@@ -34,7 +34,7 @@
 #define SUBNET_AP         (255,255,255,0) // ..55,255,0), Wifi Access Point default SUBNET                                    Adjust
 
 // PASSWORD ------------------------------------------------------------------------------------------------------------------------
-#define Default_Password       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option
+#define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option
 
 // NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
 #define NV_WIPE                       OFF //          ON, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq

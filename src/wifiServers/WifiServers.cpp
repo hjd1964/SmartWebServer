@@ -20,7 +20,7 @@ extern NVS nv;
     ESP8266WebServer server(80);
   #endif
 
-  char masterPassword[40] = Default_Password;
+  char masterPassword[40] = PASSWORD_DEFAULT;
 
   bool accessPointEnabled = true;
   bool stationEnabled     = false;

@@ -18,7 +18,7 @@ extern NVS nv;
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 
-  char masterPassword[40] = Default_Password;
+  char masterPassword[40] = PASSWORD_DEFAULT;
 
   WebServer server;
 
