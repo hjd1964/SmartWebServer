@@ -68,15 +68,15 @@ extern NVS nv;
       nv.update(EE_TIMEOUT_WEB, (int16_t)webTimeout);
       nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
 
-      nv.updateBytes(EE_STA_SSID, wifi_sta_ssid, 40);
-      nv.updateBytes(EE_STA_PWD, wifi_sta_pwd, 40);
-      nv.updateBytes(EE_PASSWORD, masterPassword, 40);
+      nv.updateBytes(EE_STA_SSID, wifi_sta_ssid, -40);
+      nv.updateBytes(EE_STA_PWD, wifi_sta_pwd, -40);
+      nv.updateBytes(EE_PASSWORD, masterPassword, -40);
       for (int i = 0; i < 4; i++) nv.update(EE_STA_IP + i, wifi_sta_ip[i]);
       for (int i = 0; i < 4; i++) nv.update(EE_STA_GW + i, wifi_sta_gw[i]);
       for (int i = 0; i < 4; i++) nv.update(EE_STA_SN + i, wifi_sta_sn[i]);
 
-      nv.updateBytes(EE_AP_SSID, wifi_ap_ssid, 40);
-      nv.updateBytes(EE_AP_PWD, wifi_ap_pwd, 40);
+      nv.updateBytes(EE_AP_SSID, wifi_ap_ssid, -40);
+      nv.updateBytes(EE_AP_PWD, wifi_ap_pwd, -40);
       nv.update(EE_AP_CH, (int16_t)wifi_ap_ch);
       for (int i = 0; i < 4; i++) nv.update(EE_AP_IP + i, wifi_ap_ip[i]);
       for (int i = 0; i < 4; i++) nv.update(EE_AP_GW + i, wifi_ap_gw[i]);
