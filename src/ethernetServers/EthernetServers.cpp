@@ -42,6 +42,7 @@ extern NVS nv;
       nv.update(EE_TIMEOUT_WEB, (int16_t)webTimeout);
       nv.update(EE_TIMEOUT_CMD, (int16_t)cmdTimeout);
 
+      nv.updateBytes(EE_PASSWORD, masterPassword, -40);
       for (int i = 0; i < 4; i++) nv.update(EE_ETH_IP + i, eth_ip[i]);
       for (int i = 0; i < 4; i++) nv.update(EE_ETH_GW + i, eth_gw[i]);
       for (int i = 0; i < 4; i++) nv.update(EE_ETH_SN + i, eth_sn[i]);
@@ -55,6 +56,7 @@ extern NVS nv;
     if (cmdTimeout > 300) cmdTimeout = 300;
     if (cmdTimeout < 100) cmdTimeout = 100;
 
+    nv.readBytes(EE_PASSWORD, masterPassword, -40);
     for (int i = 0; i < 4; i++) eth_ip[i] = nv.read(EE_ETH_IP + i);
     for (int i = 0; i < 4; i++) eth_gw[i] = nv.read(EE_ETH_GW + i);
     for (int i = 0; i < 4; i++) eth_dns[i] = nv.read(EE_ETH_GW + i);

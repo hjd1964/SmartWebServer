@@ -178,7 +178,7 @@ void processNetworkGet() {
   v = server.arg("webpwd");
   if (!v.equals(EmptyStr)) {
     strcpy(masterPassword, (char*)v.c_str());
-    nv.write(EE_PASSWORD, masterPassword);
+    nv.updateBytes(EE_PASSWORD, masterPassword, -40);
   }
 
   // Timeouts -----------------------------------------------------------------
