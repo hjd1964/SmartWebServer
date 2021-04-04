@@ -15,6 +15,11 @@
     #error "Absolute encoders require NV/EEPROM which isn't supported on this platform"
   #endif
 
+  // similar broadcom devices have range of 10MHz to 80 KHz
+  // the fastest supported rate for this library is 500 KHz
+  // rounding makes rates of about 500, 250, 166.66, 125, 100, 83.33 KHz
+  #define CLOCK_RATE_KHZ 250
+
   #define ENC_HAS_ABSOLUTE
   
   class BiSSC_Encoder {
