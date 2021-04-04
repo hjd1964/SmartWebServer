@@ -69,7 +69,7 @@ extern NVS nv;
     encCrc = 0;
 
     // rate in microseconds, ie 2+2 = 4 = 250KHz
-    int rate = lround(500/CLOCK_RATE_KHZ);
+    int rate = lround(500.0/CLOCK_RATE_KHZ);
 
     // sync phase
     for (int i = 0; i < 20; i++) {
