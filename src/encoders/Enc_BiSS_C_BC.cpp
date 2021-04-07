@@ -8,6 +8,7 @@
 #include "../HAL/HAL.h"
 extern NVS nv;
 #include "../pinmaps/Models.h"
+#include "../debug/Debug.h"
 
 // tested and known to work with Broadcom AS37-H39B-B
 // designed according protocol description found in as38-H39e-b-an100.pdf
@@ -153,10 +154,10 @@ extern NVS nv;
     digitalWrite(_clkPin, HIGH);
 
     // trap errors
-    if (!foundAck) return false;
-    if (!foundStart) return false;
-    if (!foundCds) return false;
-    if (encErr) return false;
+    if (!foundAck) { VLF("WEM: BISSC Encoder, Ack bit invalid"); return false; }
+    if (!foundStart) { VLF("WEM: BISSC Encoder, Start bit invalid"); return false; }
+    if (!foundCds) { VLF("WEM: BISSC Encoder, Cds bit invalid"); return false; }
+    if (encErr) { VLF("WEM: BISSC Encoder, Error bit set"); return false; }
     // todo: solve CRC and return false if it fails
 
     // combine absolute and 9 low order bits of multi-turn count for a 32 bit position
