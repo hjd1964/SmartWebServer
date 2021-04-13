@@ -96,27 +96,25 @@ void handleSettings() {
   // Slew speed
   data.concat(FPSTR(html_settingsSlewSpeed1));
   data.concat(FPSTR(html_settingsSlewSpeed2));
-
   sendHtml(data);
 
-  if (mountStatus.mountType()!=MT_ALTAZM) {
+  if (mountStatus.mountType() != MT_ALTAZM) {
     data.concat(FPSTR(html_settingsTrackComp1));
     data.concat(FPSTR(html_settingsTrackComp2));
     data.concat(FPSTR(html_settingsTrackComp3));
+    sendHtml(data);
   }
-  sendHtml(data);
 
   data.concat(FPSTR(html_settingsTrack1));
   data.concat(FPSTR(html_settingsTrack2));
   
   data.concat(FPSTR(html_settingsPark1));
-    
   sendHtml(data);
 
   data.concat(FPSTR(html_settingsBuzzer1));
   data.concat(FPSTR(html_settingsBuzzer2));
 
-  if (mountStatus.mountType()==MT_GEM) {
+  if (mountStatus.mountType() == MT_GEM) {
     data.concat(FPSTR(html_settingsMFAuto1));
     data.concat(FPSTR(html_settingsMFAuto2));
     data.concat(FPSTR(html_settingsMFPause1));
@@ -220,7 +218,7 @@ void settingsAjax() {
   temp = commandString(":GX93#");
   float currentRate = temp.toFloat();
   if (nominalRate > 0.001 && nominalRate < 180.0 && currentRate > 0.001 && currentRate < 180.0) {
-    double rateRatio=currentRate/nominalRate;
+    double rateRatio = currentRate/nominalRate;
 
     if (rateRatio > 1.75) {
       data.concat("sr_vf|disabled\n");
