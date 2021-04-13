@@ -21,6 +21,10 @@
 // STATUS LED ----------------------------------------------------------------------------------------------------------------------
 #define LED_STATUS_ON_STATE           LOW //         LOW, Use HIGH so indicator stays on when connected if needed.            Option
 
+// PASSWORD ------------------------------------------------------------------------------------------------------------------------
+#define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Adjust
+                                          //              password for runtime access to network settings.
+
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
 // These settings are stored in NV (EEPROM) and will not revert to the defaults once first set from the values below unless
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
@@ -36,9 +40,6 @@
 #define STA_IP_ADDR        (192,168,1,55) // ..168,1,55), Wifi Station/Ethernet IP Address.                                   Adjust
 #define STA_GW_ADDR         (192,168,1,1) // ..,168,1,1), Wifi Station/Ethernet GATEWAY Address.                              Adjust
 #define STA_SN_MASK       (255,255,255,0) // ..55,255,0), Wifi Station/Ethernet SUBNET Mask.                                  Adjust
-
-// PASSWORD ------------------------------------------------------------------------------------------------------------------------
-#define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option
 
 // NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
 #define NV_WIPE                       OFF //          ON, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
