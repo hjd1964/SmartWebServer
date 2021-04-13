@@ -151,8 +151,8 @@ void handleControl() {
   sendHtml(data);
 
   // Focusing ------------------------------------------------
-  if (commandBool(":FA#")) Focuser1=true; else Focuser1=false;
-  if (commandBool(":fA#")) Focuser2=true; else Focuser2=false;
+  if (commandBool(":FA#")) Focuser1 = true; else Focuser1 = false;
+  if (commandBool(":fA#")) Focuser2 = true; else Focuser2 = false;
   if (Focuser1) {
     data.concat(FPSTR(html_controlFocus1));
     data.concat("<div style='float: left;'>" L_FOCUSER ":</div><div style='float: right; text-align: right;' id='focuserpos'>?</div><br />");
