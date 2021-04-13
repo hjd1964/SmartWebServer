@@ -185,12 +185,14 @@ void Encoders::init() {
 
   #ifdef ENC_HAS_ABSOLUTE
     void Encoders::zeroFromOnStep() {
-    #ifdef ENC_HAS_ABSOLUTE_AXIS1
-      axis1Pos.write(_osAxis1*(double)Axis1EncTicksPerDeg);
-    #endif
-    #ifdef ENC_HAS_ABSOLUTE_AXIS2
-      axis2Pos.write(_osAxis2*(double)Axis2EncTicksPerDeg);
-    #endif
+      #ifdef ENC_HAS_ABSOLUTE_AXIS1
+        axis1Pos.write(_osAxis1*(double)Axis1EncTicksPerDeg);
+        axis1Pos.setZero();
+      #endif
+      #ifdef ENC_HAS_ABSOLUTE_AXIS2
+        axis2Pos.write(_osAxis2*(double)Axis2EncTicksPerDeg);
+        axis2Pos.setZero();
+      #endif
     }
   #endif
 
