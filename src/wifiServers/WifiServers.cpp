@@ -35,7 +35,7 @@ extern NVS nv;
 
   char wifi_ap_ssid[40] = AP_SSID;
   char wifi_ap_pwd[40] = AP_PASSWORD;
-  byte wifi_ap_ch = 7;
+  byte wifi_ap_ch = AP_CHANNEL;
 
   IPAddress wifi_ap_ip = IPAddress AP_IP_ADDR;
   IPAddress wifi_ap_gw = IPAddress AP_GW_ADDR;
