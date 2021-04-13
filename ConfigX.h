@@ -29,7 +29,7 @@
 // These settings are stored in NV (EEPROM) and will not revert to the defaults once first set from the values below unless
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
 #define AP_SSID                  "ONSTEP" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
-#define AP_PASSWORD            "password" //  "password", Wifi Access Point mode.                                             Adjust
+#define AP_PASSWORD            "password" //  "password", Wifi Access Point password.                                         Adjust
 #define AP_CHANNEL                      7 //           7, Wifi Access Point channel.                                          Adjust
 #define AP_IP_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point IP Address.                                       Adjust
 #define AP_GW_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point GATEWAY Address.                                  Adjust
