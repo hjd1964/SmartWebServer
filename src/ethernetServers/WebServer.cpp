@@ -25,10 +25,10 @@
   byte eth_mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 
   // The IP addresses below will be dependent on your local network:
-  IPAddress eth_ip = IPAddress IP_ADDRESS;
-  IPAddress eth_dns= IPAddress GATEWAY_ADDRESS;
-  IPAddress eth_gw = IPAddress GATEWAY_ADDRESS;
-  IPAddress eth_sn = IPAddress SUBNET;
+  IPAddress eth_ip = IPAddress STA_IP_ADDR;
+  IPAddress eth_dns= IPAddress STA_GW_ADDR;
+  IPAddress eth_gw = IPAddress STA_GW_ADDR;
+  IPAddress eth_sn = IPAddress STA_SN_MASK;
 
   EthernetServer _server(80);
 

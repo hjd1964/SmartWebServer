@@ -295,14 +295,14 @@ extern NVS nv;
 
   void processEncodersGet() {
     String v;
-    
+
     v=server.arg("ms");
     if (!v.equals(EmptyStr)) {
       if (v.equals("ons")) encoders.syncToOnStep();
       if (v.equals("enc")) encoders.syncFromOnStep();
-  #ifdef ENC_HAS_ABSOLUTE
-      if (v.equals("zro")) encoders.zeroFromOnStep();
-  #endif
+      #ifdef ENC_HAS_ABSOLUTE
+        if (v.equals("zro")) encoders.zeroFromOnStep();
+      #endif
     }
 
     // Autosync
