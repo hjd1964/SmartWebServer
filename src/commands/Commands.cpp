@@ -93,6 +93,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
   // send the command
   Ser.print(cmd);
 
+  response[0] = 0;
   bool noResponse = false;
   bool shortResponse = false;
   if (cmd[0] == (char)6 && cmd[1] == 0) shortResponse = true;
