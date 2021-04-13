@@ -24,14 +24,17 @@
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
 // For Wifi these settings are stored in NV (EEPROM) and will not revert to the defaults once first set from these values unless
 // NV is wiped, these settings can be changed at runtime however.  For Ethernet, settings must be changed below to take effect
-#define IP_ADDRESS         (192,168,1,55) // ..168,1,55), Wifi Station/Ethernet default IP Address                            Adjust
-#define DNS_ADDRESS         (192,168,1,1) // ..,168,1,1), Wifi Station/Ethernet default DNS Server Address                    Adjust
-#define GATEWAY_ADDRESS     (192,168,1,1) // ..,168,1,1), Wifi Station/Ethernet default GATEWAY Address                       Adjust
-#define SUBNET            (255,255,255,0) // ..55,255,0), Wifi Station/Ethernet default SUBNET                                Adjust
+#define AP_SSID                  "ONSTEP" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
+#define AP_PASSWORD            "password" //  "password", Wifi Access Point mode.                                             Adjust
+#define AP_IP_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point IP Address.                                       Adjust
+#define AP_GW_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point GATEWAY Address.                                  Adjust
+#define AP_SN_MASK        (255,255,255,0) // ..55,255,0), Wifi Access Point SUBNET Mask.                                      Adjust
 
-#define IP_ADDRESS_AP       (192,168,0,1) // ..,168,0,1), Wifi Access Point default IP Address                                Adjust
-#define GATEWAY_AP          (192,168,0,1) // ..,168,0,1), Wifi Access Point default GATEWAY Address                           Adjust
-#define SUBNET_AP         (255,255,255,0) // ..55,255,0), Wifi Access Point default SUBNET                                    Adjust
+#define STA_SSID                   "Home" //      "Home", Wifi Station SSID to connnect to.                                   Adjust
+#define STA_PASSWORD           "password" //  "password", Wifi Station mode password.                                         Adjust
+#define STA_IP_ADDR        (192,168,1,55) // ..168,1,55), Wifi Station/Ethernet IP Address.                                   Adjust
+#define STA_GW_ADDR         (192,168,1,1) // ..,168,1,1), Wifi Station/Ethernet GATEWAY Address.                              Adjust
+#define STA_SN_MASK       (255,255,255,0) // ..55,255,0), Wifi Station/Ethernet SUBNET Mask.                                  Adjust
 
 // PASSWORD ------------------------------------------------------------------------------------------------------------------------
 #define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Option
@@ -41,7 +44,7 @@
                                           //              ***     IMPORTANT: ENABLE THIS OPTION THEN UPLOAD, WAIT A MINUTE    ***
 // Warning --->                           //              ***     OR TWO THEN SET THIS OPTION TO OFF AND UPLOAD AGAIN.        ***
                                           //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
-                                          //              ***     WARE AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
+                                          //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
 
 #define NV_DEFAULT                     ON //          ON, Uses HAL specified default, for remembering settings when           Infreq
                                           //              powered off.  This is usually done using the microcontrollers
