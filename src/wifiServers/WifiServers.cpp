@@ -59,6 +59,9 @@ extern NVS nv;
   }
 
   void wifiInit(void) {
+    WiFi.disconnect();
+    WiFi.softAPdisconnect(true);
+
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
       VLF("WEM: bad NV key, reset Wifi defaults");
       nv.update(EE_AP_EN, (int16_t)accessPointEnabled);
