@@ -20,14 +20,14 @@
     return true;
   }
 
-  void NonVolatileStorageESP::poll() {
+  void NonVolatileStorageESP::poll(bool disableInterrupts) {
     if (dirty && ((long)(millis() - commitReadyTimeMs) >= 0)) {
       #if defined(ESP32)
-        timerAlarmsDisable();
+        if (disableInterrupts) timerAlarmsDisable();
       #endif
       EEPROM.commit();
       #if defined(ESP32)
-        timerAlarmsEnable();
+        if (disableInterrupts) timerAlarmsEnable();
       #endif
       dirty = false;
     }
