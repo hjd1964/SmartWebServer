@@ -22,7 +22,7 @@
 #define LED_STATUS_ON_STATE           LOW //         LOW, Use HIGH so indicator stays on when connected if needed.            Option
 
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
-// These settings are stored in NV (EEPROM) and will not revert to the defaults once first set from these values unless
+// These settings are stored in NV (EEPROM) and will not revert to the defaults once first set from the values below unless
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
 #define AP_SSID                  "ONSTEP" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
 #define AP_PASSWORD            "password" //  "password", Wifi Access Point mode.                                             Adjust
