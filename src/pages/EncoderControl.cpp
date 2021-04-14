@@ -111,7 +111,7 @@ extern NVS nv;
     data.concat(FPSTR(html_syncOnStepNow));
     data.concat(FPSTR(html_syncEncodersNow));
     #ifdef ENC_HAS_ABSOLUTE
-      data.concat(FPSTR(html_zeroEncodersNow);
+      data.concat(FPSTR(html_zeroEncodersNow));
     #endif
     data.concat("</form>");
 
