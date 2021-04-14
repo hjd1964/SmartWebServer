@@ -143,7 +143,11 @@ bool MountStatus::syncToEncodersOnly() { return _toEncOnly; }
 bool MountStatus::atHome() { return _atHome; }
 bool MountStatus::ppsSync() { return _ppsSync; }
 bool MountStatus::guiding() { return _guiding; }
-bool MountStatus::focuserPresent() { static int p = -1; if (p == -1) { p = commandBool(":FA#"); } else return p; }
+bool MountStatus::focuserPresent() {
+  static int p = -1;
+  if (p == -1) p = commandBool(":FA#");
+  return p;
+}
 bool MountStatus::axisFault() { return _axisFault; }
 bool MountStatus::axisStatusValid() { return _validStepperDriverStatus; }
 bool MountStatus::axis1Comms() { return _comms1; }
