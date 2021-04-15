@@ -13,7 +13,7 @@
 #include "../status/MountStatus.h"
 #include "../wifiServers/WifiServers.h"
 #include "../ethernetServers/EthernetServers.h"
-#include "../ethernetServers/webServer.h"
+#include "../ethernetServers/WebServer.h"
 
 #include "htmlHeaders.h"
 #include "htmlMessages.h"

@@ -49,7 +49,7 @@ Tasks tasks;
 #include "src/commands/Commands.h"
 #include "src/ethernetServers/EthernetServers.h"
 #include "src/wifiServers/WifiServers.h"
-#include "src/encoders/encoders.h"
+#include "src/encoders/Encoders.h"
 #include "src/pages/Pages.h"
 
 bool connected = false;
