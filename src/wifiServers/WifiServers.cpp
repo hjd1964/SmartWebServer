@@ -162,13 +162,13 @@ extern NVS nv;
 
     // wait for connection in station mode, if it fails fall back to access-point mode
     if (!accessPointEnabled && stationEnabled) {
-      for (int i=0; i<8; i++) if (WiFi.status() != WL_CONNECTED) delay(1000); else break;
+      for (int i = 0; i < 8; i++) if (WiFi.status() != WL_CONNECTED) delay(1000); else break;
       if (WiFi.status() != WL_CONNECTED) {
         VLF("WEM: Starting WiFi Station, failed");
         WiFi.disconnect(); delay(3000);
         VLF("WEM: Switching to WiFi Soft AP mode");
-        stationEnabled=false;
-        accessPointEnabled=true;
+        stationEnabled = false;
+        accessPointEnabled = true;
         goto TryAgain;
       }
     }
@@ -192,8 +192,8 @@ extern NVS nv;
 
       // check clients for data, if found get the command, pass to OnStep and pickup the response, then return the response to client
       while (cmdSvrClient && cmdSvrClient.connected() && cmdSvrClient.available() > 0) {
-        static char cmdBuffer[40]="";
-        static int cmdBufferPos=0;
+        static char cmdBuffer[40] = "";
+        static int cmdBufferPos = 0;
 
         // get the data
         byte b = cmdSvrClient.read();

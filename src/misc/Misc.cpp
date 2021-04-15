@@ -63,7 +63,7 @@ void sprintF(char *result, const char *source, float f) {
   result[j++] = 0;
 }
 
-bool doubleToDms(char *reply, double *f, boolean fullRange, boolean signPresent) {
+bool doubleToDms(char *reply, double *f, bool fullRange, bool signPresent) {
   char sign[]="+";
   int  o=0,d1,s1=0;
   double m1,f1;
@@ -134,7 +134,7 @@ float byteToTime(uint8_t b) {
   return v;
 }
 
-boolean decodeAxisSettings(char* s, AxisSettings* a) {
+bool decodeAxisSettings(char* s, AxisSettings* a) {
   if (strcmp(s,"0") != 0) {
     char *ws=s;
     char *conv_end;

@@ -23,10 +23,10 @@
 
 void processControlGet();
 
-boolean Focuser1;
-boolean Focuser2;
-boolean Rotate;
-boolean DeRotate;
+bool Focuser1;
+bool Focuser2;
+bool Rotate;
+bool DeRotate;
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 void handleControl(EthernetClient *client) {

@@ -23,7 +23,7 @@ bool atoi2(char *a, int *i);
 void sprintF(char *result, const char *source, float f);
 
 // convert to various degrees, minutes, seconds formats
-boolean doubleToDms(char *reply, double *f, boolean fullRange, boolean signPresent);
+bool doubleToDms(char *reply, double *f, bool fullRange, bool signPresent);
 
 // convert hex to int, returns -1 on error
 int hexToInt(String s);
@@ -38,7 +38,7 @@ float byteToTime(uint8_t b);
 bool decodeAxisSettings(char* s, AxisSettings* a);
 
 // validate axis settings for a given axis and mount type
-bool validateAxisSettings(int axisNum, boolean altAz, AxisSettings a);
+bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a);
 
 // return temperature string with proper value and units for this locale
 void localeTemperature(char* temperatureStr, char* units);
