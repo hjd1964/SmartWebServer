@@ -42,7 +42,7 @@
 #define STA_SN_MASK       (255,255,255,0) // ..55,255,0), Wifi Station/Ethernet SUBNET Mask.                                  Adjust
 
 // NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
-#define NV_WIPE                       OFF //          ON, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
+#define NV_WIPE                       OFF //         OFF, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
                                           //              ***     IMPORTANT: ENABLE THIS OPTION THEN UPLOAD, WAIT A MINUTE    ***
 // Warning --->                           //              ***     OR TWO THEN SET THIS OPTION TO OFF AND UPLOAD AGAIN.        ***
                                           //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
