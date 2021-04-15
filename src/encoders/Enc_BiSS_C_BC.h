@@ -27,6 +27,7 @@
       BiSSC_Encoder(int16_t maPin, int16_t sloPin, int16_t axis);
       int32_t read();
       void write(int32_t v);
+      void setAbsolute(int32_t offset);
       void setZero();
 
     private:

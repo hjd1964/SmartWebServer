@@ -29,8 +29,6 @@ extern NVS nv;
     pinMode(_clkPin, OUTPUT);
     digitalWrite(_clkPin, LOW);
     pinMode(_sloPin, INPUT_PULLUP);
-    if (_axis == 1) _offset = nv.readL(EE_ENC_A1_ZERO);
-    if (_axis == 2) _offset = nv.readL(EE_ENC_A2_ZERO);
   }
 
   int32_t BiSSC_Encoder::read() {
@@ -45,6 +43,10 @@ extern NVS nv;
         _offset = v - (int32_t)_position;
       }
     }
+  }
+
+  void BiSSC_Encoder::setAbsolute(int32_t offset) {
+    _offset = offset;
   }
 
   void BiSSC_Encoder::setZero() {

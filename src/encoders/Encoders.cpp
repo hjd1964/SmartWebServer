@@ -151,6 +151,11 @@ void Encoders::init() {
     Axis1EncRev = nv.readI(EE_ENC_A1_REV);
     Axis2EncRev = nv.readI(EE_ENC_A2_REV);
 
+    #ifdef ENC_HAS_ABSOLUTE
+      axis1Pos.setAbsolute(nv.readL(EE_ENC_A1_ZERO));
+      axis2Pos.setAbsolute(nv.readL(EE_ENC_A2_ZERO));
+    #endif
+
     #if AXIS1_ENC_RATE_CONTROL == ON
       Axis1EncStaSamples = nv.readL(EE_ENC_RC_STA);
       Axis1EncLtaSamples = nv.readL(EE_ENC_RC_LTA);
