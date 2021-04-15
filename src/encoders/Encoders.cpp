@@ -173,19 +173,18 @@ void Encoders::init() {
 
 #if ENCODERS == ON
   void Encoders::syncFromOnStep() {
-    // don't sync if the Encoders vs. OnStep disagree by too much
-    if (Axis1EncDiffFrom != OFF && fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
-    if (Axis2EncDiffFrom != OFF && fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffFrom/3600.0)) return;
-      
-    if (Axis1EncRev == ON)
-      axis1Pos.write(-_osAxis1*(double)Axis1EncTicksPerDeg);
-    else
-      axis1Pos.write(_osAxis1*(double)Axis1EncTicksPerDeg);
-
-    if (Axis2EncRev == ON)
-      axis2Pos.write(-_osAxis2*(double)Axis2EncTicksPerDeg);
-    else
-      axis2Pos.write(_osAxis2*(double)Axis2EncTicksPerDeg);
+    if (Axis1EncDiffFrom == OFF || fabs(_osAxis1 - _enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
+      if (Axis1EncRev == ON)
+        axis1Pos.write(-_osAxis1*(double)Axis1EncTicksPerDeg);
+      else
+        axis1Pos.write(_osAxis1*(double)Axis1EncTicksPerDeg);
+    }
+    if (Axis2EncDiffFrom == OFF || fabs(_osAxis2 - _enAxis2) <= (double)(Axis2EncDiffFrom/3600.0)) {
+      if (Axis2EncRev == ON)
+        axis2Pos.write(-_osAxis2*(double)Axis2EncTicksPerDeg);
+      else
+        axis2Pos.write(_osAxis2*(double)Axis2EncTicksPerDeg);
+    }
   }
 
   #ifdef ENC_HAS_ABSOLUTE
