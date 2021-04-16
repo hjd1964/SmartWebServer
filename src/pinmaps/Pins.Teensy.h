@@ -5,7 +5,7 @@
 #if defined(__TEENSYDUINO__)
   #define PINMAP_STR "TEENSY"
   
-  #define BOOT0_PIN        4   // pin 4 to Boot0 of STM32
+  #define BOOT0_PIN        4  // pin 4, to Boot0 of STM32 etc.
 
   #define AXIS1_ENC_A_PIN  5   // pin# for Axis1 encoder, for A or CW
   #define AXIS1_ENC_B_PIN  6   // pin# for Axis1 encoder, for B or CCW

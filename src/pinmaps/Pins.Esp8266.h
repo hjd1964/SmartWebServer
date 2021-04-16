@@ -5,7 +5,7 @@
 #if defined(ESP8266)
   #define PINMAP_STR "ESP8266"
 
-  #define BOOT0_PIN        13  // pin D7, GPIO13 to Boot0 of STM32 (no swapped serial if active)
+  #define BOOT0_PIN        13  // pin D7, GPIO13 to Boot0 of STM32 etc. (no swapped serial if active)
 
   #define AXIS1_ENC_A_PIN  14  // pin# for Axis1 encoder, for A or CW  or MA/CLK
   #define AXIS1_ENC_B_PIN  12  // pin# for Axis1 encoder, for B or CCW or SLO
