@@ -320,7 +320,7 @@ void handleConfiguration() {
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis1 RA/Azm</button>"));
         data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(1, mountStatus.mountType()==MT_ALTAZM, a)) {
+        if (validateAxisSettings(1, mountStatus.mountType() == MT_ALTAZM, a)) {
           if (!command(":GXE7#", temp1)) strcpy(temp1, "0");
           long spwr = strtol(temp1, NULL, 10);
           sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L); data.concat(temp);
