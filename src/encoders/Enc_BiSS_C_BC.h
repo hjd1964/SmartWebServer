@@ -25,19 +25,30 @@
   class BiSSC_Encoder {
     public:
       BiSSC_Encoder(int16_t maPin, int16_t sloPin, int16_t axis);
+
+      // read encoder (offset adjusted) position
       int32_t read();
+      // write (sync) encoder position
       void write(int32_t v);
-      void setAbsolute(int32_t offset);
-      void setZero();
+
+      // save encoder offset to NV
+      void saveZero();
+      // restore encoder offset from NV
+      void restoreZero();
 
     private:
+      // read encoder position with (5 seconds) error recovery
+      bool readEnc5(uint32_t &encPos);
+      // read encoder position
+      bool readEnc(uint32_t &encPos);
+
       uint32_t _position = 0;
+      uint32_t _lastValidTime = 0;
+      uint32_t _lastValidPos = 0;
       int32_t _offset = 0;
       int16_t _clkPin;
       int16_t _sloPin;
       int16_t _axis;
-      
-      bool readEnc(uint32_t &encPos);
   };
 
   #if AXIS1_ENC == BC_BISSC

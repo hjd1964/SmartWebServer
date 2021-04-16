@@ -32,26 +32,42 @@ extern NVS nv;
   }
 
   int32_t BiSSC_Encoder::read() {
-    if (readEnc(_position)) {
+    if (readEnc5(_position)) {
         return (int32_t)_position + _offset;
     } else return INT32_MAX;
   }
 
   void BiSSC_Encoder::write(int32_t v) {
     if (_position != INT32_MAX) {
-      if (readEnc(_position)) {
+      if (readEnc5(_position)) {
         _offset = v - (int32_t)_position;
       }
     }
   }
 
-  void BiSSC_Encoder::setAbsolute(int32_t offset) {
-    _offset = offset;
-  }
-
-  void BiSSC_Encoder::setZero() {
+  void BiSSC_Encoder::saveZero() {
     if (_axis == 1) nv.update(EE_ENC_A1_ZERO, _offset);
     if (_axis == 2) nv.update(EE_ENC_A2_ZERO, _offset);
+  }
+
+  void BiSSC_Encoder::restoreZero() {
+    if (_axis == 1) _offset = nv.readL(EE_ENC_A1_ZERO);
+    if (_axis == 2) _offset = nv.readL(EE_ENC_A2_ZERO);
+  }
+
+  bool BiSSC_Encoder::readEnc5(uint32_t &encPos) {
+    uint32_t pos = encPos;
+    bool success = readEnc(pos);
+    if (success) {
+      _lastValidTime = millis();
+      _lastValidPos = pos;
+      encPos = pos;
+      return true;
+    } else {
+      if ((long)(millis() - _lastValidTime) > 5000) return false;
+      encPos = _lastValidPos;
+      return true;
+    }
   }
 
   bool BiSSC_Encoder::readEnc(uint32_t &encPos) {

@@ -35,8 +35,8 @@ int32_t Axis2EncDiffTo      = AXIS2_ENC_DIFF_LIMIT_TO;
 int32_t Axis2EncDiffFrom    = AXIS2_ENC_DIFF_LIMIT_FROM;
 int32_t Axis2EncDiffAbs     = 0;
 
-// encoder polling rate in seconds, default=2.0
-#define POLLING_RATE 2.0
+// encoder polling rate in seconds, default 1.5
+#define POLLING_RATE 1.5
 
 // encoder rate control
 #if AXIS1_ENC_RATE_CONTROL == ON
@@ -152,8 +152,8 @@ void Encoders::init() {
     Axis2EncRev = nv.readI(EE_ENC_A2_REV);
 
     #ifdef ENC_HAS_ABSOLUTE
-      axis1Pos.setAbsolute(nv.readL(EE_ENC_A1_ZERO));
-      axis2Pos.setAbsolute(nv.readL(EE_ENC_A2_ZERO));
+      axis1Pos.restoreZero();
+      axis2Pos.restoreZero();
     #endif
 
     #if AXIS1_ENC_RATE_CONTROL == ON
@@ -191,11 +191,11 @@ void Encoders::init() {
     void Encoders::zeroFromOnStep() {
       #ifdef ENC_HAS_ABSOLUTE_AXIS1
         axis1Pos.write(_osAxis1*(double)Axis1EncTicksPerDeg);
-        axis1Pos.setZero();
+        axis1Pos.saveZero();
       #endif
       #ifdef ENC_HAS_ABSOLUTE_AXIS2
         axis2Pos.write(_osAxis2*(double)Axis2EncTicksPerDeg);
-        axis2Pos.setZero();
+        axis2Pos.saveZero();
       #endif
     }
   #endif
@@ -207,7 +207,7 @@ void Encoders::init() {
     Ser.print(":SX42,1#"); Ser.readBytes(s, 1);
   }
 
-  // check encoders and auto sync OnStep if diff is too great, checks every 2 seconds
+  // check encoders and auto sync OnStep if diff is too great, checks every 1.5 seconds
   void Encoders::poll() {
     static unsigned long nextEncCheckMs = millis() + (unsigned long)(POLLING_RATE*1000.0);
     unsigned long temp = millis();
