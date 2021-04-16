@@ -74,11 +74,11 @@ extern NVS nv;
     VF("WEM: Eth SN = "); V(eth_sn[0]); V("."); V(eth_sn[1]); V("."); V(eth_sn[2]); V("."); VL(eth_sn[3]);
 
     #if OPERATIONAL_MODE == ETHERNET_W5500
-      VF("WEM: Resetting W5500 using BOOT0_PIN ("); V(BOOT0_PIN); VL(")");
-      pinMode(BOOT0_PIN, OUTPUT); 
-      digitalWrite(BOOT0_PIN, LOW);
+      VF("WEM: Resetting W5500 using W5500_RESET_PIN ("); V(W5500_RESET_PIN); VL(")");
+      pinMode(W5500_RESET_PIN, OUTPUT); 
+      digitalWrite(W5500_RESET_PIN, LOW);
       delayMicroseconds(500);
-      digitalWrite(BOOT0_PIN, HIGH);
+      digitalWrite(W5500_RESET_PIN, HIGH);
       delayMicroseconds(1000);
       delay(1000);
     #endif
