@@ -5,7 +5,7 @@ THIS IS AN NEW DESIGN BUT IT SEEMS TO HAVE REACHED STABILITY WITH NO KNOWN PROBL
 ***
 
 This is the WiFi and Ethernet webserver for OnStep.
-It enables OnStep to be controlled over IP. This access can be over command channel(s) and/or website.
+It also enables OnStep to be controlled over IP. This access can be over command channel(s) and/or website.
 This server is known to work from personal computers (using a browser), phones and tablets,
 (using the Android OnStep App), Sky Safari, and my ASCOM driver (PC.)
 
