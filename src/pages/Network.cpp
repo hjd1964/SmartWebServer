@@ -223,48 +223,48 @@ void processNetworkGet() {
     // Station SSID
     v = server.arg("stssid"); v1=v;
     if (!v.equals(EmptyStr)) {
-      if (!strcmp(wifi_sta_ssid,(char*)v.c_str())) restartRequired=true;
-      strcpy(wifi_sta_ssid,(char*)v.c_str());
+      if (!strcmp(wifi_sta_ssid, (char*)v.c_str())) restartRequired = true;
+      strcpy(wifi_sta_ssid, (char*)v.c_str());
 
       // if this section was submitted set the stationEnabled default to false
-      stationDhcpEnabled=false;
-      stationEnabled=false;
+      stationDhcpEnabled = false;
+      stationEnabled = false;
     }
 
     // Station password
     v = server.arg("stpwd");
     if (!v.equals(EmptyStr)) {
-      if (!strcmp(wifi_sta_pwd,(char*)v.c_str())) restartRequired=true;
-      strcpy(wifi_sta_pwd,(char*)v.c_str());
+      if (!strcmp(wifi_sta_pwd, (char*)v.c_str())) restartRequired = true;
+      strcpy(wifi_sta_pwd, (char*)v.c_str());
     }
 
     // Station dhcp enabled
     v = server.arg("stadhcp");
     if (!v.equals(EmptyStr)) {
-      stationDhcpEnabled=v.toInt();
+      stationDhcpEnabled = v.toInt();
     }
 
     // Station enabled
     v = server.arg("staen");
     if (!v.equals(EmptyStr)) {
-      stationEnabled=v.toInt();
+      stationEnabled = v.toInt();
     }
 
-    // Access-Point ip
+    // Station ip
     IPAddress old_ip = wifi_sta_ip;
     v = server.arg("staip1"); if (!v.equals(EmptyStr)) wifi_sta_ip[0]=v.toInt();
     v = server.arg("staip2"); if (!v.equals(EmptyStr)) wifi_sta_ip[1]=v.toInt();
     v = server.arg("staip3"); if (!v.equals(EmptyStr)) wifi_sta_ip[2]=v.toInt();
     v = server.arg("staip4"); if (!v.equals(EmptyStr)) wifi_sta_ip[3]=v.toInt();
 
-    // Access-Point SubNet
+    // Station SubNet
     old_ip = wifi_sta_sn;
     v = server.arg("stasn1"); if (!v.equals(EmptyStr)) wifi_sta_sn[0]=v.toInt();
     v = server.arg("stasn2"); if (!v.equals(EmptyStr)) wifi_sta_sn[1]=v.toInt();
     v = server.arg("stasn3"); if (!v.equals(EmptyStr)) wifi_sta_sn[2]=v.toInt();
     v = server.arg("stasn4"); if (!v.equals(EmptyStr)) wifi_sta_sn[3]=v.toInt();
 
-    // Access-Point Gateway
+    // Station Gateway
     old_ip = wifi_sta_gw;
     v = server.arg("stagw1"); if (!v.equals(EmptyStr)) wifi_sta_gw[0]=v.toInt();
     v = server.arg("stagw2"); if (!v.equals(EmptyStr)) wifi_sta_gw[1]=v.toInt();
@@ -313,27 +313,27 @@ void processNetworkGet() {
       strcpy(wifi_ap_ssid,(char*)v.c_str());
 
       // if this section was submitted set the accessPointEnabled default to false
-      accessPointEnabled=false;
+      accessPointEnabled = false;
     }
 
     // Access-Point password
     v = server.arg("appwd");
     if (!v.equals(EmptyStr)) {
-      if (!strcmp(wifi_ap_pwd,(char*)v.c_str())) restartRequired=true;
-      strcpy(wifi_ap_pwd,(char*)v.c_str());
+      if (!strcmp(wifi_ap_pwd, (char*)v.c_str())) restartRequired = true;
+      strcpy(wifi_ap_pwd, (char*)v.c_str());
     }
 
     // Access-Point channel
     v = server.arg("apch");
     if (!v.equals(EmptyStr)) {
-      if (wifi_ap_ch!=v.toInt()) restartRequired=true;
-      wifi_ap_ch=v.toInt();
+      if (wifi_ap_ch != v.toInt()) restartRequired = true;
+      wifi_ap_ch = v.toInt();
     }
 
     // Access-Point enabled
     v = server.arg("apen");
     if (!v.equals(EmptyStr)) {
-      accessPointEnabled=v.toInt();
+      accessPointEnabled = v.toInt();
     }
 
     // Access-Point ip
