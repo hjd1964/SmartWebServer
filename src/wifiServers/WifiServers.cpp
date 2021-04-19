@@ -22,9 +22,9 @@ extern NVS nv;
 
   char masterPassword[40] = PASSWORD_DEFAULT;
 
-  bool accessPointEnabled = true;
-  bool stationEnabled     = false;
-  bool stationDhcpEnabled = true;
+  bool accessPointEnabled = AP_ENABLED;
+  bool stationEnabled     = STA_ENABLED;
+  bool stationDhcpEnabled = STA_DHCP_ENABLED;
 
   char wifi_sta_ssid[40] = STA_SSID;
   char wifi_sta_pwd[40] = STA_PASSWORD;

@@ -14,7 +14,7 @@
 //      Parameter Name              Value        Default  Notes                                                                 Hint
 #define DEBUG                         OFF //         OFF, Use ON for background error messages only, use VERBOSE for all      Infreq
                                           //              error and status messages, use PROFILER for VT100 task profiler,
-                                          //              use REMOTE to forward debug output to OnStep
+                                          //              use REMOTE to forward verbose debug output to OnStep
 #define SERIAL_DEBUG               Serial //      Serial, Or use any h/w serial port. Serial1 or Serial2, etc. as supported.  Option
 #define SERIAL_DEBUG_BAUD            9600 //        9600, n. Where n=9600,19200,57600,115200 (common baud rates.)             Option
 
@@ -28,6 +28,7 @@
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
 // These settings are stored in NV (EEPROM) and will not revert to the defaults once first set from the values below unless
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
+#define AP_ENABLED                   true //        true, Wifi Access Point Enabled.                                          Adjust
 #define AP_SSID                  "ONSTEP" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
 #define AP_PASSWORD            "password" //  "password", Wifi Access Point password.                                         Adjust
 #define AP_CHANNEL                      7 //           7, Wifi Access Point channel.                                          Adjust
@@ -35,6 +36,8 @@
 #define AP_GW_ADDR          (192,168,0,1) // ..,168,0,1), Wifi Access Point GATEWAY Address.                                  Adjust
 #define AP_SN_MASK        (255,255,255,0) // ..55,255,0), Wifi Access Point SUBNET Mask.                                      Adjust
 
+#define STA_ENABLED                 false //       false, Wifi Station Enabled.                                               Adjust
+#define STA_DHCP_ENABLED             true //        true, Wifi Station DHCP Enabled.                                          Adjust
 #define STA_SSID                   "Home" //      "Home", Wifi Station SSID to connnect to.                                   Adjust
 #define STA_PASSWORD           "password" //  "password", Wifi Station mode password.                                         Adjust
 #define STA_IP_ADDR        (192,168,1,55) // ..168,1,55), Wifi Station/Ethernet IP Address.                                   Adjust
