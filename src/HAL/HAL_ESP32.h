@@ -22,7 +22,7 @@
 
 //--------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT() { nv.init(E2END + 1, false, 5000, false); }
+#define HAL_INIT() { nv.init(E2END + 1, false, 1000, false); }
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation
