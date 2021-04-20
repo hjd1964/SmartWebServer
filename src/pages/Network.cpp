@@ -362,10 +362,10 @@ void processNetworkGet() {
       nv.writeBytes(EE_AP_PWD, wifi_ap_pwd, -40);
       nv.write(EE_AP_CH, (int16_t)wifi_ap_ch);
       nv.write(EE_AP_EN, (int16_t)accessPointEnabled);
-      for (int i = 0; i < 4; i++) { nv.update(EE_STA_IP + i, wifi_sta_ip[i]); }
-      for (int i = 0; i < 4; i++) { nv.update(EE_STA_SN + i, wifi_sta_sn[i]); }
-      for (int i = 0; i < 4; i++) { nv.update(EE_STA_GW + i, wifi_sta_gw[i]); }
-      restartRequired=true;
+      for (int i = 0; i < 4; i++) { nv.update(EE_AP_IP + i, wifi_ap_ip[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_AP_SN + i, wifi_ap_sn[i]); }
+      for (int i = 0; i < 4; i++) { nv.update(EE_AP_GW + i, wifi_ap_gw[i]); }
+      restartRequired = true;
     }
   #else
     // Ethernet ip
