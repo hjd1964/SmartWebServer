@@ -5,7 +5,7 @@
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "0"
 #define FirmwareVersionMinor  "8"
-#define FirmwareVersionPatch  "i"
+#define FirmwareVersionPatch  "j"
 #define FirmwareDate     __DATE__
 #define FirmwareTime     __TIME__
 
