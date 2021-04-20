@@ -126,7 +126,7 @@ Again:
     Ser.print(highSpeedCommsStr(serial_baud)); delay(100);
     if (Ser.available() != 1) { serialRecvFlush(); goto Again; }
     if (Ser.read() != '1') goto Again;
-    
+
     // we're all set, just change the baud rate to match OnStep
     serialBegin(serial_baud, serialSwap);
 
