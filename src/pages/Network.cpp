@@ -129,9 +129,9 @@ void handleNetwork() {
       
       sprintf_P(temp,htmL_NET_MAC,"ap", temp1); data.concat(temp);
       sendHtml(data);
-      sprintf_P(temp,htmL_NET_IP, "ap", wifi_sta_ip[0], "ap", wifi_sta_ip[1], "ap", wifi_sta_ip[2], "ap", wifi_sta_ip[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_GW, "ap", wifi_sta_gw[0], "ap", wifi_sta_gw[1], "ap", wifi_sta_gw[2], "ap", wifi_sta_gw[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_SN, "ap", wifi_sta_sn[0], "ap", wifi_sta_sn[1], "ap", wifi_sta_sn[2], "ap", wifi_sta_sn[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_IP, "ap", wifi_ap_ip[0], "ap", wifi_ap_ip[1], "ap", wifi_ap_ip[2], "ap", wifi_ap_ip[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_GW, "ap", wifi_ap_gw[0], "ap", wifi_ap_gw[1], "ap", wifi_ap_gw[2], "ap", wifi_ap_gw[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_SN, "ap", wifi_ap_sn[0], "ap", wifi_ap_sn[1], "ap", wifi_ap_sn[2], "ap", wifi_ap_sn[3]); data.concat(temp);
 
       sprintf_P(temp,htmL_NETWORKSSID7, accessPointEnabled?"checked":""); data.concat(temp);
     #else
