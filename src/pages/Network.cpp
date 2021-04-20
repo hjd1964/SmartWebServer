@@ -252,24 +252,24 @@ void processNetworkGet() {
 
     // Station ip
     IPAddress old_ip = wifi_sta_ip;
-    v = server.arg("staip1"); if (!v.equals(EmptyStr)) wifi_sta_ip[0]=v.toInt();
-    v = server.arg("staip2"); if (!v.equals(EmptyStr)) wifi_sta_ip[1]=v.toInt();
-    v = server.arg("staip3"); if (!v.equals(EmptyStr)) wifi_sta_ip[2]=v.toInt();
-    v = server.arg("staip4"); if (!v.equals(EmptyStr)) wifi_sta_ip[3]=v.toInt();
+    v = server.arg("staip1"); if (!v.equals(EmptyStr)) wifi_sta_ip[0] = v.toInt();
+    v = server.arg("staip2"); if (!v.equals(EmptyStr)) wifi_sta_ip[1] = v.toInt();
+    v = server.arg("staip3"); if (!v.equals(EmptyStr)) wifi_sta_ip[2] = v.toInt();
+    v = server.arg("staip4"); if (!v.equals(EmptyStr)) wifi_sta_ip[3] = v.toInt();
 
     // Station SubNet
     old_ip = wifi_sta_sn;
-    v = server.arg("stasn1"); if (!v.equals(EmptyStr)) wifi_sta_sn[0]=v.toInt();
-    v = server.arg("stasn2"); if (!v.equals(EmptyStr)) wifi_sta_sn[1]=v.toInt();
-    v = server.arg("stasn3"); if (!v.equals(EmptyStr)) wifi_sta_sn[2]=v.toInt();
-    v = server.arg("stasn4"); if (!v.equals(EmptyStr)) wifi_sta_sn[3]=v.toInt();
+    v = server.arg("stasn1"); if (!v.equals(EmptyStr)) wifi_sta_sn[0] = v.toInt();
+    v = server.arg("stasn2"); if (!v.equals(EmptyStr)) wifi_sta_sn[1] = v.toInt();
+    v = server.arg("stasn3"); if (!v.equals(EmptyStr)) wifi_sta_sn[2] = v.toInt();
+    v = server.arg("stasn4"); if (!v.equals(EmptyStr)) wifi_sta_sn[3] = v.toInt();
 
     // Station Gateway
     old_ip = wifi_sta_gw;
-    v = server.arg("stagw1"); if (!v.equals(EmptyStr)) wifi_sta_gw[0]=v.toInt();
-    v = server.arg("stagw2"); if (!v.equals(EmptyStr)) wifi_sta_gw[1]=v.toInt();
-    v = server.arg("stagw3"); if (!v.equals(EmptyStr)) wifi_sta_gw[2]=v.toInt();
-    v = server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3]=v.toInt();
+    v = server.arg("stagw1"); if (!v.equals(EmptyStr)) wifi_sta_gw[0] = v.toInt();
+    v = server.arg("stagw2"); if (!v.equals(EmptyStr)) wifi_sta_gw[1] = v.toInt();
+    v = server.arg("stagw3"); if (!v.equals(EmptyStr)) wifi_sta_gw[2] = v.toInt();
+    v = server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3] = v.toInt();
       
     if (!v1.equals(EmptyStr)) {
       VLF(wifi_sta_ssid);
@@ -338,24 +338,24 @@ void processNetworkGet() {
 
     // Access-Point ip
     old_ip = wifi_ap_ip;
-    v = server.arg("apip1"); if (!v.equals(EmptyStr)) wifi_ap_ip[0]=v.toInt();
-    v = server.arg("apip2"); if (!v.equals(EmptyStr)) wifi_ap_ip[1]=v.toInt();
-    v = server.arg("apip3"); if (!v.equals(EmptyStr)) wifi_ap_ip[2]=v.toInt();
-    v = server.arg("apip4"); if (!v.equals(EmptyStr)) wifi_ap_ip[3]=v.toInt();
+    v = server.arg("apip1"); if (!v.equals(EmptyStr)) wifi_ap_ip[0] = v.toInt();
+    v = server.arg("apip2"); if (!v.equals(EmptyStr)) wifi_ap_ip[1] = v.toInt();
+    v = server.arg("apip3"); if (!v.equals(EmptyStr)) wifi_ap_ip[2] = v.toInt();
+    v = server.arg("apip4"); if (!v.equals(EmptyStr)) wifi_ap_ip[3] = v.toInt();
 
     // Access-Point SubNet
-    old_ip=wifi_ap_sn;
-    v = server.arg("apsn1"); if (!v.equals(EmptyStr)) wifi_ap_sn[0]=v.toInt();
-    v = server.arg("apsn2"); if (!v.equals(EmptyStr)) wifi_ap_sn[1]=v.toInt();
-    v = server.arg("apsn3"); if (!v.equals(EmptyStr)) wifi_ap_sn[2]=v.toInt();
-    v = server.arg("apsn4"); if (!v.equals(EmptyStr)) wifi_ap_sn[3]=v.toInt();
+    old_ip = wifi_ap_sn;
+    v = server.arg("apsn1"); if (!v.equals(EmptyStr)) wifi_ap_sn[0] = v.toInt();
+    v = server.arg("apsn2"); if (!v.equals(EmptyStr)) wifi_ap_sn[1] = v.toInt();
+    v = server.arg("apsn3"); if (!v.equals(EmptyStr)) wifi_ap_sn[2] = v.toInt();
+    v = server.arg("apsn4"); if (!v.equals(EmptyStr)) wifi_ap_sn[3] = v.toInt();
 
     // Access-Point Gateway
     old_ip = wifi_ap_gw;
-    v = server.arg("apgw1"); if (!v.equals(EmptyStr)) wifi_ap_gw[0]=v.toInt();
-    v = server.arg("apgw2"); if (!v.equals(EmptyStr)) wifi_ap_gw[1]=v.toInt();
-    v = server.arg("apgw3"); if (!v.equals(EmptyStr)) wifi_ap_gw[2]=v.toInt();
-    v = server.arg("apgw4"); if (!v.equals(EmptyStr)) wifi_ap_gw[3]=v.toInt();
+    v = server.arg("apgw1"); if (!v.equals(EmptyStr)) wifi_ap_gw[0] = v.toInt();
+    v = server.arg("apgw2"); if (!v.equals(EmptyStr)) wifi_ap_gw[1] = v.toInt();
+    v = server.arg("apgw3"); if (!v.equals(EmptyStr)) wifi_ap_gw[2] = v.toInt();
+    v = server.arg("apgw4"); if (!v.equals(EmptyStr)) wifi_ap_gw[3] = v.toInt();
 
     if (!v.equals(EmptyStr)) {
       nv.writeBytes(EE_AP_SSID, wifi_ap_ssid, -40);
