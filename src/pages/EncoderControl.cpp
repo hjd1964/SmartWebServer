@@ -337,27 +337,27 @@ extern NVS nv;
     }
 
     // Counts per degree
-    v=server.arg("a1cpd");
+    v = server.arg("a1cpd");
     if (!v.equals(EmptyStr)) {
       double d = v.toFloat();
-      if (d >= 1.0 && d <= 10000.0) { 
-        Axis1EncTicksPerDeg=d;
+      if (d >= 1.0 && d <= 1000000.0) { 
+        Axis1EncTicksPerDeg = d;
         nv.update(EE_ENC_A1_TICKS, Axis1EncTicksPerDeg);
       }
     }
-    v=server.arg("a2cpd");
+    v = server.arg("a2cpd");
     if (!v.equals(EmptyStr)) {
       double d = v.toFloat();
-      if (d >= 1.0 && d <= 10000.0) { 
-        Axis2EncTicksPerDeg=d;
+      if (d >= 1.0 && d <= 1000000.0) { 
+        Axis2EncTicksPerDeg = d;
         nv.update(EE_ENC_A2_TICKS, Axis2EncTicksPerDeg);
       }
     }
 
-    v=server.arg("a1rev");
+    v = server.arg("a1rev");
     if (!v.equals(EmptyStr)) {
       if (v.equals("0")) {
-        Axis1EncRev=OFF;
+        Axis1EncRev = OFF;
         nv.update(EE_ENC_A1_REV, Axis1EncRev);
       }
       if (v.equals("1")) {
@@ -366,10 +366,10 @@ extern NVS nv;
       }
     }
 
-    v=server.arg("a2rev");
+    v = server.arg("a2rev");
     if (!v.equals(EmptyStr)) {
       if (v.equals("0")) {
-        Axis2EncRev=OFF;
+        Axis2EncRev = OFF;
         nv.update(EE_ENC_A2_REV, Axis2EncRev);
       }
       if (v.equals("1")) {
@@ -378,22 +378,22 @@ extern NVS nv;
       }
     }
 
-    v=server.arg("revert");
+    v = server.arg("revert");
     if (!v.equals(EmptyStr)) { 
       if (v.equals("1")) {
-        Axis1EncTicksPerDeg=AXIS1_ENC_TICKS_DEG;
+        Axis1EncTicksPerDeg = AXIS1_ENC_TICKS_DEG;
         nv.update(EE_ENC_A1_TICKS, Axis1EncTicksPerDeg);
         Axis1EncRev=AXIS1_ENC_REVERSE;
         nv.update(EE_ENC_A1_REV, Axis1EncRev);
-        Axis1EncDiffTo=AXIS1_ENC_DIFF_LIMIT_TO;
+        Axis1EncDiffTo = AXIS1_ENC_DIFF_LIMIT_TO;
         nv.update(EE_ENC_A1_DIFF_TO, (int32_t)Axis1EncDiffTo);
       }
       if (v.equals("2")) {
-        Axis2EncTicksPerDeg=AXIS2_ENC_TICKS_DEG;
+        Axis2EncTicksPerDeg = AXIS2_ENC_TICKS_DEG;
         nv.update(EE_ENC_A2_TICKS, Axis2EncTicksPerDeg);
-        Axis2EncRev=AXIS1_ENC_REVERSE;
+        Axis2EncRev = AXIS1_ENC_REVERSE;
         nv.update(EE_ENC_A2_REV, Axis2EncRev);
-        Axis2EncDiffTo=AXIS2_ENC_DIFF_LIMIT_TO;
+        Axis2EncDiffTo = AXIS2_ENC_DIFF_LIMIT_TO;
         nv.update(EE_ENC_A2_DIFF_TO, (int32_t)Axis2EncDiffTo);
       }
     }
