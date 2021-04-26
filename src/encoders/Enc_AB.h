@@ -32,6 +32,8 @@
 
   #if AXIS1_ENC == AB
     extern ABEncoder axis1Pos;
+    extern bool fastMotion();
+    extern bool slowMotion();
   #endif
 
   #if AXIS2_ENC == AB

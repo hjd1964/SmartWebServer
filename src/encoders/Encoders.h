@@ -73,3 +73,15 @@ private:
 };
 
 extern Encoders encoders;
+extern bool encSweep;
+extern bool encRateControl;
+extern float axis1EncRateComp;
+extern long Axis1EncProp;
+extern long Axis1EncMinGuide;
+extern volatile long Axis1EncStaSamples;
+extern volatile long Axis1EncLtaSamples;
+extern float axis1EncRateSta;
+extern float axis1EncRateLta;
+extern float axis1EncRateComp;
+extern float axis1Rate;
+extern long guideCorrectionMillis;
