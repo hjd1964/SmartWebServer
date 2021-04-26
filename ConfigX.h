@@ -26,6 +26,7 @@
                                           //              password for runtime access to network settings.
 
 // BLE GAMEPAD SETTINGS (ESP32 ONLY) ------------------------------------------- see https://onstep.groups.io/g/developer/wiki/22427
+// THIS IS AN EXPERIMENTAL FEATURE
 #define BLE_GAMEPAD                   OFF //         OFF, ON to allow BLE gamepad connection for ESP32 only.                   Option
 #define BLE_GP_ADDR   "ff:ff:ff:ff:ff:ff" // ...f:ff:ff", GamePad MAC address #1                                               Adjust
                                           //              GamePad device address must match exactly else it will not connect!

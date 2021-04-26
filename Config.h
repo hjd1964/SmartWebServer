@@ -54,6 +54,7 @@
                                           //         Experimental, possibly causes problems w/standard cmd channel if enabled.
 
 // ENCODER SUPPORT -----------------------------------------------------------------------------------------------------------------
+// BC_BISSC SUPPORT IS AN EXPERIMENTAL FEATURE
 #define ENC_AUTO_SYNC_DEFAULT          ON //     ON, Automatically sync Encoders to OnStep.                                   Option
 #define ENC_AUTO_SYNC_MEMORY          OFF //    OFF, ON Remember automatic sync setting across power cycles.                  Option
 
@@ -72,6 +73,7 @@
                                           //         for absolute encoders, leave off when setting Zero, then enable.
 
 // ENCODER RATE CONTROL
+// THIS IS AN EXPERIMENTAL FEATURE
 #define AXIS1_ENC_RATE_CONTROL        OFF //    OFF, ON Rate control for RA high resolution encoder. EQ mounts only.          Infreq
 #define AXIS1_ENC_INTPOL_COS          OFF //    OFF, ON enables cosine compensation feature.                                  Infreq
 #define AXIS1_ENC_RATE_AUTO           OFF //    OFF, n, (Worm period in seconds.) Adjusts avg encoder pulse rate to account   Option
