@@ -11,5 +11,5 @@ void debugPrint(const char* s) {
   char s1[255];
   strcpy(s1, s);
   for (unsigned int i = 0; i < strlen(s1); i++) if (s1[i] == ' ') s1[i] = '_';
-  Ser.print(s1);
+  SERIAL_ONSTEP.print(s1);
 }

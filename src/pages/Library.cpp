@@ -38,7 +38,7 @@ void handleLibrary() {
   char temp1[120] = "";
 
   currentCatalog = 0;
-  Ser.setTimeout(webTimeout);
+  SERIAL_ONSTEP.setTimeout(webTimeout);
   serialRecvFlush();
   
   mountStatus.update();

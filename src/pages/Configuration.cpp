@@ -32,7 +32,7 @@ void handleConfiguration() {
   char temp1[120] = "";
   char temp2[120] = "";
 
-  Ser.setTimeout(webTimeout);
+  SERIAL_ONSTEP.setTimeout(webTimeout);
   serialRecvFlush();
   
   mountStatus.update();

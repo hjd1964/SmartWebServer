@@ -119,21 +119,21 @@ Again:
 
   // look for OnStep
   VLF("WEM: Attempting to contact OnStep");
-  Ser.print(":GVP#"); delay(100);
-  String s = Ser.readString();
+  SERIAL_ONSTEP.print(":GVP#"); delay(100);
+  String s = SERIAL_ONSTEP.readString();
   if (s == "On-Step#" || s == "OnStepX#") {
     // check for fastest baud rate
-    Ser.print(":GB#"); delay(100);
-    if (Ser.available() != 1) { serialRecvFlush(); goto Again; }
+    SERIAL_ONSTEP.print(":GB#"); delay(100);
+    if (SERIAL_ONSTEP.available() != 1) { serialRecvFlush(); goto Again; }
     // Mega2560 returns '4' for 19200 baud recommended
-    if (Ser.read() == '4' && serial_baud > 19200) {
+    if (SERIAL_ONSTEP.read() == '4' && serial_baud > 19200) {
       serial_baud = 19200;
     }
 
     // set fastest baud rate
-    Ser.print(highSpeedCommsStr(serial_baud)); delay(100);
-    if (Ser.available() != 1) { serialRecvFlush(); goto Again; }
-    if (Ser.read() != '1') goto Again;
+    SERIAL_ONSTEP.print(highSpeedCommsStr(serial_baud)); delay(100);
+    if (SERIAL_ONSTEP.available() != 1) { serialRecvFlush(); goto Again; }
+    if (SERIAL_ONSTEP.read() != '1') goto Again;
 
     // we're all set, just change the baud rate to match OnStep
     serialBegin(serial_baud, serialSwap);

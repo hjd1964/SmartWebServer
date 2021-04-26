@@ -35,7 +35,7 @@ void handleControl() {
 #endif
   char temp[240] = "";
 
-  Ser.setTimeout(webTimeout);
+  SERIAL_ONSTEP.setTimeout(webTimeout);
   serialRecvFlush();
 
   mountStatus.update(true);

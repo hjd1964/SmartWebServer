@@ -44,7 +44,7 @@ void handleNetwork() {
   char temp[420]  = "";
   char temp1[140] = "";
 
-  Ser.setTimeout(webTimeout);
+  SERIAL_ONSTEP.setTimeout(webTimeout);
   serialRecvFlush();
   
   mountStatus.update(true);

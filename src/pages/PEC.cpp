@@ -29,7 +29,7 @@ void handlePec() {
 #endif
   char temp[120] = "";
 
-  Ser.setTimeout(webTimeout);
+  SERIAL_ONSTEP.setTimeout(webTimeout);
   serialRecvFlush();
       
   mountStatus.update();

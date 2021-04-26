@@ -28,7 +28,7 @@ void handleAux(EthernetClient *client) {
 #else
 void handleAux() {
 #endif
-  Ser.setTimeout(webTimeout);
+  SERIAL_ONSTEP.setTimeout(webTimeout);
   serialRecvFlush();
 
   mountStatus.update(true);

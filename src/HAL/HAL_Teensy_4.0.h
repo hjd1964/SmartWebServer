@@ -14,7 +14,7 @@
 #endif
 
 // Default serial port where OnStep is attached ------------------------------------------------------
-#define Ser Serial1
+#define SERIAL_ONSTEP Serial1
 
 //----------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL

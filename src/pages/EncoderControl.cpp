@@ -34,7 +34,7 @@ extern NVS nv;
     char temp[400] = "";
     char temp1[80] = "";
 
-    Ser.setTimeout(webTimeout);
+    SERIAL_ONSTEP.setTimeout(webTimeout);
     serialRecvFlush();
     
     mountStatus.update();
@@ -56,7 +56,7 @@ extern NVS nv;
     sendHtml(data);
 
     #if AXIS1_ENC_RATE_CONTROL == ON
-      data.concat(html_encScript2;
+      data.concat(html_encScript2);
       sendHtml(data);
     #endif
 
@@ -122,30 +122,30 @@ extern NVS nv;
 
     #if AXIS1_ENC_RATE_CONTROL == ON
       // OnStep rate control
-      data.concat("<br />";
-      data.concat(FPSTR(html_encRateEn1);
-      data.concat(FPSTR(html_encRateEn2);
+      data.concat("<br />");
+      data.concat(FPSTR(html_encRateEn1));
+      data.concat(FPSTR(html_encRateEn2));
 
       // Encoder averaging (integration) samples
-      sprintf_P(temp,html_encStaAxis1,Axis1EncStaSamples);
-      data.concat(temp;
-      sprintf_P(temp,html_encLtaAxis1,Axis1EncLtaSamples);
-      data.concat(temp;
+      sprintf_P(temp, html_encStaAxis1, Axis1EncStaSamples);
+      data.concat(temp);
+      sprintf_P(temp, html_encLtaAxis1, Axis1EncLtaSamples);
+      data.concat(temp);
       sendHtml(data);
 
       // Encoder poportional response
-      sprintf_P(temp,html_encPropAxis1,Axis1EncProp);
-      data.concat(temp;
+      sprintf_P(temp, html_encPropAxis1, Axis1EncProp);
+      data.concat(temp);
 
       // Encoder minimum guide
-      sprintf_P(temp,html_encMinGuideAxis1,Axis1EncMinGuide);
-      data.concat(temp;
+      sprintf_P(temp, html_encMinGuideAxis1, Axis1EncMinGuide);
+      data.concat(temp);
 
       // Encoder rate compensation
       #if AXIS1_ENC_RATE_AUTO == OFF
         long l=round(axis1EncRateComp*1000000.0);
         sprintf_P(temp,html_encErc2Axis1,l);
-        data.concat(temp;
+        data.concat(temp);
       #endif
 
       #if AXIS1_ENC_INTPOL_COS == ON
@@ -160,9 +160,9 @@ extern NVS nv;
 
       // Encoder status display
       sprintf(temp,L_ENC_STAT_RATE_AXIS1 ":<br />");
-      data.concat(temp;
+      data.concat(temp);
       sprintf(temp,"&nbsp; OnStep = <span id='stO'>?</span><br />");
-      data.concat(temp;
+      data.concat(temp);
       #if AXIS1_ENC_INTPOL_COS == ON
         sprintf(temp,"&nbsp; " L_ENC_STAT_INTPOL_COMP " = <span id='ipC'>?</span><br />");
         data.concat(temp;
@@ -174,21 +174,21 @@ extern NVS nv;
         data.concat(temp;
       #endif
       sprintf(temp,"&nbsp; " L_ENCODER " STA = <span id='stS'>?</span> x<br />");
-      data.concat(temp;
+      data.concat(temp);
       sprintf(temp,"&nbsp; " L_ENCODER " LTA = <span id='stL'>?</span> x<br />");
-      data.concat(temp;
+      data.concat(temp);
       sprintf(temp,"&nbsp; " L_DELTA " &nbsp;= <span id='stD'>?</span><br />");
-      data.concat(temp;
+      data.concat(temp);
       sprintf(temp,"&nbsp; " L_GUIDE " &nbsp;= <span id='rtF'>?</span><br />");
-      data.concat(temp;
+      data.concat(temp);
 
       sendHtml(data);
 
-      data.concat("<br /><canvas id='myCanvas' width='600' height='300' style='margin-left: -2px; border:2px solid #999999;'></canvas>";
-      data.concat("&nbsp; " L_CENTER ": OnStep " L_RATE ", " L_BLUE ": STA (" L_RANGE " &#xb1;0.1), " L_GREEN ": LTA (" L_RANGE " &#xb1;0.01)<br />";
+      data.concat("<br /><canvas id='myCanvas' width='600' height='300' style='margin-left: -2px; border:2px solid #999999;'></canvas>");
+      data.concat("&nbsp; " L_CENTER ": OnStep " L_RATE ", " L_BLUE ": STA (" L_RANGE " &#xb1;0.1), " L_GREEN ": LTA (" L_RANGE " &#xb1;0.01)<br />");
 
-      data.concat(FPSTR(html_encSweepEn1);
-      data.concat(FPSTR(html_encSweepEn2);
+      data.concat(FPSTR(html_encSweepEn1));
+      data.concat(FPSTR(html_encSweepEn2));
 
       encoders.clearAverages();
     #endif
@@ -240,12 +240,12 @@ extern NVS nv;
   #else
   void encAjax() {
   #endif
-    String data="";
+    String data = "";
     
     #if AXIS1_ENC_RATE_CONTROL == ON
       char temp[20]="";
       data.concat("stO|"); sprintf(temp,"%+1.4f\n",axis1Rate); data.concat(temp);
-      data.concat("stD|"); sprintf(temp,"%+1.4f\n",axis1Rate-axis1EncRateSta); data.concat(temp);
+      data.concat("stD|"); sprintf(temp,"%+1.4f\n",axis1Rate - axis1EncRateSta); data.concat(temp);
       data.concat("stS|"); sprintf(temp,"%+1.4f\n",axis1EncRateSta); data.concat(temp);
       data.concat("stL|"); sprintf(temp,"%+1.4f\n",axis1EncRateLta); data.concat(temp);
       #if AXIS1_ENC_INTPOL_COS == ON
@@ -256,18 +256,18 @@ extern NVS nv;
         data.concat("erA|"); sprintf(temp,"%+1.5f\n",axis1EncRateComp); data.concat(temp);
       #endif
 
-      if (guideCorrectionMillis==0) {
+      if (guideCorrectionMillis == 0) {
         data.concat("rtF|"); sprintf(temp,L_NONE "\n"); data.concat(temp);
       } else
-      if (guideCorrectionMillis>0) {
+      if (guideCorrectionMillis > 0) {
         data.concat("rtF|"); sprintf(temp,L_WEST " %ld ms\n",guideCorrectionMillis); data.concat(temp);
       } else
-      if (guideCorrectionMillis<0) {
+      if (guideCorrectionMillis < 0) {
         data.concat("rtF|"); sprintf(temp,L_EAST " %ld ms\n",-guideCorrectionMillis); data.concat(temp);
       }
 
-      data.concat("orc|"); if (encRateControl) data.concat(L_ON "\n"); else data.concat(L_OFF "\n"));
-      data.concat("osc|"); if (encSweep) data.concat(L_ON "\n"); else data.concat(L_OFF "\n"));
+      data.concat("orc|"); if (encRateControl) data.concat(L_ON "\n"); else data.concat(L_OFF "\n");
+      data.concat("osc|"); if (encSweep) data.concat(L_ON "\n"); else data.concat(L_OFF "\n");
     #endif
 
     data.concat("eas_on|");  if (encAutoSync) data.concat("disabled\n"); else data.concat("enabled\n");
@@ -400,46 +400,46 @@ extern NVS nv;
 
     #if AXIS1_ENC_RATE_CONTROL == ON
       // OnStep rate control
-      v=server.arg("rc");
+      v = server.arg("rc");
       if (!v.equals(EmptyStr)) {
-        if (v.equals("on")) encRateControl=true;
-        if (v.equals("off")) encRateControl=false;
+        if (v.equals("on")) encRateControl = true;
+        if (v.equals("off")) encRateControl = false;
       }
 
       // Encoder averaging samples
-      v=server.arg("sa");
+      v = server.arg("sa");
       if (!v.equals(EmptyStr)) {
         int i;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=1) && (i<=999))) { 
-          Axis1EncStaSamples=i;
+          Axis1EncStaSamples = i;
           nv.update(EE_ENC_RC_STA, (int32_t)Axis1EncStaSamples);
         }
       }
-      v=server.arg("la");
+      v = server.arg("la");
       if (!v.equals(EmptyStr)) {
         int i;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=1) && (i<=999))) { 
-          Axis1EncLtaSamples=i;
+          Axis1EncLtaSamples = i;
           nv.update(EE_ENC_RC_LTA, (int32_t)Axis1EncLtaSamples);
         }
       }
 
       // Encoder proportional response
-      v=server.arg("pr");
+      v = server.arg("pr");
       if (!v.equals(EmptyStr)) {
         int i;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=50) && (i<=5000))) { 
-          Axis1EncProp=i;
+          Axis1EncProp = i;
           nv.update(EE_ENC_RC_PROP, (int32_t)Axis1EncProp);
         }
       }
       
       // Encoder minimum guide
-      v=server.arg("mg");
+      v = server.arg("mg");
       if (!v.equals(EmptyStr)) {
         int i;
         if ( (atoi2((char*)v.c_str(),&i)) && ((i>=25) && (i<=1000))) { 
-          Axis1EncMinGuide=i;
+          Axis1EncMinGuide = i;
           nv.update(EE_ENC_MIN_GUIDE, (int32_t)Axis1EncMinGuide);
         }
       }
@@ -449,37 +449,37 @@ extern NVS nv;
       if (!v.equals(EmptyStr)) {
         int l=0;
         l=strtol(v.c_str(),NULL,10);
-        if ((l>=-99999) && (l<=99999)) {
-          axis1EncRateComp=(float)l/1000000.0;
+        if (l >= -99999 && l <= 99999) {
+          axis1EncRateComp = (float)l/1000000.0;
           nv.update(EE_ENC_RC_RCOMP, (int32_t)l);
         }
       }
 
       #if AXIS1_ENC_INTPOL_COS == ON
         // Encoder interpolation compensation
-        v=server.arg("ip"); // phase
+        v = server.arg("ip"); // phase
         if (!v.equals(EmptyStr)) {
           int i;
-          if ( (atoi2((char*)v.c_str(),&i)) && ((i>=0) && (i<=255))) { 
-            Axis1EncIntPolPhase=i;
+          if ( atoi2((char*)v.c_str(), &i) && (i >= 0 && i <= 255)) { 
+            Axis1EncIntPolPhase = i;
             nv.update(EE_ENC_RC_INTP_P, (int32_t)i);
           }
         }
-        v=server.arg("im"); // magnitude
+        v = server.arg("im"); // magnitude
         if (!v.equals(EmptyStr)) {
           int i;
-          if ( (atoi2((char*)v.c_str(),&i)) && ((i>=0) && (i<=29000))) { 
-            Axis1EncIntPolMag=i;
+          if ( atoi2((char*)v.c_str(), &i) && (i >= 0 && i <= 29000)) { 
+            Axis1EncIntPolMag = i;
             nv.update(EE_ENC_RC_INTP_M, (int32_t)i);
           }
         }
       #endif
 
       // Sweep control
-      v=server.arg("sw");
+      v = server.arg("sw");
       if (!v.equals(EmptyStr)) {
-        if (v.equals("on") encSweep=true;
-        if (v.equals("off") encSweep=false;
+        if (v.equals("on")) encSweep = true;
+        if (v.equals("off")) encSweep = false;
       }
     #endif
   }
