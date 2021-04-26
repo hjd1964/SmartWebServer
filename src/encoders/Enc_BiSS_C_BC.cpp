@@ -12,6 +12,7 @@ extern NVS nv;
 
 // tested and known to work with Broadcom AS37-H39B-B
 // designed according protocol description found in as38-H39e-b-an100.pdf
+// later I found this: https://docs.broadcom.com/docs/AS37-H39B-AN100
 
 #if AXIS1_ENC == BC_BISSC || AXIS2_ENC == BC_BISSC
   #include "Enc_BiSS_C_BC.h"
