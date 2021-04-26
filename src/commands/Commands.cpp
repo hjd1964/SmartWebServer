@@ -31,11 +31,11 @@ void serialBegin(long baudRate, int swap) {
     if (swap) { 
         VLF("WEM: Attempting connect on swapped port");
         delay(500);
-        Ser.begin(baudRate,SERIAL_8N1,23,5); 
+        Ser.begin(baudRate, SERIAL_8N1, 23, 5); 
       } else {
         VLF("WEM: Attempting connect on non-swapped port");
         delay(500);
-        Ser.begin(baudRate,SERIAL_8N1,1,3);
+        Ser.begin(baudRate, SERIAL_8N1, 1, 3);
       }
   #else
     VF("WEM: Set baud rate to "); VL(baudRate);
