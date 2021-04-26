@@ -229,7 +229,7 @@ Again:
     encoders.init();
   #endif
 
-  if (!mountStatus.valid()) {
+  if (mountStatus.valid()) {
     mountStatus.update(false);
     delay(100);
   }
