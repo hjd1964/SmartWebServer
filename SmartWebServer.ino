@@ -49,8 +49,10 @@ Tasks tasks;
 #include "src/commands/Commands.h"
 #include "src/ethernetServers/EthernetServers.h"
 #include "src/wifiServers/WifiServers.h"
+#include "src/bleGamepad/BleGamepad.h"
 #include "src/encoders/Encoders.h"
 #include "src/pages/Pages.h"
+#include "src/status/MountStatus.h"
 
 bool connected = false;
 
@@ -65,6 +67,12 @@ void setup(void) {
 
   VF("WEM: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
   VF("WEM: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
+
+  // call gamepad BLE initialization
+  #if BLE_GAMEPAD == ON
+    VLF("WEM: Init BLE");
+    bleInit();
+  #endif
 
   // call hardware specific initialization
   VLF("WEM: Init HAL");
@@ -147,6 +155,10 @@ Again:
     goto Again;
   }
 
+  #if BLE_GAMEPAD == ON
+    bleSetup();
+  #endif
+  
   // bring servers up
   clearSerialChannel();
 
@@ -216,6 +228,11 @@ Again:
     VLF("WEM: Starting encoders");
     encoders.init();
   #endif
+
+  if (!mountStatus.valid()) {
+    mountStatus.update(false);
+    delay(100);
+  }
     
   VLF("WEM: SmartWebServer ready");
 }
@@ -225,6 +242,11 @@ void loop(void) {
 
   #if ENCODERS == ON
     encoders.poll();
+  #endif
+  
+  #if BLE_GAMEPAD == ON
+    bleTimers();
+    bleConnTest(); 
   #endif
 
   #if OPERATIONAL_MODE == WIFI
