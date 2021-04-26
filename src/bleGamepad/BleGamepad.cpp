@@ -16,6 +16,8 @@
   #include "../status/MountStatus.h"
 
   // ===== GamePad Button Assignments =====
+  // commands are blind unless otherwise noted, though only commandBlind() is used to process these since
+  // it is ESP32 thread safe (unlike commandBool() etc.) and still reads any response as appropriate.
   #define LOW_TRIGGER       ":F-#"
   #define UPR_TRIGGER       ":F+#"
   #define BUTTON_A          0x01
