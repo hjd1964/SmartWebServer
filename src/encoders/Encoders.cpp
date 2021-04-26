@@ -201,10 +201,10 @@ void Encoders::init() {
   #endif
 
   void Encoders::syncToOnStep() {
-    char s[22];
-    Ser.print(":SX40,"); Ser.print(_enAxis1, 6); Ser.print("#"); Ser.readBytes(s, 1);
-    Ser.print(":SX41,"); Ser.print(_enAxis2, 6); Ser.print("#"); Ser.readBytes(s, 1);
-    Ser.print(":SX42,1#"); Ser.readBytes(s, 1);
+    char cmd[40];
+    sprintF(cmd, ":SX40,%0.6f#", _enAxis1); commandBool(cmd);
+    sprintF(cmd, ":SX41,%0.6f#", _enAxis2); commandBool(cmd);
+    commandBool(":SX42,1#");
   }
 
   // check encoders and auto sync OnStep if diff is too great, checks every 1.5 seconds
@@ -241,7 +241,7 @@ void Encoders::init() {
         if (mountStatus.atHome() || mountStatus.parked() || mountStatus.aligning() || mountStatus.syncToEncodersOnly()) {
           syncFromOnStep();
           // re-enable normal operation once we're updated here
-          if (mountStatus.syncToEncodersOnly()) { Ser.print(":SX43,1#"); Ser.readBytes(s, 1); }
+          if (mountStatus.syncToEncodersOnly()) commandBool(":SX43,1#");
         } else
           if (!mountStatus.slewing() && !mountStatus.guiding()) {
             if ((fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffTo/3600.0)) ||
@@ -268,8 +268,8 @@ void Encoders::init() {
         static int pass = -1;
         pass++;
         if (pass%5 == 0) {
-          Ser.print(":GX49#"); s[Ser.readBytesUntil('#',s,20)] = 0;
-          if (strlen(s) > 1) axis1Rate = atof(s); else axis1Rate = 0;
+          char* result = commandString(":GX49#");
+          if (strlen(result) > 1) axis1Rate = atof(result); else axis1Rate = 0;
         }
 
         // reset averages if rate is too fast or too slow
@@ -308,12 +308,12 @@ void Encoders::init() {
         if (guideCorrection < -POLLING_RATE) clearAverages(); else
         if (guideCorrection > Axis1EncMinGuide/1000.0) {
           guideCorrectionMillis = round(guideCorrection*1000.0);
-          Ser.print(":Mgw"); Ser.print(guideCorrectionMillis); Ser.print("#");
+          sprintf(s, ":Mgw%ld#", guideCorrectionMillis); commandBlind(s);
           guideCorrection = 0;
         } else
         if (guideCorrection < -Axis1EncMinGuide/1000.0) {
           guideCorrectionMillis = round(guideCorrection*1000.0);
-          Ser.print(":Mge"); Ser.print(-guideCorrectionMillis); Ser.print("#");
+          sprintf(s, ":Mge%ld#", -guideCorrectionMillis); commandBlind(s);
           guideCorrection = 0;
         } else 
           guideCorrectionMillis = 0;

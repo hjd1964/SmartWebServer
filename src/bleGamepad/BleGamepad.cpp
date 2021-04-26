@@ -12,25 +12,26 @@
   #include "../debug/Debug.h"
   #include "../pinmaps/Models.h"
   #include <BLEDevice.h>
+  #include "../commands/Commands.h"
   #include "../status/MountStatus.h"
 
   // ===== GamePad Button Assignments =====
   #define LOW_TRIGGER       ":F-#"
   #define UPR_TRIGGER       ":F+#"
   #define BUTTON_A          0x01
-  #define BUTTON_B          ":Mp#"  // Spiral search
-  #define BUTTON_C          ":R4#"  // rate 4 = 4x
-  #define BUTTON_D          ":R8#"  // rate 8 = 48x
+  #define BUTTON_B          ":Mp#"     // Spiral search
+  #define BUTTON_C          ":R4#"     // rate 4 = 4x
+  #define BUTTON_D          ":R8#"     // rate 8 = 48x
   #define FOCUS_LOW         ":FS#"
   #define FOCUS_HIGH        ":FF#"
   #define FOCUS_STOP        ":FQ#"
-  #define PARK              ":hP#"
-  #define UNPARK            ":hR#"
-  #define TRACK_ON          ":Te#"   // Tracking enable
-  #define TRACK_OFF         ":Td#"   // Tracking disable
+  #define PARK              ":hP#"     // returns 0 or 1
+  #define UNPARK            ":hR#"     // returns 0 or 1
+  #define TRACK_ON          ":Te#"     // returns 0 or 1
+  #define TRACK_OFF         ":Td#"     // returns 0 or 1
   #define STOP_ALL          ":Q#"
-  #define BEEP              ":SX97,0#"
-  #define GOTO_CURRENT      ":MS#"
+  #define BEEP              ":SX97,0#" // returns 0 or 1
+  #define GOTO_CURRENT      ":MS#"     // returns numeric code
 
   #define TaskStackSize     4096
 
@@ -358,12 +359,12 @@
         // the lower trigger button is pressed
         if (FocusSpd)
         {
-          Ser.print(FOCUS_HIGH); 
+          commandBlind(FOCUS_HIGH);
           FocusSpd = false;
         }
-        else Ser.print(FOCUS_LOW); 
+        else commandBlind(FOCUS_LOW); 
           
-        Ser.print(LOW_TRIGGER);         
+        commandBlind(LOW_TRIGGER);         
         triggerPress = true;
         pressedOnce = true;
         continue;
@@ -374,12 +375,12 @@
         // the upper trigger button is pressed
         if (FocusSpd)
           {
-            Ser.print(FOCUS_HIGH); 
+            commandBlind(FOCUS_HIGH); 
             FocusSpd = false;
           }
-        else Ser.print(FOCUS_LOW);  
+        else commandBlind(FOCUS_LOW);  
       
-        Ser.print(UPR_TRIGGER);         
+        commandBlind(UPR_TRIGGER);         
         triggerPress = true;
         pressedOnce = true;
         continue;
@@ -391,7 +392,7 @@
         if (!movingNorth) 
         {
           movingNorth = true;
-          Ser.print(":Mn#");
+          commandBlind(":Mn#");
         }
       }
       else if (y > JoyStickDeadZone)
@@ -400,7 +401,7 @@
         if (!movingSouth) 
         {
           movingSouth = true;
-          Ser.print(":Ms#");
+          commandBlind(":Ms#");
         }
       }
       if (x < -JoyStickDeadZone)
@@ -409,7 +410,7 @@
         if (!movingEast) 
         {
           movingEast = true;
-          Ser.print(":Me#");
+          commandBlind(":Me#");
         }
       }
       else if (x > JoyStickDeadZone)
@@ -418,7 +419,7 @@
         if (!movingWest) 
         {
           movingWest = true;
-          Ser.print(":Mw#");
+          commandBlind(":Mw#");
         }
       }
     
@@ -427,7 +428,7 @@
         pushTimer = 0;
         triggerPress = false;   
         FocusSpd = false;
-        Ser.print(FOCUS_STOP);          
+        commandBlind(FOCUS_STOP);          
         continue;          
       }
               
@@ -441,7 +442,7 @@
           movingEast = false; 
           movingWest = false;                                  
           timerReturn = false;
-          Ser.print(STOP_ALL);          
+          commandBlind(STOP_ALL);          
         }        
       }
     }
@@ -466,8 +467,8 @@
 
       if (buttons & VB_BUTTON_A)
       {
-        Ser.print(GOTO_CURRENT);
-        Ser.print(BEEP);    
+        commandBlind(GOTO_CURRENT);
+        commandBlind(BEEP);
       }
 
       if (buttons & VB_BUTTON_B)
@@ -477,14 +478,14 @@
         if (SpiralInProgess == false)
           {
             SpiralInProgess = true;
-            Ser.print(BUTTON_B);
+            commandBlind(BUTTON_B);
           }
         else
           {
             SpiralInProgess = false; 
-            Ser.print(BUTTON_B);
+            commandBlind(BUTTON_B);
             delay(100);
-            Ser.print(STOP_ALL);
+            commandBlind(STOP_ALL);
           }
       }
     }
@@ -515,39 +516,39 @@
       
       if (VB_BUTTON_M == buttons)
       {
-          mountStatus.update(false);
+        mountStatus.update(false);
 
-      // emergency stop
-      if (mountStatus.slewing())
-      {   
-        Ser.print(STOP_ALL); 
-        continue;
+        // emergency stop
+        if (mountStatus.slewing())
+        {   
+          commandBlind(STOP_ALL);
+          continue;
+        }
+        
+        else if (mountStatus.atHome() && !mountStatus.tracking())
+        {
+          commandBlind(TRACK_ON);
+        }        
+        else if (mountStatus.parked())
+        {
+          commandBlind(UNPARK);
+        }
+        else if (!mountStatus.parked())
+        {
+          commandBlind(PARK);
+          commandBlind(BEEP);     
+        }
       }
-      
-      else if (mountStatus.atHome() && !mountStatus.tracking())
-      {
-        Ser.print(TRACK_ON);
-      }        
-      else if (mountStatus.parked())
-      {
-        Ser.print(UNPARK);         
-      }
-      else if (!mountStatus.parked())
-      {
-        Ser.print(PARK);
-        Ser.print(BEEP);               
-      }
-    }
 
       if (buttons & VB_BUTTON_C)
       {
         // button C pressed
         CDpressedOnce = true; 
         (activeGuideRate--);
-        if (activeGuideRate<4)  activeGuideRate=4;
-        if (activeGuideRate>10) activeGuideRate=10;
-        char cmd[5]= ":Rn#"; cmd[2] = '0' + activeGuideRate - 1;
-        Ser.print(cmd);
+        if (activeGuideRate < 4)  activeGuideRate = 4;
+        if (activeGuideRate > 10) activeGuideRate = 10;
+        char cmd[5] = ":Rn#"; cmd[2] = '0' + activeGuideRate - 1;
+        commandBlind(cmd);
       }
 
       if (buttons & VB_BUTTON_D)
@@ -555,10 +556,10 @@
         // button D pressed
         CDpressedOnce = true; 
         (activeGuideRate++);
-        if (activeGuideRate<4)  activeGuideRate=4;
-        if (activeGuideRate>10) activeGuideRate=10;
-        char cmd[5]= ":Rn#"; cmd[2] = '0' + activeGuideRate - 1;
-        Ser.print(cmd);
+        if (activeGuideRate < 4)  activeGuideRate = 4;
+        if (activeGuideRate > 10) activeGuideRate = 10;
+        char cmd[5] = ":Rn#"; cmd[2] = '0' + activeGuideRate - 1;
+        commandBlind(cmd);
       }
     } 
   }
@@ -682,7 +683,6 @@
   void bleTimers() 
   {
     // joystick no activity detector
-      
     if (Connected)
     {
       if (joyTimer && (joyTimer < millis()))
