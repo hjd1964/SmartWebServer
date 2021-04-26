@@ -22,6 +22,7 @@ int cmdTimeout = TIMEOUT_CMD;
 void serialBegin(long baudRate, int swap) {
   static bool firstRun = true;
   if (SERIAL_BAUD_DEFAULT == SERIAL_BAUD && (swap == ON || swap == OFF) && !firstRun) return;
+  if (!firstRun) Ser.end();
   firstRun = false;
   if (swap == ON || swap == AUTO_ON) swap = 1; else swap = 0;
   #ifdef ESP32
