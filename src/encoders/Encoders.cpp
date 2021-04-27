@@ -192,8 +192,8 @@ void Encoders::init() {
     char *conv_end;
     if ((long)(temp - nextEncCheckMs) > 0) {
       nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
-      char s[22];
 
+      char result[40];
       if (command(":GX42#", result) && strlen(result) > 1) {
         double f = strtod(result, &conv_end);
         if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1 = f;
