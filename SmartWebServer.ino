@@ -122,18 +122,17 @@ Again:
   SERIAL_ONSTEP.print(":GVP#"); delay(100);
   String s = SERIAL_ONSTEP.readString();
   if (s == "On-Step#" || s == "OnStepX#") {
-    // check for fastest baud rate
-    SERIAL_ONSTEP.print(":GB#"); delay(100);
-    if (SERIAL_ONSTEP.available() != 1) { serialRecvFlush(); goto Again; }
-    // Mega2560 returns '4' for 19200 baud recommended
-    if (SERIAL_ONSTEP.read() == '4' && serial_baud > 19200) {
-      serial_baud = 19200;
+    // if there is more than one baud rate specified
+    if (SERIAL_BAUD != SERIAL_BAUD_DEFAULT) {
+      // get fastest baud rate, Mega2560 returns '4' for 19200 baud recommended
+      SERIAL_ONSTEP.print(":GB#"); delay(100);
+      if (SERIAL_ONSTEP.available() != 1) { serialRecvFlush(); goto Again; }
+      if (SERIAL_ONSTEP.read() == '4' && serial_baud > 19200) serial_baud = 19200;
+      // set faster baud rate
+      SERIAL_ONSTEP.print(highSpeedCommsStr(serial_baud)); delay(100);
+      if (SERIAL_ONSTEP.available() != 1) { serialRecvFlush(); goto Again; }
+      if (SERIAL_ONSTEP.read() != '1') goto Again;
     }
-
-    // set fastest baud rate
-    SERIAL_ONSTEP.print(highSpeedCommsStr(serial_baud)); delay(100);
-    if (SERIAL_ONSTEP.available() != 1) { serialRecvFlush(); goto Again; }
-    if (SERIAL_ONSTEP.read() != '1') goto Again;
 
     // we're all set, just change the baud rate to match OnStep
     serialBegin(serial_baud, serialSwap);
