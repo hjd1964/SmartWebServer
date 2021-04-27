@@ -19,9 +19,6 @@ extern Tasks tasks;
 int webTimeout = TIMEOUT_WEB;
 int cmdTimeout = TIMEOUT_CMD;
 
-#ifdef ESP32
-  SemaphoreHandle_t xMutex = xSemaphoreCreateBinary();
-#endif
 
 void serialBegin(long baudRate, int swap) {
   static bool firstRun = true;
@@ -88,10 +85,22 @@ void clearSerialChannel() {
   }
 }
 
+#ifdef ESP32
+  SemaphoreHandle_t xMutex;
+#endif
+
 // smart LX200 aware command and response over serial
 bool processCommand(const char* cmd, char* response, long timeOutMs) {
+
   #ifdef ESP32
-  //  xSemaphoreTake(xMutex, portMAX_DELAY);
+    // create the mutex automatically
+    static bool firstCall = true;
+    if (firstCall) {
+      xMutex = xSemaphoreCreateMutex();
+      firstCall = false;
+    }
+
+    xSemaphoreTake(xMutex, portMAX_DELAY);
   #endif
 
   SERIAL_ONSTEP.setTimeout(timeOutMs);
@@ -174,7 +183,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
   if (noResponse) {
     response[0] = 0;
     #ifdef ESP32
-  //    xSemaphoreGive(xMutex);
+      xSemaphoreGive(xMutex);
     #endif
     return true;
   } else
@@ -183,7 +192,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
       if (SERIAL_ONSTEP.available()) { response[SERIAL_ONSTEP.readBytes(response, 1)] = 0; break; }
     }
     #ifdef ESP32
-   //   xSemaphoreGive(xMutex);
+      xSemaphoreGive(xMutex);
     #endif
     return (response[0] != 0);
   } else {
@@ -197,7 +206,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
       }
     }
     #ifdef ESP32
-   //   xSemaphoreGive(xMutex);
+      xSemaphoreGive(xMutex);
     #endif
     return (response[0] != 0);
   }
