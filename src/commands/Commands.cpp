@@ -91,7 +91,7 @@ void clearSerialChannel() {
 // smart LX200 aware command and response over serial
 bool processCommand(const char* cmd, char* response, long timeOutMs) {
   #ifdef ESP32
-    xSemaphoreTake(xMutex, portMAX_DELAY);
+  //  xSemaphoreTake(xMutex, portMAX_DELAY);
   #endif
 
   SERIAL_ONSTEP.setTimeout(timeOutMs);
@@ -174,7 +174,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
   if (noResponse) {
     response[0] = 0;
     #ifdef ESP32
-      xSemaphoreGive(xMutex);
+  //    xSemaphoreGive(xMutex);
     #endif
     return true;
   } else
@@ -183,7 +183,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
       if (SERIAL_ONSTEP.available()) { response[SERIAL_ONSTEP.readBytes(response, 1)] = 0; break; }
     }
     #ifdef ESP32
-      xSemaphoreGive(xMutex);
+   //   xSemaphoreGive(xMutex);
     #endif
     return (response[0] != 0);
   } else {
@@ -197,7 +197,7 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
       }
     }
     #ifdef ESP32
-      xSemaphoreGive(xMutex);
+   //   xSemaphoreGive(xMutex);
     #endif
     return (response[0] != 0);
   }
