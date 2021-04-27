@@ -173,10 +173,10 @@ extern NVS nv;
     digitalWrite(_clkPin, HIGH);
 
     // trap errors
-    if (!foundAck) { VLF("WEM: BISSC Encoder, Ack bit invalid"); return false; }
-    if (!foundStart) { VLF("WEM: BISSC Encoder, Start bit invalid"); return false; }
-    if (!foundCds) { VLF("WEM: BISSC Encoder, Cds bit invalid"); return false; }
-    if (encErr) { VLF("WEM: BISSC Encoder, Error bit set"); return false; }
+    if (!foundAck) { VLF("SWS: BISSC Encoder, Ack bit invalid"); return false; }
+    if (!foundStart) { VLF("SWS: BISSC Encoder, Start bit invalid"); return false; }
+    if (!foundCds) { VLF("SWS: BISSC Encoder, Cds bit invalid"); return false; }
+    if (encErr) { VLF("SWS: BISSC Encoder, Error bit set"); return false; }
     // todo: solve CRC and return false if it fails
 
     // combine absolute and 9 low order bits of multi-turn count for a 32 bit position

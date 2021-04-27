@@ -63,7 +63,7 @@ extern NVS nv;
     WiFi.softAPdisconnect(true);
 
     if (nv.readI(EE_KEY_HIGH) != NV_KEY_HIGH || nv.readI(EE_KEY_LOW) != NV_KEY_LOW) {
-      VLF("WEM: bad NV key, reset Wifi defaults");
+      VLF("SWS: bad NV key, reset Wifi defaults");
       nv.update(EE_AP_EN, (int16_t)accessPointEnabled);
       nv.update(EE_STA_EN, (int16_t)stationEnabled);
       nv.update(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
@@ -86,7 +86,7 @@ extern NVS nv;
       for (int i = 0; i < 4; i++) nv.update(EE_AP_SN + i, wifi_ap_sn[i]);
     }
 
-    VLF("WEM: NV reading Wifi settings");
+    VLF("SWS: NV reading Wifi settings");
     accessPointEnabled = nv.readI(EE_AP_EN);
     stationEnabled = nv.readI(EE_STA_EN);
     if (!accessPointEnabled && !stationEnabled) accessPointEnabled = true;
@@ -115,43 +115,43 @@ extern NVS nv;
   }
 
   void wifiStart(void) {
-    VF("WEM: Master Pwd = "); VL(masterPassword);
+    VF("SWS: Master Pwd = "); VL(masterPassword);
 
-    VF("WEM: Web Ch Timeout ms = "); VL(webTimeout);
-    VF("WEM: Cmd Ch Timeout ms = "); VL(cmdTimeout);
+    VF("SWS: Web Ch Timeout ms = "); VL(webTimeout);
+    VF("SWS: Cmd Ch Timeout ms = "); VL(cmdTimeout);
 
-    VF("WEM: WiFi AP Enabled  = "); VL(accessPointEnabled);
-    VF("WEM: WiFi Sta Enabled = "); VL(stationEnabled);
-    VF("WEM: WiFi Sta DHCP En = "); VL(stationDhcpEnabled);
+    VF("SWS: WiFi AP Enabled  = "); VL(accessPointEnabled);
+    VF("SWS: WiFi Sta Enabled = "); VL(stationEnabled);
+    VF("SWS: WiFi Sta DHCP En = "); VL(stationDhcpEnabled);
 
-    VF("WEM: WiFi STA SSID    = "); VL(wifi_sta_ssid);
-    VF("WEM: WiFi STA PWD     = "); VL(wifi_sta_pwd);
-    VF("WEM: WiFi STA IP      = "); VL(wifi_sta_ip.toString());
-    VF("WEM: WiFi STA GATEWAY = "); VL(wifi_sta_gw.toString());
-    VF("WEM: WiFi STA SN      = "); VL(wifi_sta_sn.toString());
+    VF("SWS: WiFi STA SSID    = "); VL(wifi_sta_ssid);
+    VF("SWS: WiFi STA PWD     = "); VL(wifi_sta_pwd);
+    VF("SWS: WiFi STA IP      = "); VL(wifi_sta_ip.toString());
+    VF("SWS: WiFi STA GATEWAY = "); VL(wifi_sta_gw.toString());
+    VF("SWS: WiFi STA SN      = "); VL(wifi_sta_sn.toString());
 
-    VF("WEM: WiFi AP SSID     = "); VL(wifi_ap_ssid);
-    VF("WEM: WiFi AP PWD      = "); VL(wifi_ap_pwd);
-    VF("WEM: WiFi AP CH       = "); VL(wifi_ap_ch);
-    VF("WEM: WiFi AP IP       = "); VL(wifi_ap_ip.toString());
-    VF("WEM: WiFi AP GATEWAY  = "); VL(wifi_ap_gw.toString());
-    VF("WEM: WiFi AP SN       = "); VL(wifi_ap_sn.toString());
+    VF("SWS: WiFi AP SSID     = "); VL(wifi_ap_ssid);
+    VF("SWS: WiFi AP PWD      = "); VL(wifi_ap_pwd);
+    VF("SWS: WiFi AP CH       = "); VL(wifi_ap_ch);
+    VF("SWS: WiFi AP IP       = "); VL(wifi_ap_ip.toString());
+    VF("SWS: WiFi AP GATEWAY  = "); VL(wifi_ap_gw.toString());
+    VF("SWS: WiFi AP SN       = "); VL(wifi_ap_sn.toString());
 
   TryAgain:
     if (accessPointEnabled && !stationEnabled) {
-      VLF("WEM: Starting WiFi Soft AP");
+      VLF("SWS: Starting WiFi Soft AP");
       WiFi.softAP(wifi_ap_ssid, wifi_ap_pwd, wifi_ap_ch);
       WiFi.mode(WIFI_AP);
     } else
     if (!accessPointEnabled && stationEnabled) {
-      VLF("WEM: Starting WiFi Station");
+      VLF("SWS: Starting WiFi Station");
       WiFi.begin(wifi_sta_ssid, wifi_sta_pwd);
       WiFi.mode(WIFI_STA);
     } else
     if (accessPointEnabled && stationEnabled) {
-      VLF("WEM: Starting WiFi Soft AP");
+      VLF("SWS: Starting WiFi Soft AP");
       WiFi.softAP(wifi_ap_ssid, wifi_ap_pwd, wifi_ap_ch);
-      VLF("WEM: Starting WiFi Station");
+      VLF("SWS: Starting WiFi Station");
       WiFi.begin(wifi_sta_ssid, wifi_sta_pwd);
       WiFi.mode(WIFI_AP_STA);
     }
@@ -164,9 +164,9 @@ extern NVS nv;
     if (!accessPointEnabled && stationEnabled) {
       for (int i = 0; i < 8; i++) if (WiFi.status() != WL_CONNECTED) delay(1000); else break;
       if (WiFi.status() != WL_CONNECTED) {
-        VLF("WEM: Starting WiFi Station, failed");
+        VLF("SWS: Starting WiFi Station, failed");
         WiFi.disconnect(); delay(3000);
-        VLF("WEM: Switching to WiFi Soft AP mode");
+        VLF("SWS: Switching to WiFi Soft AP mode");
         stationEnabled = false;
         accessPointEnabled = true;
         goto TryAgain;

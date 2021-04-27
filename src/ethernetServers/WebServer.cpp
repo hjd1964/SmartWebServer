@@ -41,7 +41,7 @@
     Ethernet.begin(eth_mac, eth_ip, eth_dns, eth_gw, eth_sn);
     _server.begin();
 
-    WF("WEM: WWW Server started at = "); WL(Ethernet.localIP());
+    WF("SWS: WWW Server started at = "); WL(Ethernet.localIP());
 
     #if SD_CARD == ON
       SDfound = SD.begin(SD_CARD_CS_PIN);
@@ -60,7 +60,7 @@
     EthernetClient client;
     client = _server.available();
     if (client) {
-      WL("WEM WEBSERVER: New client");
+      WL("SWS: Webserver New client");
 
       parameter_count = 0;
       String line = "";
@@ -120,22 +120,22 @@
       bool handlerFound = false;
       if (handler_number >= 0) {
         if (handlers[handler_number] != NULL) {
-          WF("WEM WEBSERVER: Running handler# "); WL(handler_number);
+          WF("SWS: Webserver Running handler# "); WL(handler_number);
           client.print(responseHeader);
           (*handlers[handler_number])(&client);
           handlerFound = true;
         } else {
           #if SD_CARD == ON
             if (modifiedSinceFound) {
-              WLF("WEM WEBSERVER: Sending js304Header");
+              WLF("SWS: Webserver Sending js304Header");
               char temp[255]; strcpy_P(temp, http_js304Header); _client.print(temp);
               handlerFound = true;
             } else {
               if (handlers_fn[handler].indexOf(".js") > 0) {
-                WLF("WEM WEBSERVER: Sending jsHeader");
+                WLF("SWS: Webserver Sending jsHeader");
                 char temp[255]; strcpy_P(temp, http_jsHeader); _client.print(temp); 
               } else client.print(responseHeader);
-              WLF("WEM WEBSERVER: Sending SD file");
+              WLF("SWS: Webserver Sending SD file");
               sdPage(handlers_fn[handler], &client);
               handlerFound = true;
             }
@@ -156,7 +156,7 @@
         modifiedSinceFound = false;
       #endif
   
-      WL("WEM WEBSERVER: Client disconnected");
+      WL("SWS: Webserver Client disconnected");
     }
   }
 
@@ -164,8 +164,8 @@
     int url_end = line->indexOf("HTTP/");
     if (url_end <= 0) return -1;
 
-    WLF("WEM WEBSERVER: processing header GET/POST handler");
-    WF("WEM WEBSERVER: ["); W(line->substring(0, 8)); WL("...]");
+    WLF("SWS: Webserver processing header GET/POST handler");
+    WF("SWS: Webserver ["); W(line->substring(0, 8)); WL("...]");
 
     // isolate the content
     *line = line->substring(0, url_end);
@@ -174,7 +174,7 @@
       int j = line->indexOf(handlers_fn[i]);
       if (j >= 0) {
         // success, isolate any parameters and return
-        WF("WEM WEBSERVER: found handler "); W(i); W(" ["); W(handlers_fn[i]); WL("]");
+        WF("SWS: Webserver found handler "); W(i); W(" ["); W(handlers_fn[i]); WL("]");
         *line = line->substring(j + handlers_fn[i].length());
         line->trim();
         return i;
@@ -184,8 +184,8 @@
   }
 
   void WebServer::processGet(String* line) {
-    WLF("WEM WEBSERVER: processing header GET parameters");
-    WF("WEM WEBSERVER: ["); W(line->substring(0, 8)); WL("...]");
+    WLF("SWS: Webserver processing header GET parameters");
+    WF("SWS: Webserver ["); W(line->substring(0, 8)); WL("...]");
 
     // isolate any parameters, get their values
     // look for form "?a=1&" or "&a=1"
@@ -202,13 +202,13 @@
       }
       if ((int)line->length() > j1) *line = line->substring(j1); else *line = "";
 
-      WF("WEM WEBSERVER: param. "); W(thisArg); W(" = "); WL(thisVal);
+      WF("SWS: Webserver param. "); W(thisArg); W(" = "); WL(thisVal);
     }
   }
 
   void WebServer::processPost(String* line) {
-    WLF("WEM WEBSERVER: processing header POST parameter");
-    WF("WEM WEBSERVER: ["); W(line->substring(0, 8)); WL("...]");
+    WLF("SWS: Webserver processing header POST parameter");
+    WF("SWS: Webserver ["); W(line->substring(0, 8)); WL("...]");
 
     // make all tokens start with '&'
     *line = "&" + *line;
@@ -228,7 +228,7 @@
       }
       if ((int)line->length() > j1) *line = line->substring(j1); else *line = "";
 
-      WF("WEM WEBSERVER: param. "); W(thisArg); W(" = "); WL(thisVal);
+      WF("SWS: Webserver param. "); W(thisArg); W(" = "); WL(thisVal);
     }
   }
 

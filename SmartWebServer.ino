@@ -65,32 +65,32 @@ void setup(void) {
   if (DEBUG == ON || DEBUG == VERBOSE) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
   delay(2000);
 
-  VF("WEM: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
-  VF("WEM: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
+  VF("SWS: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
+  VF("SWS: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
   // call gamepad BLE initialization
   #if BLE_GAMEPAD == ON
-    VLF("WEM: Init BLE");
+    VLF("SWS: Init BLE");
     bleInit();
   #endif
 
   // call hardware specific initialization
-  VLF("WEM: Init HAL");
+  VLF("SWS: Init HAL");
   HAL_INIT();
 
   // System services
   // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
-  VF("WEM: Setup, starting system services task (rate 10ms priority 7)... ");
+  VF("SWS: Setup, starting system services task (rate 10ms priority 7)... ");
   if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
 
   // if requested, cause defaults to be written back into NV
   if (NV_WIPE == ON) { nv.update(EE_KEY_HIGH, (int16_t)0); nv.update(EE_KEY_LOW, (int16_t)0); }
 
   // read settings from NV or init. as required
-  VLF("WEM: Init Encoders");
+  VLF("SWS: Init Encoders");
   encoders.init();
 
-  VLF("WEM: Init Webserver");
+  VLF("SWS: Init Webserver");
   #if OPERATIONAL_MODE == WIFI
     wifiInit();
   #else
@@ -114,11 +114,11 @@ void setup(void) {
   uint8_t tb = 1;
 
 Again:
-  VLF("WEM: Clearing serial channel");
+  VLF("SWS: Clearing serial channel");
   clearSerialChannel();
 
   // look for OnStep
-  VLF("WEM: Attempting to contact OnStep");
+  VLF("SWS: Attempting to contact OnStep");
   SERIAL_ONSTEP.print(":GVP#"); delay(100);
   String s = SERIAL_ONSTEP.readString();
   if (s == "On-Step#" || s == "OnStepX#") {
@@ -138,9 +138,9 @@ Again:
     serialBegin(serial_baud, serialSwap);
 
     connected = true;
-    VLF("WEM: OnStep Connection established");
+    VLF("SWS: OnStep Connection established");
   } else {
-    if (DEBUG == ON || DEBUG == VERBOSE) { VF("WEM: No valid reply found ("); V(s); VL(")"); }
+    if (DEBUG == ON || DEBUG == VERBOSE) { VF("SWS: No valid reply found ("); V(s); VL(")"); }
     #if LED_STATUS == ON
       digitalWrite(LED_STATUS_PIN, LED_STATUS_OFF_STATE);
     #endif
@@ -161,14 +161,14 @@ Again:
   // bring servers up
   clearSerialChannel();
 
-  VLF("WEM: Starting port 80 web svr");
+  VLF("SWS: Starting port 80 web svr");
   #if OPERATIONAL_MODE == WIFI
     wifiStart();
   #else
     ethernetStart();
   #endif
 
-  VLF("WEM: Set webpage handlers");
+  VLF("SWS: Set webpage handlers");
   server.on("/index.htm", handleRoot);
   server.on("/configuration.htm", handleConfiguration);
   server.on("/configurationA.txt", configurationAjaxGet);
@@ -197,7 +197,7 @@ Again:
   server.onNotFound(handleNotFound);
 
   #if STANDARD_COMMAND_CHANNEL == ON
-    VLF("WEM: Starting port 9999 cmd svr");
+    VLF("SWS: Starting port 9999 cmd svr");
     #if OPERATIONAL_MODE == WIFI
       cmdSvr.begin();
       cmdSvr.setNoDelay(true);
@@ -207,13 +207,13 @@ Again:
   #endif
 
   #if PERSISTENT_COMMAND_CHANNEL == ON && OPERATIONAL_MODE == WIFI
-    VLF("WEM: Starting port 9998 persistant cmd svr");
+    VLF("SWS: Starting port 9998 persistant cmd svr");
     persistentCmdSvr.begin();
     persistentCmdSvr.setNoDelay(true);
   #endif
 
   #if OPERATIONAL_MODE == WIFI
-    VLF("WEM: Starting port 80 web svr");
+    VLF("SWS: Starting port 80 web svr");
     server.begin();
   #endif
 
@@ -224,7 +224,7 @@ Again:
   clearSerialChannel();
 
   #if ENCODERS == ON
-    VLF("WEM: Starting encoders");
+    VLF("SWS: Starting encoders");
     encoders.init();
   #endif
 
@@ -233,7 +233,7 @@ Again:
     delay(100);
   }
     
-  VLF("WEM: SmartWebServer ready");
+  VLF("SWS: SmartWebServer ready");
 }
 
 void loop(void) {

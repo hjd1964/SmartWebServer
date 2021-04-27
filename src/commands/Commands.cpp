@@ -31,24 +31,24 @@ void serialBegin(long baudRate, int swap) {
     // not swapped: TX and RX on default pins
     //     swapped: TX on gpio 5 and RX on gpio 23
     if (swap) { 
-        VLF("WEM: Attempting connect on swapped port");
+        VLF("SWS: Attempting connect on swapped port");
         delay(500);
         SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 23, 5); 
       } else {
-        VLF("WEM: Attempting connect on non-swapped port");
+        VLF("SWS: Attempting connect on non-swapped port");
         delay(500);
         SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 1, 3);
       }
   #else
-    VF("WEM: Set baud rate to "); VL(baudRate);
+    VF("SWS: Set baud rate to "); VL(baudRate);
     SERIAL_ONSTEP.begin(baudRate);
     #ifdef ESP8266
       if (swap) {
-        VLF("WEM: Attempting connect on swapped port");
+        VLF("SWS: Attempting connect on swapped port");
         delay(500);
         SERIAL_ONSTEP.swap();
       } else {
-        VLF("WEM: Attempting connect on non-swapped port");
+        VLF("SWS: Attempting connect on non-swapped port");
       }
     #endif
   #endif

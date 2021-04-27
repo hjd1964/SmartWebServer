@@ -222,7 +222,7 @@
     {
       scanTimer = 0;                                          // reinitalize the scan timer
       digitalWrite(LED_STATUS_PIN, LED_STATUS_ON_STATE);      // indicate connected
-      VLF("WEM: BLE GamePad Connected");
+      VLF("SWS: BLE GamePad Connected");
       mountStatus.update(false);
     }
 
@@ -231,7 +231,7 @@
       havedevice = false;
       Connected = false;
       digitalWrite(LED_STATUS_PIN, LED_STATUS_OFF_STATE);     // indicate disconnected
-      VLF("WEM: BLE GamePad Disconnected");
+      VLF("SWS: BLE GamePad Disconnected");
       scanTimer = millis() + SCANTIMER;                       // restart the scan timer
     }
   };
@@ -595,7 +595,7 @@
 
       // restart the scan timer
       scanTimer = millis() + SCANTIMER;
-      VLF("WEM: Scanning for BLE GamePad");
+      VLF("SWS: Scanning for BLE GamePad");
     }
   }
   // End of DoScan.
@@ -678,7 +678,7 @@
       
     bleConnTest();
 
-    VLF("WEM: Starting BLE GamePad"); 
+    VLF("SWS: Starting BLE GamePad"); 
   }
   // End of bleSetup.
 
