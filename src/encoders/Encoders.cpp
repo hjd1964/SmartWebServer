@@ -193,15 +193,14 @@ void Encoders::init() {
     if ((long)(temp - nextEncCheckMs) > 0) {
       nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
       char s[22];
-      
-      if (command(":GX42#", s) && strlen(s) > 1) {
-        double f = strtod(s, &conv_end);
-        if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1 = f;
+
+      if (command(":GX42#", result) && strlen(result) > 1) {
+        double f = strtod(result, &conv_end);
+        if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1 = f;
       }
-      
-      if (command(":GX43#", s) && strlen(s) > 1) {
-        double f = strtod(s, &conv_end);
-        if (&s[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis2 = f;
+      if (command(":GX43#", result) && strlen(result) > 1) {
+        double f = strtod(result, &conv_end);
+        if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis2 = f;
       }
       
       long pos = axis1Pos.read();
@@ -282,16 +281,17 @@ void Encoders::init() {
         // accumulate tracking rate departures for pulse-guide, rate delta * 2 seconds
         guideCorrection += (axis1Rate - axis1EncRateSta)*((float)Axis1EncProp/100.0)*POLLING_RATE;
 
+        char cmd[40];
         if (guideCorrection > POLLING_RATE) clearAverages(); else
         if (guideCorrection < -POLLING_RATE) clearAverages(); else
         if (guideCorrection > Axis1EncMinGuide/1000.0) {
           guideCorrectionMillis = round(guideCorrection*1000.0);
-          sprintf(s, ":Mgw%ld#", guideCorrectionMillis); commandBlind(s);
+          sprintf(cmd, ":Mgw%ld#", guideCorrectionMillis); commandBlind(cmd);
           guideCorrection = 0;
         } else
         if (guideCorrection < -Axis1EncMinGuide/1000.0) {
           guideCorrectionMillis = round(guideCorrection*1000.0);
-          sprintf(s, ":Mge%ld#", -guideCorrectionMillis); commandBlind(s);
+          sprintf(cmd, ":Mge%ld#", -guideCorrectionMillis); commandBlind(cmd);
           guideCorrection = 0;
         } else 
           guideCorrectionMillis = 0;
