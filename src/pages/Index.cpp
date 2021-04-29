@@ -279,56 +279,35 @@ void handleRoot() {
 
   data.concat("<br /><b>" L_STATE ":</b><br />");
 
-  if (mountStatus.axisStatusValid()) {
-    // Stepper driver status Axis1
-    strcpy(temp1,"");
-    if (mountStatus.axis1Comms()) strcat(temp1,L_COMMS_FAILURE  ", ");
-    if (mountStatus.axis1StSt()) strcat(temp1,L_STANDSTILL ", "); else {
-      if (mountStatus.axis1OLa() || mountStatus.axis1OLb()) {
-        strcat(temp1,L_OPEN_LOAD " ");
-        if (mountStatus.axis1OLa()) strcat(temp1,"A");
-        if (mountStatus.axis1OLb()) strcat(temp1,"B");
+  // Driver status
+  for (int axis = 0; axis < 9; axis++) {
+    if (mountStatus.driver[axis].valid) {
+      sprintf(temp, "&nbsp;&nbsp;Axis%d", axis + 1);
+      data.concat(temp);
+      strcpy(temp1,"");
+      if (mountStatus.driver[axis].fault) strcat(temp1, L_DRIVER_FAULT "  ");
+      if (mountStatus.driver[axis].communicationFailure) strcat(temp1, L_COMMS_FAILURE ", ");
+      if (mountStatus.driver[axis].standstill) strcat(temp1, L_STANDSTILL ", "); else {
+        if (mountStatus.driver[axis].outputA.openLoad || mountStatus.driver[axis].outputB.openLoad) {
+          strcat(temp1, L_OPEN_LOAD " ");
+          if (mountStatus.driver[axis].outputA.openLoad) strcat(temp1,"A");
+          if (mountStatus.driver[axis].outputB.openLoad) strcat(temp1,"B");
+          strcat(temp1,", ");
+        }
+      }
+      if (mountStatus.driver[axis].outputA.shortToGround || mountStatus.driver[axis].outputB.shortToGround) {
+        strcat(temp1, L_SHORT_GND " ");
+        if (mountStatus.driver[axis].outputA.shortToGround) strcat(temp1,"A");
+        if (mountStatus.driver[axis].outputB.shortToGround) strcat(temp1,"B");
         strcat(temp1,", ");
       }
+      if (mountStatus.driver[axis].overTemperature) strcat(temp1, L_SHUTDOWN_OVER " 150C, ");
+      if (mountStatus.driver[axis].overTemperaturePreWarning) strcat(temp1, L_PRE_WARNING " &gt;120C, ");
+      if (strlen(temp1) > 2) temp1[strlen(temp1) - 2] = 0;
+      if (strlen(temp1) == 0) strcpy(temp1, "Ok");
+      sprintf_P(temp, html_indexDriverStatus, temp1);
+      data.concat(temp);
     }
-    if (mountStatus.axis1S2Ga() || mountStatus.axis1S2Ga()) {
-      strcat(temp1,L_SHORT_GND " ");
-      if (mountStatus.axis1S2Ga()) strcat(temp1,"A");
-      if (mountStatus.axis1S2Gb()) strcat(temp1,"B");
-      strcat(temp1,", ");
-    }
-    if (mountStatus.axis1OT()) strcat(temp1,L_SHUTDOWN_OVER " 150C, ");
-    if (mountStatus.axis1OTPW()) strcat(temp1,L_PRE_WARNING " &gt;120C, ");
-    if (strlen(temp1)>2) temp1[strlen(temp1)-2]=0;
-    if (strlen(temp1)==0) strcpy(temp1,"Ok");
-    sprintf_P(temp,html_indexDriverStatus,temp1);
-    data.concat("&nbsp;&nbsp;Axis1");
-    data.concat(temp);
-  
-    // Stepper driver status Axis2
-    strcpy(temp1,"");
-    if (mountStatus.axis2Comms()) strcat(temp1,L_COMMS_FAILURE ", ");
-    if (mountStatus.axis2StSt()) strcat(temp1,L_STANDSTILL ", "); else {
-      if (mountStatus.axis2OLa() || mountStatus.axis2OLb()) {
-        strcat(temp1,L_OPEN_LOAD " ");
-        if (mountStatus.axis2OLa()) strcat(temp1,"A");
-        if (mountStatus.axis2OLb()) strcat(temp1,"B");
-        strcat(temp1,", ");
-      }
-    }
-    if (mountStatus.axis2S2Ga() || mountStatus.axis2S2Ga()) {
-      strcat(temp1,L_SHORT_GND " ");
-      if (mountStatus.axis2S2Ga()) strcat(temp1,"A");
-      if (mountStatus.axis2S2Gb()) strcat(temp1,"B");
-      strcat(temp1,", ");
-    }
-    if (mountStatus.axis2OT()) strcat(temp1,L_SHUTDOWN_OVER " 150C, ");
-    if (mountStatus.axis2OTPW()) strcat(temp1,L_PRE_WARNING " &gt;120C, ");
-    if (strlen(temp1)>2) temp1[strlen(temp1)-2]=0;
-    if (strlen(temp1)==0) strcpy(temp1,"Ok");
-    sprintf_P(temp,html_indexDriverStatus,temp1);
-    data.concat("&nbsp;&nbsp;Axis2");
-    data.concat(temp);
   }
 
   // MCU Temperature

@@ -109,6 +109,7 @@
 #define L_SHORT_GND "Masseschluss"
 #define L_SHUTDOWN_OVER "Abschaltung &uuml;ber"
 #define L_PRE_WARNING "Vorwarnung"
+#define L_DRIVER_FAULT "Fehler"
 
 // misc. errors/workload
 #define L_INTERNAL_TEMP "Interne Controller Temperatur"

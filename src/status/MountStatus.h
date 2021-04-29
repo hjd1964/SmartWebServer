@@ -11,6 +11,22 @@ enum Errors {
   ERR_UNDER_POLE, ERR_MERIDIAN, ERR_SYNC, ERR_PARK, ERR_GOTO_SYNC, ERR_UNSPECIFIED,
   ERR_ALT_MAX, ERR_WEATHER_INIT, ERR_SITE_INIT, ERR_NV_INIT};
 
+typedef struct DriverOutputStatus {
+  bool shortToGround;
+  bool openLoad;
+} DriverOutputStatus;
+
+typedef struct DriverStatus {
+  DriverOutputStatus outputA;
+  DriverOutputStatus outputB;
+  bool overTemperaturePreWarning;
+  bool overTemperature;
+  bool standstill;
+  bool communicationFailure;
+  bool fault;
+  bool valid;
+} DriverStatus;
+
 #define PierSideNone     0
 #define PierSideEast     1
 #define PierSideWest     2
@@ -48,27 +64,13 @@ class MountStatus {
     bool atHome();
     bool ppsSync();
     bool guiding();
+    bool guideRate();
+    bool guideRatePulse();
 
     bool focuserPresent();
 
     bool axisFault();
     bool axisStatusValid();
-    bool axis1Comms();
-    bool axis1StSt();
-    bool axis1OLa();
-    bool axis1OLb();
-    bool axis1S2Ga();
-    bool axis1S2Gb();
-    bool axis1OT();
-    bool axis1OTPW();
-    bool axis2Comms();
-    bool axis2StSt();
-    bool axis2OLa();
-    bool axis2OLb();
-    bool axis2S2Ga();
-    bool axis2S2Gb();
-    bool axis2OT();
-    bool axis2OTPW();
 
     bool waitingHome();
     bool pauseAtHome();
@@ -92,6 +94,7 @@ class MountStatus {
     bool featureUpdate(bool all = false);
     
     Errors lastError();
+    DriverStatus driver[9];
     
     bool getLastErrorMessage(char message[]);
 
@@ -141,27 +144,10 @@ class MountStatus {
     bool _autoMeridianFlips = false;
     byte _pierSide = PierSideNone;
     int _alignMaxStars = -1;
+    int _guideRatePulse = -1;
+    int _guideRate = -1;
 
     Errors _lastError = ERR_NONE;
-    bool _validStepperDriverStatus = false;
-    bool _comms1 = false;
-    bool _stst1 = false;
-    bool _olb1 = false;
-    bool _ola1 = false;
-    bool _s2ga1 = false;
-    bool _s2gb1 = false;
-    bool _ot1 = false;
-    bool _otpw1 = false;
-    bool _valid2 = false;
-    bool _comms2 = false;
-    bool _stst2 = false;
-    bool _olb2 = false;
-    bool _ola2 = false;
-    bool _s2ga2 = false;
-    bool _s2gb2 = false;
-    bool _ot2 = false;
-    bool _otpw2 = false;
-
 };
 
 extern MountStatus mountStatus;

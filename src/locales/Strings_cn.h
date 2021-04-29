@@ -100,6 +100,7 @@
 #define L_SHORT_GND "接近地面"
 #define L_SHUTDOWN_OVER "已关闭"
 #define L_PRE_WARNING "预警"
+#define L_DRIVER_FAULT "过错"
 
 // misc. errors/workload
 #define L_INTERNAL_TEMP "内部控制器温度"

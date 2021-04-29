@@ -93,13 +93,14 @@
 
 // driver status
 #define L_DRIVER_STATUS "Driver"
-#define L_STATE "State"
+#define L_STATE "Status"
 #define L_COMMS_FAILURE "Comms failure"
 #define L_STANDSTILL "Standstill"
 #define L_OPEN_LOAD "Open Load"
 #define L_SHORT_GND "Short Gnd"
 #define L_SHUTDOWN_OVER "Shutdown Over"
 #define L_PRE_WARNING "Pre-warning"
+#define L_DRIVER_FAULT "Fault"
 
 // misc. errors/workload
 #define L_INTERNAL_TEMP "Controller Internal Temperature"
@@ -412,7 +413,7 @@
 #define L_DOWN_MESSAGE1 "If you just rebooted OnStep please wait for several seconds for everything to startup again, then check to be sure you're still connected to WiFi.<br /><br />"
 #define L_DOWN_MESSAGE2 "If this is a persistant problem here are other possible causes:<br /><ul>"
 #define L_DOWN_MESSAGE3 "Baud rate mismatch due to reboot of only OnStep, power everything off/on again."
-#define L_DOWN_MESSAGE4 "Incorrectly configured Addon baud rate."
+#define L_DOWN_MESSAGE4 "Incorrectly configured SWS baud rate."
 #define L_DOWN_MESSAGE5 "Incorrectly configured OnStep baud rate."
 #define L_DOWN_MESSAGE6 "Incorrect wiring of the com ports."
 #define L_DOWN_MESSAGE7 "Incorrect wiring of power supply pins.  Gnd must be shared between OnStep's MCU and the Addon's MCU."
