@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------------
 // BLE Gamepad support
-// by Drew
+// by Drew Bolce'
 
 #include <Arduino.h>
 #include "../../Constants.h"
@@ -18,12 +18,9 @@
   // ===== GamePad Button Assignments =====
   // commands are blind unless otherwise noted, though only commandBlind() is used to process these since
   // it is ESP32 thread safe (unlike commandBool() etc.) and still reads any response as appropriate.
-  #define LOW_TRIGGER       ":F-#"
-  #define UPR_TRIGGER       ":F+#"
-  #define BUTTON_A          0x01
-  #define BUTTON_B          ":Mp#"     // Spiral search
-  #define BUTTON_C          ":R4#"     // rate 4 = 4x
-  #define BUTTON_D          ":R8#"     // rate 8 = 48x
+  #define FOCUS_IN          ":F-#"
+  #define FOCUS_OUT         ":F+#"
+  #define SPIRAL            ":Mp#"  // Spiral search
   #define FOCUS_LOW         ":FS#"
   #define FOCUS_HIGH        ":FF#"
   #define FOCUS_STOP        ":FQ#"
@@ -197,14 +194,10 @@
           VrBoxData[VB_BTNAB] = pData[0];
           if (HandleAB)
             vTaskResume(HandleAB);
-
-          // restart the parking push delay timer
-          longTimer = millis() + PARKTIMER;          
         }
         else
         {
           // C/D button report, wake the C/D button handler task
-          // VLF("Wake the C/D button handler task");
           VrBoxData[VB_BTNCD] = pData[0];
           if (HandleCD)
             vTaskResume(HandleCD);
@@ -350,94 +343,93 @@
       y = (int8_t)VrBoxData[VB_JOYY];
       triggers = VrBoxData[VB_TRIGGERS];
 
-      if (pressedOnce)
+      if (pressedOnce && !timerReturn)
       {
         pressedOnce = false;
         continue;
       }
 
       if (triggers & VB_LOW_TRIGGER)
-      {
-        // the lower trigger button is pressed
-        if (FocusSpd)
+    {
+      // the lower trigger button is pressed
+      if (FocusSpd)
         {
-          commandBlind(FOCUS_HIGH);
+          commandBlind(FOCUS_HIGH); 
           FocusSpd = false;
         }
-        else commandBlind(FOCUS_LOW); 
-          
-        commandBlind(LOW_TRIGGER);         
-        triggerPress = true;
-        pressedOnce = true;
-        continue;
-      }
-        
-      if (triggers & VB_UPR_TRIGGER)
-      {
-        // the upper trigger button is pressed
-        if (FocusSpd)
-          {
-            commandBlind(FOCUS_HIGH); 
-            FocusSpd = false;
-          }
-        else commandBlind(FOCUS_LOW);  
+      else commandBlind(FOCUS_LOW); 
+      commandBlind(FOCUS_IN);         
+      triggerPress = true;
+      pressedOnce = true;
+      continue;
+    }
       
-        commandBlind(UPR_TRIGGER);         
-        triggerPress = true;
-        pressedOnce = true;
-        continue;
-      }
-        
-      if (y < -JoyStickDeadZone)
-      {
-        // move North
-        if (!movingNorth) 
+    if (triggers & VB_UPR_TRIGGER)
+    {
+      // the upper trigger button is pressed
+      if (FocusSpd)
         {
-          movingNorth = true;
-          commandBlind(":Mn#");
+           commandBlind(FOCUS_HIGH); 
+          FocusSpd = false;
         }
-      }
-      else if (y > JoyStickDeadZone)
+      else commandBlind(FOCUS_LOW);  
+     
+      commandBlind(FOCUS_OUT);         
+      triggerPress = true;
+      pressedOnce = true;
+      continue;
+    }
+       
+    if (y < -JoyStickDeadZone)
+    {
+      // move North
+      if (!movingNorth) 
       {
-        // move South
-        if (!movingSouth) 
-        {
-          movingSouth = true;
-          commandBlind(":Ms#");
-        }
+        movingNorth = true;
+        commandBlind(":Mn#");
       }
-      if (x < -JoyStickDeadZone)
+    }
+    else if (y > JoyStickDeadZone)
+    {
+      // move South
+      if (!movingSouth) 
       {
-        // move East
-        if (!movingEast) 
-        {
-          movingEast = true;
-          commandBlind(":Me#");
-        }
+        movingSouth = true;
+        commandBlind(":Ms#");
       }
-      else if (x > JoyStickDeadZone)
+    }
+    if (x < -JoyStickDeadZone)
+    {
+      // move East
+      if (!movingEast) 
       {
-        // move West
-        if (!movingWest) 
-        {
-          movingWest = true;
-          commandBlind(":Mw#");
-        }
-      }
-    
-      if (triggerPress && (VrBoxData[VB_TRIGGERS] == 0))
-      {
-        pushTimer = 0;
-        triggerPress = false;   
-        FocusSpd = false;
-        commandBlind(FOCUS_STOP);          
-        continue;          
-      }
-              
-      // joystick has been centered for JOYTIMEOUT ms 
-      if (timerReturn) 
-      {
-        if ((JoyStickDeadZone == 0) && (movingNorth || movingSouth || movingEast || movingWest))
+        movingEast = true;
+        commandBlind(":Me#");
+       }
+     }
+     else if (x > JoyStickDeadZone)
+     {
+       // move West
+       if (!movingWest) 
+       {
+         movingWest = true;
+         commandBlind(":Mw#");
+       }
+     }
+  
+    if (triggerPress && (VrBoxData[VB_TRIGGERS] == 0))
+    {
+       pushTimer = 0;
+       triggerPress = false;   
+       FocusSpd = false;
+       commandBlind(FOCUS_STOP);          
+       continue;          
+     }
+            
+// joystick has been centered for JOYTIMEOUT ms 
+     if (timerReturn) 
+     {
+      if ((JoyStickDeadZone == 0) && (movingNorth || movingSouth || movingEast || movingWest))
         {
           movingNorth = false; 
           movingSouth = false; 
@@ -446,9 +438,9 @@
           timerReturn = false;
           commandBlind(STOP_ALL);          
         }        
-      }
-    }
-  } 
+     }
+  }
+} 
   // End of taskJoyStick
 
   //******************************************************************************
@@ -480,13 +472,11 @@
         if (SpiralInProgess == false)
           {
             SpiralInProgess = true;
-            commandBlind(BUTTON_B);
+            commandBlind(SPIRAL);
           }
         else
           {
             SpiralInProgess = false; 
-            commandBlind(BUTTON_B);
-            delay(100);
             commandBlind(STOP_ALL);
           }
       }
@@ -526,7 +516,6 @@
           commandBlind(STOP_ALL);
           continue;
         }
-        
         else if (mountStatus.atHome() && !mountStatus.tracking())
         {
           commandBlind(TRACK_ON);
@@ -537,7 +526,7 @@
         }
         else if (!mountStatus.parked())
         {
-          commandBlind(PARK);
+          commandBlind(PARK);            
           commandBlind(BEEP);     
         }
       }
@@ -625,9 +614,11 @@
   void bleSetup()
   {
     My_BLE_Address = BLE_GP_ADDR;
-    My_BLE_Address1 = BLE_GP_ADDR1;  
+    My_BLE_Address1 = BLE_GP_ADDR1;
+    joyTimer = 0;  
+    pushTimer = 0;
 
-    BaseType_t xReturned;
+    VLF("SWS: Starting BLE GamePad Services");    BaseType_t xReturned;
 
     // create tasks to handle the joystick and buttons
     xReturned = xTaskCreate(taskJoyStick,             // task to handle activity on the joystick.
@@ -675,10 +666,9 @@
       // restart the scan timer
       scanTimer = millis() + SCANTIMER;
     }
-      
-    bleConnTest();
 
-    VLF("SWS: Starting BLE GamePad"); 
+//    VLF("SWS: Starting BLE GamePad");      
+    bleConnTest(); 
   }
   // End of bleSetup.
 
@@ -687,7 +677,7 @@
     // joystick no activity detector
     if (Connected)
     {
-      if (joyTimer && (joyTimer < millis()))
+      if (joyTimer && (joyTimer < millis()) && (movingNorth || movingSouth || movingEast || movingWest))
       {
         // no joystick notification for JOYTIMEOUT mS, center the joystick
         VrBoxData[VB_JOYX] = VrBoxData[VB_JOYY] = 0;
@@ -697,16 +687,16 @@
         joyTimer = 0;
       }
             
-      if (pushTimer && (pushTimer < millis()))
+      if (pushTimer && (pushTimer < millis()) && triggerPress)
       {
         // Focus button held down for FOCUSTIMER, speed up
         FocusSpd = true;
         // wake up the joystick task
-        timerReturn = true;
+        timerReturn = true;      
         vTaskResume(HandleJS);
         pushTimer = 0;          
       }
-      else FocusSpd = false;
+//      else FocusSpd = false;
     }
   }
   // end of bleTimers
