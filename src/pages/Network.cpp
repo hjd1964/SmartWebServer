@@ -203,18 +203,18 @@ void processNetworkGet() {
     if (!v.equals(EmptyStr)) {
       // 5c:cf:7f:0f:ad:85
       // first the length should be 17
-      if (v.length()==17) {
+      if (v.length() == 17) {
         // seperators all in place
-        if ((v.charAt(2)==':') && (v.charAt(5)==':') && (v.charAt(8)==':') && (v.charAt(11)==':') && (v.charAt(14)==':')) {
-          // digits all in 0..9,A..F and validate
+        if (v.charAt(2) == ':' && v.charAt(5) == ':' && v.charAt(8) == ':' && v.charAt(11) == ':' && v.charAt(14) == ':') {
+          // digits all in 0..9, A..F and validate
           v.toUpperCase();
           uint8_t mac[6];
           int imac[6];
-          imac[0]=hexToInt(v.substring(0,2)); imac[1]=hexToInt(v.substring(3,2)); imac[2]=hexToInt(v.substring(6,2));
-          imac[3]=hexToInt(v.substring(9,2)); imac[4]=hexToInt(v.substring(12,2)); imac[5]=hexToInt(v.substring(15,2));
-          if ((imac[0]>=0) && (imac[1]>=0) && (imac[2]>=0) && (imac[3]>=0) && (imac[4]>=0) && (imac[5]>=0)) {
-            mac[0]=imac[0]; mac[1]=imac[1]; mac[2]=imac[2]; mac[3]=imac[3]; mac[4]=imac[4]; mac[5]=imac[5]; 
-            WiFi.macAddress(mac); restartRequired=true; 
+          imac[0] = hexToInt(v.substring(0, 2)); imac[1] = hexToInt(v.substring(3, 2)); imac[2] = hexToInt(v.substring(6, 2));
+          imac[3] = hexToInt(v.substring(9, 2)); imac[4] = hexToInt(v.substring(12, 2)); imac[5] = hexToInt(v.substring(15, 2));
+          if (imac[0] >= 0 && imac[1] >= 0 && imac[2] >= 0 && imac[3] >= 0 && imac[4] >= 0 && imac[5] >= 0) {
+            mac[0] = imac[0]; mac[1] = imac[1]; mac[2] = imac[2]; mac[3] = imac[3]; mac[4] = imac[4]; mac[5] = imac[5]; 
+            WiFi.macAddress(mac); restartRequired = true; 
           }
         }
       }
