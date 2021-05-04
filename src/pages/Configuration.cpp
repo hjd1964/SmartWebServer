@@ -292,19 +292,22 @@ void handleConfiguration() {
       data.concat(FPSTR(html_configFormEnd));
       sendHtml(data);
     }
-    
+
     data.concat("<br />\r\n");
 
     int numShown = 0;
-    
+
     // Mount type
-    if (!command(":GXEM#",temp1)) strcpy(temp1,"0");
-    int mt=atoi(temp1);
-    if (mt != 0 || DRIVE_CONFIGURATION == ON)  data.concat(FPSTR(html_configAdvanced));
+    int mt = 0;
+    if (mountStatus.getVersionMajor() >= 5) {
+      if (!command(":GXEM#",temp1)) strcpy(temp1,"0");
+      mt = atoi(temp1);
+    }
+    if ((mt >= 1 && mt <= 3) || DRIVE_CONFIGURATION == ON) data.concat(FPSTR(html_configAdvanced));
     if (mt >= 1 && mt <= 3) {
       data.concat(F("<button type='button' class='collapsible'>Mount Type</button>"));
       data.concat(FPSTR(html_configFormBegin));
-      sprintf_P(temp,html_configMountType,mt); data.concat(temp);
+      sprintf_P(temp, html_configMountType, mt); data.concat(temp);
       data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
       data.concat(F("<button name='revert' value='0' type='submit'>" L_REVERT "</button>\r\n"));
       data.concat(FPSTR(html_configFormEnd));
@@ -314,7 +317,7 @@ void handleConfiguration() {
 
     #if DRIVE_CONFIGURATION == ON
       AxisSettings a;
-    
+
       // Axis1 RA/Azm
       if (!command(":GXA1#", temp1)) strcpy(temp1,"0");
       if (decodeAxisSettings(temp1, &a)) {
@@ -466,9 +469,9 @@ void handleConfiguration() {
 
   // collapsible script
   data.concat(FPSTR(html_collapseScript));
- 
+
   data.concat("<br/><br/>");
-  
+
   strcpy(temp,"</div></div></body></html>");
   data.concat(temp);
 
