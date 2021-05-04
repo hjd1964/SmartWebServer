@@ -280,29 +280,33 @@ void handleRoot() {
   data.concat("<br /><b>" L_STATE ":</b><br />");
 
   // Driver status
-  for (int axis = 0; axis < 9; axis++) {
+  int numAxes = 2;
+  if (mountStatus.getVersionMajor() >= 10) numAxes = 9;
+  for (int axis = 0; axis < numAxes; axis++) {
     if (mountStatus.driver[axis].valid) {
       sprintf(temp, "&nbsp;&nbsp;Axis%d", axis + 1);
       data.concat(temp);
       strcpy(temp1,"");
       if (mountStatus.driver[axis].fault) strcat(temp1, L_DRIVER_FAULT "  ");
       if (mountStatus.driver[axis].communicationFailure) strcat(temp1, L_COMMS_FAILURE ", ");
-      if (mountStatus.driver[axis].standstill) strcat(temp1, L_STANDSTILL ", "); else {
-        if (mountStatus.driver[axis].outputA.openLoad || mountStatus.driver[axis].outputB.openLoad) {
-          strcat(temp1, L_OPEN_LOAD " ");
-          if (mountStatus.driver[axis].outputA.openLoad) strcat(temp1,"A");
-          if (mountStatus.driver[axis].outputB.openLoad) strcat(temp1,"B");
+      if (!mountStatus.driver[axis].communicationFailure) {
+        if (mountStatus.driver[axis].standstill) strcat(temp1, L_STANDSTILL ", "); else {
+          if (mountStatus.driver[axis].outputA.openLoad || mountStatus.driver[axis].outputB.openLoad) {
+            strcat(temp1, L_OPEN_LOAD " ");
+            if (mountStatus.driver[axis].outputA.openLoad) strcat(temp1,"A");
+            if (mountStatus.driver[axis].outputB.openLoad) strcat(temp1,"B");
+            strcat(temp1,", ");
+          }
+        }
+        if (mountStatus.driver[axis].outputA.shortToGround || mountStatus.driver[axis].outputB.shortToGround) {
+          strcat(temp1, L_SHORT_GND " ");
+          if (mountStatus.driver[axis].outputA.shortToGround) strcat(temp1,"A");
+          if (mountStatus.driver[axis].outputB.shortToGround) strcat(temp1,"B");
           strcat(temp1,", ");
         }
+        if (mountStatus.driver[axis].overTemperature) strcat(temp1, L_SHUTDOWN_OVER " 150C, ");
+        if (mountStatus.driver[axis].overTemperaturePreWarning) strcat(temp1, L_PRE_WARNING " &gt;120C, ");
       }
-      if (mountStatus.driver[axis].outputA.shortToGround || mountStatus.driver[axis].outputB.shortToGround) {
-        strcat(temp1, L_SHORT_GND " ");
-        if (mountStatus.driver[axis].outputA.shortToGround) strcat(temp1,"A");
-        if (mountStatus.driver[axis].outputB.shortToGround) strcat(temp1,"B");
-        strcat(temp1,", ");
-      }
-      if (mountStatus.driver[axis].overTemperature) strcat(temp1, L_SHUTDOWN_OVER " 150C, ");
-      if (mountStatus.driver[axis].overTemperaturePreWarning) strcat(temp1, L_PRE_WARNING " &gt;120C, ");
       if (strlen(temp1) > 2) temp1[strlen(temp1) - 2] = 0;
       if (strlen(temp1) == 0) strcpy(temp1, "Ok");
       sprintf_P(temp, html_indexDriverStatus, temp1);
