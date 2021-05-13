@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// BLE Gamepad support
+// BLE Gamepad support v1.1
 // by Drew Bolce'
 
 #include <Arduino.h>
@@ -20,53 +20,50 @@
   // it is ESP32 thread safe (unlike commandBool() etc.) and still reads any response as appropriate.
   #define FOCUS_IN          ":F-#"
   #define FOCUS_OUT         ":F+#"
-  #define SPIRAL            ":Mp#"  // Spiral search
   #define FOCUS_LOW         ":FS#"
   #define FOCUS_HIGH        ":FF#"
   #define FOCUS_STOP        ":FQ#"
+  #define SPIRAL            ":Mp#"     // Spiral search
   #define PARK              ":hP#"     // returns 0 or 1
   #define UNPARK            ":hR#"     // returns 0 or 1
   #define TRACK_ON          ":Te#"     // returns 0 or 1
   #define TRACK_OFF         ":Td#"     // returns 0 or 1
   #define STOP_ALL          ":Q#"
-  #define BEEP              ":SX97,0#" // returns 0 or 1
+  #define BEEP              ":SX97,1#" // returns 0 or 1
   #define GOTO_CURRENT      ":MS#"     // returns numeric code
 
   #define TaskStackSize     4096
-
+  
   //------ GamePad Definitions -----
   enum
   {
-    VB_TRIGGERS = 0,
-    VB_JOYX,
-    VB_JOYY,
-    VB_BTNAB,
-    VB_BTNCD,
-    VB_NUMBYTES
+    GP_TRIGGERS = 0,
+    GP_JOYX,
+    GP_JOYY,
+    GP_BTNAB,
+    GP_BTNCD,
+    GP_NUMBYTES
   };
 
   //------ GuideRate up/down variables -----
     uint8_t activeGuideRate = 5;
-  //  uint8_t featureKeyMode = 1; // guide rate
 
   // ===== GamePad Button Masks =====
 
-  #define VB_BUTTON_UP      0x00
-  #define VB_LOW_TRIGGER    0x01
-  #define VB_UPR_TRIGGER    0x02
-  #define VB_BUTTON_A       0x01
-  #define VB_BUTTON_B       0x02
-  #define VB_BUTTON_C       0x01
-  #define VB_BUTTON_D       0x02
-  #define VB_BUTTON_M       0x00
+  #define GP_BUTTON_UP      0x00
+  #define GP_LOW_TRIGGER    0x01
+  #define GP_UPR_TRIGGER    0x02
+  #define GP_BUTTON_A       0x01
+  #define GP_BUTTON_B       0x02
+  #define GP_BUTTON_C       0x01
+  #define GP_BUTTON_D       0x02
+  #define GP_BUTTON_M       0x00
   #define FRESHFLAG         0x80
 
-  #define JOYTIMEOUT         150   // joystick no activity timeout in mS
+  #define JOYTIMEOUT         100   // joystick no activity timeout in mS
   #define JoyStickDeadZone     0   // increase if motors not stopping when in center position
   #define SCANTIMER        15000   // number of ms before rescanning
-  #define PARKTIMER         1000   // Accidental push delay for Parking On/Off
   #define FOCUSTIMER        5000   // focus speedup timer
-  #define TRACKINGTIMER     1000   // Accidental push delay for Tracking On/Off
 
   // we will connect to server by MAC address not name
   static BLEAddress *Server_BLE_Address; 
@@ -99,7 +96,6 @@
   static bool pressedOnce = false;
   static bool FocusSpd = false; //Focus speed toggle flag
   static bool SpiralInProgess = false; //Spiral search start/stop flag
-  static bool dblClk = false; //Double click "clicked once" flag
 
   static bool doConnect = false;
   static bool Connected = false;
@@ -107,13 +103,10 @@
   static bool havedevice = false;
   static bool ABpressedOnce = false;
   static bool CDpressedOnce = false;
-  static bool isParked = true;
-  static bool Tracking = false;
-  static bool Parkbtn = false;
 
   static BLERemoteCharacteristic* pRemoteCharacteristic;
   static BLEAdvertisedDevice* myDevice;
-
+  static BLEClient *pClient = NULL;
   static BLERemoteCharacteristic* pBatRemoteCharacteristic;
 
   // pointer to a list of characteristics of the active service,
@@ -131,7 +124,7 @@
   BLERemoteCharacteristic *bleRcs[4];
 
   // This is where we store the data from the buttons and joystick
-  volatile byte   VrBoxData[VB_NUMBYTES];
+  volatile byte   VrBoxData[GP_NUMBYTES];
   volatile bool   flag = false;         // indicates new data to process
 
   // joyTimer is a JOYTIMEOUT millisecond re-triggerable timer that sets the joystick 
@@ -141,10 +134,6 @@
   // pushTimer is a millisecond re-triggerable timer that sets the amount
   // of time a key must be pressed before a button state change is triggered
   volatile uint32_t pushTimer = millis();
-
-  // longTimer is a millisecond re-triggerable timer that sets the amount
-  // of time a key must be pressed before a button push event is triggered
-  volatile uint32_t longTimer = millis();
 
   // scanTimer is a TimerIncrease millisecond re-triggerable timer that sets the amount
   // of time between rescans on device disconnect
@@ -174,7 +163,7 @@
       if (4 == length)
       {
         // copy data to VrBoxData
-        for (int i = VB_TRIGGERS; i < VB_BTNAB; i++)
+        for (int i = GP_TRIGGERS; i < GP_BTNAB; i++)
           VrBoxData[i] = pData[i];
     
         // wake up the joystick/trigger buttons handler task
@@ -183,7 +172,6 @@
           
         // restart the timers
         joyTimer = millis() + JOYTIMEOUT;
-        pushTimer = millis() + FOCUSTIMER;
       }
       else if (2 == length)
       {
@@ -191,18 +179,18 @@
         if (0x50 == pData[1])
         {
           // A/B button report, wake the A/B button handler task
-          VrBoxData[VB_BTNAB] = pData[0];
+          VrBoxData[GP_BTNAB] = pData[0];
           if (HandleAB)
             vTaskResume(HandleAB);
         }
         else
         {
           // C/D button report, wake the C/D button handler task
-          VrBoxData[VB_BTNCD] = pData[0];
+          VrBoxData[GP_BTNCD] = pData[0];
           if (HandleCD)
             vTaskResume(HandleCD);
         }
-    }
+     }
   }
   //  End of notifyCallback
 
@@ -218,13 +206,14 @@
       VLF("SWS: BLE GamePad Connected");
       mountStatus.update(false);
     }
-
+    
     void onDisconnect(BLEClient* pclient)
     {
       havedevice = false;
       Connected = false;
       digitalWrite(LED_STATUS_PIN, LED_STATUS_OFF_STATE);     // indicate disconnected
       VLF("SWS: BLE GamePad Disconnected");
+      delete myDevice; 
       scanTimer = millis() + SCANTIMER;                       // restart the scan timer
     }
   };
@@ -261,11 +250,22 @@
   //******************************************************************************
   bool connectToServer()
   {
-    BLEClient*  pClient  = BLEDevice::createClient();
+
+    if (pClient == NULL)
+    {
+      pClient = BLEDevice::createClient();
+    }
     pClient->setClientCallbacks(new MyClientCallback());
-    // Connect to the remote BLE Server.
-    pClient->connect(myDevice);
-    
+
+    // Connect to the remote BLE Server
+    bool _connected = pClient->connect(myDevice);  // if you pass BLEAdvertisedDevice instead of address, it will be recognized type of peer device address (public or private)
+    if(!_connected)
+    {
+      delete pClient;
+      delete myDevice;
+      return false;
+    } 
+       
     // BLE servers may offer several services, each with unique characteristics
     // we can identify the type of service by using the service UUID
     // Obtain a reference to the service we are after in the remote BLE server.
@@ -317,6 +317,7 @@
       }
     }
   };
+  // End of MyAdvertisedDeviceCallbacks
 
   // All of these tasks are designed to run forever. The tasks are resumed when
   // a notification message is received with new data.
@@ -339,108 +340,116 @@
 
       // we just woke up, new data is available, convert joystick data to
       // signed 8 bit integers
-      x = (int8_t)VrBoxData[VB_JOYX];
-      y = (int8_t)VrBoxData[VB_JOYY];
-      triggers = VrBoxData[VB_TRIGGERS];
+      x = (int8_t)VrBoxData[GP_JOYX];
+      y = (int8_t)VrBoxData[GP_JOYY];
+      triggers = VrBoxData[GP_TRIGGERS];
+         
+      // trigger released, stop focuser 
+      if (triggerPress && (VrBoxData[GP_TRIGGERS] == 0))
+      {
+        commandBlind(FOCUS_STOP);        
+        pushTimer = 0;
+        triggerPress = false;   
+        FocusSpd = false;
+        continue;          
+      }
+      
+      if (triggers & GP_LOW_TRIGGER)
+      {
+      // the lower trigger button is pressed
+      if (FocusSpd && triggerPress)
+        {
+        commandBlind(FOCUS_HIGH); 
+        FocusSpd = false;
+        }
+      else 
+        {
+        commandBlind(FOCUS_LOW);
+        pushTimer = millis() + FOCUSTIMER; 
+        }
+         commandBlind(FOCUS_IN);         
+        triggerPress = true;
+        pressedOnce = true;
+        continue;
+      }
+      
+      if (triggers & GP_UPR_TRIGGER)
+      {
+        // the upper trigger button is pressed
+        if (FocusSpd && triggerPress)
+          {
+          commandBlind(FOCUS_HIGH); 
+          FocusSpd = false;
+          }
+       else 
+         {
+         commandBlind(FOCUS_LOW);
+         pushTimer = millis() + FOCUSTIMER; 
+         }
+         commandBlind(FOCUS_OUT);         
+         triggerPress = true;
+         pressedOnce = true;
+         continue;
+      }
 
-      if (pressedOnce && !timerReturn)
+      if (pressedOnce)
       {
         pressedOnce = false;
         continue;
       }
-
-      if (triggers & VB_LOW_TRIGGER)
-    {
-      // the lower trigger button is pressed
-      if (FocusSpd)
+                
+      if (y < -JoyStickDeadZone)
+      {
+        // move North
+        if (!movingNorth) 
         {
-          commandBlind(FOCUS_HIGH); 
-          FocusSpd = false;
+          movingNorth = true;
+          commandBlind(":Mn#");
         }
-      else commandBlind(FOCUS_LOW); 
-      commandBlind(FOCUS_IN);         
-      triggerPress = true;
-      pressedOnce = true;
-      continue;
-    }
-      
-    if (triggers & VB_UPR_TRIGGER)
-    {
-      // the upper trigger button is pressed
-      if (FocusSpd)
+      }
+      else if (y > JoyStickDeadZone)
+      {
+        // move South
+        if (!movingSouth) 
         {
-           commandBlind(FOCUS_HIGH); 
-          FocusSpd = false;
+          movingSouth = true;
+          commandBlind(":Ms#");
         }
-      else commandBlind(FOCUS_LOW);  
-     
-      commandBlind(FOCUS_OUT);         
-      triggerPress = true;
-      pressedOnce = true;
-      continue;
-    }
-       
-    if (y < -JoyStickDeadZone)
-    {
-      // move North
-      if (!movingNorth) 
-      {
-        movingNorth = true;
-        commandBlind(":Mn#");
       }
-    }
-    else if (y > JoyStickDeadZone)
-    {
-      // move South
-      if (!movingSouth) 
+      if (x < -JoyStickDeadZone)
       {
-        movingSouth = true;
-        commandBlind(":Ms#");
-      }
-    }
-    if (x < -JoyStickDeadZone)
-    {
-      // move East
-      if (!movingEast) 
-      {
-        movingEast = true;
-        commandBlind(":Me#");
+        // move East
+        if (!movingEast) 
+        {
+          movingEast = true;
+          commandBlind(":Me#");
+         }
        }
-     }
-     else if (x > JoyStickDeadZone)
-     {
-       // move West
-       if (!movingWest) 
+       else if (x > JoyStickDeadZone)
        {
-         movingWest = true;
-         commandBlind(":Mw#");
+         // move West
+         if (!movingWest) 
+         {
+           movingWest = true;
+           commandBlind(":Mw#");
+         }
        }
-     }
-  
-    if (triggerPress && (VrBoxData[VB_TRIGGERS] == 0))
-    {
-       pushTimer = 0;
-       triggerPress = false;   
-       FocusSpd = false;
-       commandBlind(FOCUS_STOP);          
-       continue;          
-     }
-            
-// joystick has been centered for JOYTIMEOUT ms 
-     if (timerReturn) 
-     {
-      if ((JoyStickDeadZone == 0) && (movingNorth || movingSouth || movingEast || movingWest))
-        {
-          movingNorth = false; 
-          movingSouth = false; 
-          movingEast = false; 
-          movingWest = false;                                  
-          timerReturn = false;
-          commandBlind(STOP_ALL);          
-        }        
+   
+       // joystick has been centered for JOYTIMEOUT ms 
+       if (timerReturn) 
+       {
+        if ((JoyStickDeadZone == 0) && (movingNorth || movingSouth || movingEast || movingWest))
+          {
+            movingNorth = false; 
+            movingSouth = false; 
+            movingEast = false; 
+            movingWest = false;                                  
+            timerReturn = false;
+            commandBlind(STOP_ALL);          
+          }        
+        }
      }
   }
-} 
   // End of taskJoyStick
 
   //******************************************************************************
@@ -457,15 +466,15 @@
       vTaskSuspend(NULL);
       
       // we just woke up, new data is available
-      buttons = VrBoxData[VB_BTNAB];
+      buttons = VrBoxData[GP_BTNAB];
 
-      if (buttons & VB_BUTTON_A)
+      if (buttons & GP_BUTTON_A)
       {
         commandBlind(GOTO_CURRENT);
         commandBlind(BEEP);
       }
 
-      if (buttons & VB_BUTTON_B)
+      if (buttons & GP_BUTTON_B)
       {
         // button B pressed
         // Spiral search
@@ -479,7 +488,7 @@
             SpiralInProgess = false; 
             commandBlind(STOP_ALL);
           }
-      }
+       }
     }
   } 
   //  End of taskButtonAB
@@ -498,7 +507,7 @@
       vTaskSuspend(NULL);
 
       // we just woke up, new data is available
-      buttons = VrBoxData[VB_BTNCD];
+      buttons = VrBoxData[GP_BTNCD];
 
       if (CDpressedOnce)
       {
@@ -506,7 +515,7 @@
         continue;
       }
       
-      if (VB_BUTTON_M == buttons)
+      if (GP_BUTTON_M == buttons)
       {
         mountStatus.update(false);
 
@@ -531,7 +540,7 @@
         }
       }
 
-      if (buttons & VB_BUTTON_C)
+      if (buttons & GP_BUTTON_C)
       {
         // button C pressed
         CDpressedOnce = true; 
@@ -542,7 +551,7 @@
         commandBlind(cmd);
       }
 
-      if (buttons & VB_BUTTON_D)
+      if (buttons & GP_BUTTON_D)
       {
         // button D pressed
         CDpressedOnce = true; 
@@ -571,17 +580,19 @@
   {
     if (scanTimer && (scanTimer < millis()))
     {
-        // Retrieve a GATT Scanner and set the callback we want to use to be informed 
-        // when we have detected a new device.  Specify that we want active scanning
-        // and start the scan.
-      
-        BLEScan* pBLEScan = BLEDevice::getScan();
-        pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
-        pBLEScan->setInterval(1349);
-        pBLEScan->setWindow(499);
-        pBLEScan->setActiveScan(true);
-        pBLEScan->start(1); // scan 1 second
-
+      // Retrieve a GATT Scanner and set the callback we want to use to be informed 
+      // when we have detected a new device.  Specify that we want active scanning
+      // and start the scan.
+    
+      BLEScan* pBLEScan = BLEDevice::getScan();
+      pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+      pBLEScan->setInterval(1349);
+      pBLEScan->setWindow(499);
+      pBLEScan->setActiveScan(true);
+      pBLEScan->start(1); // scan 1 second
+        
+      pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory   heap problem
+    
       // restart the scan timer
       scanTimer = millis() + SCANTIMER;
       VLF("SWS: Scanning for BLE GamePad");
@@ -656,21 +667,18 @@
       pBLEScan->setWindow(150);  
       pBLEScan->setActiveScan(true);
       pBLEScan->start(2, false); // scan
-        
       delay(3000); // delay for scan
     }
-    
+
     if (!Connected)
     {
       doScan = true;
       // restart the scan timer
       scanTimer = millis() + SCANTIMER;
     }
-
-//    VLF("SWS: Starting BLE GamePad");      
-    bleConnTest(); 
+    bleConnTest();     
   }
-  // End of bleSetup.
+// End of bleSetup
 
   void bleTimers() 
   {
@@ -678,27 +686,25 @@
     if (Connected)
     {
       if (joyTimer && (joyTimer < millis()) && (movingNorth || movingSouth || movingEast || movingWest))
-      {
+      { 
         // no joystick notification for JOYTIMEOUT mS, center the joystick
-        VrBoxData[VB_JOYX] = VrBoxData[VB_JOYY] = 0;
-        // wake up the joystick task
+        VrBoxData[GP_JOYX] = VrBoxData[GP_JOYY] = 0;
         timerReturn = true;
+        joyTimer = 0;        
         vTaskResume(HandleJS);
-        joyTimer = 0;
       }
             
       if (pushTimer && (pushTimer < millis()) && triggerPress)
       {
-        // Focus button held down for FOCUSTIMER, speed up
+         // Focus button held down for FOCUSTIMER, speed up
         FocusSpd = true;
-        // wake up the joystick task
-        timerReturn = true;      
+        timerReturn = true;
+        pushTimer = 0;                  
         vTaskResume(HandleJS);
-        pushTimer = 0;          
       }
-//      else FocusSpd = false;
+      else FocusSpd = false;
     }
   }
-  // end of bleTimers
+// End of bleTimers
 
 #endif 
