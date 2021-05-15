@@ -2,12 +2,9 @@
 // Control
 #pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-
-#include "../locales/Locale.h"
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
 
 const char html_controlQuick1[] PROGMEM =
 "<div style='text-align: center; width: 30em'>"

@@ -1,17 +1,9 @@
 // -----------------------------------------------------------------------------------
 // Cmd channel server
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-
-#include <Ethernet.h>
+#include "CmdServer.h"
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
-
-  #include "CmdServer.h"
 
   EthernetServer cmdserver1(9999);
   EthernetServer cmdserver2(9998);

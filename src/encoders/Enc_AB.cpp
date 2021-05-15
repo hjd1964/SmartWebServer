@@ -1,12 +1,6 @@
 // ----------------------------------------------------------------------------------------------------------------
 // Read Quadrature A/B type encoders
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../pinmaps/Models.h"
-
 #include "Enc_AB.h"
 
 // this is for Quadrature A/B type encoders (library based)

@@ -1,27 +1,8 @@
 // -----------------------------------------------------------------------------------
 // Setup Network
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-extern NVS nv;
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
-#include "../commands/Commands.h"
-#include "../misc/Misc.h"
-#include "../status/MountStatus.h"
-#include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/EthernetServers.h"
-#include "../encoders/Encoders.h"
-
-#include "htmlHeaders.h"
-#include "htmlMessages.h"
-#include "htmlScripts.h"
-
 #include "Network.h"
+extern NVS nv;
 
 extern int webTimeout;
 extern int cmdTimeout;
@@ -72,7 +53,8 @@ void handleNetwork() {
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2));
+  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));

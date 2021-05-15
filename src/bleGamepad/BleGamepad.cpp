@@ -2,15 +2,10 @@
 // BLE Gamepad support v1.1
 // by Drew Bolce'
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
+#include "BleGamepad.h"
 
 #if BLE_GAMEPAD == ON 
-  #include "../HAL/HAL.h"
-  #include "../debug/Debug.h"
-  #include "../pinmaps/Models.h"
+
   #include <BLEDevice.h>
   #include "../commands/Commands.h"
   #include "../status/MountStatus.h"

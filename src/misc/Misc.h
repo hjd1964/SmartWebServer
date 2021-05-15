@@ -2,7 +2,7 @@
 // Misc functions to help with commands, etc.
 #pragma once
 
-#include <Arduino.h>
+#include "../SmartWebServer.h"
 
 typedef struct AxisSettings {
    double stepsPerMeasure;

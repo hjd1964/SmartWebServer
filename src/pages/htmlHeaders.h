@@ -1,5 +1,14 @@
 #pragma once
 
+#include "../SmartWebServer.h"
+#include "../locales/Locale.h"
+#include "../misc/Misc.h"
+#include "../commands/Commands.h"
+#include "../status/MountStatus.h"
+#include "../wifiServers/WifiServers.h"
+#include "../ethernetServers/EthernetServers.h"
+#include "../encoders/Encoders.h"
+
 const char html_headB[] PROGMEM = "<!DOCTYPE HTML>\r\n"
                                   "<html>\r\n"
                                   "<head>\r\n"

@@ -1,17 +1,12 @@
 // ----------------------------------------------------------------------------------------------------------------
 // Read CW/CCW type encoders
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../pinmaps/Models.h"
-#include "../HAL/HAL.h"
+#include "Enc_CwCcw.h"
 
 #if AXIS1_ENC == CWCCW || AXIS2_ENC == CWCCW
-  #include "Enc_CwCcw.h"
 
   #if AXIS1_ENC == CWCCW && AXIS1_ENC_RATE_CONTROL == ON
+  
     #define MIN_ENC_PERIOD 0.2
     #define MAX_ENC_PERIOD 5.0
 

@@ -1,25 +1,7 @@
 // -----------------------------------------------------------------------------------
 // The home page, status information
 
-#include <Arduino.h>
 #include <limits.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
-#include "../misc/Misc.h"
-#include "../commands/Commands.h"
-#include "../status/MountStatus.h"
-#include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/EthernetServers.h"
-#include "../encoders/Encoders.h"
-
-#include "htmlHeaders.h"
-#include "htmlMessages.h"
-#include "htmlScripts.h"
-
 #include "Index.h"
 
 #if OPERATIONAL_MODE != WIFI
@@ -60,7 +42,8 @@ void handleRoot() {
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2));
+  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatS));

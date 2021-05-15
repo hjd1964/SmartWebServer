@@ -2,16 +2,12 @@
 // Encoders
 #pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-extern NVS nv;
-#include "../debug/Debug.h"
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
 
-#include "../encoders/Encoders.h"
 #if ENCODERS == ON
+
   #include "../locales/Locale.h"
 
   const char html_encScript2[] PROGMEM =

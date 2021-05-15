@@ -1,13 +1,8 @@
 // -----------------------------------------------------------------------------------
 // Wifi Web and Cmd servers
-
 #pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
+#include "../SmartWebServer.h"
 
 #if OPERATIONAL_MODE == WIFI
   #if defined(ESP32)

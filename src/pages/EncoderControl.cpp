@@ -1,28 +1,10 @@
 // -----------------------------------------------------------------------------------
 // Encoders
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-extern NVS nv;
-#include "../debug/Debug.h"
+#include "EncoderControl.h"
 
-#include "../encoders/Encoders.h"
 #if ENCODERS == ON
-  #include "../locales/Locale.h"
-  #include "../misc/Misc.h"
-  #include "../commands/Commands.h"
-  #include "../status/MountStatus.h"
-  #include "../wifiServers/WifiServers.h"
-  #include "../ethernetServers/EthernetServers.h"
-
-  #include "htmlHeaders.h"
-  #include "htmlMessages.h"
-  #include "htmlScripts.h"
-
-  #include "EncoderControl.h"
+  extern NVS nv;
 
   void processEncodersGet();
 
@@ -84,9 +66,10 @@ extern NVS nv;
 
     // finish the standard http response header
     {
-      char temp1[40]="";
+      char temp1[40] = "";
       data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-      data.concat(FPSTR(html_onstep_header2));
+      data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+      data.concat(" (OnStep");
       if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
       data.concat(FPSTR(html_onstep_header3));
     }

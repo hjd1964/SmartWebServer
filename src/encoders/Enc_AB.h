@@ -1,11 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 // Read Quadrature A/B type encoders
+#pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../pinmaps/Models.h"
+#include "../SmartWebServer.h"
 
 // this is for Quadrature A/B type encoders (library based)
 #if AXIS1_ENC_RATE_CONTROL != ON && (AXIS1_ENC == AB || AXIS2_ENC == AB)

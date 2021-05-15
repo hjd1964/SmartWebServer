@@ -1,17 +1,6 @@
 // -----------------------------------------------------------------------------------
 // Constants
-
-// Firmware version ----------------------------------------------------------------------------------------------------------------
-#define Product "Smart Web Server"
-#define FirmwareVersionMajor  "0"
-#define FirmwareVersionMinor  "9"
-#define FirmwareVersionPatch  "j"
-#define FirmwareDate     __DATE__
-#define FirmwareTime     __TIME__
-
-#define Version FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch
-
-// Configuration options -----------------------------------------------------------------------------------------------------------
+#pragma once
 
 // On/Off, etc.
 #define OFF                    -1

@@ -1,24 +1,11 @@
 // -----------------------------------------------------------------------------------
 // Help with commands, etc.
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-extern NVS nv;
-#include "../debug/Debug.h"
-#include "../tasks/OnTask.h"
-extern Tasks tasks;
-#include "../pinmaps/Models.h"
-
-#include "../locales/Locale.h"
-
 #include "Commands.h"
+#include "../locales/Locale.h"
 
 int webTimeout = TIMEOUT_WEB;
 int cmdTimeout = TIMEOUT_CMD;
-
 
 void serialBegin(long baudRate, int swap) {
   static bool firstRun = true;

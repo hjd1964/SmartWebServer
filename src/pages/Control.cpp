@@ -1,32 +1,14 @@
 // -----------------------------------------------------------------------------------
 // Telescope control related functions 
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
-#include "../misc/Misc.h"
-#include "../commands/Commands.h"
-#include "../status/MountStatus.h"
-#include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/EthernetServers.h"
-#include "../encoders/Encoders.h"
-
-#include "htmlHeaders.h"
-#include "htmlMessages.h"
-#include "htmlScripts.h"
-
 #include "Control.h"
 
 void processControlGet();
 
-bool Focuser1;
-bool Focuser2;
-bool Rotate;
-bool DeRotate;
+bool Focuser1 = false;
+bool Focuser2 = false;
+bool Rotate = false;
+bool DeRotate = false;
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 void handleControl(EthernetClient *client) {
@@ -71,7 +53,8 @@ void handleControl() {
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2));
+  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));

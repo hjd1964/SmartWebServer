@@ -1,24 +1,6 @@
 // -----------------------------------------------------------------------------------
 // Telescope auxiliary feature related functions 
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
-#include "../misc/Misc.h"
-#include "../commands/Commands.h"
-#include "../status/MountStatus.h"
-#include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/EthernetServers.h"
-#include "../encoders/Encoders.h"
-
-#include "htmlHeaders.h"
-#include "htmlMessages.h"
-#include "htmlScripts.h"
-
 #include "Auxiliary.h"
 
 void processAuxGet();
@@ -33,8 +15,8 @@ void handleAux() {
 
   mountStatus.update(true);
     
-  char temp[240]="";
-  char temp1[80]="";
+  char temp[240] = "";
+  char temp1[80] = "";
 
   processAuxGet();
 
@@ -65,7 +47,8 @@ void handleAux() {
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2));
+  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));

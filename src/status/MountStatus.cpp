@@ -2,7 +2,7 @@
 // Mount status from OnStep
 
 #include <Arduino.h>
-#include "../../Constants.h"
+#include "../Constants.h"
 #include "../../Config.h"
 #include "../../ConfigX.h"
 #include "../debug/Debug.h"

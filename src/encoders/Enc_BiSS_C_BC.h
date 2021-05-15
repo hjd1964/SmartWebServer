@@ -1,16 +1,14 @@
 // ----------------------------------------------------------------------------------------------------------------
 // Read Broadcom BISS-C type encoders
+#pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../pinmaps/Models.h"
+#include "../SmartWebServer.h"
 
 // tested and known to work with Broadcom AS37-H39B-B
 // designed according protocol description found in as38-H39e-b-an100.pdf
 
 #if AXIS1_ENC == BC_BISSC || AXIS2_ENC == BC_BISSC
+
   #ifdef EEPROM_DISABLED
     #error "Absolute encoders require NV/EEPROM which isn't supported on this platform"
   #endif

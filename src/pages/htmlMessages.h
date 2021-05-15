@@ -1,6 +1,4 @@
 #pragma once
-#include "../../Constants.h"
-#include "../../Config.h"
 
 const char html_bad_comms_message[] PROGMEM =
 "<br /><bigger><font class=\"y\">" L_DOWN_TITLE "</font></bigger><br /><br />"
@@ -18,7 +16,7 @@ L_DOWN_MESSAGE1 L_DOWN_MESSAGE2
 "</div></body></html>";
 
 const char html_onstep_header1[] PROGMEM = "<div class='t'><table width='100%%'><tr><td><b><font size='5'>";
-const char html_onstep_header2[] PROGMEM = "</font></b></td><td align='right'><b>" Product " " Version " (OnStep ";
+const char html_onstep_header2[] PROGMEM = "</font></b></td><td align='right'><b>Smart Web Server ";
 const char html_onstep_header3[] PROGMEM = ")</b></td></tr></table>";
 const char html_onstep_header4[] PROGMEM = "</div><div class='b'>\r\n";
 

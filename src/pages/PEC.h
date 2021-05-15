@@ -2,14 +2,9 @@
 // Controls for PEC
 #pragma once
 
-#include <Arduino.h>
-#include <limits.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
 
 const char html_pec1[] PROGMEM = "<div class='b1' style='width: 27em'>";
 const char html_pec2[] PROGMEM = "<div style='float: left'>" L_PEC_STATUS ":</div><br/><div id='status'>?</div></div><br class='clear' />";

@@ -1,19 +1,12 @@
 // -------------------------------------------------------------------------------------------------------
 // Handle encoders, both CW/CCW and Quadrature A/B types are supported
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../pinmaps/Models.h"
-#include "../HAL/HAL.h"
+#include "Encoders.h"
 extern NVS nv;
-#include "../debug/Debug.h"
 
 #include "../status/MountStatus.h"
 #include "../commands/Commands.h"
 #include "../misc/Misc.h"
-#include "Encoders.h"
 
 #if defined(ESP8266) || defined(ESP32)
   #include <Esp.h>

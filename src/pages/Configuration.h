@@ -2,12 +2,9 @@
 // Configuration
 #pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-
-#include "../locales/Locale.h"
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
 
 // Misc
 const char html_configFormBegin[] PROGMEM = "<div class='content'><br />\r\n<form method='get' action='/configuration.htm'>";

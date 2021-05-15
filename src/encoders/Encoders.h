@@ -2,10 +2,7 @@
 // Handle encoders, both CW/CCW and Quadrature A/B types are supported
 #pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
+#include "../SmartWebServer.h"
 
 #if AXIS1_ENC > 0 && AXIS2_ENC > 0
   #define ENCODERS ON

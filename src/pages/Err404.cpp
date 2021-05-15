@@ -1,20 +1,6 @@
 // -----------------------------------------------------------------------------------
 // Error not found, 404
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
-#include "../misc/Misc.h"
-#include "../commands/Commands.h"
-#include "../status/MountStatus.h"
-#include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/EthernetServers.h"
-#include "../ethernetServers/WebServer.h"
-
 #include "htmlHeaders.h"
 #include "htmlMessages.h"
 #include "htmlScripts.h"

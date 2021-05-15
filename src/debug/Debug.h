@@ -1,8 +1,9 @@
 // -----------------------------------------------------------------------------------
 // Helper macros for debugging, with less typing
+#pragma once
 
 #include <Arduino.h>
-#include "../../Constants.h"
+#include "../Constants.h"
 #include "../../Config.h"
 #include "../../ConfigX.h"
 #include "../HAL/HAL.h"

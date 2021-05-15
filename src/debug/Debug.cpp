@@ -1,11 +1,7 @@
 // -----------------------------------------------------------------------------------
 // Helper macros for debugging, with less typing
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
+#include "Debug.h"
 
 void debugPrint(const char* s) {
   char s1[255];

@@ -2,14 +2,9 @@
 // The home page, status information
 #pragma once
 
-#include <Arduino.h>
-#include <limits.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
 
 #define leftTri  "&#x25c4;"
 #define rightTri "&#x25ba;"

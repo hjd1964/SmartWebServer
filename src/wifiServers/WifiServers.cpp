@@ -1,18 +1,13 @@
 // -----------------------------------------------------------------------------------
 // Wifi Web and Cmd servers
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-extern NVS nv;
-#include "../debug/Debug.h"
+#include "../SmartWebServer.h"
 
 #if OPERATIONAL_MODE == WIFI
-  #include "../commands/Commands.h"
 
+  #include "../commands/Commands.h"
   #include "WifiServers.h"
+  extern NVS nv;
 
   #if defined(ESP32)
     WebServer server(80);

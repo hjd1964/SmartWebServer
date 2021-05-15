@@ -1,16 +1,8 @@
 // -----------------------------------------------------------------------------------
 // Misc functions to help with commands, etc.
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-#include "../pinmaps/Models.h"
-
-#include "../locales/Locale.h"
-
 #include "Misc.h"
+#include "../locales/Locale.h"
 
 void stripNum(char* s) {
   int pp=-1;

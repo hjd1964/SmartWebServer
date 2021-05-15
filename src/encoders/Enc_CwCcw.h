@@ -1,7 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 // Read CW/CCW type encoders
+#pragma once
 
-#include <Arduino.h>
+#include "../SmartWebServer.h"
 
 #if AXIS1_ENC == CWCCW || AXIS2_ENC == CWCCW
   class CwCcwEncoder {

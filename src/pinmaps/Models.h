@@ -2,10 +2,7 @@
 // Loads pinmap model for current configuration
 #pragma once
 
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
+#include "../SmartWebServer.h"
 
 #include "Pins.Esp32.h"
 #include "Pins.Esp8266.h"

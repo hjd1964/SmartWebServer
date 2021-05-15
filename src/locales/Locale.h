@@ -2,7 +2,7 @@
 // Locale
 #pragma once
 
-#include "../../Constants.h"
+#include "../Constants.h"
 #include "../../Config.h"
 
 #include "Locales.h"

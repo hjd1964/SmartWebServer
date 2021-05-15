@@ -2,14 +2,9 @@
 // Setup Network
 #pragma once
 
-#include <Arduino.h>
-#include <limits.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
-
-#include "../locales/Locale.h"
+#include "htmlHeaders.h"
+#include "htmlMessages.h"
+#include "htmlScripts.h"
 
 const char htmL_NETWORKSerial[] PROGMEM =
 "<b>" L_NETWORK_PERFORMANCE ":</b><br/>"

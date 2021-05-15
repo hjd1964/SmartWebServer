@@ -17,10 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * 
- *
  * Revision History, see GitHub
- *
  *
  * Author: Howard Dutton
  * http://www.stellarjourney.com
@@ -34,18 +31,12 @@
 
 // Use Config.h to configure the SWS to your requirements
 
-// See Constants.h for version information
+// Use Config.h to configure the SWS to your requirements
 
-#include "Constants.h"
-#include "Config.h"
-#include "ConfigX.h"
-#include "src/HAL/HAL.h"
+#include "src/SmartWebServer.h"
 NVS nv;
-#include "src/debug/Debug.h"
 #include "src/tasks/OnTask.h"
 Tasks tasks;
-
-#include "src/pinmaps/Models.h"
 #include "src/commands/Commands.h"
 #include "src/ethernetServers/EthernetServers.h"
 #include "src/wifiServers/WifiServers.h"
@@ -61,11 +52,13 @@ void systemServices() {
 }
 
 void setup(void) {
+  strcpy(firmwareVersion.str, FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch);
+
   // start debug serial port
   if (DEBUG == ON || DEBUG == VERBOSE) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
   delay(2000);
 
-  VF("SWS: SmartWebServer "); V(FirmwareVersionMajor); V("."); V(FirmwareVersionMinor); VL(FirmwareVersionPatch);
+  VF("SWS: SmartWebServer "); VL(firmwareVersion.str);
   VF("SWS: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
   // call gamepad BLE initialization

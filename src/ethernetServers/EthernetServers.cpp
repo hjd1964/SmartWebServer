@@ -1,22 +1,15 @@
 // -----------------------------------------------------------------------------------
 // Ethernet Web and Cmd servers
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-extern NVS nv;
-#include "../pinmaps/Models.h"
-#include "../debug/Debug.h"
-
-#include <Ethernet.h>
-
-#include "../commands/Commands.h"
-#include "CmdServer.h"
-#include "WebServer.h"
+#include "EthernetServers.h"
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
+
+  #include <Ethernet.h>
+  #include "../commands/Commands.h"
+  #include "CmdServer.h"
+  #include "WebServer.h"
+  extern NVS nv;
 
   char masterPassword[40] = PASSWORD_DEFAULT;
 

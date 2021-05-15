@@ -1,19 +1,10 @@
 // -----------------------------------------------------------------------------------
 // Web server
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-#include "../debug/Debug.h"
-#include "../pinmaps/Models.h"
-
-#include <Ethernet.h>
-
 #include "WebServer.h"
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
+
   #define SD_CARD OFF
 
   // SD CARD support, simply enable and provide a webserver.on("filename.htm") to serve each file

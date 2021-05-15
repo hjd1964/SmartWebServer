@@ -20,13 +20,8 @@
  *
 */
 
-#include <Arduino.h>
-
-// these lines allow configuration of OnTask from OnStep, if this library is used outside OnStep remove them
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../debug/Debug.h"
+// this line allows configuration of OnTask from OnStep, if this library is used outside OnStep remove it
+#include "../SmartWebServer.h"
 
 // To enable the option to use a given hardware timer (1..4), if available, uncomment that line:
 //#define TASKS_HWTIMER1_ENABLE

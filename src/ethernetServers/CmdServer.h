@@ -1,17 +1,12 @@
 // -----------------------------------------------------------------------------------
 // Cmd channel server
-
 #pragma once
 
-#include <Arduino.h>
-#include "../../Constants.h"
-#include "../../Config.h"
-#include "../../ConfigX.h"
-#include "../HAL/HAL.h"
-
-#include <Ethernet.h>
+#include "../SmartWebServer.h"
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
+
+#include <Ethernet.h>
 
   #define CMDSERVER_DEBUG OFF
 
