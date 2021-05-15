@@ -5,7 +5,7 @@
 #if defined(ESP32)
   #define PINMAP_STR "ESP32"
 
-  #define BOOT0_PIN        23  // GPIO23 to Boot0 of STM32 etc. (no swapped serial if active)
+  #define BOOT0_PIN         5  // GPIO5 to Boot0 of STM32 etc. (no swapped serial if active)
 
   #define AXIS1_ENC_A_PIN  18  // pin# for Axis1 encoder, for A or CW  or MA/CLK
   #define AXIS1_ENC_B_PIN  19  // pin# for Axis1 encoder, for B or CCW or SLO
