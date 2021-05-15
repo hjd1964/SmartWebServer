@@ -54,6 +54,8 @@
                                           //         Experimental, possibly causes problems w/standard cmd channel if enabled.
 
 // ENCODER SUPPORT -----------------------------------------------------------------------------------------------------------------
+// Some of these settings are stored in NV (EEPROM) as the default values when first uploaded.  Later changes below may be
+// ignored unless NV is wiped or you configure to revert to the defaults again at runtime.
 // BC_BISSC SUPPORT IS AN EXPERIMENTAL FEATURE
 #define ENC_AUTO_SYNC_DEFAULT          ON //     ON, Automatically sync Encoders to OnStep.                                   Option
 #define ENC_AUTO_SYNC_MEMORY          OFF //    OFF, ON Remember automatic sync setting across power cycles.                  Option
