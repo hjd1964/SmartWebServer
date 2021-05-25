@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include "status/version.h"
+#include "status/Version.h"
 #include "Constants.h"
 #include "../Config.h"
 #include "../ConfigX.h"
