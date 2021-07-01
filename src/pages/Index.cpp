@@ -120,7 +120,8 @@ void handleRoot() {
 
   // Focuser/telescope temperature
   if (mountStatus.focuserPresent()) {
-    if (!command(":Ft#", temp1)) strcpy(temp1, "?"); else localeTemperature(temp1, temp2); sprintf_P(temp, html_indexTPHD, L_TELE_TEMPERATURE ":",temp1,temp2); data.concat(temp);
+    if (!command(":Ft#", temp1)) strcpy(temp1, "?"); else localeTemperature(temp1, temp2);
+    sprintf_P(temp, html_indexTPHD, L_TELE_TEMPERATURE ":",temp1,temp2); data.concat(temp);
   }
   
   data.concat("<br /><b>" L_COORDINATES ":</b><br />");
@@ -226,7 +227,7 @@ void handleRoot() {
 
   // Tracking
   if (mountStatus.tracking()) strcpy(temp1,L_ON); else strcpy(temp1,L_OFF);
-  if (mountStatus.slewing()) strcpy(temp1,L_SLEWING);
+  if (mountStatus.inGoto()) strcpy(temp1,L_INGOTO);
   if (!mountStatus.valid()) strcpy(temp1,"?");
   
   strcpy(temp2,"</font>(<font class=\"c\">");

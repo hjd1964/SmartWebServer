@@ -515,7 +515,7 @@
         mountStatus.update(false);
 
         // emergency stop
-        if (mountStatus.slewing())
+        if (mountStatus.inGoto())
         {   
           commandBlind(STOP_ALL);
           continue;

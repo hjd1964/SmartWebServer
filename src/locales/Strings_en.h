@@ -77,7 +77,7 @@
 
 // home
 #define L_AT_HOME "At Home"
-#define L_SLEWING "Slewing"
+#define L_INGOTO "Slewing"
 #define L_PPS_SYNC "PPS Sync"
 
 // tracking

@@ -49,7 +49,7 @@ class MountStatus {
     bool valid();
     bool aligning();
     bool tracking();
-    bool slewing();
+    bool inGoto();
     bool parked();
     bool parking();
     bool parkFail();
@@ -119,7 +119,7 @@ class MountStatus {
     char _ver_patch = 0;
     bool _valid = false;
     bool _tracking = false;
-    bool _slewing = false;
+    bool _inGoto = false;
     bool _parked = false;
     bool _parking = false;
     bool _parkFail = false;

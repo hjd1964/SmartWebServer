@@ -213,7 +213,7 @@ void Encoders::init() {
           // re-enable normal operation once we're updated here
           if (mountStatus.syncToEncodersOnly()) commandBool(":SX43,1#");
         } else
-          if (!mountStatus.slewing() && !mountStatus.guiding()) {
+          if (!mountStatus.inGoto() && !mountStatus.guiding()) {
             if ((fabs(_osAxis1 - _enAxis1) > (double)(Axis1EncDiffTo/3600.0)) ||
                 (fabs(_osAxis2 - _enAxis2) > (double)(Axis2EncDiffTo/3600.0))) syncToOnStep();
           }

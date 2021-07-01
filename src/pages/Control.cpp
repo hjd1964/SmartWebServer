@@ -220,7 +220,7 @@ void controlAjax() {
       data.concat("park|enabled\n");
       data.concat("unpark|disabled\n");
     }
-    if (mountStatus.slewing()) {
+    if (mountStatus.inGoto()) {
       data.concat("c_goto|enabled\n");
     } else {
       data.concat("c_goto|disabled\n");

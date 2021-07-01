@@ -29,8 +29,8 @@ bool MountStatus::update(bool all) {
 
   if (!command(":GU#", s) || s[0] == 0) { _valid = false; return false; }
 
-  _tracking = false; _slewing = false;
-  if (!strstr(s, "N")) _slewing = true; else _tracking = !strstr(s,"n");
+  _tracking = false; _inGoto = false;
+  if (!strstr(s, "N")) _inGoto = true; else _tracking = !strstr(s,"n");
 
   _parked      = strstr(s, "P");
   if (strstr(s, "p")) _parked = false;
@@ -129,7 +129,7 @@ bool MountStatus::aligning() {
   if (command(":A?#", s) && strlen(s) == 3 && s[1] <= s[2] && s[1] != '0') return true; else return false;
 }
 bool MountStatus::tracking() { return _tracking; }
-bool MountStatus::slewing() { return _slewing; }
+bool MountStatus::inGoto() { return _inGoto; }
 bool MountStatus::parked() { return _parked; }
 bool MountStatus::parking() { return _parking; }
 bool MountStatus::parkFail() { return _parkFail; }

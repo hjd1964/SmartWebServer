@@ -77,7 +77,7 @@
 
 // home
 #define L_AT_HOME "在原位"
-#define L_SLEWING "快速定位"
+#define L_INGOTO "快速定位"
 #define L_PPS_SYNC "同步卫星信号"
 
 // tracking

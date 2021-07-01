@@ -86,7 +86,7 @@
 
 // home
 #define L_AT_HOME "Bei Homeposition"
-#define L_SLEWING "Schwenke"
+#define L_INGOTO "Schwenke"
 #define L_PPS_SYNC "PPS Sync"
 
 // tracking
