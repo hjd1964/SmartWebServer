@@ -442,7 +442,7 @@ void handleConfiguration() {
       sendHtml(data);
       data.concat("<hr>" L_RESET_TITLE "<br/><br/>");
       data.concat("<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('advanced','reset')\" type='button'>" L_RESET "!</button>");
-      #ifdef BOOT0_PIN
+      #if defined(BOOT0_PIN) && DISPLAY_RESET_CONTROLS == FWU
         data.concat(" &nbsp;&nbsp;<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('advanced','fwu')\" type='button'>" L_RESET_FWU "!</button>");
       #endif
       data.concat("<br/>\r\n");
