@@ -21,7 +21,7 @@
 */
 
 // this line allows configuration of OnTask from OnStep, if this library is used outside OnStep remove it
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 // To enable the option to use a given hardware timer (1..4), if available, uncomment that line:
 //#define TASKS_HWTIMER1_ENABLE

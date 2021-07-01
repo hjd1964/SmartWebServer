@@ -2,7 +2,7 @@
 // Misc functions to help with commands, etc.
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 typedef struct AxisSettings {
    double stepsPerMeasure;

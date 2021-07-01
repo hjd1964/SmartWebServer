@@ -2,7 +2,7 @@
 // Handle encoders, both CW/CCW and Quadrature A/B types are supported
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 #if AXIS1_ENC > 0 && AXIS2_ENC > 0
   #define ENCODERS ON

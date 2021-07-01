@@ -2,7 +2,7 @@
 // Read Quadrature A/B type encoders
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 // this is for Quadrature A/B type encoders (library based)
 #if AXIS1_ENC_RATE_CONTROL != ON && (AXIS1_ENC == AB || AXIS2_ENC == AB)

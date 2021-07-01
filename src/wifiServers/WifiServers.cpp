@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------------
 // Wifi Web and Cmd servers
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 #if OPERATIONAL_MODE == WIFI
 

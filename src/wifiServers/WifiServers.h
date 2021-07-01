@@ -2,7 +2,7 @@
 // Wifi Web and Cmd servers
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 #if OPERATIONAL_MODE == WIFI
   #if defined(ESP32)

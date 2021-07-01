@@ -2,7 +2,7 @@
 // Cmd channel server
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 

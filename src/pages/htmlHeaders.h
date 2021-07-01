@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 #include "../locales/Locale.h"
 #include "../misc/Misc.h"
 #include "../commands/Commands.h"

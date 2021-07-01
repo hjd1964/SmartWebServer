@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 #if BLE_GAMEPAD == ON
   extern void bleInit();

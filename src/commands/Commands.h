@@ -2,7 +2,7 @@
 // Help with commands, etc.
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 enum CommandErrors {
   CE_NONE, CE_0, CE_CMD_UNKNOWN, CE_REPLY_UNKNOWN, CE_PARAM_RANGE, CE_PARAM_FORM,

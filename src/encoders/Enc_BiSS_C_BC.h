@@ -2,7 +2,7 @@
 // Read Broadcom BISS-C type encoders
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 // tested and known to work with Broadcom AS37-H39B-B
 // designed according protocol description found in as38-H39e-b-an100.pdf

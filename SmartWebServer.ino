@@ -36,7 +36,7 @@
 
 // Use Config.h to configure the SWS to your requirements
 
-#include "src/SmartWebServer.h"
+#include "src/Common.h"
 NVS nv;
 #include "src/tasks/OnTask.h"
 Tasks tasks;

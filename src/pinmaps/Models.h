@@ -2,7 +2,11 @@
 // Loads pinmap model for current configuration
 #pragma once
 
-#include "../SmartWebServer.h"
+#include <Arduino.h>
+#include "../status/Version.h"
+#include "../Constants.h"
+#include "../../Config.h"
+#include "../../ConfigX.h"
 
 #include "Pins.Esp32.h"
 #include "Pins.Esp8266.h"
