@@ -2,7 +2,7 @@
 // Read CW/CCW type encoders
 #pragma once
 
-#include "../SmartWebServer.h"
+#include "../Common.h"
 
 #if AXIS1_ENC == CWCCW || AXIS2_ENC == CWCCW
   class CwCcwEncoder {
