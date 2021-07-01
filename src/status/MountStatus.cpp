@@ -48,9 +48,11 @@ bool MountStatus::update(bool all) {
   _toEncOnly   = strstr(s, "e");
   _atHome      = strstr(s, "H");
   _ppsSync     = strstr(s, "S");
-  _guiding     = strstr(s, "G");
+  _pulseGuiding= strstr(s, "G");
+  _guiding     = strstr(s, "g");
+  if (_pulseGuiding) _guiding = true;
   _axisFault   = strstr(s, "f");
-      
+
   if (strstr(s, "r")) { if (strstr(s, "s")) _rateCompensation = RC_REFR_RA; else _rateCompensation = RC_REFR_BOTH; } else
   if (strstr(s, "t")) { if (strstr(s, "s")) _rateCompensation = RC_FULL_RA; else _rateCompensation = RC_FULL_BOTH; } else _rateCompensation = RC_NONE;
 
@@ -143,6 +145,7 @@ bool MountStatus::pecRecording() { return _pecRecording; }
 bool MountStatus::syncToEncodersOnly() { return _toEncOnly; }
 bool MountStatus::atHome() { return _atHome; }
 bool MountStatus::ppsSync() { return _ppsSync; }
+bool MountStatus::pulseGuiding() { return _pulseGuiding; }
 bool MountStatus::guiding() { return _guiding; }
 bool MountStatus::guideRate() { return _guideRate; }
 bool MountStatus::guideRatePulse() { return _guideRatePulse; }

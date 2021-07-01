@@ -63,6 +63,7 @@ class MountStatus {
     bool syncToEncodersOnly();
     bool atHome();
     bool ppsSync();
+    bool pulseGuiding();
     bool guiding();
     bool guideRate();
     bool guideRatePulse();
@@ -133,6 +134,7 @@ class MountStatus {
     bool _toEncOnly = false;
     bool _atHome = false;
     bool _ppsSync = false;
+    bool _pulseGuiding = false;
     bool _guiding = false;
     bool _axisFault = false;
     bool _waitingHome = false;
