@@ -1,8 +1,6 @@
 // -----------------------------------------------------------------------------------
 // non-volatile storage (caching, for 85RC series I2C FRAMS)
 
-#include "Arduino.h"
-#include "Wire.h"
 #include "NV_MB85RC.h"
 
 #define MSB(i) (i >> 8)
@@ -13,7 +11,7 @@
 
 bool NonVolatileStorageMB85RC::init(uint16_t size, bool cacheEnable, uint16_t wait, bool checkEnable, TwoWire* wire, uint8_t address) {
   // setup size, cache, etc.
-  NonVolatileStorage::init(size, cacheEnable, wait, checkEnable);
+  NonVolatileStorage::init(size, cacheEnable, wait, checkEnable, wire, address);
 
   this->wire = wire;
   this->framAddress = framAddress;

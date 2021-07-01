@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include "Arduino.h"
+#include <Arduino.h>
+
 #if defined(ARDUINO_ARCH_SAMD)
 
   #include "NV.h"
+  #include "FlashAsEEPROM.h" // https://github.com/cmaglie/FlashStorage
 
   class NonVolatileStorageM0 : public NonVolatileStorage {
     public:

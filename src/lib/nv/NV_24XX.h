@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "Arduino.h"
-#include "Wire.h"
+#include <Arduino.h>
 #include "NV.h"
 
 class NonVolatileStorage24XX : public NonVolatileStorage {

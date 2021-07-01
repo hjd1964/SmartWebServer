@@ -1,7 +1,6 @@
 // -----------------------------------------------------------------------------------
 // non-volatile storage base class
 
-#include "Arduino.h"
 #include "NV.h"
 
 bool NonVolatileStorage::init(uint16_t size, bool cacheEnable, uint16_t wait, bool checkEnable, TwoWire* wire, uint8_t address) {
@@ -23,6 +22,11 @@ bool NonVolatileStorage::init(uint16_t size, bool cacheEnable, uint16_t wait, bo
   for (uint16_t i = 0; i < cacheStateSize; i++) cacheStateRead[i] = 255;
   // mark entire write cache as clean
   for (uint16_t i = 0; i < cacheStateSize; i++) cacheStateWrite[i] = 0;
+
+  // stop compiler warnings
+  (void)(checkEnable);
+  (void)(wire);
+  (void)(address);
 
   return true;
 }
@@ -62,6 +66,9 @@ void NonVolatileStorage::poll(bool disableInterrupts) {
       bitWrite(cacheStateRead[cacheIndex/8], cacheIndex%8, 0);
     }
   }
+
+  // stop compiler warnings
+  (void)(disableInterrupts);
 }
 
 bool NonVolatileStorage::committed() {
@@ -151,13 +158,6 @@ void NonVolatileStorage::updateBytes(uint16_t i, void *j, int16_t count) {
 
 bool NonVolatileStorage::busy() {
   return false;
-}
-
-uint8_t NonVolatileStorage::readFromStorage(uint16_t i) {
-  return 0;
-}
-
-void NonVolatileStorage::writeToStorage(uint16_t i, uint8_t j) {
 }
 
 int compare (const void * a, const void * b)
