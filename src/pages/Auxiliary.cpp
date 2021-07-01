@@ -14,7 +14,7 @@ void handleAux() {
   serialRecvFlush();
 
   mountStatus.update(true);
-    
+
   char temp[240] = "";
   char temp1[80] = "";
 
@@ -303,7 +303,7 @@ void auxAjax() {
 
 void processAuxGet() {
   String v;
-  char temp[40] = "";
+  char temp[80] = "";
   char temp1[40] = "";
 
   // Auxiliary Feature set Value1 to Value4

@@ -108,10 +108,14 @@ void handleRoot() {
 
   // Ambient conditions
   #if DISPLAY_WEATHER == ON
-    if (!command(":GX9A#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_TEMPERATURE ":",temp1,temp2); data.concat(temp);
-    if (!command(":GX9B#",temp1)) strcpy(temp1,"?"); else localePressure(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_PRESSURE ":",temp1,temp2); data.concat(temp);
-    if (!command(":GX9C#",temp1)) strcpy(temp1,"?"); sprintf_P(temp,html_indexTPHD,L_HUMIDITY ":",temp1,"%"); data.concat(temp);
-    if (!command(":GX9E#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_DEW_POINT ":",temp1,temp2); data.concat(temp);
+    if (!command(":GX9A#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2);
+    sprintf_P(temp,html_indexTPHD,L_TEMPERATURE ":",temp1,temp2); data.concat(temp);
+    if (!command(":GX9B#",temp1)) strcpy(temp1,"?"); else localePressure(temp1,temp2);
+    sprintf_P(temp,html_indexTPHD,L_PRESSURE ":",temp1,temp2); data.concat(temp);
+    if (!command(":GX9C#",temp1)) strcpy(temp1,"?");
+    sprintf_P(temp,html_indexTPHD,L_HUMIDITY ":",temp1,"%"); data.concat(temp);
+    if (!command(":GX9E#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2);
+    sprintf_P(temp,html_indexTPHD,L_DEW_POINT ":",temp1,temp2); data.concat(temp);
   #endif
 
   // Focuser/telescope temperature
