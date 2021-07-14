@@ -403,10 +403,10 @@ void processControlGet() {
     if (v.equals("F2")) commandBool(":FA2#");      // select focuser 2
     if (v.equals("FH")) commandBlind(":FH#");      // reset focuser at home (half travel)
     if (v.equals("Fh")) commandBlind(":Fh#");      // move focuser to home (half travel)
-    if (v.equals("FI")) commandBlind(":FF#:F-#");  // rate fast, move in
-    if (v.equals("Fi")) commandBlind(":FS#:F-#");  // rate slow, move in
-    if (v.equals("Fo")) commandBlind(":FS#:F+#");  // rate fast, move out
-    if (v.equals("FO")) commandBlind(":FF#:F+#");  // rate slow, move out
+    if (v.equals("FI")) commandBlind(":F4#:F-#");  // rate fast, move in
+    if (v.equals("Fi")) commandBlind(":F2#:F-#");  // rate slow, move in
+    if (v.equals("Fo")) commandBlind(":F2#:F+#");  // rate slow, move out
+    if (v.equals("FO")) commandBlind(":F4#:F+#");  // rate fast, move out
     if (v.equals("Fq")) commandBlind(":FQ#");
    
     // Rotate/De-Rotate
