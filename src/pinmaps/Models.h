@@ -6,7 +6,7 @@
 #include "../status/Version.h"
 #include "../Constants.h"
 #include "../../Config.h"
-#include "../../ConfigX.h"
+#include "../../Extended.config.h"
 
 #include "Pins.Esp32.h"
 #include "Pins.Esp8266.h"

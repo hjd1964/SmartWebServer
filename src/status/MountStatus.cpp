@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "../Constants.h"
 #include "../../Config.h"
-#include "../../ConfigX.h"
+#include "../../Extended.config.h"
 #include "../debug/Debug.h"
 
 #include "../locales/Locale.h"

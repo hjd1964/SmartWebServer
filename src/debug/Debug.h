@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include "../Constants.h"
 #include "../../Config.h"
-#include "../../ConfigX.h"
+#include "../../Extended.config.h"
 #include "../HAL/HAL.h"
 
 extern bool connected;

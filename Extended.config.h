@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------------------------------
-// Configuration for OnStep SmartWebServer infrequently used eXtended options
+// Extended configuration for OnStep SmartWebServer infrequently used options
 
 //                                 *** Most users will not change anything in this file! ***
 
@@ -28,7 +28,7 @@
 // BLE GAMEPAD SETTINGS (ESP32 ONLY) ------------------------------------------- see https://onstep.groups.io/g/developer/wiki/22427
 // THIS IS AN EXPERIMENTAL FEATURE
 #define BLE_GAMEPAD                   OFF //         OFF, ON to allow BLE gamepad connection for ESP32 only.                   Option
-#define BLE_GP_ADDR   "ff:ff:ff:ff:ff:ff" // ...f:ff:ff", GamePad MAC address #1                                               Adjust
+#define BLE_GP_ADDR   "ff:ff:de:09:f5:cf" // ...f:ff:ff", GamePad MAC address #1                                               Adjust
                                           //              GamePad device address must match exactly else it will not connect!
                                           //              Replace address with yours, in lower case, with colons as shown.
 #define BLE_GP_ADDR1  "ff:ff:ff:ff:ff:ff" // ...f:ff:ff", GamePad MAC address #2                                               Adjust
