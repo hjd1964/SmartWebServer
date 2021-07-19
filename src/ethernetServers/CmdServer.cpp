@@ -28,11 +28,11 @@
       if (thisPort == 9999) client = cmdserver1.available();
       if (thisPort == 9998) client = cmdserver2.available();
       if (client) {
-      lastAccess = millis();
-      haveClient = true;
-      #if CMDSERVER_DEBUG == ON
-        VLF("WEM: Client connected");
-      #endif
+        lastAccess = millis();
+        haveClient = true;
+        #if CMDSERVER_DEBUG == ON
+          VLF("WEM: Client connected");
+        #endif
       }
     } else {
       // client disconnect
@@ -41,8 +41,8 @@
         client = EthernetClient();
         haveClient = false;
         #if CMDSERVER_DEBUG == ON
-            VF("WEM: Client disconnected");
-            if ((long)(millis() - lastAccess) > timeout) VLF(" (timed out)"); else VLF("");
+          VF("WEM: Client disconnected");
+          if ((long)(millis() - lastAccess) > timeout) VLF(" (timed out)"); else VLF("");
         #endif
       }
     }
@@ -52,6 +52,7 @@
     if (thisPort == 0) return 0;
     if (!haveClient) return 0;
     if (!client.connected()) return 0;
+    //lastAccess = millis();
     return client.available();
   }
 
