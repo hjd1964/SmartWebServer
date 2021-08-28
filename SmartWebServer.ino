@@ -30,7 +30,7 @@
  */
 
 #define Product "Smart Web Server"
-#define FirmwareVersionMajor  "1"
+#define FirmwareVersionMajor  "2"
 #define FirmwareVersionMinor  "0"
 #define FirmwareVersionPatch  "a"
 
