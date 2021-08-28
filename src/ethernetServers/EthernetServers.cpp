@@ -5,22 +5,13 @@
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 
-  #include <Ethernet.h>
-  #include "../commands/Commands.h"
-  #include "CmdServer.h"
-  #include "WebServer.h"
   extern NVS nv;
+
+  #include "../commands/Commands.h"
 
   char masterPassword[40] = PASSWORD_DEFAULT;
 
   WebServer server;
-
-  #if STANDARD_COMMAND_CHANNEL == ON
-    CmdServer cmdSvr;
-  #endif
-
-  #if PERSISTENT_COMMAND_CHANNEL == ON
-  #endif
 
   void idle() {
     server.handleClient();
@@ -78,26 +69,56 @@
     server.init();
   }
 
-  void ethernetCommandChannel(void) {
-    cmdSvr.handleClient();
+  #if STANDARD_COMMAND_CHANNEL == ON
+    CmdServer cmdSvr;
 
-    // check clients for data, if found get the command, send cmd and pickup the response, then return the response
-    static char cmdBuffer[40] = "";
-    static int cmdBufferPos = 0;
-    while (cmdSvr.available()) {
-      byte b = cmdSvr.read();
-      cmdBuffer[cmdBufferPos] = b;
-      cmdBufferPos++;
-      if (cmdBufferPos > 39) cmdBufferPos = 39;
-      cmdBuffer[cmdBufferPos] = 0;
+    void ethernetCommandChannel(void) {
+      cmdSvr.handleClient();
 
-      if (b == '#' || (strlen(cmdBuffer) == 1 && b == (char)6)) {
-        char result[40] = "";
-        processCommand(cmdBuffer, result, cmdTimeout);               // send cmd to OnStep, pickup response
-        if (strlen(result) > 0) { cmdSvr.print(result); delay(2); }  // return any response to client
-        cmdBuffer[0] = 0; cmdBufferPos = 0;
-      } else idle();
+      // check clients for data, if found get the command, send cmd and pickup the response, then return the response
+      static char cmdBuffer[40] = "";
+      static int cmdBufferPos = 0;
+      while (cmdSvr.available()) {
+        byte b = cmdSvr.read();
+        cmdBuffer[cmdBufferPos] = b;
+        cmdBufferPos++;
+        if (cmdBufferPos > 39) cmdBufferPos = 39;
+        cmdBuffer[cmdBufferPos] = 0;
+
+        if (b == '#' || (strlen(cmdBuffer) == 1 && b == (char)6)) {
+          char result[40] = "";
+          processCommand(cmdBuffer, result, cmdTimeout);               // send cmd to OnStep, pickup response
+          if (strlen(result) > 0) { cmdSvr.print(result); delay(2); }  // return any response to client
+          cmdBuffer[0] = 0; cmdBufferPos = 0;
+        } else idle();
+      }
     }
-  }
+  #endif
+
+  #if PERSISTENT_COMMAND_CHANNEL == ON
+    CmdServer cmdSvrPersistant;
+
+    void ethernetPersistantCommandChannel(void) {
+      cmdSvrPersistant.handleClient();
+
+      // check clients for data, if found get the command, send cmd and pickup the response, then return the response
+      static char cmdBuffer[40] = "";
+      static int cmdBufferPos = 0;
+      while (cmdSvrPersistant.available()) {
+        byte b = cmdSvrPersistant.read();
+        cmdBuffer[cmdBufferPos] = b;
+        cmdBufferPos++;
+        if (cmdBufferPos > 39) cmdBufferPos = 39;
+        cmdBuffer[cmdBufferPos] = 0;
+
+        if (b == '#' || (strlen(cmdBuffer) == 1 && b == (char)6)) {
+          char result[40] = "";
+          processCommand(cmdBuffer, result, cmdTimeout);                         // send cmd to OnStep, pickup response
+          if (strlen(result) > 0) { cmdSvrPersistant.print(result); delay(2); }  // return any response to client
+          cmdBuffer[0] = 0; cmdBufferPos = 0;
+        } else idle();
+      }
+    }
+  #endif
 
 #endif

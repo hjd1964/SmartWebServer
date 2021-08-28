@@ -29,6 +29,9 @@
     // start the Ethernet connection and the server:
     setResponseHeader(http_defaultHeader);
 
+    #ifdef W5500_CS_PIN
+      Ethernet.init(W5500_CS_PIN);
+    #endif
     Ethernet.begin(eth_mac, eth_ip, eth_dns, eth_gw, eth_sn);
     _server.begin();
 

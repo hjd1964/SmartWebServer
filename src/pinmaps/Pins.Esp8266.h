@@ -12,7 +12,8 @@
   #define AXIS2_ENC_A_PIN  5   // pin# for Axis1 encoder, for A or CW  or MA/CLK
   #define AXIS2_ENC_B_PIN  4   // pin# for Axis1 encoder, for B or CCW or SLO
 
-  #define W5500_RESET_PIN  9   // pin# for controlling the reset of W5500 so it comes up properly
+  #define W5500_RESET_PIN  D2 // pin# for controlling the reset of W5500 so it comes up properly
+  #define W5500_CS_PIN     D1 // pin# for W5500 SPI CS
 
   #define LED_STATUS_PIN   2   // pin GPIO2 is the status led
 

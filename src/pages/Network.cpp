@@ -254,7 +254,6 @@ void processNetworkGet() {
     v = server.arg("stagw4"); if (!v.equals(EmptyStr)) wifi_sta_gw[3] = v.toInt();
       
     if (!v1.equals(EmptyStr)) {
-      VLF(wifi_sta_ssid);
       nv.updateBytes(EE_STA_SSID, wifi_sta_ssid, -40);
       nv.updateBytes(EE_STA_PWD, wifi_sta_pwd, -40);
       nv.update(EE_DHCP_EN, (int16_t)stationDhcpEnabled);
