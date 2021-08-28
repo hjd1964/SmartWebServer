@@ -117,8 +117,17 @@ bool processCommand(const char* cmd, char* response, long timeOutMs) {
       if (strchr("W123456789+",cmd[2])) { shortResponse = true; if (timeOutMs < 1000) timeOutMs = 1000; }
     } else
     if ((cmd[1] == 'F') || (cmd[1] == 'f')) {
-      if (strchr("+-QZHhF1234", cmd[2])) noResponse = true;
-      if (strchr("Ap",cmd[2])) shortResponse = true;
+      if (strchr("123456", cmd[2]) && cmd[3] != '#') {
+        // direct focuser select command?
+        if (strchr("+-QZHhF", cmd[3])) noResponse = true;
+        if (strchr("1234", cmd[3])) noResponse = true;
+        if (strchr("Aap",cmd[3])) shortResponse = true;
+      } else {
+        // normal command
+        if (strchr("+-QZHhF", cmd[2])) noResponse = true;
+        if (strchr("1234", cmd[2])) noResponse = true;
+        if (strchr("Aap",cmd[2])) shortResponse = true;
+      }
     } else
     if (cmd[1] == 'r') {
       if (strchr("+-PRFC<>Q1234", cmd[2])) noResponse = true;

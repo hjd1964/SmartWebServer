@@ -22,6 +22,7 @@
 
 #define L_NONE "没有"
 #define L_AUTO "自动"
+#define L_SET "放"
 #define L_OK "Ok"
 #define L_ON "开"
 #define L_OFF "关"

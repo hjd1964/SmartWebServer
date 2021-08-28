@@ -55,25 +55,17 @@ const char html_configBlAxis2[] PROGMEM =
 const char html_configBlAxis3[] PROGMEM =
 "<input value='%d' type='number' name='b3' min='0' max='32767'>&nbsp;" L_BACKLASH_RANGE_AXIS345 "<br /><br />";
 
-// Axis4
-const char html_configBlAxis4[] PROGMEM =
-"<input value='%d' type='number' name='b4' min='0' max='32767'>&nbsp;" L_BACKLASH_RANGE_AXIS345 "<br /><br />";
-const char html_configTcfEnAxis4[] PROGMEM =
-"<input value='%d' type='number' name='en4' min='0' max='1' step='1'>&nbsp;" L_TCF_COEF_EN_AXIS45 "<br />";
-const char html_configDbAxis4[] PROGMEM =
-"<input value='%d' type='number' name='d4' min='1' max='32767'>&nbsp;" L_DEADBAND_RANGE_AXIS45 "<br />";
-const char html_configTcfCoefAxis4[] PROGMEM =
-"<input value='%s' type='number' name='tc4' min='-999.0' max='999.0' step='any'>&nbsp;" L_TCF_COEF_RANGE_AXIS45 "<br /><br />";
-
-// Axis5
-const char html_configBlAxis5[] PROGMEM =
-"<input value='%d' type='number' name='b5' min='0' max='32767'>&nbsp;" L_BACKLASH_RANGE_AXIS345 "<br /><br />";
-const char html_configTcfEnAxis5[] PROGMEM =
-"<input value='%d' type='number' name='en5' min='0' max='1' step='1'>&nbsp;" L_TCF_COEF_EN_AXIS45 "<br />";
-const char html_configDbAxis5[] PROGMEM =
-"<input value='%d' type='number' name='d5' min='1' max='32767'>&nbsp;" L_DEADBAND_RANGE_AXIS45 "<br />";
-const char html_configTcfCoefAxis5[] PROGMEM =
-"<input value='%s' type='number' name='tc5' min='-999.0' max='999.0' step='any'>&nbsp;" L_TCF_COEF_RANGE_AXIS45 "<br /><br />";
+// Axis4 to 9
+const char html_configFocuser[] PROGMEM =
+"<button type='button' class='collapsible'>Axis%d " L_FOCUSER " %d</button>";
+const char html_configBacklash[] PROGMEM =
+"<input value='%d' type='number' name='b%d' min='0' max='32767'>&nbsp;" L_BACKLASH_RANGE_AXIS345 "<br /><br />";
+const char html_configTcfEnable[] PROGMEM =
+"<input value='%d' type='number' name='en%d' min='0' max='1' step='1'>&nbsp;" L_TCF_COEF_EN_AXIS45 "<br />";
+const char html_configDeadband[] PROGMEM =
+"<input value='%d' type='number' name='d%d' min='1' max='32767'>&nbsp;" L_DEADBAND_RANGE_AXIS45 "<br />";
+const char html_configTcfCoef[] PROGMEM =
+"<input value='%s' type='number' name='tc%d' min='-999.0' max='999.0' step='any'>&nbsp;" L_TCF_COEF_RANGE_AXIS45 "<br /><br />";
 
 const char html_configAdvanced[] PROGMEM =
 "<hr>" L_ADV_SET_TITLE " (<i>" L_ADV_SET_HEADER_MSG "</i>)<br /><br />";
@@ -97,6 +89,9 @@ const char html_configMountType[] PROGMEM =
   " <input style='width: 7em;' value='%d' type='number' name='a%dmin' min='%d' max='%d' step='1'>&nbsp;%s&nbsp; " L_ADV_SET_MIN "<br />\r\n";
   const char html_configAxisMax[] PROGMEM =
   " <input style='width: 7em;' value='%d' type='number' name='a%dmax' min='%d' max='%d' step='1'>&nbsp;%s&nbsp; " L_ADV_SET_MAX "<br /><br />\r\n";
+  const char html_configAxisRevert[] PROGMEM =
+  "<button name='revert' value='%d' type='submit'>" L_REVERT "</button>";
+
   const char html_configAxesNotes[] PROGMEM =
   "<br />Notes:<ul>"
   "<li>" L_ADV_SET_FOOTER_MSG1 "</li>"

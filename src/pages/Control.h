@@ -84,21 +84,35 @@ const char html_controlGuide7[] PROGMEM =
 "<button class='bbh' onpointerdown=\"g('R8')\" type='button'>" L_VFAST_RATE "</button>"
 "</div><br class='clear' />\r\n";
 
-const char html_controlFocus1[] PROGMEM =
+const char html_controlFocusBeg[] PROGMEM =
 "<div class='b1' style='width: 27em'>";
-const char html_controlFocus2[] PROGMEM =
-"<button class='bbh' onpointerdown=\"gf('F1')\" title='" L_HINT_FOC_SEL " 1' type='button'>1</button>"
-"<button class='bbh' onpointerdown=\"gf('F2')\" title='" L_HINT_FOC_SEL " 2' type='button'>2</button>&nbsp;&nbsp;&nbsp;&nbsp;";
-const char html_controlFocus3[] PROGMEM =
+const char html_selectFocuser1[] PROGMEM =
+"<button id='foc1_sel' class='bbh' onpointerdown=\"gf('F1')\" title='" L_HINT_FOC_SEL " 1' type='button' disabled>1</button>";
+const char html_selectFocuser2[] PROGMEM =
+"<button id='foc2_sel' class='bbh' onpointerdown=\"gf('F2')\" title='" L_HINT_FOC_SEL " 2' type='button' disabled>2</button>";
+const char html_selectFocuser3[] PROGMEM =
+"<button id='foc3_sel' class='bbh' onpointerdown=\"gf('F3')\" title='" L_HINT_FOC_SEL " 3' type='button' disabled>3</button>";
+const char html_selectFocuser4[] PROGMEM =
+"<button id='foc4_sel' class='bbh' onpointerdown=\"gf('F4')\" title='" L_HINT_FOC_SEL " 4' type='button' disabled>4</button>";
+const char html_selectFocuser5[] PROGMEM =
+"<button id='foc5_sel' class='bbh' onpointerdown=\"gf('F5')\" title='" L_HINT_FOC_SEL " 5' type='button' disabled>5</button>";
+const char html_selectFocuser6[] PROGMEM =
+"<button id='foc6_sel' class='bbh' onpointerdown=\"gf('F6')\" title='" L_HINT_FOC_SEL " 6' type='button' disabled>6</button>";
+const char html_setFocus1[] PROGMEM =
+"&nbsp;&nbsp;&nbsp;&nbsp;<span style='border: 1px solid #551111; background-color: #181818; text-align: center; margin: 1px; padding: 0.5em 0.1em 0.5em 0.1em;'>";
+const char html_setFocus2[] PROGMEM =
+"<input id='foc_set' style='width: 6em;' value='0' type='number' min='-500000' max='500000'>&nbsp;&nbsp;"
+"<button onpointerdown=\"s('fs',document.getElementById('foc_set').value)\" type='button'>" L_SET "</button></span>";
+const char html_controlFocus1[] PROGMEM =
 "<button class='bbh' onpointerdown=\"gf('Fh')\" title='" L_HINT_FOC_FIND_HOME "' type='button'>" ARROW_DR HOME_CH "</button>"
 "<button class='bbh' onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) gf('FH')\" title='" L_HINT_FOC_RESET_HOME "' type='button'>" CAUTION_CH HOME_CH "</button>&nbsp;&nbsp;&nbsp;&nbsp;";
-const char html_controlFocus4[] PROGMEM =
+const char html_controlFocus2[] PROGMEM =
 "<button class='bbh' onpointerdown=\"gf('FI')\" onpointerup=\"g('Fq');\" type='button'>" ARROW_DD "</button>"
 "<button class='bbh' style='width: 2em' onpointerdown=\"gf('Fi')\" onpointerup=\"g('Fq')\" type='button'>" ARROW_D "</button>";
-const char html_controlFocus5[] PROGMEM =
+const char html_controlFocus3[] PROGMEM =
 "<button class='bbh' style='width: 2em' onpointerdown=\"gf('Fo')\" onpointerup=\"g('Fq')\" type='button'>" ARROW_U "</button>"
 "<button class='bbh' onpointerdown=\"gf('FO')\" onpointerup=\"g('Fq')\" type='button'>" ARROW_UU "</button>";
-const char html_controlFocus6[] PROGMEM =
+const char html_controlFocusEnd[] PROGMEM =
 "</div><br class='clear' />\r\n";
 
 const char html_controlRotate0[] PROGMEM =

@@ -3,6 +3,9 @@
 
 #include "Configuration.h"
 
+extern int focuserCount;
+extern bool focuserPresent[6];
+
 bool processConfigurationGet();
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
@@ -195,85 +198,71 @@ void handleConfiguration() {
     // Axis3 Rotator
     int i = 0;
     static int rotatorPresent = -1;
-    if (rotatorPresent == -1) { command(":rT#",temp1); if (temp1[0] == '0') rotatorPresent=false; else rotatorPresent=true; }
-    
+    if (rotatorPresent == -1) {
+      command(":rT#",temp1);
+      if (temp1[0] == '0') rotatorPresent = false; else rotatorPresent = true;
+    }
+
     if (rotatorPresent) {
       data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
       data.concat(FPSTR(html_configFormBegin));
       // Backlash
-      if (!command(":rb#",temp1)) strcpy(temp1,"0");
+      if (!command(":rb#", temp1)) strcpy(temp1, "0");
       i = (int)strtol(&temp1[0], NULL, 10);
-      sprintf_P(temp,html_configBlAxis3,i);
+      sprintf_P(temp, html_configBlAxis3, i);
       data.concat(temp);
       data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
       data.concat(FPSTR(html_configFormEnd));
       sendHtml(data);
     }
 
-    // Axis4 Focuser1
-    static int focuser1Present = -1;
-    if (focuser1Present == -1) { command(":FT#",temp1); if (temp1[0] == '0') focuser1Present=false; else focuser1Present=true; }
-    if (focuser1Present) {
-      commandBool(":FA1#");
-
-      data.concat(F("<button type='button' class='collapsible'>Axis4 " L_FOCUSER " 1</button>"));
-      data.concat(FPSTR(html_configFormBegin));
-      // Backlash
-      if (!command(":Fb#",temp1)) strcpy(temp1,"0");
-      i = (int)strtol(&temp1[0], NULL, 10);
-      sprintf_P(temp,html_configBlAxis4,i);
-      data.concat(temp);
-      // TCF Enable
-      if (commandBool(":Fc#")) sprintf_P(temp,html_configTcfEnAxis4,1); else sprintf_P(temp,html_configTcfEnAxis4,0);
-      data.concat(temp);
-      // TCF Deadband
-      if (!command(":Fd#",temp1)) strcpy(temp1,"0");
-      i = (int)strtol(&temp1[0], NULL, 10);
-      sprintf_P(temp,html_configDbAxis4,i);
-      data.concat(temp);
-      sendHtml(data);
-      // TCF Coef
-      if (!command(":FC#",temp1)) strcpy(temp1,"0");
-      char *conv_end;
-      double f=strtod(temp1,&conv_end); if (&temp1[0] == conv_end) f=0.0;
-      dtostrf(f,1,5,temp1); stripNum(temp1);
-      sprintf_P(temp,html_configTcfCoefAxis4,temp1);
-      data.concat(temp);
-      data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
-      data.concat(FPSTR(html_configFormEnd));
-      sendHtml(data);
+    // Axis4 to 9 Focusers
+    focuserCount = 0;
+    for (int i = 0; i < 6; i++) focuserPresent[i] = false;
+    if (mountStatus.getVersionMajor() >= 10) {
+      if (commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
+      if (commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
+      if (commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
+      if (commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
+      if (commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
+      if (commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
+    } else {
+      if (commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
+      if (commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
     }
 
-    // Axis5 Focuser2
-    static int focuser2Present = -1;
-    if (focuser2Present == -1) { command(":fT#",temp1); if (temp1[0] == '0') focuser2Present=false; else focuser2Present=true; }
-    if (focuser2Present) {
-      data.concat(F("<button type='button' class='collapsible'>Axis5 " L_FOCUSER " 2</button>"));
-      data.concat(FPSTR(html_configFormBegin));
-      // Backlash
-      if (!command(":fb#",temp1)) strcpy(temp1,"0");
-      i = (int)strtol(&temp1[0], NULL, 10);
-      sprintf_P(temp,html_configBlAxis5,i);
-      data.concat(temp);
-      // TCF Enable
-      if (commandBool(":Fc#")) sprintf_P(temp,html_configTcfEnAxis5,1); else sprintf_P(temp,html_configTcfEnAxis5,0);
-      data.concat(temp);
-      // TCF Deadband
-      if (!command(":fd#",temp1)) strcpy(temp1,"0");
-      i = (int)strtol(&temp1[0], NULL, 10);
-      sprintf_P(temp, html_configDbAxis5, i);
-      data.concat(temp);
-      sendHtml(data);
-      // TCF Coef
-      if (!command(":fC#",temp1)) strcpy(temp1,"0");
-      char *conv_end;
-      double f = strtod(temp1,&conv_end); if (&temp1[0] == conv_end) f = 0.0;
-      dtostrf(f, 1, 5, temp1); stripNum(temp1);
-      sprintf_P(temp, html_configTcfCoefAxis5, temp1);
-      data.concat(temp);
-      data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
-      data.concat(FPSTR(html_configFormEnd));
-      sendHtml(data);
+    for (int focuser = 0; focuser < 6; focuser++) {
+      if (focuserPresent[focuser]) {
+        sprintf_P(temp, html_configFocuser, focuser + 4, focuser + 1);
+        data.concat(temp);
+        data.concat(FPSTR(html_configFormBegin));
+        // Backlash
+        if (!command(":Fb#",temp1)) strcpy(temp1,"0");
+        i = (int)strtol(&temp1[0], NULL, 10);
+        sprintf_P(temp, html_configBacklash, i, focuser + 4);
+        data.concat(temp);
+        // TCF Enable
+        sprintf_P(temp, html_configTcfEnable, (int)commandBool(":Fc#"), focuser + 4);
+        data.concat(temp);
+        // TCF Deadband
+        if (!command(":Fd#",temp1)) strcpy(temp1,"0");
+        i = (int)strtol(&temp1[0], NULL, 10);
+        sprintf_P(temp,html_configDeadband, i, focuser + 4);
+        data.concat(temp);
+        sendHtml(data);
+        // TCF Coef
+        if (!command(":FC#",temp1)) strcpy(temp1,"0");
+        char *conv_end;
+        double f = strtod(temp1,&conv_end);
+        if (&temp1[0] == conv_end) f = 0.0;
+        dtostrf(f, 1, 5, temp1);
+        stripNum(temp1);
+        sprintf_P(temp, html_configTcfCoef, temp1, focuser + 4);
+        data.concat(temp);
+        data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
+        data.concat(FPSTR(html_configFormEnd));
+        sendHtml(data);
+      }
     }
 
     data.concat("<br />\r\n");
@@ -309,25 +298,38 @@ void handleConfiguration() {
         if (validateAxisSettings(1, mountStatus.mountType() == MT_ALTAZM, a)) {
           if (!command(":GXE7#", temp1)) strcpy(temp1, "0");
           long spwr = strtol(temp1, NULL, 10);
-          sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L); data.concat(temp);
-          dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
-          sprintf_P(temp, html_configAxisSpd, temp1, 1, 3000, 122400L); data.concat(temp);
+          sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L);
+          data.concat(temp);
+          dtostrf(a.stepsPerMeasure, 1, 3, temp1);
+          stripNum(temp1);
+          sprintf_P(temp, html_configAxisSpd, temp1, 1, 3000, 122400L);
+          data.concat(temp);
           #if DRIVE_MAIN_AXES_MICROSTEPS == ON
-            if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 1); data.concat(temp); }
+            if (a.microsteps != OFF) {
+              sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 1);
+              data.concat(temp);
+            }
           #endif
           sendHtml(data);
           #if DRIVE_MAIN_AXES_CURRENT == ON
-            if (a.IRUN != OFF) { sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 1, 3000); data.concat(temp); }
+            if (a.IRUN != OFF) {
+              sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 1, 3000);
+              data.concat(temp);
+            }
           #endif
           #if DRIVE_MAIN_AXES_REVERSE == ON
-            sprintf_P(temp, html_configAxisReverse, a.reverse==ON?1:0,1); data.concat(temp);
+            sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, 1);
+            data.concat(temp);
           #endif
-          sprintf_P(temp, html_configAxisMin, (int)a.min, 1, -360, -90, "&deg;,"); data.concat(temp);
+          sprintf_P(temp, html_configAxisMin, (int)a.min, 1, -360, -90, "&deg;,");
+          data.concat(temp);
           sendHtml(data);
-          sprintf_P(temp, html_configAxisMax, (int)a.max, 1, 90, 360, "&deg;,"); data.concat(temp);
+          sprintf_P(temp, html_configAxisMax, (int)a.max, 1, 90, 360, "&deg;,");
+          data.concat(temp);
           data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
         }
-        data.concat(F("<button name='revert' value='1' type='submit'>" L_REVERT "</button>\r\n"));
+        sprintf_P(temp, html_configAxisRevert, 1);
+        data.concat(temp);
         data.concat(FPSTR(html_configFormEnd));
         sendHtml(data);
         numShown++;
@@ -338,25 +340,37 @@ void handleConfiguration() {
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis2 Dec/Alt</button>"));
         data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(2, mountStatus.mountType()==MT_ALTAZM, a)) {
-          dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
-          sprintf_P(temp, html_configAxisSpd, temp1, 2, 3000, 122400L); data.concat(temp);
+        if (validateAxisSettings(2, mountStatus.mountType() == MT_ALTAZM, a)) {
+          dtostrf(a.stepsPerMeasure, 1, 3, temp1);
+          stripNum(temp1);
+          sprintf_P(temp, html_configAxisSpd, temp1, 2, 3000, 122400L);
+          data.concat(temp);
           #if DRIVE_MAIN_AXES_MICROSTEPS == ON
-            if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 2); data.concat(temp); }
+            if (a.microsteps != OFF) {
+              sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 2);
+              data.concat(temp);
+            }
           #endif
           sendHtml(data);
           #if DRIVE_MAIN_AXES_CURRENT == ON
-            if (a.IRUN != OFF) { sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 2, 3000); data.concat(temp); }
+            if (a.IRUN != OFF) {
+              sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 2, 3000);
+              data.concat(temp);
+            }
           #endif
           #if DRIVE_MAIN_AXES_REVERSE == ON
-            sprintf_P(temp, html_configAxisReverse, a.reverse==ON?1:0, 2); data.concat(temp);
+            sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, 2);
+            data.concat(temp);
           #endif
-          sprintf_P(temp, html_configAxisMin, (int)a.min, 2, -90, 0, "&deg;,"); data.concat(temp);
+          sprintf_P(temp, html_configAxisMin, (int)a.min, 2, -90, 0, "&deg;,");
+          data.concat(temp);
           sendHtml(data);
-          sprintf_P(temp, html_configAxisMax, (int)a.max, 2, 0, 90, "&deg;,"); data.concat(temp);
+          sprintf_P(temp, html_configAxisMax, (int)a.max, 2, 0, 90, "&deg;,");
+          data.concat(temp);
           data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
         }
-        data.concat("<button name='revert' value='2' type='submit'>" L_REVERT "</button>");
+        sprintf_P(temp, html_configAxisRevert, 2);
+        data.concat(temp);
         data.concat(FPSTR(html_configFormEnd));
         sendHtml(data);
         numShown++;
@@ -368,68 +382,76 @@ void handleConfiguration() {
         data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
         data.concat(FPSTR(html_configFormBegin));
         if (validateAxisSettings(3, mountStatus.mountType() == MT_ALTAZM, a)) {
-          dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
-          sprintf_P(temp, html_configAxisSpd, temp1, 3, 10, 3600L); data.concat(temp);
-          if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 3); data.concat(temp); }
+          dtostrf(a.stepsPerMeasure, 1, 3, temp1);
+          stripNum(temp1);
+          sprintf_P(temp, html_configAxisSpd, temp1, 3, 10, 3600L);
+          data.concat(temp);
+          if (a.microsteps != OFF) {
+            sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 3);
+            data.concat(temp);
+          }
           sendHtml(data);
-          if (a.IRUN != OFF) { sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 3, 1000); data.concat(temp); }
-          sprintf_P(temp, html_configAxisReverse, a.reverse==ON?1:0, 3); data.concat(temp);
-          sprintf_P(temp, html_configAxisMin, (int)a.min, 3, -360, 0, "&deg;,"); data.concat(temp);
+          if (a.IRUN != OFF) {
+            sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 3, 1000);
+            data.concat(temp);
+          }
+          sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, 3);
+          data.concat(temp);
+          sprintf_P(temp, html_configAxisMin, (int)a.min, 3, -360, 0, "&deg;,");
+          data.concat(temp);
           sendHtml(data);
-          sprintf_P(temp, html_configAxisMax, (int)a.max, 3, 0, 360, "&deg;,"); data.concat(temp);
+          sprintf_P(temp, html_configAxisMax, (int)a.max, 3, 0, 360, "&deg;,");
+          data.concat(temp);
           data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
         }
-        data.concat(F("<button name='revert' value='3' type='submit'>" L_REVERT "</button>"));
+        sprintf_P(temp, html_configAxisRevert, 3);
+        data.concat(temp);
         data.concat(FPSTR(html_configFormEnd));
         sendHtml(data);
         numShown++;
       }
 
-      // Axis4 Focuser1
-      if (!command(":GXA4#", temp1)) strcpy(temp1, "0");
-      if (decodeAxisSettings(temp1, &a)) {
-        data.concat(F("<button type='button' class='collapsible'>Axis4 " L_FOCUSER " 1</button>"));
-        data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(4, mountStatus.mountType() == MT_ALTAZM, a)) {
-          dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
-          sprintf_P(temp, html_configAxisSpu, temp1, 4); data.concat(temp);
-          if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 4); data.concat(temp); }
-          sendHtml(data);
-          if (a.IRUN != OFF) { sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 4, 1000); data.concat(temp); }
-          sprintf_P(temp, html_configAxisReverse,a.reverse==ON?1:0,4); data.concat(temp);
-          sprintf_P(temp, html_configAxisMin, (int)a.min, 4, 0, 500, "mm,"); data.concat(temp);
-          sendHtml(data);
-          sprintf_P(temp, html_configAxisMax, (int)a.max, 4, 0, 500, "mm,"); data.concat(temp);
-          data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
+      // Axis4 to Axis9 Focusers
+      for (int focuser = 0; focuser < 6; focuser++) {
+        if (focuserPresent[focuser]) {
+          sprintf(temp2, ":GXA%d#", focuser + 4);
+          if (!command(temp2, temp1)) strcpy(temp1, "0");
+          if (decodeAxisSettings(temp1, &a)) {
+            sprintf_P(temp, html_configFocuser, focuser + 4, focuser + 1);
+            data.concat(temp);
+            data.concat(FPSTR(html_configFormBegin));
+            if (validateAxisSettings(focuser + 4, mountStatus.mountType() == MT_ALTAZM, a)) {
+              dtostrf(a.stepsPerMeasure, 1, 3, temp1);
+              stripNum(temp1);
+              sprintf_P(temp, html_configAxisSpu, temp1, focuser + 4);
+              data.concat(temp);
+              if (a.microsteps != OFF) {
+                sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, focuser + 4);
+                data.concat(temp);
+              }
+              sendHtml(data);
+              if (a.IRUN != OFF) {
+                sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, focuser + 4, 1000);
+                data.concat(temp);
+              }
+              sprintf_P(temp, html_configAxisReverse,a.reverse == ON ? 1 : 0, focuser + 4);
+              data.concat(temp);
+              sprintf_P(temp, html_configAxisMin, (int)a.min, focuser + 4, -500, 500, "mm,");
+              data.concat(temp);
+              sendHtml(data);
+              sprintf_P(temp, html_configAxisMax, (int)a.max, focuser + 4, -500, 500, "mm,");
+              data.concat(temp);
+              data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
+            }
+            sprintf_P(temp, html_configAxisRevert, focuser + 4);
+            data.concat(temp);
+            data.concat(FPSTR(html_configFormEnd));
+            sendHtml(data);
+            numShown++;
+          }
         }
-        data.concat(F("<button name='revert' value='4' type='submit'>" L_REVERT "</button>"));
-        data.concat(FPSTR(html_configFormEnd));
-        sendHtml(data);
-        numShown++;
       }
 
-      // Axis5 Focuser2
-      if (!command(":GXA5#",temp1)) strcpy(temp1,"0");
-      if (decodeAxisSettings(temp1, &a)) {
-        data.concat(F("<button type='button' class='collapsible'>Axis5 " L_FOCUSER " 2</button>"));
-        data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(5, mountStatus.mountType()==MT_ALTAZM, a)) {
-          dtostrf(a.stepsPerMeasure, 1, 3, temp1); stripNum(temp1);
-          sprintf_P(temp, html_configAxisSpu, temp1, 5); data.concat(temp);
-          if (a.microsteps != OFF) { sprintf_P(temp, html_configAxisMicroSteps, (int)a.microsteps, 5); data.concat(temp); }
-          sendHtml(data);
-          if (a.IRUN != OFF) { sprintf_P(temp, html_configAxisCurrent, (int)a.IRUN, 5, 1000); data.concat(temp); }
-          sprintf_P(temp, html_configAxisReverse, a.reverse==ON?1:0, 5); data.concat(temp);
-          sprintf_P(temp, html_configAxisMin, (int)a.min, 5, 0, 500, "mm,"); data.concat(temp);
-          sendHtml(data);
-          sprintf_P(temp, html_configAxisMax, (int)a.max, 5, 0, 500, "mm,"); data.concat(temp);
-          data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
-        }
-        data.concat(F("<button name='revert' value='5' type='submit'>" L_REVERT "</button>"));
-        data.concat(FPSTR(html_configFormEnd));
-        sendHtml(data);
-        numShown++;
-      }
       if (numShown == 0) data.concat(L_ADV_SET_NO_EDIT "<br />");
       data.concat(F("<br /><form method='get' action='/configuration.htm'>"));
       data.concat(F("<button name='advanced' type='submit' "));

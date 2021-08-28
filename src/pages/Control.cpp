@@ -5,10 +5,10 @@
 
 void processControlGet();
 
-bool Focuser1 = false;
-bool Focuser2 = false;
-bool Rotate = false;
-bool DeRotate = false;
+int focuserCount = 0;
+bool focuserPresent[6];
+bool rotator;
+bool deRotator;
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
 void handleControl(EthernetClient *client) {
@@ -134,27 +134,48 @@ void handleControl() {
   sendHtml(data);
 
   // Focusing ------------------------------------------------
-  if (commandBool(":FA#")) Focuser1 = true; else Focuser1 = false;
-  if (commandBool(":fA#")) Focuser2 = true; else Focuser2 = false;
-  if (Focuser1) {
-    data.concat(FPSTR(html_controlFocus1));
+  focuserCount = 0;
+  for (int i = 0; i < 6; i++) focuserPresent[i] = false;
+  if (mountStatus.getVersionMajor() >= 10) {
+    if (commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
+    if (commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
+    if (commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
+    if (commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
+    if (commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
+    if (commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
+  } else {
+    if (commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
+    if (commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
+  }
+  if (focuserCount > 0) {
+    data.concat(FPSTR(html_controlFocusBeg));
     data.concat("<div style='float: left;'>" L_FOCUSER ":</div><div style='float: right; text-align: right;' id='focuserpos'>?</div><br />");
-    if (Focuser2) data.concat(FPSTR(html_controlFocus2));
+    if (focuserCount > 1) {
+      if (focuserPresent[0]) data.concat(FPSTR(html_selectFocuser1));
+      if (focuserPresent[1]) data.concat(FPSTR(html_selectFocuser2));
+      if (focuserPresent[2]) data.concat(FPSTR(html_selectFocuser3));
+      if (focuserPresent[3]) data.concat(FPSTR(html_selectFocuser4));
+      if (focuserPresent[4]) data.concat(FPSTR(html_selectFocuser5));
+      if (focuserPresent[5]) data.concat(FPSTR(html_selectFocuser6));
+    }
+    data.concat(FPSTR(html_setFocus1));
+    data.concat(FPSTR(html_setFocus2));
+    data.concat("<br />");
+    data.concat(FPSTR(html_controlFocus1));
+    data.concat(FPSTR(html_controlFocus2));
     data.concat(FPSTR(html_controlFocus3));
-    data.concat(FPSTR(html_controlFocus4));
-    data.concat(FPSTR(html_controlFocus5));
-    data.concat(FPSTR(html_controlFocus6));
+    data.concat(FPSTR(html_controlFocusEnd));
     sendHtml(data);
   }
 
   // Rotate/De-Rotate ----------------------------------------
-  Rotate=false;
-  DeRotate=false;
+  rotator = false;
+  deRotator = false;
   if (command(":GX98#", temp)) {
-    if (temp[0] == 'R') Rotate = true;
-    if (temp[0] == 'D') { Rotate = true; DeRotate = true; }
+    if (temp[0] == 'R') rotator = true;
+    if (temp[0] == 'D') { rotator = true; deRotator = true; }
   }
-  if (Rotate) {
+  if (rotator) {
     data.concat(FPSTR(html_controlRotate0));
     data.concat("<div style='float: left;'>" L_ROTATOR ":</div><div style='float: right; text-align: right;' id='rotatorpos'>?</div><br />");
     data.concat(FPSTR(html_controlRotate1));
@@ -162,12 +183,12 @@ void handleControl() {
     data.concat(FPSTR(html_controlRotate3));
     sendHtml(data);
   }
-  if (DeRotate) {
+  if (deRotator) {
     data.concat(FPSTR(html_controlDeRotate1));
     data.concat(FPSTR(html_controlDeRotate2));
     sendHtml(data);
   }
-  if (Rotate) {
+  if (rotator) {
     data.concat(FPSTR(html_controlRotate4));
     sendHtml(data);
   }
@@ -265,12 +286,26 @@ void controlAjax() {
     data.concat("rpa|disabled\n");
   }
 
-  if (Focuser1) {
+  if (focuserCount > 0) {
     data.concat("focuserpos|");
     if (command(":FG#",temp)) { data.concat(temp); data.concat(" microns\n"); } else { data.concat("?\n"); }
+
+    if (mountStatus.getVersionMajor() >= 10) {
+      if (command(":FA#",temp)) {
+        if (temp[0] == '1' && temp[1] == 0) data.concat("foc1_sel|disabled\n"); else data.concat("foc1_sel|enabled\n");
+        if (temp[0] == '2' && temp[1] == 0) data.concat("foc2_sel|disabled\n"); else data.concat("foc2_sel|enabled\n");
+        if (temp[0] == '3' && temp[1] == 0) data.concat("foc3_sel|disabled\n"); else data.concat("foc3_sel|enabled\n");
+        if (temp[0] == '4' && temp[1] == 0) data.concat("foc4_sel|disabled\n"); else data.concat("foc4_sel|enabled\n");
+        if (temp[0] == '5' && temp[1] == 0) data.concat("foc5_sel|disabled\n"); else data.concat("foc5_sel|enabled\n");
+        if (temp[0] == '6' && temp[1] == 0) data.concat("foc6_sel|disabled\n"); else data.concat("foc6_sel|enabled\n");
+      }
+    } else {
+        data.concat("foc1_sel|enabled\n");
+        if (focuserCount > 1) data.concat("foc2_sel|enabled\n");
+    }
   }
 
-  if (Rotate) {
+  if (rotator) {
     data.concat("rotatorpos|");
     if (command(":rG#",temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
   }
@@ -398,17 +433,6 @@ void processControlGet() {
     if (v.equals("R8")) commandBlind(":R8#");
     if (v.equals("R9")) commandBlind(":R9#");
 
-    // Focuser
-    if (v.equals("F1")) commandBool(":FA1#");      // select focuser 1
-    if (v.equals("F2")) commandBool(":FA2#");      // select focuser 2
-    if (v.equals("FH")) commandBlind(":FH#");      // reset focuser at home (half travel)
-    if (v.equals("Fh")) commandBlind(":Fh#");      // move focuser to home (half travel)
-    if (v.equals("FI")) commandBlind(":F4#:F-#");  // rate fast, move in
-    if (v.equals("Fi")) commandBlind(":F2#:F-#");  // rate slow, move in
-    if (v.equals("Fo")) commandBlind(":F2#:F+#");  // rate slow, move out
-    if (v.equals("FO")) commandBlind(":F4#:F+#");  // rate fast, move out
-    if (v.equals("Fq")) commandBlind(":FQ#");
-   
     // Rotate/De-Rotate
     if (v.equals("rB")) commandBlind(":r3#:rc#:r<#"); // rate 3, move ccw
     if (v.equals("rr")) commandBlind(":r1#:rc#:r<#"); // rate 1, move ccw
@@ -421,7 +445,34 @@ void processControlGet() {
     if (v.equals("rR")) commandBlind(":rR#");         // reverse rotator
     if (v.equals("rp")) commandBlind(":rP#");         // move rotator to parallactic angle
     if (v.equals("rq")) commandBlind(":rQ#");
+
+    // Focuser
+    if (v.equals("F1")) commandBool(":FA1#");      // select focuser 1
+    if (v.equals("F2")) commandBool(":FA2#");      // select focuser 2
+    if (v.equals("F3")) commandBool(":FA3#");      // select focuser 3
+    if (v.equals("F4")) commandBool(":FA4#");      // select focuser 4
+    if (v.equals("F5")) commandBool(":FA5#");      // select focuser 5
+    if (v.equals("F6")) commandBool(":FA6#");      // select focuser 6
+    if (v.equals("FH")) commandBlind(":FH#");      // reset focuser at home (half travel)
+    if (v.equals("Fh")) commandBlind(":Fh#");      // move focuser to home (half travel)
+    if (v.equals("FI")) commandBlind(":F4#:F-#");  // rate fast, move in
+    if (v.equals("Fi")) commandBlind(":F2#:F-#");  // rate slow, move in
+    if (v.equals("Fo")) commandBlind(":F2#:F+#");  // rate slow, move out
+    if (v.equals("FO")) commandBlind(":F4#:F+#");  // rate fast, move out
+    if (v.equals("Fq")) commandBlind(":FQ#");
   }
+
+  // Set the focuser position
+  v=server.arg("fs");
+  if (!v.equals(EmptyStr)) {
+    int p = v.toInt();
+    if (p >= -500000 || p <= 500000) {
+      char temp[20];
+      sprintf(temp, ":FS%d#", p);
+      commandBool(temp);
+    }
+  }
+
   // refine polar align
   v=server.arg("rp");
   if (!v.equals(EmptyStr)) {
