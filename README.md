@@ -1,9 +1,5 @@
 # OnStep Smart Web Server
 
-***
-THIS IS AN NEW DESIGN BUT IT SEEMS TO HAVE REACHED STABILITY WITH NO KNOWN PROBLEMS.  I NOW CONSIDER THIS A BETA AND SUITABLE FOR USER TESTING.
-***
-
 This is the WiFi and Ethernet webserver for OnStep.
 It also enables OnStep to be controlled over IP. This access can be over command channel(s) and/or website.
 This server is known to work from personal computers (using a browser), phones and tablets,
