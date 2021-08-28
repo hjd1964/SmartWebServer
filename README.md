@@ -1,5 +1,5 @@
 # OnStep Smart Web Server
-==========================
+
 # Important Note
 
 THERE ARE SEVERAL GITHUB BRANCHES OF ONSTEP:
