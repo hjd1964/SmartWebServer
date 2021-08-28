@@ -86,7 +86,9 @@ bool MountStatus::update(bool all) {
 
     // attempt to get the driver status for all 9 axes, mark the ones that return false so we don't attempt to process again
     static int driverStatusFailedAttempts[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    for (int axis = 0; axis < 9; axis++) {
+    int maxAxes = 2;
+    if (mountStatus.getVersionMajor() >= 10) maxAxes = 9;
+    for (int axis = 0; axis < maxAxes; axis++) {
       if (driverStatusFailedAttempts[axis] < 3) {
         char cmd[40];
         char reply[40];
