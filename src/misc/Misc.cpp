@@ -55,30 +55,39 @@ void sprintF(char *result, const char *source, float f) {
   result[j++] = 0;
 }
 
-bool doubleToDms(char *reply, double *f, bool fullRange, bool signPresent) {
-  char sign[]="+";
-  int  o=0,d1,s1=0;
-  double m1,f1;
-  f1=*f;
+// convert double (in degrees) to string in format as follows:
+// sDD:MM          PM_LOW
+// DDD:MM          PM_LOW
+// sDD*MM          PM_LOW
+// DDD*MM          PM_LOW
+// DDD:MM:SS       PM_HIGH
+// sDD:MM:SS.SSS   PM_HIGHEST
+void doubleToDms(char *reply, double value, bool fullRange, bool signPresent, PrecisionMode p) {
+  char sign[2] = "";
+  double deg, minute, second = 0, decimal = 0;
 
   // setup formatting, handle adding the sign
-  if (f1<0) { f1=-f1; sign[0]='-'; }
-
-  f1=f1+0.000139; // round to 1/2 arc-second
-  d1=floor(f1);
-  m1=(f1-d1)*60.0;
-  s1=(m1-floor(m1))*60.0;
-  
-  char s[]="+%02d*%02d:%02d";
-  if (signPresent) { 
-    if (sign[0]=='-') { s[0]='-'; } o=1;
-  } else {
-    strcpy(s,"%02d*%02d:%02d");
+  if (signPresent) {
+    if (value < 0) { value = -value; strcpy(sign,"-"); } else strcpy(sign,"+");
   }
-  if (fullRange) s[2+o]='3';
+
+  // round to 0.0005 arc-second or 0.5 arc-second, depending on precision mode
+  if (p == PM_HIGHEST) value += 0.000000139; else value += 0.000139; 
+
+  deg = floor(value);
+  minute = (value - deg)*60.0;
+  second = (minute - floor(minute))*60.0;
+
+  // finish off calculations for dms and form string template
+  char form[]="%s%02d*%02d:%02d.%03d";
+  if (p != PM_HIGHEST) form[16] = 0; else decimal = (second - floor(second))*1000.0;
+  if (p == PM_LOW)     form[11] = 0;
+  if (fullRange)                   form[4]  = '3';
  
-  sprintf(reply,s,d1,(int)m1,s1);
-  return true;
+  // return result string
+  if (p == PM_HIGHEST) sprintf(reply, form, sign, (int)deg, (int)minute, (int)second, (int)decimal); else
+  if (p == PM_HIGH)    sprintf(reply, form, sign, (int)deg, (int)minute, (int)second); else
+  if (p == PM_LOW)     sprintf(reply, form, sign, (int)deg, (int)minute);
 }
 
 int hexToInt(String s) {

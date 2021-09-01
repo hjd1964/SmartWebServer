@@ -13,6 +13,8 @@ typedef struct AxisSettings {
    int16_t max;
 } AxisSettings;
 
+enum PrecisionMode {PM_LOWEST, PM_LOW, PM_HIGH, PM_HIGHEST, PM_UNKNOWN};
+
 // remove leading and trailing 0's
 void stripNum(char* s);
 
@@ -22,8 +24,14 @@ bool atoi2(char *a, int *i);
 // sprintf like function for float type, limited to one parameter
 void sprintF(char *result, const char *source, float f);
 
-// convert to various degrees, minutes, seconds formats
-bool doubleToDms(char *reply, double *f, bool fullRange, bool signPresent);
+// convert double (in degrees) to string in format as follows:
+// sDD:MM          PM_LOW
+// DDD:MM          PM_LOW
+// sDD*MM          PM_LOW
+// DDD*MM          PM_LOW
+// DDD:MM:SS       PM_HIGH
+// sDD:MM:SS.SSS   PM_HIGHEST
+void doubleToDms(char *reply, double value, bool fullRange, bool signPresent, PrecisionMode p);
 
 // convert hex to int, returns -1 on error
 int hexToInt(String s);
