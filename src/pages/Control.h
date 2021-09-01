@@ -115,8 +115,13 @@ const char html_controlFocus3[] PROGMEM =
 const char html_controlFocusEnd[] PROGMEM =
 "</div><br class='clear' />\r\n";
 
-const char html_controlRotate0[] PROGMEM =
+const char html_controlRotateBeg[] PROGMEM =
 "<div class='b1' style='width: 27em'>";
+const char html_setRotate1[] PROGMEM =
+"<span style='border: 1px solid #551111; background-color: #181818; text-align: center; margin: 1px; padding: 0.5em 0.1em 0.5em 0.1em;'>";
+const char html_setRotate2[] PROGMEM =
+"<input id='rot_set' style='width: 6em;' value='0.0' type='number' min='-360' max='360' step='any'>&nbsp;&nbsp;"
+"<button onpointerdown=\"s('rs',document.getElementById('rot_set').value)\" type='button'>" L_SET "</button></span>";
 const char html_controlRotate1[] PROGMEM =
 "<button class='bbh' style='height: 2.1em' onpointerdown=\"gf('rh')\" title='" L_HINT_ROT_FIND_HOME "' type='button'>" ARROW_DR HOME_CH "</button>"
 "<button class='bbh' style='height: 2.1em' onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) gf('rH')\" title='" L_HINT_ROT_RESET_HOME "' type='button'>" CAUTION_CH HOME_CH "</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -132,7 +137,7 @@ const char html_controlDeRotate1[] PROGMEM =
 const char html_controlDeRotate2[] PROGMEM =
 "<button onpointerdown=\"gf('rp')\" title='" L_HINT_ROTATOR_PAR "' type='button'>P</button>&nbsp;&nbsp;&nbsp;"
 "<button onpointerdown=\"gf('r0')\" type='button'>" L_HINT_DEROTATE_OFF "</button>";
-const char html_controlRotate4[] PROGMEM =
+const char html_controlRotateEnd[] PROGMEM =
 "</div><br class='clear' />\r\n";
 
 const char html_controlEnd[] PROGMEM = 

@@ -176,20 +176,21 @@ void handleControl() {
     if (temp[0] == 'D') { rotator = true; deRotator = true; }
   }
   if (rotator) {
-    data.concat(FPSTR(html_controlRotate0));
+    data.concat(FPSTR(html_controlRotateBeg));
     data.concat("<div style='float: left;'>" L_ROTATOR ":</div><div style='float: right; text-align: right;' id='rotatorpos'>?</div><br />");
+    data.concat(FPSTR(html_setRotate1));
+    data.concat(FPSTR(html_setRotate2));
+    data.concat("<br />");
     data.concat(FPSTR(html_controlRotate1));
     data.concat(FPSTR(html_controlRotate2));
     data.concat(FPSTR(html_controlRotate3));
     sendHtml(data);
-  }
-  if (deRotator) {
-    data.concat(FPSTR(html_controlDeRotate1));
-    data.concat(FPSTR(html_controlDeRotate2));
-    sendHtml(data);
-  }
-  if (rotator) {
-    data.concat(FPSTR(html_controlRotate4));
+    if (deRotator) {
+      data.concat(FPSTR(html_controlDeRotate1));
+      data.concat(FPSTR(html_controlDeRotate2));
+      sendHtml(data);
+    }
+    data.concat(FPSTR(html_controlRotateEnd));
     sendHtml(data);
   }
 
@@ -460,6 +461,18 @@ void processControlGet() {
     if (v.equals("Fo")) commandBlind(":F2#:F+#");  // rate slow, move out
     if (v.equals("FO")) commandBlind(":F4#:F+#");  // rate fast, move out
     if (v.equals("Fq")) commandBlind(":FQ#");
+  }
+
+  // Set the rotator position
+  v=server.arg("rs");
+  if (!v.equals(EmptyStr)) {
+    double f = v.toFloat();
+    if (f >= -360.0 || f <= 360.0) {
+      char temp[20], temp1[20];
+      doubleToDms(temp1, f, true, true, PM_HIGH);
+      sprintf(temp, ":rS%s#", temp1);
+      commandBool(temp);
+    }
   }
 
   // Set the focuser position
