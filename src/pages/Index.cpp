@@ -155,14 +155,14 @@ void handleRoot() {
   #if ENCODERS == ON
     // RA,Dec OnStep position
     double f;
-    f=encoders.getOnStepAxis1(); doubleToDms(temp1,&f,true,true);
-    f=encoders.getOnStepAxis2(); doubleToDms(temp2,&f,true,true);
+    f=encoders.getOnStepAxis1(); doubleToDms(temp1, f, true, true, PM_HIGH);
+    f=encoders.getOnStepAxis2(); doubleToDms(temp2, f, true, true, PM_HIGH);
     sprintf_P(temp,html_indexEncoder1,temp1,temp2);
     data.concat(temp);
 
     // RA,Dec encoder position
-    if (encoders.validAxis1()) { f=encoders.getAxis1(); doubleToDms(temp1,&f,true,true); } else strcpy(temp1," ** " L_FAULT " ** ");
-    if (encoders.validAxis2()) { f=encoders.getAxis2(); doubleToDms(temp2,&f,true,true); } else strcpy(temp2," ** " L_FAULT " ** ");
+    if (encoders.validAxis1()) { f=encoders.getAxis1(); doubleToDms(temp1, f, true, true, PM_HIGH); } else strcpy(temp1," ** " L_FAULT " ** ");
+    if (encoders.validAxis2()) { f=encoders.getAxis2(); doubleToDms(temp2, f, true, true, PM_HIGH); } else strcpy(temp2," ** " L_FAULT " ** ");
     sprintf_P(temp,html_indexEncoder2,temp1,temp2);
     data.concat(temp);
   #endif
