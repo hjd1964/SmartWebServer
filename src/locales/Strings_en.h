@@ -22,7 +22,7 @@
 
 #define L_NONE "None"
 #define L_AUTO "Auto"
-#define L_SET "Set"
+#define L_SET_LABEL "Set"
 #define L_OK "Ok"
 #define L_ON "On"
 #define L_OFF "Off"

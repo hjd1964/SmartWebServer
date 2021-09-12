@@ -102,7 +102,7 @@ const char html_setFocus1[] PROGMEM =
 "&nbsp;&nbsp;&nbsp;&nbsp;<span style='border: 1px solid #551111; background-color: #181818; text-align: center; margin: 1px; padding: 0.5em 0.1em 0.5em 0.1em;'>";
 const char html_setFocus2[] PROGMEM =
 "<input id='foc_set' style='width: 6em;' value='0' type='number' min='-500000' max='500000'>&nbsp;&nbsp;"
-"<button onpointerdown=\"s('fs',document.getElementById('foc_set').value)\" type='button'>" L_SET "</button></span>";
+"<button onpointerdown=\"s('fs',document.getElementById('foc_set').value)\" type='button'>" L_SET_LABEL "</button></span>";
 const char html_controlFocus1[] PROGMEM =
 "<button class='bbh' onpointerdown=\"gf('Fh')\" title='" L_HINT_FOC_FIND_HOME "' type='button'>" ARROW_DR HOME_CH "</button>"
 "<button class='bbh' onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) gf('FH')\" title='" L_HINT_FOC_RESET_HOME "' type='button'>" CAUTION_CH HOME_CH "</button>&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -121,7 +121,7 @@ const char html_setRotate1[] PROGMEM =
 "<span style='border: 1px solid #551111; background-color: #181818; text-align: center; margin: 1px; padding: 0.5em 0.1em 0.5em 0.1em;'>";
 const char html_setRotate2[] PROGMEM =
 "<input id='rot_set' style='width: 6em;' value='0.0' type='number' min='-360' max='360' step='any'>&nbsp;&nbsp;"
-"<button onpointerdown=\"s('rs',document.getElementById('rot_set').value)\" type='button'>" L_SET "</button></span>";
+"<button onpointerdown=\"s('rs',document.getElementById('rot_set').value)\" type='button'>" L_SET_LABEL "</button></span>";
 const char html_controlRotate1[] PROGMEM =
 "<button class='bbh' style='height: 2.1em' onpointerdown=\"gf('rh')\" title='" L_HINT_ROT_FIND_HOME "' type='button'>" ARROW_DR HOME_CH "</button>"
 "<button class='bbh' style='height: 2.1em' onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) gf('rH')\" title='" L_HINT_ROT_RESET_HOME "' type='button'>" CAUTION_CH HOME_CH "</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";

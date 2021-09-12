@@ -31,7 +31,7 @@
 
 #define L_NONE "Kein"
 #define L_AUTO "Auto"
-#define L_SET "Set"
+#define L_SET_LABEL "Set"
 #define L_OK "Tun"
 #define L_ON "An"
 #define L_OFF "Aus"
