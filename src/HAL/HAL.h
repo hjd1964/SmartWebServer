@@ -60,3 +60,16 @@
 #else
   #error "Unsupported Platform! If this is a new platform, it needs the appropriate entries in the HAL directory."
 #endif
+
+// create null decoration for non-ESP processors
+#ifndef IRAM_ATTR
+  #define IRAM_ATTR
+#endif
+
+#ifndef ICACHE_RAM_ATTR
+  #define ICACHE_RAM_ATTR
+#endif
+
+#ifndef FPSTR
+  #define FPSTR
+#endif
