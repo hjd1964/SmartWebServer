@@ -39,10 +39,14 @@
 #pragma once
 #include <Arduino.h>
 
+#ifndef IRAM_ATTR
+  #define IRAM_ATTR
+#endif
+
 // default provision is for 8 tasks, up to 255 are allowed, to change use:
 // #define TASKS_MAX 200 (for example)
 #ifndef TASKS_MAX
-  #define TASKS_MAX 64
+  #define TASKS_MAX 32
 #endif
 
 // default is to allow only higher priority tasks to run during a yield()
