@@ -98,7 +98,8 @@ void handleSettings() {
   data.concat(FPSTR(html_settingsBuzzer1));
   data.concat(FPSTR(html_settingsBuzzer2));
 
-  if (mountStatus.mountType() == MT_GEM) {
+  if (mountStatus.mountType() == MT_GEM ||
+     (mountStatus.getVersionMajor() >= 10 && mountStatus.mountType() == MT_FORK)) {
     data.concat(FPSTR(html_settingsMFAuto1));
     data.concat(FPSTR(html_settingsMFAuto2));
     data.concat(FPSTR(html_settingsMFPause1));
@@ -137,7 +138,8 @@ void settingsAjax() {
   if (mountStatus.valid()) {
     data.concat("bzr_on|");  if (mountStatus.buzzerEnabled()) data.concat("disabled\n"); else data.concat("enabled\n");
     data.concat("bzr_off|"); if (mountStatus.buzzerEnabled()) data.concat("enabled\n"); else data.concat("disabled\n");
-    if (mountStatus.mountType() == MT_GEM) {
+    if (mountStatus.mountType() == MT_GEM ||
+       (mountStatus.getVersionMajor() >= 10 && mountStatus.mountType() == MT_FORK)) {
       data.concat("mfa_on|");  if (mountStatus.autoMeridianFlips()) data.concat("disabled\n"); else data.concat("enabled\n");
       data.concat("mfa_off|"); if (mountStatus.autoMeridianFlips()) data.concat("enabled\n"); else data.concat("disabled\n");
       data.concat("mfp_on|");  if (mountStatus.pauseAtHome()) data.concat("disabled\n"); else data.concat("enabled\n");
