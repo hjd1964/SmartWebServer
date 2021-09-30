@@ -468,7 +468,7 @@ void processControlGet() {
   if (!v.equals(EmptyStr)) {
     double f = v.toFloat();
     if (f >= -360.0 || f <= 360.0) {
-      char temp[20], temp1[20];
+      char temp[40], temp1[40];
       doubleToDms(temp1, f, true, true, PM_HIGH);
       sprintf(temp, ":rS%s#", temp1);
       commandBool(temp);
@@ -480,7 +480,7 @@ void processControlGet() {
   if (!v.equals(EmptyStr)) {
     int p = v.toInt();
     if (p >= -500000 || p <= 500000) {
-      char temp[20];
+      char temp[40];
       sprintf(temp, ":FS%d#", p);
       commandBool(temp);
     }
