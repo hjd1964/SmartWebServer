@@ -39,7 +39,6 @@
 #include "src/Common.h"
 NVS nv;
 #include "src/tasks/OnTask.h"
-Tasks tasks;
 #include "src/commands/Commands.h"
 #include "src/ethernetServers/EthernetServers.h"
 #include "src/wifiServers/WifiServers.h"
