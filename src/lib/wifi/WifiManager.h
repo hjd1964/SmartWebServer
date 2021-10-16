@@ -18,7 +18,7 @@
 #endif
 
 #pragma pack(1)
-#define WifiSettingsSize 228
+#define WifiSettingsSize 252
 typedef struct WifiSettings {
   char masterPassword[40];
 
