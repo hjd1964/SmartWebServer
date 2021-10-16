@@ -31,8 +31,8 @@
 
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
-#define FirmwareVersionMinor  "0"
-#define FirmwareVersionPatch  "d"
+#define FirmwareVersionMinor  "1"
+#define FirmwareVersionPatch  "a"
 
 // Use Config.h to configure the SWS to your requirements
 
@@ -68,16 +68,72 @@ void setup(void) {
     WiFi.softAPdisconnect(true);
   #endif
 
+  strcpy(firmwareVersion.str, FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch);
+
   // start debug serial port
   if (DEBUG == ON || DEBUG == VERBOSE) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
   delay(2000);
 
-  VF("MSG: SmartWebServer boot");
-  
+  VF("MSG: SmartWebServer "); VL(firmwareVersion.str);
+  VF("MSG: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
+
+  delay(2000);
+
+  // call gamepad BLE initialization
+  #if BLE_GAMEPAD == ON
+    VLF("MSG: Init BLE");
+    bleInit();
+  #endif
+
+  // call hardware specific initialization
+  VLF("MSG: Init HAL");
+  HAL_INIT();
+
+  // if requested, cause defaults to be written back into NV
+  if (NV_WIPE == ON) { nv.writeKey(0); }
+
+  // get NV ready
+  if (!nv.isKeyValid(INIT_NV_KEY)) {
+    VF("MSG: Wipe NV "); V(nv.size); VLF(" Bytes");
+    nv.wipe();
+    VLF("MSG: Wipe NV waiting for commit");
+    nv.wait();
+    VLF("MSG: NV reset to defaults");
+  } else { VLF("MSG: Correct NV key found"); }
+
+  // get the command and web timeouts
+  if (!nv.isKeyValid()) {
+    nv.write(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
+    nv.write(NV_TIMEOUT_WEB, (int16_t)webTimeout);
+  }
+  cmdTimeout = nv.readUI(NV_TIMEOUT_CMD);
+  webTimeout = nv.readUI(NV_TIMEOUT_WEB);
+
   // System services
   // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
   VF("MSG: Setup, starting system services task (rate 10ms priority 7)... ");
   if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
+
+  // read settings from NV or init. as required
+  VLF("MSG: Init Encoders");
+  encoders.init();
+
+  // bring servers up
+  #if OPERATIONAL_MODE == WIFI
+    VLF("MSG: Init WiFi");
+    wifiManager.init();
+  #else
+    VLF("MSG: Init Ethernet");
+    ethernetManager.init();
+  #endif
+  
+  // init is done, write the NV key if necessary
+  if (!nv.isKeyValid()) {
+    nv.writeKey((uint32_t)INIT_NV_KEY);
+    nv.ignoreCache(true);
+    if (nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV reset failed to read back key!"); } else { VLF("MSG: NV reset complete"); }
+    nv.ignoreCache(false);
+  }
 
   #if LED_STATUS != OFF
     pinMode(LED_STATUS_PIN, OUTPUT);
@@ -137,67 +193,11 @@ Again:
   }
   onStep.clearSerialChannel();
 
-  // we should be connected now...
-  strcpy(firmwareVersion.str, FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch);
-  VF("MSG: SmartWebServer "); VL(firmwareVersion.str);
-  VF("MSG: MCU = "); VF(MCU_STR); VF(", "); VF("Pinmap = "); VLF(PINMAP_STR);
-
-  delay(2000);
-
-  // call gamepad BLE initialization
-  #if BLE_GAMEPAD == ON
-    VLF("MSG: Init BLE");
-    bleInit();
-  #endif
-
-  // call hardware specific initialization
-  VLF("MSG: Init HAL");
-  HAL_INIT();
-
-  // if requested, cause defaults to be written back into NV
-  if (NV_WIPE == ON) { nv.writeKey(0); }
-
-  // get NV ready
-  if (!nv.isKeyValid(INIT_NV_KEY)) {
-    VF("MSG: NV invalid key reset "); V(nv.size); VLF(" Bytes");
-    nv.wipe();
-    VLF("MSG: NV wipe waiting for commit");
-    nv.wait();
-    VLF("MSG: NV reset to defaults");
-  } else { VLF("MSG: NV correct key found"); }
-
-  // get the command and web timeouts
-  if (!nv.isKeyValid()) {
-    nv.write(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
-    nv.write(NV_TIMEOUT_WEB, (int16_t)webTimeout);
-  }
-  cmdTimeout = nv.readUI(NV_TIMEOUT_CMD);
-  webTimeout = nv.readUI(NV_TIMEOUT_WEB);
-
-  // read settings from NV or init. as required
-  VLF("MSG: Init Encoders");
-  encoders.init();
-
-  // bring servers up
-  #if OPERATIONAL_MODE == WIFI
-    VLF("MSG: Init WiFi");
-    wifiManager.init();
-  #else
-    VLF("MSG: Init Ethernet");
-    ethernetManager.init();
-  #endif
-  
-  // init is done, write the NV key if necessary
-  if (!nv.isKeyValid()) {
-    nv.writeKey((uint32_t)INIT_NV_KEY);
-    if (!nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV reset failed to read back key!"); } else { VLF("MSG: NV reset complete"); }
-  }
-
   #if BLE_GAMEPAD == ON
     bleSetup();
   #endif
 
-  VLF("MSG: Setting webpage handlers");
+  VLF("MSG: Set webpage handlers");
   www.on("/index.htm", handleRoot);
   www.on("/configuration.htm", handleConfiguration);
   www.on("/configurationA.txt", configurationAjaxGet);
