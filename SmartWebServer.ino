@@ -31,7 +31,7 @@
 
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
-#define FirmwareVersionMinor  "1"
+#define FirmwareVersionMinor  "01"
 #define FirmwareVersionPatch  "a"
 
 // Use Config.h to configure the SWS to your requirements
@@ -75,7 +75,7 @@ void setup(void) {
   delay(2000);
 
   VF("MSG: SmartWebServer "); VL(firmwareVersion.str);
-  VF("MSG: MCU =  "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
+  VF("MSG: MCU = "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
   delay(2000);
 
