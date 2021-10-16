@@ -12,7 +12,7 @@
   #define AXIS2_ENC_A_PIN  7   // pin# for Axis2 encoder, for A or CW
   #define AXIS2_ENC_B_PIN  8   // pin# for Axis2 encoder, for B or CCW
 
-  #define W5500_RESET_PIN  9   // pin# for controlling the reset of W5500 so it comes up properly
+  #define ETH_RESET_PIN    9   // pin# for controlling the reset of W5500 so it comes up properly
 
   #define LED_STATUS_PIN   11  // pin 11 is the status led
 

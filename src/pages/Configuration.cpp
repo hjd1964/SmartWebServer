@@ -8,17 +8,13 @@ extern bool focuserPresent[6];
 
 bool processConfigurationGet();
 
-#if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
-void handleConfiguration(EthernetClient *client) {
-#else
 void handleConfiguration() {
-#endif
   char temp[360] = "";
   char temp1[120] = "";
   char temp2[120] = "";
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
   
   mountStatus.update();
  
@@ -81,9 +77,9 @@ void handleConfiguration() {
 
   // Longitude
   if (mountStatus.getVersionMajor() > 3) {
-    if (!command(":GgH#",temp1)) strcpy(temp1,"+000*00:00");
+    if (!onStep.command(":GgH#",temp1)) strcpy(temp1,"+000*00:00");
   } else {
-    if (!command(":Gg#",temp1)) strcpy(temp1,"+000*00");
+    if (!onStep.command(":Gg#",temp1)) strcpy(temp1,"+000*00");
   }
   temp1[10] = 0;
   temp1[4] = 0;                        // deg part only
@@ -104,9 +100,9 @@ void handleConfiguration() {
 
   // Latitude
   if (mountStatus.getVersionMajor() > 3) {
-    if (!command(":GtH#",temp1)) strcpy(temp1,"+00*00:00");
+    if (!onStep.command(":GtH#",temp1)) strcpy(temp1,"+00*00:00");
   } else {
-    if (!command(":Gt#",temp1)) strcpy(temp1,"+00*00");
+    if (!onStep.command(":Gt#",temp1)) strcpy(temp1,"+00*00");
   }
   temp1[9] = 0;
   temp1[3] = 0;                        // deg part only
@@ -125,7 +121,7 @@ void handleConfiguration() {
   sendHtml(data);
 
   // UTC Offset
-  if (!command(":GG#", temp1)) strcpy(temp1, "+00");
+  if (!onStep.command(":GG#", temp1)) strcpy(temp1, "+00");
   strcpy(temp2, temp1);
   temp2[3] = 0;                        // deg. part only
   if (temp2[0] == '+') temp2[0] = '0'; // remove +
@@ -144,11 +140,11 @@ void handleConfiguration() {
   // Overhead and Horizon Limits
   data.concat(F("<button type='button' class='collapsible'>" L_LIMITS_TITLE "</button>"));
   data.concat(FPSTR(html_configFormBegin));
-  if (!command(":Gh#",temp1)) strcpy(temp1,"0");
+  if (!onStep.command(":Gh#",temp1)) strcpy(temp1,"0");
   int minAlt = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configMinAlt, minAlt);
   data.concat(temp);
-  if (!command(":Go#",temp1)) strcpy(temp1,"0");
+  if (!onStep.command(":Go#",temp1)) strcpy(temp1,"0");
   int maxAlt = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configMaxAlt, maxAlt);
   data.concat(temp);
@@ -160,13 +156,13 @@ void handleConfiguration() {
   data.concat(F("<br /><button type='button' class='collapsible'>Axis1 RA/Azm</button>"));
   data.concat(FPSTR(html_configFormBegin));
   // Backlash
-  if (!command(":%BR#",temp1)) strcpy(temp1,"0");
+  if (!onStep.command(":%BR#",temp1)) strcpy(temp1,"0");
   int backlashAxis1 = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configBlAxis1, backlashAxis1);
   data.concat(temp);
   sendHtml(data);
   // Meridian Limits
-  if (mountStatus.mountType() == MT_GEM && (command(":GXE9#",temp1)) && (command(":GXEA#",temp2))) {
+  if (mountStatus.mountType() == MT_GEM && (onStep.command(":GXE9#",temp1)) && (onStep.command(":GXEA#",temp2))) {
     int degPastMerE = (int)strtol(&temp1[0], NULL, 10);
     degPastMerE = round((degPastMerE*15.0)/60.0);
     sprintf_P(temp, html_configPastMerE, degPastMerE);
@@ -185,7 +181,7 @@ void handleConfiguration() {
   data.concat(F("<button type='button' class='collapsible'>Axis2 Dec/Alt</button>"));
   data.concat(FPSTR(html_configFormBegin));
   // Backlash
-  if (!command(":%BD#", temp1)) strcpy(temp1, "0");
+  if (!onStep.command(":%BD#", temp1)) strcpy(temp1, "0");
   int backlashAxis2 = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configBlAxis2, backlashAxis2);
   data.concat(temp);
@@ -199,7 +195,7 @@ void handleConfiguration() {
     int i = 0;
     static int rotatorPresent = -1;
     if (rotatorPresent == -1) {
-      command(":rT#",temp1);
+      onStep.command(":rT#",temp1);
       if (temp1[0] == '0') rotatorPresent = false; else rotatorPresent = true;
     }
 
@@ -207,7 +203,7 @@ void handleConfiguration() {
       data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
       data.concat(FPSTR(html_configFormBegin));
       // Backlash
-      if (!command(":rb#", temp1)) strcpy(temp1, "0");
+      if (!onStep.command(":rb#", temp1)) strcpy(temp1, "0");
       i = (int)strtol(&temp1[0], NULL, 10);
       sprintf_P(temp, html_configBlAxis3, i);
       data.concat(temp);
@@ -220,15 +216,15 @@ void handleConfiguration() {
     focuserCount = 0;
     for (int i = 0; i < 6; i++) focuserPresent[i] = false;
     if (mountStatus.getVersionMajor() >= 10) {
-      if (commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
-      if (commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
-      if (commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
-      if (commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
-      if (commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
-      if (commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
+      if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
+      if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
+      if (onStep.commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
+      if (onStep.commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
+      if (onStep.commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
+      if (onStep.commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
     } else {
-      if (commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
-      if (commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
+      if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
+      if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
     }
 
     for (int focuser = 0; focuser < 6; focuser++) {
@@ -237,21 +233,21 @@ void handleConfiguration() {
         data.concat(temp);
         data.concat(FPSTR(html_configFormBegin));
         // Backlash
-        if (!command(":Fb#",temp1)) strcpy(temp1,"0");
+        if (!onStep.command(":Fb#",temp1)) strcpy(temp1,"0");
         i = (int)strtol(&temp1[0], NULL, 10);
         sprintf_P(temp, html_configBacklash, i, focuser + 4);
         data.concat(temp);
         // TCF Enable
-        sprintf_P(temp, html_configTcfEnable, (int)commandBool(":Fc#"), focuser + 4);
+        sprintf_P(temp, html_configTcfEnable, (int)onStep.commandBool(":Fc#"), focuser + 4);
         data.concat(temp);
         // TCF Deadband
-        if (!command(":Fd#",temp1)) strcpy(temp1,"0");
+        if (!onStep.command(":Fd#",temp1)) strcpy(temp1,"0");
         i = (int)strtol(&temp1[0], NULL, 10);
         sprintf_P(temp,html_configDeadband, i, focuser + 4);
         data.concat(temp);
         sendHtml(data);
         // TCF Coef
-        if (!command(":FC#",temp1)) strcpy(temp1,"0");
+        if (!onStep.command(":FC#",temp1)) strcpy(temp1,"0");
         char *conv_end;
         double f = strtod(temp1,&conv_end);
         if (&temp1[0] == conv_end) f = 0.0;
@@ -272,7 +268,7 @@ void handleConfiguration() {
     // Mount type
     int mt = 0;
     if (mountStatus.getVersionMajor() >= 5) {
-      if (!command(":GXEM#",temp1)) strcpy(temp1,"0");
+      if (!onStep.command(":GXEM#",temp1)) strcpy(temp1,"0");
       mt = atoi(temp1);
     }
     if ((mt >= 1 && mt <= 3) || DRIVE_CONFIGURATION == ON) data.concat(FPSTR(html_configAdvanced));
@@ -291,12 +287,12 @@ void handleConfiguration() {
       AxisSettings a;
 
       // Axis1 RA/Azm
-      if (!command(":GXA1#", temp1)) strcpy(temp1,"0");
+      if (!onStep.command(":GXA1#", temp1)) strcpy(temp1,"0");
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis1 RA/Azm</button>"));
         data.concat(FPSTR(html_configFormBegin));
         if (validateAxisSettings(1, mountStatus.mountType() == MT_ALTAZM, a)) {
-          if (!command(":GXE7#", temp1)) strcpy(temp1, "0");
+          if (!onStep.command(":GXE7#", temp1)) strcpy(temp1, "0");
           long spwr = strtol(temp1, NULL, 10);
           sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L);
           data.concat(temp);
@@ -336,7 +332,7 @@ void handleConfiguration() {
       }
 
       // Axis2 Dec/Alt
-      if (!command(":GXA2#",temp1)) strcpy(temp1,"0");
+      if (!onStep.command(":GXA2#",temp1)) strcpy(temp1,"0");
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis2 Dec/Alt</button>"));
         data.concat(FPSTR(html_configFormBegin));
@@ -377,7 +373,7 @@ void handleConfiguration() {
       }
 
       // Axis3 Rotator
-      if (!command(":GXA3#",temp1)) strcpy(temp1,"0");
+      if (!onStep.command(":GXA3#",temp1)) strcpy(temp1,"0");
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
         data.concat(FPSTR(html_configFormBegin));
@@ -415,7 +411,7 @@ void handleConfiguration() {
       for (int focuser = 0; focuser < 6; focuser++) {
         if (focuserPresent[focuser]) {
           sprintf(temp2, ":GXA%d#", focuser + 4);
-          if (!command(temp2, temp1)) strcpy(temp1, "0");
+          if (!onStep.command(temp2, temp1)) strcpy(temp1, "0");
           if (decodeAxisSettings(temp1, &a)) {
             sprintf_P(temp, html_configFocuser, focuser + 4, focuser + 1);
             data.concat(temp);
@@ -484,16 +480,12 @@ void handleConfiguration() {
   sendHtmlDone(data);
 }
 
-#if OPERATIONAL_MODE != WIFI
-void configurationAjaxGet(EthernetClient *client) {
-#else
 void configurationAjaxGet() {
-#endif
   processConfigurationGet();
   #if OPERATIONAL_MODE != WIFI
-    client->print("");
+    www.sendContent("");
   #else
-    server.send(200, "text/html","");
+    www.send(200, "text/html", "");
   #endif
 }
 
@@ -502,189 +494,208 @@ bool processConfigurationGet() {
   char temp[80] = "";
 
   // Overhead limit
-  v=server.arg("ol");
+  v = www.arg("ol");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 60 && v.toInt() <= 90) { 
       sprintf(temp, ":So%d#", (int16_t)v.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
   // Horizon limit
-  v=server.arg("hl");
+  v = www.arg("hl");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= -30 && v.toInt() <= 30) { 
       sprintf(temp, ":Sh%d#", (int16_t)v.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
   // Meridian limit E
-  v=server.arg("el");
+  v = www.arg("el");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= -270 && v.toInt() <= 270) { 
       sprintf(temp, ":SXE9,%d#", (int16_t)round((v.toInt()*60.0)/15.0));
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
   // Meridian limit W
-  v=server.arg("wl");
+  v = www.arg("wl");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= -270 && v.toInt() <= 270) { 
       sprintf(temp, ":SXEA,%d#", (int16_t)round((v.toInt()*60.0)/15.0));
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
   // Backlash
-  v=server.arg("b1");
+  v = www.arg("b1");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 3600) { 
       sprintf(temp, ":$BR%d#", (int16_t)v.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("b2");
+  v = www.arg("b2");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 3600) { 
       sprintf(temp, ":$BD%d#", (int16_t)v.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("b3");
+  v = www.arg("b3");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
       sprintf(temp, ":rb%d#", (int16_t)v.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("b4");
+  v = www.arg("b4");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
       sprintf(temp, ":Fb%d#", (int16_t)v.toInt());
-      commandBool(":FA1#"); commandBool(temp);
+      onStep.commandBool(":FA1#");
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("b5");
+  v = www.arg("b5");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
       sprintf(temp, ":fb%d#", (int16_t)v.toInt());
-      commandBool(":FA1#"); commandBool(temp);
+      onStep.commandBool(":FA1#");
+      onStep.commandBool(temp);
     }
   }
 
   // TCF deadband
-  v=server.arg("d4");
+  v = www.arg("d4");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 1 && v.toInt() <= 32767) { 
       sprintf(temp, ":Fd%d#", (int16_t)v.toInt());
-      commandBool(":FA1#"); commandBool(temp);
+      onStep.commandBool(":FA1#");
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("d5");
+  v = www.arg("d5");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 1 && v.toInt() <= 32767) { 
       sprintf(temp, ":fd%d#", (int16_t)v.toInt());
-      commandBool(":FA1#"); commandBool(temp);
+      onStep.commandBool(":FA1#");
+      onStep.commandBool(temp);
     }
   }
 
   // TCF Coef
-  v=server.arg("tc4");
+  v = www.arg("tc4");
   if (!v.equals(EmptyStr)) {
     if (v.toFloat() >= -999.0 && v.toFloat() <= 999.0) { 
       sprintf(temp, ":FC%s#", v.c_str());
-      commandBool(":FA1#"); commandBool(temp);
+      onStep.commandBool(":FA1#");
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("tc5");
+  v = www.arg("tc5");
   if (!v.equals(EmptyStr)) {
     if (v.toFloat() >= -999.0 && v.toFloat() <= 999.0) { 
       sprintf(temp, ":fC%s#", v.c_str());
-      commandBool(":FA1#"); commandBool(temp);
+      onStep.commandBool(":FA1#");
+      onStep.commandBool(temp);
     }
   }
 
   // TCF Enable
-  v=server.arg("en4");
+  v = www.arg("en4");
   if (v.equals("0") || v.equals("1")) {
     sprintf(temp, ":Fc%s#", v.c_str());
-    commandBool(":FA1#"); commandBool(temp);
+    onStep.commandBool(":FA1#");
+    onStep.commandBool(temp);
   }
-  v=server.arg("en5");
+  v = www.arg("en5");
   if (v.equals("0") || v.equals("1")) {
     sprintf(temp, ":fc%s#", v.c_str());
-    commandBool(":FA1#"); commandBool(temp);
+    onStep.commandBool(":FA1#");
+    onStep.commandBool(temp);
   }
 
   // Location
-  v = server.arg("g1");  // long deg
-  v1 = server.arg("g2"); // long min
-  if (mountStatus.getVersionMajor() > 3) v2 = server.arg("g3"); else v2 = "0"; // long sec
+  v = www.arg("g1");  // long deg
+  v1 = www.arg("g2"); // long min
+  if (mountStatus.getVersionMajor() > 3) v2 = www.arg("g3"); else v2 = "0"; // long sec
   if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
     if (v.toInt() >= -180 && v.toInt() <= 180 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
       if (mountStatus.getVersionMajor() > 3)
         sprintf(temp,":Sg%+04d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
       else
         sprintf(temp,":Sg%+04d*%02d#", (int16_t)v.toInt(), (int16_t)v1.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
-  v = server.arg("t1");  // lat deg
-  v1 = server.arg("t2"); // lat min
-  if (mountStatus.getVersionMajor() > 3) v2 = server.arg("t3"); else v2 = "0"; // lat sec
+  v = www.arg("t1");  // lat deg
+  v1 = www.arg("t2"); // lat min
+  if (mountStatus.getVersionMajor() > 3) v2 = www.arg("t3"); else v2 = "0"; // lat sec
   if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
     if (v.toInt() >= -90 && v.toInt() <= 90 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
       sprintf(temp,":St%+03d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
-  v = server.arg("u1");  // UT hrs
-  v1 = server.arg("u2"); // UT min
+  v = www.arg("u1");  // UT hrs
+  v1 = www.arg("u2"); // UT min
   if (!v.equals(EmptyStr) && !v1.equals(EmptyStr)) {
     if (v.toInt() >= -14 && v.toInt() <= 12 && (v1.toInt() == 0 || v1.toInt() == 30 || v1.toInt() == 45)) {
       sprintf(temp, ":SG%+03d:%02d#", (int16_t)v.toInt(), (int16_t)v1.toInt());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
-  String ssa=server.arg("advanced");
+  String ssa=www.arg("advanced");
   #if DISPLAY_RESET_CONTROLS != OFF
-    if (ssa.equals("reset")) { commandBlind(":ERESET#"); return false; }
+    if (ssa.equals("reset")) { onStep.commandBlind(":ERESET#"); return false; }
     #ifdef BOOT0_PIN
-      if (ssa.equals("fwu")) { pinMode(BOOT0_PIN,OUTPUT); digitalWrite(BOOT0_PIN,HIGH); commandBlind(":ERESET#"); delay(500); pinMode(BOOT0_PIN,INPUT); return false; }
+      if (ssa.equals("fwu")) {
+        pinMode(BOOT0_PIN,OUTPUT);
+        digitalWrite(BOOT0_PIN,HIGH);
+        onStep.commandBlind(":ERESET#");
+        delay(500);
+        pinMode(BOOT0_PIN,INPUT);
+        return false;
+      }
     #endif
   #endif
-  String ssm=server.arg("mountt"); if (!ssm.equals(EmptyStr)) { sprintf(temp,":SXEM,%s#",ssm.c_str()); commandBool(temp); }
+  String ssm = www.arg("mountt");
+  if (!ssm.equals(EmptyStr)) {
+    sprintf(temp,":SXEM,%s#",ssm.c_str());
+    onStep.commandBool(temp);
+  }
 
   #if DRIVE_CONFIGURATION == ON
     // Axis settings
-    if (ssa.equals("enable")) { commandBool(":SXAC,0#"); return true; }
-    if (ssa.equals("disable")) { commandBool(":SXAC,1#"); return true; }
+    if (ssa.equals("enable")) { onStep.commandBool(":SXAC,0#"); return true; }
+    if (ssa.equals("disable")) { onStep.commandBool(":SXAC,1#"); return true; }
 
-    String ssr=server.arg("revert");
+    String ssr=www.arg("revert");
     if (!ssr.equals(EmptyStr)) {
       int axis=ssr.toInt();
-      if (axis > 0 && axis < 5) { sprintf(temp,":SXA%d,R#",axis); commandBool(temp); }
-      if (axis == 0) { strcpy(temp,":SXEM,0#"); commandBool(temp); }
+      if (axis > 0 && axis < 5) { sprintf(temp,":SXA%d,R#",axis); onStep.commandBool(temp); }
+      if (axis == 0) { strcpy(temp,":SXEM,0#"); onStep.commandBool(temp); }
       return true;
     }
 
     int axis = 0;
     String ss1,ss2,ss3,ss4,ss5,s1,s2,s3,s4,s5,s6;
-    ss1=server.arg("a1spd");
-    ss2=server.arg("a2spd");
-    ss3=server.arg("a3spd");
-    ss4=server.arg("a4spu");
-    ss5=server.arg("a5spu");
-    if (!ss1.equals(EmptyStr)) { axis=1; s1=server.arg("a1spd"); s2=server.arg("a1ustp"); s3=server.arg("a1I"); s4=server.arg("a1rev"); s5=server.arg("a1min"); s6=server.arg("a1max"); } else
-    if (!ss2.equals(EmptyStr)) { axis=2; s1=server.arg("a2spd"); s2=server.arg("a2ustp"); s3=server.arg("a2I"); s4=server.arg("a2rev"); s5=server.arg("a2min"); s6=server.arg("a2max"); } else
-    if (!ss3.equals(EmptyStr)) { axis=3; s1=server.arg("a3spd"); s2=server.arg("a3ustp"); s3=server.arg("a3I"); s4=server.arg("a3rev"); s5=server.arg("a3min"); s6=server.arg("a3max"); } else
-    if (!ss4.equals(EmptyStr)) { axis=4; s1=server.arg("a4spu"); s2=server.arg("a4ustp"); s3=server.arg("a4I"); s4=server.arg("a4rev"); s5=server.arg("a4min"); s6=server.arg("a4max"); } else
-    if (!ss5.equals(EmptyStr)) { axis=5; s1=server.arg("a5spu"); s2=server.arg("a5ustp"); s3=server.arg("a5I"); s4=server.arg("a5rev"); s5=server.arg("a5min"); s6=server.arg("a5max"); }
+    ss1=www.arg("a1spd");
+    ss2=www.arg("a2spd");
+    ss3=www.arg("a3spd");
+    ss4=www.arg("a4spu");
+    ss5=www.arg("a5spu");
+    if (!ss1.equals(EmptyStr)) { axis=1; s1=www.arg("a1spd"); s2=www.arg("a1ustp"); s3=www.arg("a1I"); s4=www.arg("a1rev"); s5=www.arg("a1min"); s6=www.arg("a1max"); } else
+    if (!ss2.equals(EmptyStr)) { axis=2; s1=www.arg("a2spd"); s2=www.arg("a2ustp"); s3=www.arg("a2I"); s4=www.arg("a2rev"); s5=www.arg("a2min"); s6=www.arg("a2max"); } else
+    if (!ss3.equals(EmptyStr)) { axis=3; s1=www.arg("a3spd"); s2=www.arg("a3ustp"); s3=www.arg("a3I"); s4=www.arg("a3rev"); s5=www.arg("a3min"); s6=www.arg("a3max"); } else
+    if (!ss4.equals(EmptyStr)) { axis=4; s1=www.arg("a4spu"); s2=www.arg("a4ustp"); s3=www.arg("a4I"); s4=www.arg("a4rev"); s5=www.arg("a4min"); s6=www.arg("a4max"); } else
+    if (!ss5.equals(EmptyStr)) { axis=5; s1=www.arg("a5spu"); s2=www.arg("a5ustp"); s3=www.arg("a5I"); s4=www.arg("a5rev"); s5=www.arg("a5min"); s6=www.arg("a5max"); }
 
     if (axis > 0 && axis < 6) {
       if (s2.equals(EmptyStr)) s2 = "-1";
@@ -695,9 +706,9 @@ bool processConfigurationGet() {
       if (s4.equals("0")) s4 = "-1"; else if (s4.equals("1")) s4 = "-2";
       v=s1+","+s2+","+s3+","+s4+","+s5+","+s6;
       sprintf(temp,":SXA%d,%s#",axis,v.c_str());
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
-    ss1=server.arg("a1spwr"); if (!ss1.equals(EmptyStr)) { sprintf(temp,":SXE7,%s#",ss1.c_str()); commandBool(temp); }
+    ss1=www.arg("a1spwr"); if (!ss1.equals(EmptyStr)) { sprintf(temp,":SXE7,%s#",ss1.c_str()); onStep.commandBool(temp); }
   #endif
 
   return true;

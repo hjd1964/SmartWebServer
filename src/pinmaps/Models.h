@@ -3,7 +3,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include "../status/Version.h"
 #include "../Constants.h"
 #include "../../Config.h"
 #include "../../Extended.config.h"

@@ -5,15 +5,11 @@
 
 void processPecGet();
 
-#if OPERATIONAL_MODE != WIFI
-void handlePec(EthernetClient *client) {
-#else
 void handlePec() {
-#endif
   char temp[120] = "";
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
       
   mountStatus.update();
 
@@ -92,16 +88,12 @@ void handlePec() {
   sendHtmlDone(data);
 }
 
-#if OPERATIONAL_MODE != WIFI
-void pecAjax(EthernetClient *client) {
-#else
 void pecAjax() {
-#endif
   String data="";
   char temp[80]="";
   
   data.concat("status|");
-  if ((mountStatus.mountType() != MT_ALTAZM) && (mountStatus.update()) && (command(":$QZ?#",temp))) {
+  if ((mountStatus.mountType() != MT_ALTAZM) && (mountStatus.update()) && (onStep.command(":$QZ?#",temp))) {
     if (temp[0] == 'I') data.concat(L_PEC_IDLE); else
     if (temp[0] == 'p') data.concat(L_PEC_WAIT_PLAY); else
     if (temp[0] == 'P') data.concat(L_PEC_PLAYING); else
@@ -112,9 +104,9 @@ void pecAjax() {
   data.concat("\n");
 
 #if OPERATIONAL_MODE != WIFI
-  client->print(data);
+  sendHtmlDone(data);
 #else
-  server.send(200, "text/plain",data);
+  www.send(200, "text/plain",data);
 #endif
 }
 
@@ -122,12 +114,12 @@ void processPecGet() {
   String v;
 
   // PEC control
-  v = server.arg("pe");
+  v = www.arg("pe");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("pl")) commandBlind(":$QZ+#"); // play
-    if (v.equals("st")) commandBlind(":$QZ-#"); // stop
-    if (v.equals("re")) commandBlind(":$QZ/#"); // record
-    if (v.equals("cl")) commandBlind(":$QZZ#"); // clear
-    if (v.equals("wr")) commandBlind(":$QZ!#"); // write to eeprom
+    if (v.equals("pl")) onStep.commandBlind(":$QZ+#"); // play
+    if (v.equals("st")) onStep.commandBlind(":$QZ-#"); // stop
+    if (v.equals("re")) onStep.commandBlind(":$QZ/#"); // record
+    if (v.equals("cl")) onStep.commandBlind(":$QZZ#"); // clear
+    if (v.equals("wr")) onStep.commandBlind(":$QZ!#"); // write to eeprom
   }
 }

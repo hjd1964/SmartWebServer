@@ -3,6 +3,8 @@
 
 #include "Control.h"
 
+#include "../lib/convert/Convert.h"
+
 void processControlGet();
 
 int focuserCount = 0;
@@ -10,15 +12,11 @@ bool focuserPresent[6];
 bool rotator;
 bool deRotator;
 
-#if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
-void handleControl(EthernetClient *client) {
-#else
 void handleControl() {
-#endif
   char temp[240] = "";
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
 
   mountStatus.update(true);
 
@@ -137,15 +135,15 @@ void handleControl() {
   focuserCount = 0;
   for (int i = 0; i < 6; i++) focuserPresent[i] = false;
   if (mountStatus.getVersionMajor() >= 10) {
-    if (commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
-    if (commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
-    if (commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
-    if (commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
-    if (commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
-    if (commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
+    if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
+    if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
+    if (onStep.commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
+    if (onStep.commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
+    if (onStep.commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
+    if (onStep.commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
   } else {
-    if (commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
-    if (commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
+    if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
+    if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
   }
   if (focuserCount > 0) {
     data.concat(FPSTR(html_controlFocusBeg));
@@ -171,7 +169,7 @@ void handleControl() {
   // Rotate/De-Rotate ----------------------------------------
   rotator = false;
   deRotator = false;
-  if (command(":GX98#", temp)) {
+  if (onStep.command(":GX98#", temp)) {
     if (temp[0] == 'R') rotator = true;
     if (temp[0] == 'D') { rotator = true; deRotator = true; }
   }
@@ -205,24 +203,16 @@ void handleControl() {
   sendHtmlDone(data);
 }
 
-#if OPERATIONAL_MODE != WIFI
-void controlAjaxGet(EthernetClient *client) {
-#else
 void controlAjaxGet() {
-#endif
   processControlGet();
-#if OPERATIONAL_MODE != WIFI
-  client->print("");
-#else
-  server.send(200, "text/html","");
-#endif
+  #if OPERATIONAL_MODE != WIFI
+    www.sendContent("");
+  #else
+    www.send(200, "text/html", "");
+  #endif
 }
 
-#if OPERATIONAL_MODE != WIFI
-void controlAjax(EthernetClient *client) {
-#else
 void controlAjax() {
-#endif
   String data = "";
   char temp[120] = "";
 
@@ -289,10 +279,10 @@ void controlAjax() {
 
   if (focuserCount > 0) {
     data.concat("focuserpos|");
-    if (command(":FG#",temp)) { data.concat(temp); data.concat(" microns\n"); } else { data.concat("?\n"); }
+    if (onStep.command(":FG#",temp)) { data.concat(temp); data.concat(" microns\n"); } else { data.concat("?\n"); }
 
     if (mountStatus.getVersionMajor() >= 10) {
-      if (command(":FA#",temp)) {
+      if (onStep.command(":FA#",temp)) {
         if (temp[0] == '1' && temp[1] == 0) data.concat("foc1_sel|disabled\n"); else data.concat("foc1_sel|enabled\n");
         if (temp[0] == '2' && temp[1] == 0) data.concat("foc2_sel|disabled\n"); else data.concat("foc2_sel|enabled\n");
         if (temp[0] == '3' && temp[1] == 0) data.concat("foc3_sel|disabled\n"); else data.concat("foc3_sel|enabled\n");
@@ -308,13 +298,13 @@ void controlAjax() {
 
   if (rotator) {
     data.concat("rotatorpos|");
-    if (command(":rG#",temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
+    if (onStep.command(":rG#",temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
   }
 
 #if OPERATIONAL_MODE != WIFI
-  client->print(data);
+  sendHtmlDone(data);
 #else
-  server.send(200, "text/plain",data);
+  www.send(200, "text/plain",data);
 #endif
 }
 
@@ -327,169 +317,169 @@ int get_temp_second;
 
 void processControlGet() {
   String v;
-  int i;
+  int16_t i;
 
   // Quick bar
-  v=server.arg("qb");
+  v = www.arg("qb");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("q")) commandBlind(":Q#");       // stop goto/guide
-    if (v.equals("co")) commandBool(":SX99,1#");  // meridian flip, pause->continue
-    if (v.equals("hf")) commandBlind(":hF#");     // home, reset
-    if (v.equals("hc")) commandBlind(":hC#");     // home, find
-    if (v.equals("pk")) commandBool(":hP#");      // park
-    if (v.equals("pu")) commandBool(":hR#");      // un-park
+    if (v.equals("q")) onStep.commandBlind(":Q#");       // stop goto/guide
+    if (v.equals("co")) onStep.commandBool(":SX99,1#");  // meridian flip, pause->continue
+    if (v.equals("hf")) onStep.commandBlind(":hF#");     // home, reset
+    if (v.equals("hc")) onStep.commandBlind(":hC#");     // home, find
+    if (v.equals("pk")) onStep.commandBool(":hP#");      // park
+    if (v.equals("pu")) onStep.commandBool(":hR#");      // un-park
   }
 
   // Align
-  v=server.arg("al");
+  v = www.arg("al");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("1")) commandBool(":A1#");
-    if (v.equals("2")) commandBool(":A2#");
-    if (v.equals("3")) commandBool(":A3#");
-    if (v.equals("4")) commandBool(":A4#");
-    if (v.equals("5")) commandBool(":A5#");
-    if (v.equals("6")) commandBool(":A6#");
-    if (v.equals("7")) commandBool(":A7#");
-    if (v.equals("8")) commandBool(":A8#");
-    if (v.equals("9")) commandBool(":A9#");
-    if (v.equals("n")) commandBool(":A+#");
-    if (v.equals("q")) commandBlind(":Q#");
+    if (v.equals("1")) onStep.commandBool(":A1#");
+    if (v.equals("2")) onStep.commandBool(":A2#");
+    if (v.equals("3")) onStep.commandBool(":A3#");
+    if (v.equals("4")) onStep.commandBool(":A4#");
+    if (v.equals("5")) onStep.commandBool(":A5#");
+    if (v.equals("6")) onStep.commandBool(":A6#");
+    if (v.equals("7")) onStep.commandBool(":A7#");
+    if (v.equals("8")) onStep.commandBool(":A8#");
+    if (v.equals("9")) onStep.commandBool(":A9#");
+    if (v.equals("n")) onStep.commandBool(":A+#");
+    if (v.equals("q")) onStep.commandBlind(":Q#");
   }
 
   // Set DATE/TIME
-  v=server.arg("dm");
+  v = www.arg("dm");
   if (!v.equals(EmptyStr)) {
-    if ( (atoi2((char *)v.c_str(),&i)) && ((i>=0) && (i<=11))) { get_temp_month=i+1; }
+    if (convert.atoi2((char *)v.c_str(), &i) && (i >= 0 && i <= 11)) get_temp_month = i + 1;
   }
-  v=server.arg("dd");
+  v = www.arg("dd");
   if (!v.equals(EmptyStr)) {
-    if ( (atoi2((char *)v.c_str(),&i)) && ((i>=1) && (i<=31))) { get_temp_day=i; }
+    if (convert.atoi2((char *)v.c_str(), &i) && (i >= 1 && i <= 31)) get_temp_day = i;
   }
-  v=server.arg("dy");
+  v = www.arg("dy");
   if (!v.equals(EmptyStr)) {
-    if ( (atoi2((char *)v.c_str(),&i)) && ((i>=2016) && (i<=9999))) {
-      get_temp_year=i-2000;
+    if ( (convert.atoi2((char *)v.c_str(), &i)) && (i >= 2016 && i <= 9999)) {
+      get_temp_year = i - 2000;
       char temp[16];
-      sprintf(temp,":SC%02d/%02d/%02d#",get_temp_month,get_temp_day,get_temp_year);
-      commandBool(temp);
+      sprintf(temp, ":SC%02d/%02d/%02d#", get_temp_month, get_temp_day, get_temp_year);
+      onStep.commandBool(temp);
     }
   }
-  v=server.arg("th");
+  v = www.arg("th");
   if (!v.equals(EmptyStr)) {
-    if ( (atoi2((char *)v.c_str(),&i)) && ((i>=0) && (i<=23))) { get_temp_hour=i; }
+    if (convert.atoi2((char *)v.c_str(), &i) && (i >= 0 && i <= 23)) get_temp_hour = i;
   }
-  v=server.arg("tm");
+  v = www.arg("tm");
   if (!v.equals(EmptyStr)) {
-    if ( (atoi2((char *)v.c_str(),&i)) && ((i>=0) && (i<=59))) { get_temp_minute=i; }
+    if (convert.atoi2((char *)v.c_str(), &i) && (i >= 0 && i <= 59)) get_temp_minute = i;
   }
-  v=server.arg("ts");
+  v = www.arg("ts");
   if (!v.equals(EmptyStr)) {
-    if ( (atoi2((char *)v.c_str(),&i)) && ((i>=0) && (i<=59))) {
-      get_temp_second=i;
-      char temp[16];
-      sprintf(temp,":SL%02d:%02d:%02d#",get_temp_hour,get_temp_minute,get_temp_second);
-      commandBool(temp);
+    if (convert.atoi2((char *)v.c_str(), &i) && (i >= 0 && i <= 59)) {
+      get_temp_second = i;
+      char temp[20];
+      sprintf(temp, ":SL%02d:%02d:%02d#", get_temp_hour, get_temp_minute, get_temp_second);
+      onStep.commandBool(temp);
     }
   }
 
-  v=server.arg("dr");
+  v = www.arg("dr");
   if (!v.equals(EmptyStr)) {
     // Tracking control
-    if (v.equals("T1")) commandBool(":Te#");     // enable tracking
-    if (v.equals("T0")) commandBool(":Td#");     // disable tracking
-    if (v.equals("Ts")) commandBlind(":TQ#");    // sidereal
-    if (v.equals("Tl")) commandBlind(":TL#");    // lunar
-    if (v.equals("Th")) commandBlind(":TS#");    // solar
+    if (v.equals("T1")) onStep.commandBool(":Te#");     // enable tracking
+    if (v.equals("T0")) onStep.commandBool(":Td#");     // disable tracking
+    if (v.equals("Ts")) onStep.commandBlind(":TQ#");    // sidereal
+    if (v.equals("Tl")) onStep.commandBlind(":TL#");    // lunar
+    if (v.equals("Th")) onStep.commandBlind(":TS#");    // solar
 
     // quick
-    if (v.equals("qq")) commandBlind(":Q#");     // stop goto/guide
-    if (v.equals("qc")) commandBool(":SX99,1#"); // meridian flip, pause->continue
-    if (v.equals("qr")) commandBlind(":hF#");    // home, reset
-    if (v.equals("qh")) commandBlind(":hC#");    // home, find
-    if (v.equals("pk")) commandBool(":hP#");     // park
-    if (v.equals("pu")) commandBool(":hR#");     // un-park
+    if (v.equals("qq")) onStep.commandBlind(":Q#");     // stop goto/guide
+    if (v.equals("qc")) onStep.commandBool(":SX99,1#"); // meridian flip, pause->continue
+    if (v.equals("qr")) onStep.commandBlind(":hF#");    // home, reset
+    if (v.equals("qh")) onStep.commandBlind(":hC#");    // home, find
+    if (v.equals("pk")) onStep.commandBool(":hP#");     // park
+    if (v.equals("pu")) onStep.commandBool(":hR#");     // un-park
 
     // GUIDE control direction
-    if (v.equals("n1")) commandBlind(":Mn#");    // move n... s,e,w
-    if (v.equals("s1")) commandBlind(":Ms#");
-    if (v.equals("e1")) commandBlind(":Me#");
-    if (v.equals("w1")) commandBlind(":Mw#");
+    if (v.equals("n1")) onStep.commandBlind(":Mn#");    // move n... s,e,w
+    if (v.equals("s1")) onStep.commandBlind(":Ms#");
+    if (v.equals("e1")) onStep.commandBlind(":Me#");
+    if (v.equals("w1")) onStep.commandBlind(":Mw#");
 
-    if (v.equals("n0")) commandBlind(":Qn#");    // quit n... s,e,w
-    if (v.equals("s0")) commandBlind(":Qs#");
-    if (v.equals("e0")) commandBlind(":Qe#");
-    if (v.equals("w0")) commandBlind(":Qw#");
+    if (v.equals("n0")) onStep.commandBlind(":Qn#");    // quit n... s,e,w
+    if (v.equals("s0")) onStep.commandBlind(":Qs#");
+    if (v.equals("e0")) onStep.commandBlind(":Qe#");
+    if (v.equals("w0")) onStep.commandBlind(":Qw#");
 
-    if (v.equals("sy")) commandBool(":CS#");     // sync
+    if (v.equals("sy")) onStep.commandBool(":CS#");     // sync
 
     // GUIDE control rate
-    if (v.equals("R0")) commandBlind(":R0#");    // guide rate 0..9
-    if (v.equals("R1")) commandBlind(":R1#");
-    if (v.equals("R2")) commandBlind(":R2#");
-    if (v.equals("R3")) commandBlind(":R3#");
-    if (v.equals("R4")) commandBlind(":R4#");
-    if (v.equals("R5")) commandBlind(":R5#");
-    if (v.equals("R6")) commandBlind(":R6#");
-    if (v.equals("R7")) commandBlind(":R7#");
-    if (v.equals("R8")) commandBlind(":R8#");
-    if (v.equals("R9")) commandBlind(":R9#");
+    if (v.equals("R0")) onStep.commandBlind(":R0#");    // guide rate 0..9
+    if (v.equals("R1")) onStep.commandBlind(":R1#");
+    if (v.equals("R2")) onStep.commandBlind(":R2#");
+    if (v.equals("R3")) onStep.commandBlind(":R3#");
+    if (v.equals("R4")) onStep.commandBlind(":R4#");
+    if (v.equals("R5")) onStep.commandBlind(":R5#");
+    if (v.equals("R6")) onStep.commandBlind(":R6#");
+    if (v.equals("R7")) onStep.commandBlind(":R7#");
+    if (v.equals("R8")) onStep.commandBlind(":R8#");
+    if (v.equals("R9")) onStep.commandBlind(":R9#");
 
     // Rotate/De-Rotate
-    if (v.equals("rB")) commandBlind(":r3#:rc#:r<#"); // rate 3, move ccw
-    if (v.equals("rr")) commandBlind(":r1#:rc#:r<#"); // rate 1, move ccw
-    if (v.equals("rf")) commandBlind(":r1#:rc#:r>#"); // rate 1, move cw
-    if (v.equals("rF")) commandBlind(":r3#:rc#:r>#"); // rate 3, move cw
-    if (v.equals("rH")) commandBlind(":rF#");         // reset rotator at home
-    if (v.equals("rh")) commandBlind(":rC#");         // move rotator to home
-    if (v.equals("r0")) commandBlind(":r-#");         // disable de-rotator
-    if (v.equals("r1")) commandBlind(":r+#");         // enable de-rotator
-    if (v.equals("rR")) commandBlind(":rR#");         // reverse rotator
-    if (v.equals("rp")) commandBlind(":rP#");         // move rotator to parallactic angle
-    if (v.equals("rq")) commandBlind(":rQ#");
+    if (v.equals("rB")) onStep.commandBlind(":r3#:rc#:r<#"); // rate 3, move ccw
+    if (v.equals("rr")) onStep.commandBlind(":r1#:rc#:r<#"); // rate 1, move ccw
+    if (v.equals("rf")) onStep.commandBlind(":r1#:rc#:r>#"); // rate 1, move cw
+    if (v.equals("rF")) onStep.commandBlind(":r3#:rc#:r>#"); // rate 3, move cw
+    if (v.equals("rH")) onStep.commandBlind(":rF#");         // reset rotator at home
+    if (v.equals("rh")) onStep.commandBlind(":rC#");         // move rotator to home
+    if (v.equals("r0")) onStep.commandBlind(":r-#");         // disable de-rotator
+    if (v.equals("r1")) onStep.commandBlind(":r+#");         // enable de-rotator
+    if (v.equals("rR")) onStep.commandBlind(":rR#");         // reverse rotator
+    if (v.equals("rp")) onStep.commandBlind(":rP#");         // move rotator to parallactic angle
+    if (v.equals("rq")) onStep.commandBlind(":rQ#");
 
     // Focuser
-    if (v.equals("F1")) commandBool(":FA1#");      // select focuser 1
-    if (v.equals("F2")) commandBool(":FA2#");      // select focuser 2
-    if (v.equals("F3")) commandBool(":FA3#");      // select focuser 3
-    if (v.equals("F4")) commandBool(":FA4#");      // select focuser 4
-    if (v.equals("F5")) commandBool(":FA5#");      // select focuser 5
-    if (v.equals("F6")) commandBool(":FA6#");      // select focuser 6
-    if (v.equals("FH")) commandBlind(":FH#");      // reset focuser at home (half travel)
-    if (v.equals("Fh")) commandBlind(":Fh#");      // move focuser to home (half travel)
-    if (v.equals("FI")) commandBlind(":F4#:F-#");  // rate fast, move in
-    if (v.equals("Fi")) commandBlind(":F2#:F-#");  // rate slow, move in
-    if (v.equals("Fo")) commandBlind(":F2#:F+#");  // rate slow, move out
-    if (v.equals("FO")) commandBlind(":F4#:F+#");  // rate fast, move out
-    if (v.equals("Fq")) commandBlind(":FQ#");
+    if (v.equals("F1")) onStep.commandBool(":FA1#");      // select focuser 1
+    if (v.equals("F2")) onStep.commandBool(":FA2#");      // select focuser 2
+    if (v.equals("F3")) onStep.commandBool(":FA3#");      // select focuser 3
+    if (v.equals("F4")) onStep.commandBool(":FA4#");      // select focuser 4
+    if (v.equals("F5")) onStep.commandBool(":FA5#");      // select focuser 5
+    if (v.equals("F6")) onStep.commandBool(":FA6#");      // select focuser 6
+    if (v.equals("FH")) onStep.commandBlind(":FH#");      // reset focuser at home (half travel)
+    if (v.equals("Fh")) onStep.commandBlind(":Fh#");      // move focuser to home (half travel)
+    if (v.equals("FI")) onStep.commandBlind(":F4#:F-#");  // rate fast, move in
+    if (v.equals("Fi")) onStep.commandBlind(":F2#:F-#");  // rate slow, move in
+    if (v.equals("Fo")) onStep.commandBlind(":F2#:F+#");  // rate slow, move out
+    if (v.equals("FO")) onStep.commandBlind(":F4#:F+#");  // rate fast, move out
+    if (v.equals("Fq")) onStep.commandBlind(":FQ#");
   }
 
   // Set the rotator position
-  v=server.arg("rs");
+  v = www.arg("rs");
   if (!v.equals(EmptyStr)) {
     double f = v.toFloat();
     if (f >= -360.0 || f <= 360.0) {
       char temp[80], temp1[40];
-      doubleToDms(temp1, f, true, true, PM_HIGH);
+      convert.doubleToDms(temp1, f, true, true, PM_HIGH);
       sprintf(temp, ":rS%s#", temp1);
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
   // Set the focuser position
-  v=server.arg("fs");
+  v = www.arg("fs");
   if (!v.equals(EmptyStr)) {
     int p = v.toInt();
     if (p >= -500000 || p <= 500000) {
       char temp[80];
       sprintf(temp, ":FS%d#", p);
-      commandBool(temp);
+      onStep.commandBool(temp);
     }
   }
 
   // refine polar align
-  v=server.arg("rp");
+  v = www.arg("rp");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("a")) commandBool(":MP#");
+    if (v.equals("a")) onStep.commandBool(":MP#");
   }
 
 }

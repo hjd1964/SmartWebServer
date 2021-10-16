@@ -2,12 +2,12 @@
 
 #include "../Common.h"
 #include "../locales/Locale.h"
-#include "../misc/Misc.h"
-#include "../commands/Commands.h"
-#include "../status/MountStatus.h"
-#include "../wifiServers/WifiServers.h"
-#include "../ethernetServers/EthernetServers.h"
-#include "../encoders/Encoders.h"
+#include "../libApp/misc/Misc.h"
+#include "../libApp/cmd/Cmd.h"
+#include "../libApp/status/MountStatus.h"
+#include "../libApp/encoders/Encoders.h"
+#include "../lib/ethernet/webServer/WebServer.h"
+#include "../lib/wifi/webServer/WebServer.h"
 
 const char html_headB[] PROGMEM = "<!DOCTYPE HTML>\r\n"
                                   "<html>\r\n"

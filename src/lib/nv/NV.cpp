@@ -35,6 +35,23 @@ void NonVolatileStorage::readOnly(bool state) {
   readOnlyMode = state;
 }
 
+bool NonVolatileStorage::isKeyValid(uint32_t uniqueKey) {
+  bool state = readAndWriteThrough;
+  readAndWriteThrough = true;
+  keyMatches = readUL(0) == uniqueKey;
+  readAndWriteThrough = state;
+  return keyMatches;
+};
+
+// write the key value into addresses 0..4, blocking waits for all commits
+void NonVolatileStorage::writeKey(uint32_t uniqueKey) {
+  wait();
+  bool state = readAndWriteThrough;
+  readAndWriteThrough = true;
+  write(0, uniqueKey);
+  readAndWriteThrough = state;
+}
+
 void NonVolatileStorage::poll(bool disableInterrupts) {
   if (cacheSize == 0 || cacheClean) return;
 
@@ -74,7 +91,7 @@ void NonVolatileStorage::poll(bool disableInterrupts) {
 bool NonVolatileStorage::committed() {
   uint8_t dirty = 0;
 
-  for (int16_t j = 0; j < cacheSize; j++) {
+  for (uint16_t j = 0; j < cacheSize; j++) {
     dirty = bitRead(cacheStateWrite[j/8], j%8);
     if (dirty) break;
   }
@@ -109,8 +126,15 @@ void NonVolatileStorage::writeToCache(uint16_t i, uint8_t j) {
   // no longer clean
   cacheClean = false;
 
-  if (cacheSize == 0 || readAndWriteThrough) if (!readOnlyMode) writeToStorage(i, j);
-  if (cacheSize == 0) return;
+  if (readAndWriteThrough) if (!readOnlyMode) writeToStorage(i, j);
+  if (cacheSize == 0) {
+    if (!readOnlyMode) {
+      if (!readAndWriteThrough) {
+        if (j != readFromStorage(i)) writeToStorage(i, j);
+      } else writeToStorage(i, j);
+    }
+    return;
+  }
 
   uint8_t k = readFromCache(i);
   if (j != k) {
@@ -160,7 +184,6 @@ bool NonVolatileStorage::busy() {
   return false;
 }
 
-int compare (const void * a, const void * b)
-{
+int compare (const void * a, const void * b) {
   return ( *(int*)a - *(int*)b );
 }

@@ -3,18 +3,15 @@
 
 #include <limits.h>
 #include "Index.h"
+#include "../lib/convert/Convert.h"
 
-#if OPERATIONAL_MODE != WIFI
-void handleRoot(EthernetClient *client) {
-#else
 void handleRoot() {
-#endif
   char temp[400] = "";
   char temp1[120] = "";
   char temp2[120] = "";
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
 
   mountStatus.update(true);
 
@@ -71,30 +68,30 @@ void handleRoot() {
   data.concat(FPSTR(html_settingsBrowserTime));
 
   // UTC Date
-  if (!command(":GX81#", temp1)) strcpy(temp1, "?");
+  if (!onStep.command(":GX81#", temp1)) strcpy(temp1, "?");
   stripNum(temp1);
   sprintf_P(temp, html_indexDate, temp1);
   data.concat(temp);
 
   // UTC Time
-  if (!command(":GX80#", temp1)) strcpy(temp1, "?");
+  if (!onStep.command(":GX80#", temp1)) strcpy(temp1, "?");
   sprintf_P(temp, html_indexTime, temp1);
   data.concat(temp);
 
   // LST
-  if (!command(":GS#", temp1)) strcpy(temp1, "?");
+  if (!onStep.command(":GS#", temp1)) strcpy(temp1, "?");
   sprintf_P(temp, html_indexSidereal, temp1);
   data.concat(temp);
 
   // Longitude and Latitude
   if (mountStatus.getVersionMajor() > 3) {
-    if (!command(":GgH#", temp1)) strcpy(temp1, "?");
+    if (!onStep.command(":GgH#", temp1)) strcpy(temp1, "?");
     temp1[10] = 0;
-    if (!command(":GtH#", temp2)) strcpy(temp2, "?");
+    if (!onStep.command(":GtH#", temp2)) strcpy(temp2, "?");
     temp2[9] = 0;
   } else {
-    if (!command(":Gg#", temp1)) strcpy(temp1, "?");
-    if (!command(":Gt#", temp2)) strcpy(temp2, "?");
+    if (!onStep.command(":Gg#", temp1)) strcpy(temp1, "?");
+    if (!onStep.command(":Gt#", temp2)) strcpy(temp2, "?");
   }
   sprintf_P(temp,html_indexSite,temp1,temp2);
   data.concat(temp);
@@ -108,19 +105,19 @@ void handleRoot() {
 
   // Ambient conditions
   #if DISPLAY_WEATHER == ON
-    if (!command(":GX9A#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2);
+    if (!onStep.command(":GX9A#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2);
     sprintf_P(temp,html_indexTPHD,L_TEMPERATURE ":",temp1,temp2); data.concat(temp);
-    if (!command(":GX9B#",temp1)) strcpy(temp1,"?"); else localePressure(temp1,temp2);
+    if (!onStep.command(":GX9B#",temp1)) strcpy(temp1,"?"); else localePressure(temp1,temp2);
     sprintf_P(temp,html_indexTPHD,L_PRESSURE ":",temp1,temp2); data.concat(temp);
-    if (!command(":GX9C#",temp1)) strcpy(temp1,"?");
+    if (!onStep.command(":GX9C#",temp1)) strcpy(temp1,"?");
     sprintf_P(temp,html_indexTPHD,L_HUMIDITY ":",temp1,"%"); data.concat(temp);
-    if (!command(":GX9E#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2);
+    if (!onStep.command(":GX9E#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2);
     sprintf_P(temp,html_indexTPHD,L_DEW_POINT ":",temp1,temp2); data.concat(temp);
   #endif
 
   // Focuser/telescope temperature
   if (mountStatus.focuserPresent()) {
-    if (!command(":Ft#", temp1)) strcpy(temp1, "?"); else localeTemperature(temp1, temp2);
+    if (!onStep.command(":Ft#", temp1)) strcpy(temp1, "?"); else localeTemperature(temp1, temp2);
     sprintf_P(temp, html_indexTPHD, L_TELE_TEMPERATURE ":",temp1,temp2); data.concat(temp);
   }
   
@@ -128,26 +125,26 @@ void handleRoot() {
 
   #if DISPLAY_HIGH_PRECISION_COORDS == ON
     // RA,Dec current
-    if (!command(":GRa#",temp1)) strcpy(temp1,"?");
-    if (!command(":GDe#",temp2)) strcpy(temp2,"?");
+    if (!onStep.command(":GRa#",temp1)) strcpy(temp1,"?");
+    if (!onStep.command(":GDe#",temp2)) strcpy(temp2,"?");
     sprintf_P(temp,html_indexPosition,temp1,temp2); 
     data.concat(temp);
 
     // RA,Dec target
-    if (!command(":Gra#",temp1)) strcpy(temp1,"?");
-    if (!command(":Gde#",temp2)) strcpy(temp2,"?");
+    if (!onStep.command(":Gra#",temp1)) strcpy(temp1,"?");
+    if (!onStep.command(":Gde#",temp2)) strcpy(temp2,"?");
     sprintf_P(temp,html_indexTarget,temp1,temp2); 
     data.concat(temp);
   #else
     // RA,Dec current
-    if (!command(":GR#",temp1)) strcpy(temp1,"?");
-    if (!command(":GD#",temp2)) strcpy(temp2,"?");
+    if (!onStep.command(":GR#",temp1)) strcpy(temp1,"?");
+    if (!onStep.command(":GD#",temp2)) strcpy(temp2,"?");
     sprintf_P(temp,html_indexPosition,temp1,temp2); 
     data.concat(temp);
 
     // RA,Dec target
-    if (!command(":Gr#",temp1)) strcpy(temp1,"?");
-    if (!command(":Gd#",temp2)) strcpy(temp2,"?");
+    if (!onStep.command(":Gr#",temp1)) strcpy(temp1,"?");
+    if (!onStep.command(":Gd#",temp2)) strcpy(temp2,"?");
     sprintf_P(temp,html_indexTarget,temp1,temp2); 
     data.concat(temp);
   #endif
@@ -155,14 +152,14 @@ void handleRoot() {
   #if ENCODERS == ON
     // RA,Dec OnStep position
     double f;
-    f=encoders.getOnStepAxis1(); doubleToDms(temp1, f, true, true, PM_HIGH);
-    f=encoders.getOnStepAxis2(); doubleToDms(temp2, f, true, true, PM_HIGH);
+    f=encoders.getOnStepAxis1(); convert.doubleToDms(temp1, f, true, true, PM_HIGH);
+    f=encoders.getOnStepAxis2(); convert.doubleToDms(temp2, f, true, true, PM_HIGH);
     sprintf_P(temp,html_indexEncoder1,temp1,temp2);
     data.concat(temp);
 
     // RA,Dec encoder position
-    if (encoders.validAxis1()) { f=encoders.getAxis1(); doubleToDms(temp1, f, true, true, PM_HIGH); } else strcpy(temp1," ** " L_FAULT " ** ");
-    if (encoders.validAxis2()) { f=encoders.getAxis2(); doubleToDms(temp2, f, true, true, PM_HIGH); } else strcpy(temp2," ** " L_FAULT " ** ");
+    if (encoders.validAxis1()) { f=encoders.getAxis1(); convert.doubleToDms(temp1, f, true, true, PM_HIGH); } else strcpy(temp1," ** " L_FAULT " ** ");
+    if (encoders.validAxis2()) { f=encoders.getAxis2(); convert.doubleToDms(temp2, f, true, true, PM_HIGH); } else strcpy(temp2," ** " L_FAULT " ** ");
     sprintf_P(temp,html_indexEncoder2,temp1,temp2);
     data.concat(temp);
   #endif
@@ -184,8 +181,8 @@ void handleRoot() {
   sendHtml(data);
 
   if (abs(lat) <= 89) {
-    long ud = LONG_MIN; if (command(":GX02#",temp1)) { ud = strtol(&temp1[0], NULL, 10); if (lat < 0) ud = -ud; }
-    long lr = LONG_MIN; if (command(":GX03#",temp1)) { lr = strtol(&temp1[0], NULL, 10); lr = lr/cos(lat/57.295); }
+    long ud = LONG_MIN; if (onStep.command(":GX02#",temp1)) { ud = strtol(&temp1[0], NULL, 10); if (lat < 0) ud = -ud; }
+    long lr = LONG_MIN; if (onStep.command(":GX03#",temp1)) { lr = strtol(&temp1[0], NULL, 10); lr = lr/cos(lat/57.295); }
 
     if (lat != LONG_MIN && ud != LONG_MIN && lr != LONG_MIN) {
       data.concat("<br /><b>" L_POLAR_ALIGN ":</b><br />");
@@ -243,7 +240,7 @@ void handleRoot() {
   sendHtml(data);
 
   // Tracking rate
-  if ((command(":GT#",temp1)) && (strlen(temp1)>6)) {
+  if ((onStep.command(":GT#",temp1)) && (strlen(temp1)>6)) {
     double tr=atof(temp1);
     dtostrf(tr,5,3,temp1);
     sprintf(temp,"&nbsp;&nbsp;" L_TRACKING_RATE ": <font class=\"c\">%s</font>Hz<br />",temp1);
@@ -251,12 +248,12 @@ void handleRoot() {
   }
 
   // Slew speed
-  if ((command(":GX97#",temp1)) && (strlen(temp1)>2)) {
+  if ((onStep.command(":GX97#",temp1)) && (strlen(temp1)>2)) {
     sprintf_P(temp,html_indexMaxSpeed,temp1);
     data.concat(temp);
   } else {
     // fall back to MaxRate display if not supported
-    if ((command(":GX92#",temp1)) && (command(":GX93#",temp2))) { 
+    if ((onStep.command(":GX92#",temp1)) && (onStep.command(":GX93#",temp2))) { 
       long maxRate=strtol(&temp1[0],NULL,10);
       long MaxRate=strtol(&temp2[0],NULL,10);
       sprintf_P(temp,html_indexMaxRate,maxRate,MaxRate);
@@ -304,7 +301,7 @@ void handleRoot() {
 
   // MCU Temperature
   #if DISPLAY_INTERNAL_TEMPERATURE == ON
-    if (!command(":GX9F#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_INTERNAL_TEMP ":",temp1,temp2); data.concat(temp);
+    if (!onStep.command(":GX9F#",temp1)) strcpy(temp1,"?"); else localeTemperature(temp1,temp2); sprintf_P(temp,html_indexTPHD,L_INTERNAL_TEMP ":",temp1,temp2); data.concat(temp);
   #endif
 
   // General Error
@@ -316,9 +313,11 @@ void handleRoot() {
   data.concat(temp);
 
   // Loop time
-  if (!command(":GXFA#",temp1)) strcpy(temp1,"?%");
-  sprintf_P(temp,html_indexWorkload,temp1);
-  data.concat(temp);
+  if (mountStatus.getVersionMajor() < 10) {
+    if (!onStep.command(":GXFA#",temp1)) strcpy(temp1,"?%");
+    sprintf_P(temp,html_indexWorkload,temp1);
+    data.concat(temp);
+  }
 
   #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
     long signal_strength_dbm = WiFi.RSSI();

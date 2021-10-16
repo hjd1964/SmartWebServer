@@ -21,6 +21,24 @@ class NonVolatileStorage {
     // disables writing if true, defaults to false
     void readOnly(bool state);
 
+    // check to see if read only operation is set
+    inline bool isReadOnly() { return readOnlyMode; }
+
+    // wait for all commits to finish, blocking
+    inline void wait() { while (!committed()) { poll(false); delay(10); } }
+
+    // returns true if NV holds the correct key value in addresses 0..4
+    bool isKeyValid(uint32_t uniqueKey);
+
+    // returns true if the NV key was checked and correct
+    inline bool isKeyValid() { return keyMatches; }
+
+    // write the key value into addresses 0..4, blocking waits for all commits
+    void writeKey(uint32_t uniqueKey);
+
+    // clear the nv memory
+    inline void wipe() { for (int i = 0; i < (int)size; i++) write(i, (char)0); }
+
     // call frequently to perform any operations that need to happen in the background
     virtual void poll(bool disableInterrupts = true);
 
@@ -118,6 +136,8 @@ class NonVolatileStorage {
     uint8_t* cacheStateWrite;
 
     uint32_t waitMs = 0;
+
+    bool keyMatches = false;
 
     // a quick to access flag to tell us if delayed commit is enabled
     bool delayedCommitEnabled = false;

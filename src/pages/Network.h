@@ -38,25 +38,6 @@ const char htmL_NET_SN[] PROGMEM =
 "<input name='%ssn4' value='%d' type='number' min='0' max='255'></td></tr></table>";
 
 #if OPERATIONAL_MODE == WIFI
-  extern bool accessPointEnabled;
-  extern bool stationEnabled;
-  extern bool stationDhcpEnabled;
-
-  extern char wifi_sta_ssid[40];
-  extern char wifi_sta_pwd[40];
-
-  extern IPAddress wifi_sta_ip;
-  extern IPAddress wifi_sta_gw;
-  extern IPAddress wifi_sta_sn;
-
-  extern char wifi_ap_ssid[40];
-  extern char wifi_ap_pwd[40];
-  extern byte wifi_ap_ch;
-
-  extern IPAddress wifi_ap_ip;
-  extern IPAddress wifi_ap_gw;
-  extern IPAddress wifi_ap_sn;
-
   const char htmL_NETWORKSSID1[] PROGMEM =
   "<br/><b>" L_NETWORK_STA_TITLE ":</b><br/>"
   "<form method='post' action='/net.htm'>"

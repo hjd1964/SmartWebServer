@@ -12,17 +12,13 @@ bool downloadCatalogData = false;
 bool uploadCatalogData = false;
 String showMessage = "";
 
-#if OPERATIONAL_MODE != WIFI
-void handleLibrary(EthernetClient *client) {
-#else
 void handleLibrary() {
-#endif
   char temp[400] = "";
   char temp1[120] = "";
 
   currentCatalog = 0;
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
   
   mountStatus.update();
 
@@ -100,26 +96,18 @@ void handleLibrary() {
   sendHtmlDone(data);
 }
 
-#if OPERATIONAL_MODE != WIFI
-void libraryAjaxGet(EthernetClient *client) {
-#else
 void libraryAjaxGet() {
-#endif
   processLibraryGet();
   #if OPERATIONAL_MODE != WIFI
-    client->print("");
+    www.sendContent("");
   #else
-  server.send(200, "text/html","");
-#endif
+    www.send(200, "text/html", "");
+  #endif
 }
 
-#if OPERATIONAL_MODE != WIFI
-void libraryAjax(EthernetClient *client) {
-#else
 void libraryAjax() {
-#endif
   String data="";
-  data.concat("libFree|"); data.concat(commandString(":L?#")); data+="\n";
+  data.concat("libFree|"); data.concat(onStep.commandString(":L?#")); data+="\n";
 
   if (showMessage != "") {
     data.concat("message|" + showMessage + "\n");
@@ -131,9 +119,9 @@ void libraryAjax() {
     data.concat("up|disabled\n");
     strcpy(currentCatName,"");
     if (currentCatalog != 0) {
-      if (commandBool(":L$#")) {
+      if (onStep.commandBool(":L$#")) {
         char temp[40]="";
-        command(":LR#",temp);
+        onStep.command(":LR#",temp);
         if (temp[0] == '$') {
           for (int i=1; i<10; i++) {
             currentCatName[i-1]=0; currentCatName[i]=0;
@@ -159,13 +147,13 @@ void libraryAjax() {
       bool success=false;
       char temp[40]="";
       sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
-      if (commandBool(temp)) {
+      if (onStep.commandBool(temp)) {
         data.concat("$");
         data.concat(currentCatName);
         data.concat("\r");
 
         while (true) {
-          command(":LR#",temp);
+          onStep.command(":LR#",temp);
           if (temp[0] == ',') { success=true; break; }
           if (temp[0] == 0)  break;
 
@@ -201,9 +189,9 @@ void libraryAjax() {
   }
 
 #if OPERATIONAL_MODE != WIFI
-  client->print(data);
+  sendHtmlDone(data);
 #else
-  server.send(200, "text/plain",data);
+  www.send(200, "text/plain",data);
 #endif
 }
 
@@ -213,18 +201,18 @@ void processLibraryGet() {
   char temp[40]="";
 
   // Catalog clear
-  v=server.arg("cc");
+  v = www.arg("cc");
   if (!v.equals(EmptyStr)) {
     if (currentCatalog >= 0 && currentCatalog < 16) {
       if (currentCatalog == 0) {
         // clear library
-        commandBool(":Lo0#");
-        commandBlind(":L!#");
+        onStep.commandBool(":Lo0#");
+        onStep.commandBlind(":L!#");
       } else {
         // clear this catalog
         sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
-        commandBool(temp);
-        commandBlind(":LL#");
+        onStep.commandBool(temp);
+        onStep.commandBlind(":LL#");
       }
       catalogIndexChanged=true;
       showMessage=L_CAT_DATA_REMOVED ".";
@@ -232,11 +220,11 @@ void processLibraryGet() {
   }
 
   // Catalog download
-  v=server.arg("cd");
+  v = www.arg("cd");
   if (!v.equals(EmptyStr)) {
     if (currentCatalog > 0 && currentCatalog < 16) {
       sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
-      if (!commandBool(temp)) currentCatalog=0;
+      if (!onStep.commandBool(temp)) currentCatalog=0;
       downloadCatalogData=true;
     }
   }
@@ -245,18 +233,18 @@ void processLibraryGet() {
   // Object Name|Cat|---RA---|---Dec---
   // ccccccccccc,ccc,HH:MM:SS,sDD*MM:SS
   // NGC6813    ,DN ,19:41:08,+27*20:22
-  v=server.arg("cu");
+  v = www.arg("cu");
   if (!v.equals(EmptyStr)) {
     showMessage="";
     
     uploadCatalogData = true;
     if (currentCatalog > 0 && currentCatalog < 16) {
       sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
-      if (commandBool(temp)) {
+      if (onStep.commandBool(temp)) {
         v.replace("_"," ");
         int lineNum = 0;
         if (v.equals("DELETE")) { v = ""; showMessage = L_CAT_DATA_REMOVED "."; }
-        commandBlind(":LL#");  // clear this catalog
+        onStep.commandBlind(":LL#");  // clear this catalog
         while (v.length() > 0) { // any data left?
           lineNum++;
           String line,co,cat,ra,de;
@@ -269,16 +257,16 @@ void processLibraryGet() {
               co = line.substring(0);
               co.trim();
               if (co.length() < 2 || co.length() > 11) { showMessage=F(L_CAT_UPLOAD_FAIL); break; }
-              if (!commandBool(":L$#")) { showMessage=F(L_CAT_UPLOAD_INDEX_FAIL); break; }
-              if (!commandBool(":LD#")) { showMessage=F(L_CAT_DELETE_FAIL); break; }
-              if (!commandBool((":LW"+co+"#").c_str())) { showMessage=F(L_CAT_WRITE_NAME_FAIL); break; }
+              if (!onStep.commandBool(":L$#")) { showMessage=F(L_CAT_UPLOAD_INDEX_FAIL); break; }
+              if (!onStep.commandBool(":LD#")) { showMessage=F(L_CAT_DELETE_FAIL); break; }
+              if (!onStep.commandBool((":LW"+co+"#").c_str())) { showMessage=F(L_CAT_WRITE_NAME_FAIL); break; }
               continue;
             } else { showMessage=L_CAT_UPLOAD_NO_NAME_FAIL; break; }
           }
           
-          i=line.indexOf(","); if (i >= 0) { co  = line.substring(0,i); line=line.substring(i+1); } else { showMessage=F(L_CAT_BAD_FORM); showMessage+=String(lineNum); break; }
-          i=line.indexOf(","); if (i >= 0) { cat = line.substring(0,i); line=line.substring(i+1); } else { showMessage=F(L_CAT_BAD_FORM); showMessage+=String(lineNum); break; }
-          i=line.indexOf(","); if (i >= 0) { ra  = line.substring(0,i); line=line.substring(i+1); } else { showMessage=F(L_CAT_BAD_FORM); showMessage+=String(lineNum); break; }
+          i = line.indexOf(","); if (i >= 0) { co  = line.substring(0,i); line=line.substring(i+1); } else { showMessage=F(L_CAT_BAD_FORM); showMessage+=String(lineNum); break; }
+          i = line.indexOf(","); if (i >= 0) { cat = line.substring(0,i); line=line.substring(i+1); } else { showMessage=F(L_CAT_BAD_FORM); showMessage+=String(lineNum); break; }
+          i = line.indexOf(","); if (i >= 0) { ra  = line.substring(0,i); line=line.substring(i+1); } else { showMessage=F(L_CAT_BAD_FORM); showMessage+=String(lineNum); break; }
           de = line;
           
           co.trim(); cat.trim(); ra.trim(); de.trim();
@@ -300,9 +288,23 @@ void processLibraryGet() {
               (de.charAt(3) != '*' && de.charAt(3) != ':') ||
               de.charAt(6) != ':' || de.length() != 9) { showMessage=F(L_CAT_BAD_DEC); showMessage+=String(lineNum); break; }
 
-          if (!commandBool((":Sr"+ra+"#").c_str())) { showMessage=F(L_CAT_UPLOAD_RA_FAIL); showMessage+=String(lineNum); break; }
-          if (!commandBool((":Sd"+de+"#").c_str())) { showMessage=F(L_CAT_UPLOAD_DEC_FAIL); showMessage+=String(lineNum); break; }
-          if (!commandBool((":LW"+co+","+cat+"#").c_str())) { showMessage=F(L_CAT_UPLOAD_LINE_FAIL); showMessage+=String(lineNum); break; }
+          if (!onStep.commandBool((":Sr"+ra+"#").c_str())) {
+            showMessage=F(L_CAT_UPLOAD_RA_FAIL);
+            showMessage+=String(lineNum);
+            break;
+          }
+
+          if (!onStep.commandBool((":Sd"+de+"#").c_str())) {
+            showMessage=F(L_CAT_UPLOAD_DEC_FAIL);
+            showMessage+=String(lineNum);
+            break;
+          }
+
+          if (!onStep.commandBool((":LW"+co+","+cat+"#").c_str())) {
+            showMessage=F(L_CAT_UPLOAD_LINE_FAIL);
+            showMessage+=String(lineNum);
+            break;
+          }
         }
         if (showMessage=="") showMessage=L_CAT_UPLOAD_SUCCESS ", "+String(lineNum)+" " L_CAT_UPLOAD_LINES_WRITTEN ".";
       } else showMessage=F(L_CAT_UPLOAD_SELECT_FAIL);
@@ -310,12 +312,12 @@ void processLibraryGet() {
   }
 
   // Catalog index (1-15)
-  v=server.arg("ci");
+  v = www.arg("ci");
   if (!v.equals(EmptyStr)) {
     currentCatalog=v.toInt();
     if (currentCatalog > 0 && currentCatalog < 16) {
       sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
-      if (!commandBool(temp)) currentCatalog=0;
+      if (!onStep.commandBool(temp)) currentCatalog=0;
     } else currentCatalog=0;
     catalogIndexChanged=true;
   }

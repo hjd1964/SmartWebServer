@@ -5,15 +5,11 @@
 
 void processSettingsGet();
 
-#if OPERATIONAL_MODE != WIFI
-void handleSettings(EthernetClient *client) {
-#else
 void handleSettings() {
-#endif
   char temp[240] = "";
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
 
   mountStatus.update(true);
 
@@ -115,24 +111,16 @@ void handleSettings() {
   sendHtmlDone(data);
 }
 
-#if OPERATIONAL_MODE != WIFI
-void settingsAjaxGet(EthernetClient *client) {
-#else
 void settingsAjaxGet() {
-#endif
   processSettingsGet();
   #if OPERATIONAL_MODE != WIFI
-    client->print("");
+    www.sendContent("");
   #else
-    server.send(200, "text/html", "");
+    www.send(200, "text/html", "");
   #endif
 }
 
-#if OPERATIONAL_MODE != WIFI
-void settingsAjax(EthernetClient *client) {
-#else
 void settingsAjax() {
-#endif
   String data="";
   mountStatus.update();
   if (mountStatus.valid()) {
@@ -199,9 +187,9 @@ void settingsAjax() {
     data.concat("ot_sgl|disabled\n");
   }
 
-  String temp = commandString(":GX92#");
+  String temp = onStep.commandString(":GX92#");
   float nominalRate = temp.toFloat();
-  temp = commandString(":GX93#");
+  temp = onStep.commandString(":GX93#");
   float currentRate = temp.toFloat();
   if (nominalRate > 0.001 && nominalRate < 180.0 && currentRate > 0.001 && currentRate < 180.0) {
     double rateRatio = currentRate/nominalRate;
@@ -250,9 +238,9 @@ void settingsAjax() {
 
   
 #if OPERATIONAL_MODE != WIFI
-  client->print(data);
+  sendHtmlDone(data);
 #else
-  server.send(200, "text/plain",data);
+  www.send(200, "text/plain",data);
 #endif
 }
 
@@ -261,53 +249,53 @@ void processSettingsGet() {
   String v;
 
   // Slew Speed
-  v=server.arg("ss");
+  v = www.arg("ss");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("vs")) commandBool(":SX93,5#"); // very slow, 0.5 x
-    if (v.equals("s"))  commandBool(":SX93,4#"); // slow,      0.75x
-    if (v.equals("n"))  commandBool(":SX93,3#"); // normal,    1.0 x
-    if (v.equals("f"))  commandBool(":SX93,2#"); // fast,      1.5 x
-    if (v.equals("vf")) commandBool(":SX93,1#"); // very fast, 2.0 x
+    if (v.equals("vs")) onStep.commandBool(":SX93,5#"); // very slow, 0.5 x
+    if (v.equals("s"))  onStep.commandBool(":SX93,4#"); // slow,      0.75x
+    if (v.equals("n"))  onStep.commandBool(":SX93,3#"); // normal,    1.0 x
+    if (v.equals("f"))  onStep.commandBool(":SX93,2#"); // fast,      1.5 x
+    if (v.equals("vf")) onStep.commandBool(":SX93,1#"); // very fast, 2.0 x
   }
 
   // set-park
-  v=server.arg("pk");
+  v = www.arg("pk");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("s")) commandBool(":hQ#");
+    if (v.equals("s"))    onStep.commandBool(":hQ#");
   }
   // Tracking control
-  v=server.arg("tk");
+  v = www.arg("tk");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("f"))    commandBlind(":T+#"); // 0.02hz faster
-    if (v.equals("-"))    commandBlind(":T-#"); // 0.02hz slower
-    if (v.equals("r"))    commandBlind(":TR#"); // reset
+    if (v.equals("f"))    onStep.commandBlind(":T+#"); // 0.02hz faster
+    if (v.equals("-"))    onStep.commandBlind(":T-#"); // 0.02hz slower
+    if (v.equals("r"))    onStep.commandBlind(":TR#"); // reset
   }
   // Refraction Rate Tracking control
-  v=server.arg("rr");
+  v = www.arg("rr");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("otk"))  commandBool(":To#"); // pointing model compensated
-    if (v.equals("on"))   commandBool(":Tr#"); // compensated on
-    if (v.equals("off"))  commandBool(":Tn#"); // compensated off
-    if (v.equals("don"))  commandBool(":T2#"); // compensated 2 axis
-    if (v.equals("doff")) commandBool(":T1#"); // compensated 1 axis
+    if (v.equals("otk"))  onStep.commandBool(":To#"); // pointing model compensated
+    if (v.equals("on"))   onStep.commandBool(":Tr#"); // compensated on
+    if (v.equals("off"))  onStep.commandBool(":Tn#"); // compensated off
+    if (v.equals("don"))  onStep.commandBool(":T2#"); // compensated 2 axis
+    if (v.equals("doff")) onStep.commandBool(":T1#"); // compensated 1 axis
   }
   // Alert buzzer
-  v=server.arg("ab");
+  v = www.arg("ab");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("on"))   commandBool(":SX97,1#");
-    if (v.equals("off"))  commandBool(":SX97,0#");
+    if (v.equals("on"))   onStep.commandBool(":SX97,1#");
+    if (v.equals("off"))  onStep.commandBool(":SX97,0#");
   }
   // Auto-continue
-  v=server.arg("ma");
+  v = www.arg("ma");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("now"))  commandBool(":MN#");
-    if (v.equals("on"))   commandBool(":SX95,1#");
-    if (v.equals("off"))  commandBool(":SX95,0#");
+    if (v.equals("now"))  onStep.commandBool(":MN#");
+    if (v.equals("on"))   onStep.commandBool(":SX95,1#");
+    if (v.equals("off"))  onStep.commandBool(":SX95,0#");
   }
   // Pause at meridian flip
-  v=server.arg("mp");
+  v = www.arg("mp");
   if (!v.equals(EmptyStr)) {
-    if (v.equals("on"))   commandBool(":SX98,1#");
-    if (v.equals("off"))  commandBool(":SX98,0#");
+    if (v.equals("on"))   onStep.commandBool(":SX98,1#");
+    if (v.equals("off"))  onStep.commandBool(":SX98,0#");
   }
 }

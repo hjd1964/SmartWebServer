@@ -5,13 +5,9 @@
 
 void processAuxGet();
 
-#if OPERATIONAL_MODE != WIFI
-void handleAux(EthernetClient *client) {
-#else
 void handleAux() {
-#endif
   SERIAL_ONSTEP.setTimeout(webTimeout);
-  serialRecvFlush();
+  onStep.serialRecvFlush();
 
   mountStatus.update(true);
 
@@ -228,24 +224,16 @@ void handleAux() {
   sendHtmlDone(data);
 }
 
-#if OPERATIONAL_MODE != WIFI
-void auxAjaxGet(EthernetClient *client) {
-#else
 void auxAjaxGet() {
-#endif
   processAuxGet();
-#if OPERATIONAL_MODE != WIFI
-  client->print("");
-#else
-  server.send(200, "text/html","");
-#endif
+  #if OPERATIONAL_MODE != WIFI
+    www.sendContent("");
+  #else
+    www.send(200, "text/html", "");
+  #endif
 }
 
-#if OPERATIONAL_MODE != WIFI
-void auxAjax(EthernetClient *client) {
-#else
 void auxAjax() {
-#endif
   String data="";
   char temp[120]="";
 
@@ -295,9 +283,9 @@ void auxAjax() {
   }
 
 #if OPERATIONAL_MODE != WIFI
-  client->print(data);
+  sendHtmlDone(data);
 #else
-  server.send(200, "text/plain",data);
+  www.send(200, "text/plain",data);
 #endif
 }
 
@@ -309,21 +297,21 @@ void processAuxGet() {
   // Auxiliary Feature set Value1 to Value4
   for (char c = '1'; c <= '8'; c++) {
     mountStatus.selectFeature(c - '1');
-    sprintf(temp, "x%cv1", c); v=server.arg(temp);
-    if (!v.equals(EmptyStr)) { sprintf(temp, ":SXX%c,V%s#", c, v.c_str()); commandBool(temp); }
+    sprintf(temp, "x%cv1", c); v = www.arg(temp);
+    if (!v.equals(EmptyStr)) { sprintf(temp, ":SXX%c,V%s#", c, v.c_str()); onStep.commandBool(temp); }
     if (mountStatus.featurePurpose() == DEW_HEATER) {
-      sprintf(temp, "x%cv2", c); v = server.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat()/10.0, 0, 1, temp1); sprintf(temp, ":SXX%c,Z%s#", c, temp1); commandBool(temp); }
-      sprintf(temp, "x%cv3", c); v = server.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat()/10.0, 0, 1, temp1); sprintf(temp, ":SXX%c,S%s#", c, temp1); commandBool(temp); }
+      sprintf(temp, "x%cv2", c); v = www.arg(temp);
+      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat()/10.0, 0, 1, temp1); sprintf(temp, ":SXX%c,Z%s#", c, temp1); onStep.commandBool(temp); }
+      sprintf(temp, "x%cv3", c); v = www.arg(temp);
+      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat()/10.0, 0, 1, temp1); sprintf(temp, ":SXX%c,S%s#", c, temp1); onStep.commandBool(temp); }
     } else
     if (mountStatus.featurePurpose() == INTERVALOMETER) {
-      sprintf(temp, "x%cv2", c); v = server.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(byteToTime(v.toInt()), 0, 3, temp1); sprintf(temp, ":SXX%c,E%s#", c, temp1); commandBool(temp); }
-      sprintf(temp, "x%cv3", c); v = server.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(byteToTime(v.toInt()), 0, 2, temp1); sprintf(temp, ":SXX%c,D%s#", c, temp1); commandBool(temp); }
-      sprintf(temp, "x%cv4", c); v = server.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat(), 0, 0, temp1); sprintf(temp, ":SXX%c,C%s#", c, temp1); commandBool(temp); }
+      sprintf(temp, "x%cv2", c); v = www.arg(temp);
+      if (!v.equals(EmptyStr)) { dtostrf(byteToTime(v.toInt()), 0, 3, temp1); sprintf(temp, ":SXX%c,E%s#", c, temp1); onStep.commandBool(temp); }
+      sprintf(temp, "x%cv3", c); v = www.arg(temp);
+      if (!v.equals(EmptyStr)) { dtostrf(byteToTime(v.toInt()), 0, 2, temp1); sprintf(temp, ":SXX%c,D%s#", c, temp1); onStep.commandBool(temp); }
+      sprintf(temp, "x%cv4", c); v = www.arg(temp);
+      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat(), 0, 0, temp1); sprintf(temp, ":SXX%c,C%s#", c, temp1); onStep.commandBool(temp); }
     }
   }
 }
