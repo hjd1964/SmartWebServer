@@ -3,6 +3,8 @@
 #pragma once
 
 // misc.
+#define PROD_ABV                     "SWS"
+
 #define METRIC                       ON
 #define IMPERIAL                     -200
 #define LOCALE_DEFAULT               -201

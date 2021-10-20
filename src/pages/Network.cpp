@@ -124,18 +124,14 @@ void handleNetwork() {
 
       sprintf_P(temp,htmL_NETWORKSSID7, wifiManager.settings.accessPointEnabled ? "checked" : ""); data.concat(temp);
     #else
-      nv.readBytes(EE_ETH_IP, temp_ip, 4);
-      nv.readBytes(EE_ETH_SN, temp_sn, 4);
-      nv.readBytes(EE_ETH_GW, temp_gw, 4);
-
       data.concat(FPSTR(htmL_NETWORK_ETH_BEG)); temp1[0] = 0;
       for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, ethernetManager.settings.mac[i]); } temp1[strlen(temp1) - 1] = 0;
 
       sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data.concat(temp);
       sendHtml(data);
-      sprintf_P(temp,htmL_NET_IP, "eth", temp_ip[0], "eth", temp_ip[1], "eth", temp_ip[2], "eth", temp_ip[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_GW, "eth", temp_gw[0], "eth", temp_gw[1], "eth", temp_gw[2], "eth", temp_gw[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_SN, "eth", temp_sn[0], "eth", temp_sn[1], "eth", temp_sn[2], "eth", temp_sn[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_IP, "eth", (int)ethernetManager.settings.ip[0], "eth", (int)ethernetManager.settings.ip[1], "eth", (int)ethernetManager.settings.ip[2], "eth", (int)ethernetManager.settings.ip[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_GW, "eth", (int)ethernetManager.settings.gw[0], "eth", (int)ethernetManager.settings.gw[1], "eth", (int)ethernetManager.settings.gw[2], "eth", (int)ethernetManager.settings.gw[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_SN, "eth", (int)ethernetManager.settings.sn[0], "eth", (int)ethernetManager.settings.sn[1], "eth", (int)ethernetManager.settings.sn[2], "eth", (int)ethernetManager.settings.sn[3]); data.concat(temp);
 
       data.concat(FPSTR(htmL_NETWORK_ETH_END));
       sendHtml(data);
@@ -158,20 +154,37 @@ void processNetworkGet() {
 
   // Login --------------------------------------------------------------------
 
-  v = www.arg("login");
-  if (!v.equals(EmptyStr)) {
-    if (!strcmp(wifiManager.settings.masterPassword, (char*)v.c_str())) loginRequired = false;
-  }
+  #if OPERATIONAL_MODE == WIFI
+    v = www.arg("login");
+    if (!v.equals(EmptyStr)) {
+      if (!strcmp(wifiManager.settings.masterPassword, (char*)v.c_str())) loginRequired = false;
+    }
 
-  v = www.arg("logout");
-  if (!v.equals(EmptyStr)) loginRequired = true;
-  if (loginRequired) return;
+    v = www.arg("logout");
+    if (!v.equals(EmptyStr)) loginRequired = true;
+    if (loginRequired) return;
 
-  v = www.arg("webpwd");
-  if (!v.equals(EmptyStr)) {
-    strcpy(wifiManager.settings.masterPassword, (char*)v.c_str());
-    updateNV = true;
-  }
+    v = www.arg("webpwd");
+    if (!v.equals(EmptyStr)) {
+      strcpy(wifiManager.settings.masterPassword, (char*)v.c_str());
+      updateNV = true;
+    }
+  #else
+    v = www.arg("login");
+    if (!v.equals(EmptyStr)) {
+      if (!strcmp(ethernetManager.settings.masterPassword, (char*)v.c_str())) loginRequired = false;
+    }
+
+    v = www.arg("logout");
+    if (!v.equals(EmptyStr)) loginRequired = true;
+    if (loginRequired) return;
+
+    v = www.arg("webpwd");
+    if (!v.equals(EmptyStr)) {
+      strcpy(ethernetManager.settings.masterPassword, (char*)v.c_str());
+      updateNV = true;
+    }
+  #endif
 
   // Timeouts -----------------------------------------------------------------
   // Cmd channel timeout
