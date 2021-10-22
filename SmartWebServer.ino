@@ -50,13 +50,13 @@ NVS nv;
 #include "src/lib/wifi/cmdServer/CmdServer.h"
 #include "src/lib/wifi/webServer/WebServer.h"
 
-#if PERSISTENT_COMMAND_CHANNEL == ON
+#if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
   CmdServer persistentCmdSvr1(9996, 120L*1000L, true);
   CmdServer persistentCmdSvr2(9997, 120L*1000L, true);
   CmdServer persistentCmdSvr3(9998, 120L*1000L, true);
 #endif
 
-#if STANDARD_COMMAND_CHANNEL == ON
+#if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
   CmdServer cmdSvr(9999, 2L*1000L);
 #endif
 
@@ -227,7 +227,7 @@ Again:
   
   www.onNotFound(handleNotFound);
 
-  #if PERSISTENT_COMMAND_CHANNEL == ON
+  #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
     VLF("MSG: Starting port 9996 cmd server");
     persistentCmdSvr3.begin();
     VLF("MSG: Starting port 9997 cmd server");
@@ -236,7 +236,7 @@ Again:
     persistentCmdSvr1.begin();
   #endif
 
-  #if STANDARD_COMMAND_CHANNEL == ON
+  #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
     VLF("MSG: Starting port 9999 cmd server");
     cmdSvr.begin();
   #endif
@@ -273,13 +273,13 @@ void loop(void) {
     bleConnTest(); Y;
   #endif
 
-  #if PERSISTENT_COMMAND_CHANNEL == ON
+  #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
     persistentCmdSvr1.handleClient(); Y;
     persistentCmdSvr2.handleClient(); Y;
     persistentCmdSvr3.handleClient(); Y;
   #endif
 
-  #if STANDARD_COMMAND_CHANNEL == ON
+  #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
     cmdSvr.handleClient(); Y;
   #endif
 
