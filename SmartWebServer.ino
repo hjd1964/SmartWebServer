@@ -50,12 +50,14 @@ NVS nv;
 #include "src/lib/wifi/cmdServer/CmdServer.h"
 #include "src/lib/wifi/webServer/WebServer.h"
 
-#if STANDARD_COMMAND_CHANNEL == ON
-  CmdServer cmdSvr(9999, 2L*1000L);
+#if PERSISTENT_COMMAND_CHANNEL == ON
+  CmdServer persistentCmdSvr1(9996, 120L*1000L, true);
+  CmdServer persistentCmdSvr2(9997, 120L*1000L, true);
+  CmdServer persistentCmdSvr3(9998, 120L*1000L, true);
 #endif
 
-#if PERSISTENT_COMMAND_CHANNEL == ON
-  CmdServer persistentCmdSvr(9998, 120L*1000L, true);
+#if STANDARD_COMMAND_CHANNEL == ON
+  CmdServer cmdSvr(9999, 2L*1000L);
 #endif
 
 void systemServices() {
@@ -225,14 +227,18 @@ Again:
   
   www.onNotFound(handleNotFound);
 
+  #if PERSISTENT_COMMAND_CHANNEL == ON
+    VLF("MSG: Starting port 9996 cmd server");
+    persistentCmdSvr3.begin();
+    VLF("MSG: Starting port 9997 cmd server");
+    persistentCmdSvr2.begin();
+    VLF("MSG: Starting port 9998 cmd server");
+    persistentCmdSvr1.begin();
+  #endif
+
   #if STANDARD_COMMAND_CHANNEL == ON
     VLF("MSG: Starting port 9999 cmd server");
     cmdSvr.begin();
-  #endif
-
-  #if PERSISTENT_COMMAND_CHANNEL == ON
-    VLF("MSG: Starting port 9998 cmd server");
-    persistentCmdSvr.begin();
   #endif
 
   VLF("MSG: Starting port 80 web server");
@@ -258,24 +264,26 @@ Again:
 }
 
 void loop(void) {
-  www.handleClient();
-
   #if ENCODERS == ON
-    encoders.poll();
+    encoders.poll(); Y;
   #endif
   
   #if BLE_GAMEPAD == ON
-    bleTimers();
-    bleConnTest(); 
+    bleTimers(); Y;
+    bleConnTest(); Y;
+  #endif
+
+  #if PERSISTENT_COMMAND_CHANNEL == ON
+    persistentCmdSvr1.handleClient(); Y;
+    persistentCmdSvr2.handleClient(); Y;
+    persistentCmdSvr3.handleClient(); Y;
   #endif
 
   #if STANDARD_COMMAND_CHANNEL == ON
-    cmdSvr.handleClient();
+    cmdSvr.handleClient(); Y;
   #endif
-  
-  #if PERSISTENT_COMMAND_CHANNEL == ON
-    persistentCmdSvr.handleClient();
-  #endif
+
+  www.handleClient();
 
   tasks.yield();
 }
