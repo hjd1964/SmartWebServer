@@ -48,10 +48,9 @@
 #define DRIVE_MAIN_AXES_CURRENT        ON //    ON, to display Axis1/2 IRUN if available.                                     Option
 #define DRIVE_MAIN_AXES_REVERSE        ON //    ON, to display Axis1/2 Reverse if available.                                  Option
 
-// COMMAND CHANNELS ----------------------------------------------------------------------------------------------------------------
-#define STANDARD_COMMAND_CHANNEL       ON //     ON, Enable standard cmd channel port 9999 use w/Android App & ASCOM driver.  Infreq
-#define PERSISTENT_COMMAND_CHANNEL     ON //     ON, Enable persistent cmd channel port 9998 use w/INDI? & Stellarium Mobile. Infreq
-                                          //         Experimental, possibly causes problems w/standard cmd channel if enabled.
+// COMMAND SERVER CHANNELS ---------------------------------------------------------------------------------------------------------
+#define COMMAND_SERVER               BOTH //   BOTH, for STANDARD (port 9999) and PERSISTENT (ports 9996 to 9998)
+                                          //         or disable with OFF
 
 // ENCODER SUPPORT -----------------------------------------------------------------------------------------------------------------
 // Some of these settings are stored in NV (EEPROM) as the default values when first uploaded.  Later changes below may be

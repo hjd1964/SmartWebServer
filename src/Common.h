@@ -2,7 +2,6 @@
 #pragma once
 
 // enable lib support for the command and web servers
-#define COMMAND_SERVER ON
 #define WEB_SERVER ON
 
 #include <Arduino.h>
