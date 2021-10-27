@@ -23,11 +23,12 @@ void Axis::init(Motor *motor, void (*callback)()) {
   this->callback = callback;
 
   // start monitor
-  V(axisPrefix); VF("start monitor task (rate "); V(FRACTIONAL_SEC_MS); VF("ms priority 1)... ");
+  V(axisPrefix); VF("start monitor task (rate "); V(FRACTIONAL_SEC_US); VF("us priority 1)... ");
   uint8_t taskHandle = 0;
   char taskName[] = "Ax_Mtr";
   taskName[2] = axisNumber + '0';
-  taskHandle = tasks.add(FRACTIONAL_SEC_MS, 0, true, 1, callback, taskName);
+  taskHandle = tasks.add(0, 0, true, 1, callback, taskName);
+  tasks.setPeriodMicros(taskHandle, FRACTIONAL_SEC_US);
   if (taskHandle) { VLF("success"); } else { VLF("FAILED!"); }
 
   // check for reverting axis settings in NV
@@ -443,6 +444,9 @@ void Axis::poll() {
   Y;
 
   setFrequency(freq);
+
+  // keep associated motor updated
+  motor->poll();
 }
 
 // set minimum slew frequency in "measures" (radians, microns, etc.) per second
