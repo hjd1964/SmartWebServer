@@ -120,15 +120,6 @@ void setup(void) {
   VLF("MSG: Init Encoders");
   encoders.init();
 
-  // bring servers up
-  #if OPERATIONAL_MODE == WIFI
-    VLF("MSG: Init WiFi");
-    wifiManager.init();
-  #else
-    VLF("MSG: Init Ethernet");
-    ethernetManager.init();
-  #endif
-  
   // init is done, write the NV key if necessary
   if (!nv.isKeyValid()) {
     nv.writeKey((uint32_t)INIT_NV_KEY);
@@ -194,6 +185,15 @@ Again:
     goto Again;
   }
   onStep.clearSerialChannel();
+
+  // bring network servers up
+  #if OPERATIONAL_MODE == WIFI
+    VLF("MSG: Init WiFi");
+    wifiManager.init();
+  #else
+    VLF("MSG: Init Ethernet");
+    ethernetManager.init();
+  #endif
 
   #if BLE_GAMEPAD == ON
     bleSetup();
