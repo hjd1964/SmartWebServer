@@ -91,43 +91,6 @@ void setup(void) {
   VLF("MSG: Init HAL");
   HAL_INIT();
 
-  // if requested, cause defaults to be written back into NV
-  if (NV_WIPE == ON) { nv.writeKey(0); }
-
-  // get NV ready
-  if (!nv.isKeyValid(INIT_NV_KEY)) {
-    VF("MSG: Wipe NV "); V(nv.size); VLF(" Bytes");
-    nv.wipe();
-    VLF("MSG: Wipe NV waiting for commit");
-    nv.wait();
-    VLF("MSG: NV reset to defaults");
-  } else { VLF("MSG: Correct NV key found"); }
-
-  // get the command and web timeouts
-  if (!nv.isKeyValid()) {
-    nv.write(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
-    nv.write(NV_TIMEOUT_WEB, (int16_t)webTimeout);
-  }
-  cmdTimeout = nv.readUI(NV_TIMEOUT_CMD);
-  webTimeout = nv.readUI(NV_TIMEOUT_WEB);
-
-  // System services
-  // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
-  VF("MSG: Setup, starting system services task (rate 10ms priority 7)... ");
-  if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
-
-  // read settings from NV or init. as required
-  VLF("MSG: Init Encoders");
-  encoders.init();
-
-  // init is done, write the NV key if necessary
-  if (!nv.isKeyValid()) {
-    nv.writeKey((uint32_t)INIT_NV_KEY);
-    nv.ignoreCache(true);
-    if (nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV reset failed to read back key!"); } else { VLF("MSG: NV reset complete"); }
-    nv.ignoreCache(false);
-  }
-
   #if LED_STATUS != OFF
     pinMode(LED_STATUS_PIN, OUTPUT);
   #endif
@@ -186,6 +149,36 @@ Again:
   }
   onStep.clearSerialChannel();
 
+  // System services
+  // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
+  VF("MSG: Setup, starting system services");
+  VF(" task (rate 10ms priority 7)... ");
+  if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
+
+  // if requested, cause defaults to be written back into NV
+  if (NV_WIPE == ON) { nv.writeKey(0); }
+
+  // get NV ready
+  if (!nv.isKeyValid(INIT_NV_KEY)) {
+    VF("MSG: Wipe NV "); V(nv.size); VLF(" Bytes");
+    nv.wipe();
+    VLF("MSG: Wipe NV waiting for commit");
+    nv.wait();
+    VLF("MSG: NV reset to defaults");
+  } else { VLF("MSG: Correct NV key found"); }
+
+  // get the command and web timeouts
+  if (!nv.isKeyValid()) {
+    nv.write(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
+    nv.write(NV_TIMEOUT_WEB, (int16_t)webTimeout);
+  }
+  cmdTimeout = nv.readUI(NV_TIMEOUT_CMD);
+  webTimeout = nv.readUI(NV_TIMEOUT_WEB);
+
+  // read settings from NV or init. as required
+  VLF("MSG: Init Encoders");
+  encoders.init();
+
   // bring network servers up
   #if OPERATIONAL_MODE == WIFI
     VLF("MSG: Init WiFi");
@@ -194,6 +187,14 @@ Again:
     VLF("MSG: Init Ethernet");
     ethernetManager.init();
   #endif
+
+  // init is done, write the NV key if necessary
+  if (!nv.isKeyValid()) {
+    nv.writeKey((uint32_t)INIT_NV_KEY);
+    nv.ignoreCache(true);
+    if (!nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV reset failed to read back key!"); } else { VLF("MSG: NV reset complete"); }
+    nv.ignoreCache(false);
+  }
 
   #if BLE_GAMEPAD == ON
     bleSetup();

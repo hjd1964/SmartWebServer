@@ -33,7 +33,7 @@
 #define TIMEOUT_CMD                  200
 
 // EEPROM contents
-#define INIT_NV_KEY                  698623877UL
+#define INIT_NV_KEY                  698623878UL
 
 #define NV_TIMEOUT_CMD               5      // 2 bytes
 #define NV_TIMEOUT_WEB               7      // 2 bytes
