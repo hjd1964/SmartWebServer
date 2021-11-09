@@ -23,7 +23,6 @@ void handleRoot() {
   String data=FPSTR(html_headB);
   data.concat(FPSTR(FPSTR(html_headerIdx))); // page refresh
   data.concat(FPSTR(html_main_cssB));
-  data.concat(FPSTR(html_main_css0));
   data.concat(FPSTR(html_main_css1));
   data.concat(FPSTR(html_main_css2));
   data.concat(FPSTR(html_main_css3));
