@@ -51,7 +51,7 @@ NVS nv;
 #include "src/lib/wifi/webServer/WebServer.h"
 
 #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
-  CmdServer persistentCmdSvr1(9996, 120L*1000L, true);
+  CmdServer persistentCmdSvr1(9996, 10L*1000L, true);
   CmdServer persistentCmdSvr2(9997, 120L*1000L, true);
   CmdServer persistentCmdSvr3(9998, 120L*1000L, true);
 #endif
