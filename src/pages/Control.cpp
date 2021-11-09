@@ -35,6 +35,7 @@ void handleControl() {
   sendHtml(data);
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
+  data.concat(FPSTR(html_main_css_no_select));
   data.concat(FPSTR(html_main_css_control1));
   data.concat(FPSTR(html_main_css_control2));
   data.concat(FPSTR(html_main_css_control3));

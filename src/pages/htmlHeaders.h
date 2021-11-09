@@ -40,6 +40,8 @@ const char html_main_css7[] PROGMEM =
 " margin: none; text-align: center; text-decoration: none; display: inline-block; }";
 const char html_main_css8[] PROGMEM = 
 "button:disabled { background-color: #733; color: #000; } button { background-color: #B02020; font-weight: bold; border-radius: 5px; margin: 2px; padding: 4px 8px; }";
+const char html_main_css_no_select[] PROGMEM =
+"body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }";
 const char html_main_css_btns1[] PROGMEM = 
 ".btns_left { margin-left: -1px; border-top-left-radius: 0px; border-bottom-left-radius: 0px; }";
 const char html_main_css_btns2[] PROGMEM = 
