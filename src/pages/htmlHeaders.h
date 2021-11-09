@@ -21,6 +21,8 @@ const char html_bodyB[] PROGMEM = "<body bgcolor='#26262A'>\r\n";
 
 const char html_main_cssB[] PROGMEM = 
 "<STYLE>";
+const char html_main_css0[] PROGMEM =
+"body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}";
 const char html_main_css1[] PROGMEM = 
 ".clear { clear: both; } .a { background-color: #111111; } "
 ".t { padding: 10px 10px 20px 10px; width: 640px; border: 5px solid #551111; margin: 25px 25px 0px 25px;";
