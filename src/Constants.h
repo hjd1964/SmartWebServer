@@ -33,10 +33,10 @@
 #define TIMEOUT_CMD                  200
 
 // EEPROM contents
-#define INIT_NV_KEY                  698623878UL
+#define INIT_NV_KEY                  698623879UL
 
 #define NV_TIMEOUT_CMD               5      // 2 bytes
 #define NV_TIMEOUT_WEB               7      // 2 bytes
 #define NV_ETHERNET_SETTINGS_BASE    100    // 67 bytes
-#define NV_WIFI_SETTINGS_BASE        200    // 331 bytes
-#define NV_ENCODER_SETTINGS_BASE     600    // 88 bytes
+#define NV_WIFI_SETTINGS_BASE        200    // 427 bytes
+#define NV_ENCODER_SETTINGS_BASE     700    // 88 bytes

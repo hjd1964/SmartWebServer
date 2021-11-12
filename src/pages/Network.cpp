@@ -85,7 +85,7 @@ void handleNetwork() {
     sprintf_P(temp, htmL_NETWORKSerial, cmdTimeout, webTimeout); data.concat(temp);
     
     #if OPERATIONAL_MODE == WIFI
-      sprintf_P(temp, htmL_NETWORKSSID1, wifiManager.settings.sta1.ssid, ""); data.concat(temp);
+      sprintf_P(temp, htmL_NETWORKSSID1, wifiManager.sta->ssid, ""); data.concat(temp);
 
       uint8_t macsta[6] = {0,0,0,0,0,0};
       WiFi.macAddress(macsta);
@@ -99,11 +99,11 @@ void handleNetwork() {
 
       sprintf_P(temp,htmL_NET_MAC,"sta", temp1); data.concat(temp);
       sendHtml(data);
-      sprintf_P(temp,htmL_NET_IP, "sta", (int)wifiManager.settings.sta1.ip[0], "sta", (int)wifiManager.settings.sta1.ip[1], "sta", (int)wifiManager.settings.sta1.ip[2], "sta", (int)wifiManager.settings.sta1.ip[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_GW, "sta", (int)wifiManager.settings.sta1.gw[0], "sta", (int)wifiManager.settings.sta1.gw[1], "sta", (int)wifiManager.settings.sta1.gw[2], "sta", (int)wifiManager.settings.sta1.gw[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_SN, "sta", (int)wifiManager.settings.sta1.sn[0], "sta", (int)wifiManager.settings.sta1.sn[1], "sta", (int)wifiManager.settings.sta1.sn[2], "sta", (int)wifiManager.settings.sta1.sn[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_IP, "sta", (int)wifiManager.sta->ip[0], "sta", (int)wifiManager.sta->ip[1], "sta", (int)wifiManager.sta->ip[2], "sta", (int)wifiManager.sta->ip[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_GW, "sta", (int)wifiManager.sta->gw[0], "sta", (int)wifiManager.sta->gw[1], "sta", (int)wifiManager.sta->gw[2], "sta", (int)wifiManager.sta->gw[3]); data.concat(temp);
+      sprintf_P(temp,htmL_NET_SN, "sta", (int)wifiManager.sta->sn[0], "sta", (int)wifiManager.sta->sn[1], "sta", (int)wifiManager.sta->sn[2], "sta", (int)wifiManager.sta->sn[3]); data.concat(temp);
 
-      sprintf_P(temp,htmL_NETWORKSSID2, wifiManager.settings.sta1.dhcpEnabled ? "checked" : "",wifiManager.settings.stationEnabled ? "checked" : ""); data.concat(temp);
+      sprintf_P(temp,htmL_NETWORKSSID2, wifiManager.sta->dhcpEnabled ? "checked" : "",wifiManager.settings.stationEnabled ? "checked" : ""); data.concat(temp);
       data.concat(FPSTR(htmL_NETWORKSSID3A));
       sprintf_P(temp,htmL_NETWORKSSID3B, wifiManager.settings.ap.ssid, "", wifiManager.settings.ap.channel); data.concat(temp);
       sendHtml(data);
@@ -229,25 +229,25 @@ void processNetworkGet() {
     v = www.arg("stssid");
     v1 = v;
     if (!v.equals(EmptyStr)) {
-      if (!strcmp(wifiManager.settings.sta1.ssid, (char*)v.c_str())) restartRequired = true;
-      strcpy(wifiManager.settings.sta1.ssid, (char*)v.c_str());
+      if (!strcmp(wifiManager.sta->ssid, (char*)v.c_str())) restartRequired = true;
+      strcpy(wifiManager.sta->ssid, (char*)v.c_str());
 
       // if this section was submitted set the stationEnabled default to false
-      wifiManager.settings.sta1.dhcpEnabled = false;
+      wifiManager.sta->dhcpEnabled = false;
       wifiManager.settings.stationEnabled = false;
     }
 
     // Station password
     v = www.arg("stpwd");
     if (!v.equals(EmptyStr)) {
-      if (!strcmp(wifiManager.settings.sta1.pwd, (char*)v.c_str())) restartRequired = true;
-      strcpy(wifiManager.settings.sta1.pwd, (char*)v.c_str());
+      if (!strcmp(wifiManager.sta->pwd, (char*)v.c_str())) restartRequired = true;
+      strcpy(wifiManager.sta->pwd, (char*)v.c_str());
     }
 
     // Station dhcp enabled
     v = www.arg("stadhcp");
     if (!v.equals(EmptyStr)) {
-      wifiManager.settings.sta1.dhcpEnabled = v.toInt();
+      wifiManager.sta->dhcpEnabled = v.toInt();
     }
 
     // Station enabled
@@ -257,22 +257,22 @@ void processNetworkGet() {
     }
 
     // Station ip
-    v = www.arg("staip1"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.ip[0] = v.toInt();
-    v = www.arg("staip2"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.ip[1] = v.toInt();
-    v = www.arg("staip3"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.ip[2] = v.toInt();
-    v = www.arg("staip4"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.ip[3] = v.toInt();
+    v = www.arg("staip1"); if (!v.equals(EmptyStr)) wifiManager.sta->ip[0] = v.toInt();
+    v = www.arg("staip2"); if (!v.equals(EmptyStr)) wifiManager.sta->ip[1] = v.toInt();
+    v = www.arg("staip3"); if (!v.equals(EmptyStr)) wifiManager.sta->ip[2] = v.toInt();
+    v = www.arg("staip4"); if (!v.equals(EmptyStr)) wifiManager.sta->ip[3] = v.toInt();
 
     // Station SubNet
-    v = www.arg("stasn1"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.sn[0] = v.toInt();
-    v = www.arg("stasn2"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.sn[1] = v.toInt();
-    v = www.arg("stasn3"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.sn[2] = v.toInt();
-    v = www.arg("stasn4"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.sn[3] = v.toInt();
+    v = www.arg("stasn1"); if (!v.equals(EmptyStr)) wifiManager.sta->sn[0] = v.toInt();
+    v = www.arg("stasn2"); if (!v.equals(EmptyStr)) wifiManager.sta->sn[1] = v.toInt();
+    v = www.arg("stasn3"); if (!v.equals(EmptyStr)) wifiManager.sta->sn[2] = v.toInt();
+    v = www.arg("stasn4"); if (!v.equals(EmptyStr)) wifiManager.sta->sn[3] = v.toInt();
 
     // Station Gateway
-    v = www.arg("stagw1"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.gw[0] = v.toInt();
-    v = www.arg("stagw2"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.gw[1] = v.toInt();
-    v = www.arg("stagw3"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.gw[2] = v.toInt();
-    v = www.arg("stagw4"); if (!v.equals(EmptyStr)) wifiManager.settings.sta1.gw[3] = v.toInt();
+    v = www.arg("stagw1"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[0] = v.toInt();
+    v = www.arg("stagw2"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[1] = v.toInt();
+    v = www.arg("stagw3"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[2] = v.toInt();
+    v = www.arg("stagw4"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[3] = v.toInt();
       
     if (!v1.equals(EmptyStr)) {
       updateNV = true;
