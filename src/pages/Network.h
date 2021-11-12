@@ -41,8 +41,8 @@ const char htmL_NET_SN[] PROGMEM =
   const char htmL_NETWORKSSID1[] PROGMEM =
   "<br/><b>" L_NETWORK_STA_TITLE ":</b><br/>"
   "<form method='post' action='/net.htm'>"
-  "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
-  L_NETWORK_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='39'> (" L_NETWORK_PWD_MSG ")<br/>";
+  "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='31'>&nbsp;&nbsp;&nbsp;"
+  L_NETWORK_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='31'> (" L_NETWORK_PWD_MSG ")<br/>";
 
   const char htmL_NETWORKSSID2[] PROGMEM =
   L_NETWORK_EN_DHCP ": <input type='checkbox' name='stadhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>"
@@ -55,8 +55,8 @@ const char htmL_NET_SN[] PROGMEM =
   "SSID: <input style='width:6em' name='apssid' type='text' ";
 
   const char htmL_NETWORKSSID3B[] PROGMEM =
-  "value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
-  L_NETWORK_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='39'> " L_NETWORK_PWD_MSG "&nbsp;&nbsp;&nbsp;"
+  "value='%s' maxlength='31'>&nbsp;&nbsp;&nbsp;"
+  L_NETWORK_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='31'> " L_NETWORK_PWD_MSG "&nbsp;&nbsp;&nbsp;"
   L_NETWORK_CHA ": <input style='width:3em' name='apch' value='%d' type='number' min='1' max='11'><br/>";
 
   const char htmL_NETWORKSSID7[] PROGMEM =
@@ -74,7 +74,7 @@ const char htmL_NET_SN[] PROGMEM =
 const char html_logout[] PROGMEM =
 "<br/><b>" L_NETWORK_CONFIG_SECURITY ":</b><br/>"
 "<form method='post' action='/net.htm'>"
-L_NETWORK_PWD ": <input style='width:8em' name='webpwd' type='password' minlength='3' maxlength='39'> "
+L_NETWORK_PWD ": <input style='width:8em' name='webpwd' type='password' minlength='3' maxlength='31'> "
 "<button type='submit'>" L_UPLOAD "</button></form>"
 "<form method='post' action='/net.htm'>"
 "<button type='submit' name='logout' value='1'>" L_LOGOUT "</button></form><br />\r\n";
@@ -89,7 +89,7 @@ const char html_reboot[] PROGMEM =
 const char html_login[] PROGMEM =
 "<br/><form method='post' action='/net.htm'>"
 "<br/>" L_NETWORK_TITLE "<br />"
-"<input style='width:8em' name='login' type='password' minlength='3' maxlength='39'>"
+"<input style='width:8em' name='login' type='password' minlength='3' maxlength='31'>"
 "<button type='submit'>" L_OK "</button>"
 "</form><br/><br/><br/>"
 #if OPERATIONAL_MODE == WIFI
