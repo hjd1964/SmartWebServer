@@ -9,8 +9,8 @@
 
   #define AXIS1_ENC_A_PIN    14  // pin# for Axis1 encoder, for A or CW  or MA/CLK
   #define AXIS1_ENC_B_PIN    12  // pin# for Axis1 encoder, for B or CCW or SLO
-  #define AXIS2_ENC_A_PIN    5   // pin# for Axis1 encoder, for A or CW  or MA/CLK
-  #define AXIS2_ENC_B_PIN    4   // pin# for Axis1 encoder, for B or CCW or SLO
+  #define AXIS2_ENC_A_PIN    5   // pin# for Axis2 encoder, for A or CW  or MA/CLK
+  #define AXIS2_ENC_B_PIN    4   // pin# for Axis2 encoder, for B or CCW or SLO
 
   #define ETHERNET_RESET_PIN D2  // pin# for controlling the reset of W5500 so it comes up properly
   #define ETHERNET_CS_PIN    D1  // pin# for W5500 SPI CS
