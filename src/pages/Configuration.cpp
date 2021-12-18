@@ -289,7 +289,6 @@ void handleConfiguration() {
 
       // Axis1 RA/Azm
       if (!onStep.command(":GXA1#", temp1)) strcpy(temp1, "0");
-      VL(temp1);
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis1 RA/Azm</button>"));
         data.concat(FPSTR(html_configFormBegin));
