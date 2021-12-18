@@ -347,23 +347,29 @@
 // advanced configuration
 #define L_REVERT "还原为默认值"
 #define L_ADV_SET_TITLE "高级"
-#define L_ADV_SET_HEADER_MSG "重新启动 OnStep 后，以下更改将生效:"
+#define L_ADV_SET_HEADER_MSG "除非另有说明，否则以下更改将在重新启动 OnStep 后生效:"
 #define L_ADV_MOUNT_TYPE "选择 1 GEM, 2 EQ Fork, 3 Alt/Azm"
 
 #define L_ADV_SET_SPWR "蠕虫旋转的步骤数（0禁用）"
 #define L_ADV_SET_SPD "每度步数"
 #define L_ADV_SET_SPM "每微米步数"
-#define L_ADV_SET_us  "微步"
-#define L_ADV_SET_ma  "电流以毫安为单位，<i>小心！</i>"
 #define L_ADV_SET_REV "反向，0假或1真"
 #define L_ADV_SET_MIN "最低位置"
 #define L_ADV_SET_MAX "最大位置"
+
+#define L_ADV_SET_us "司机 微步"
+#define L_ADV_SET_ma "司机 电流以毫安为单位，<i>小心！</i>"
+#define L_ADV_SET_SLEW_ma "司机 以毫安为单位的压摆电流，<i>小心！</i>"
+#define L_ADV_SET_P "伺服 (P) 成比例的 (立即，无需重启)"
+#define L_ADV_SET_I "伺服 (I) 不可缺少的 (立即，无需重启)"
+#define L_ADV_SET_D "伺服 (D) 衍生物 (立即，无需重启)"
+
 #define L_ADV_ENABLE "启用高级配置"
 #define L_ADV_DISABLE "禁用高级配置（重新启动时所有默认设置）。"
 #define L_ADV_SET_NO_EDIT "目前禁止所有轴的编辑。可能未启用此功能，或者您需要重新启动OnStep。"
 #define L_ADV_SET_FOOTER_MSG1 "在按下[Upload]后，请注意上述更改，因为上载可能由于参数无效而被拒绝。"
 #define L_ADV_SET_FOOTER_MSG2 "当您选择[还原]时，该组将不可编辑，直到您重新启动OnStep。"
-#define L_ADV_SET_FOOTER_MSG3 "如果将IRUN设置为默认值Config.h以外的其他值，则会禁用IHOLD和IGOTO（关闭）."
+#define L_ADV_SET_FOOTER_MSG3 "如果 IRUN 设置为非 Config.h 默认值，则 IHOLD 设置为 50% (HALF)。"
 #define L_ADV_SET_FOOTER_MSG4 "更改每蠕虫蠕虫的Axis1步进数和每度步进数的比率可能会损坏Library NV存储区，如果需要，请首先备份所有目录。"
 
 // reset control

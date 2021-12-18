@@ -347,23 +347,29 @@
 // advanced configuration
 #define L_REVERT "Revert to Defaults"
 #define L_ADV_SET_TITLE "Advanced"
-#define L_ADV_SET_HEADER_MSG "changes below take effect after rebooting OnStep:"
+#define L_ADV_SET_HEADER_MSG "unless noted otherwise changes below take effect after rebooting OnStep:"
 #define L_ADV_MOUNT_TYPE "Select 1 GEM, 2 EQ Fork, or 3 Alt/Azm"
 
 #define L_ADV_SET_SPWR "Steps per worm rotation (0 to disable)"
 #define L_ADV_SET_SPD "Steps per degree"
 #define L_ADV_SET_SPM "Steps per micron"
-#define L_ADV_SET_us  "Microsteps"
-#define L_ADV_SET_ma  "Current in milli-amps, <i>caution!</i>"
 #define L_ADV_SET_REV "Reverse direction, 0 false or 1 true"
 #define L_ADV_SET_MIN "Minimum position"
 #define L_ADV_SET_MAX "Maximum position"
+
+#define L_ADV_SET_us "Driver Microsteps"
+#define L_ADV_SET_ma "Driver Tracking Current in milliamps, <i>caution!</i>"
+#define L_ADV_SET_SLEW_ma "Driver Slewing Current in milliamps, <i>caution!</i>"
+#define L_ADV_SET_P "Servo Porportional (immediate, no reboot)"
+#define L_ADV_SET_I "Servo Integral (immediate, no reboot)"
+#define L_ADV_SET_D "Servo Derivative (immediate, no reboot)"
+
 #define L_ADV_ENABLE "Enable Advanced Configuration"
 #define L_ADV_DISABLE "Disable Advanced Configuration (all defaults on reboot)"
 #define L_ADV_SET_NO_EDIT "Editing of all axes is disabled at the moment.  Perhaps this feature is not enabled or you need to reboot OnStep."
 #define L_ADV_SET_FOOTER_MSG1 "After pressing [Upload] take note of changes above since the upload may have been rejected due to an invalid parameter."
 #define L_ADV_SET_FOOTER_MSG2 "When you choose to [Revert] that group becomes unavailable for editing until you reboot OnStep."
-#define L_ADV_SET_FOOTER_MSG3 "If IRUN is set to other than the Config.h default, IHOLD and IGOTO are disabled (OFF.)"
+#define L_ADV_SET_FOOTER_MSG3 "If IRUN is set to other than the Config.h default, IHOLD is set to 50% (HALF.)"
 #define L_ADV_SET_FOOTER_MSG4 "Changing the ratio of Axis1 Steps per worm rotation and Steps per degree may corrupt the Library NV memory area, backup any catalogs first if needed."
 
 // reset control

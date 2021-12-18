@@ -356,23 +356,30 @@
 // advanced configuration
 #define L_REVERT "Auf Standard zurücksetzen"
 #define L_ADV_SET_TITLE "Fortgeschrittene"
-#define L_ADV_SET_HEADER_MSG "Die folgenden Änderungen werden nach dem Neustart von OnStep wirksam:"
+#define L_ADV_SET_HEADER_MSG "sofern nicht anders angegeben, werden die unten aufgeführten Änderungen nach dem Neustart von OnStep wirksam:"
 #define L_ADV_MOUNT_TYPE "Wählen 1 GEM, 2 EQ Fork, 3 Alt/Azm"
 
 #define L_ADV_SET_SPWR "Schritte pro Schneckendrehung (0 zum Deaktivieren)"
 #define L_ADV_SET_SPD "Schritte pro Grad"
 #define L_ADV_SET_SPM "Schritte pro Mikron"
-#define L_ADV_SET_us  "Mikroschritte"
-#define L_ADV_SET_ma  "Strom in Milliampere, <i>Vorsicht!</i>"
+
 #define L_ADV_SET_REV "Umgekehrte Richtung, 0 falsch oder 1 wahr"
 #define L_ADV_SET_MIN "Mindestposition"
 #define L_ADV_SET_MAX "Maximale Position"
+
+#define L_ADV_SET_us "Treiber Mikroschritte"
+#define L_ADV_SET_ma "Treiber Strom in Milliampere, <i>Vorsicht!</i>"
+#define L_ADV_SET_SLEW_ma "Treiber Slewing Strom in Milliampere, <i>Vorsicht!</i>"
+#define L_ADV_SET_P "Servo (P) Proportional (sofort, kein Neustart)"
+#define L_ADV_SET_I "Servo (I) Integral (sofort, kein Neustart)"
+#define L_ADV_SET_D "Servo (D) Ableitung (sofort, kein Neustart)"
+
 #define L_ADV_ENABLE "Aktivieren Sie die erweiterte Konfiguration"
 #define L_ADV_DISABLE "Deaktivieren Sie die erweiterte Konfiguration (alle Standardeinstellungen beim Neustart)"
 #define L_ADV_SET_NO_EDIT "Deaktivieren Sie die erweiterte Konfiguration (alle Standardeinstellungen beim Neustart)"
 #define L_ADV_SET_FOOTER_MSG1 "Beachten Sie nach dem Drücken von [Upload] die obigen Änderungen, da der Upload möglicherweise aufgrund eines ungültigen Parameters abgelehnt wurde."
 #define L_ADV_SET_FOOTER_MSG2 "Wenn Sie [Zurücksetzen] wählen, kann diese Gruppe erst bearbeitet werden, wenn Sie OnStep neu starten."
-#define L_ADV_SET_FOOTER_MSG3 "Wenn IRUN nicht auf die Standardeinstellung Config.h eingestellt ist, sind IHOLD und IGOTO deaktiviert (AUS)."
+#define L_ADV_SET_FOOTER_MSG3 "Wenn IRUN auf einen anderen Wert als den Standardwert von Config.h eingestellt ist, wird IHOLD auf 50% (HALF) eingestellt."
 #define L_ADV_SET_FOOTER_MSG4 "Durch Ändern des Verhältnisses von Axis1-Schritten pro Wurmdrehung und Schritten pro Grad kann der Speicherbereich von Library NV beschädigt werden. Sichern Sie bei Bedarf zuerst alle Kataloge."
 
 // reset control
