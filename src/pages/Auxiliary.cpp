@@ -117,11 +117,11 @@ void handleAux() {
         data.concat(mountStatus.featureName());
         data.concat("&bull;");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
-        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data.concat(temp);
-        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data.concat(temp);
+        sprintf_P(temp, html_auxOnSwitch, i + 1, i + 1); data.concat(temp);
+        sprintf_P(temp, html_auxOffSwitch, i + 1, i + 1); data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(mountStatus.featureValue4(),3,1,temp1);
-        sprintf(temp,"&Delta;<span id='x%dv4'>%s</span>&deg;C\r\n",i+1,temp1);
+        dtostrf(celsiusToNativeRelative(mountStatus.featureValue4()), 3, 1, temp1);
+        sprintf(temp,"&Delta;<span id='x%dv4'>%s</span>&deg;" TEMPERATURE_UNITS_ABV "\r\n", i + 1, temp1);
         data.concat(temp);
         data.concat("</div>\r\n");
 
@@ -129,11 +129,11 @@ void handleAux() {
         data.concat(L_ZERO " (100% " L_POWER ")");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxHeater));
-        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)lround(mountStatus.featureValue2()*10.0),i+1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">", (int)lround(celsiusToNativeRelative(mountStatus.featureValue2())*10.0F), i + 1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(mountStatus.featureValue2(),3,1,temp1);
-        sprintf(temp,"<span id='x%dv2'>%s</span>&deg;C\r\n",i+1,temp1);
+        dtostrf(celsiusToNativeRelative(mountStatus.featureValue2()), 3, 1, temp1);
+        sprintf(temp,"<span id='x%dv2'>%s</span>&deg;" TEMPERATURE_UNITS_ABV "\r\n", i + 1, temp1);
         data.concat(temp);
         data.concat("</div>\r\n");
         
@@ -141,11 +141,11 @@ void handleAux() {
         data.concat(L_SPAN " (0% " L_POWER ")");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxHeater));
-        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)lround(mountStatus.featureValue3()*10.0),i+1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">", (int)lround(celsiusToNativeRelative(mountStatus.featureValue3())*10.0), i + 1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(mountStatus.featureValue3(),3,1,temp1);
-        sprintf(temp,"<span id='x%dv3'>%s</span>&deg;C\r\n",i+1,temp1);
+        dtostrf(celsiusToNativeRelative(mountStatus.featureValue3()), 3, 1, temp1);
+        sprintf(temp,"<span id='x%dv3'>%s</span>&deg;" TEMPERATURE_UNITS_ABV "\r\n", i + 1, temp1);
         data.concat(temp);
         data.concat("</div>\r\n");
 
@@ -263,9 +263,9 @@ void auxAjax() {
           sprintf(temp,"sw%d_on|%s\n",i+1,"disabled"); data.concat(temp);
           sprintf(temp,"sw%d_off|%s\n",i+1,"enabled"); data.concat(temp);
         }
-        dtostrf(mountStatus.featureValue2(),3,1,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
-        dtostrf(mountStatus.featureValue3(),3,1,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
-        dtostrf(mountStatus.featureValue4(),3,1,s); sprintf(temp,"x%dv4|%s\n",i+1,s); data.concat(temp);
+        dtostrf(celsiusToNativeRelative(mountStatus.featureValue2()),3,1,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
+        dtostrf(celsiusToNativeRelative(mountStatus.featureValue3()),3,1,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
+        dtostrf(celsiusToNativeRelative(mountStatus.featureValue4()),3,1,s); sprintf(temp,"x%dv4|%s\n",i+1,s); data.concat(temp);
       } else
       if (mountStatus.featurePurpose() == INTERVALOMETER) {
         char s[40];
@@ -301,9 +301,13 @@ void processAuxGet() {
     if (!v.equals(EmptyStr)) { sprintf(temp, ":SXX%c,V%s#", c, v.c_str()); onStep.commandBool(temp); }
     if (mountStatus.featurePurpose() == DEW_HEATER) {
       sprintf(temp, "x%cv2", c); v = www.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat()/10.0, 0, 1, temp1); sprintf(temp, ":SXX%c,Z%s#", c, temp1); onStep.commandBool(temp); }
+      if (!v.equals(EmptyStr)) {
+        dtostrf(nativeToCelsiusRelative(v.toFloat()/10.0), 0, 1, temp1); sprintf(temp, ":SXX%c,Z%s#", c, temp1); onStep.commandBool(temp);
+      }
       sprintf(temp, "x%cv3", c); v = www.arg(temp);
-      if (!v.equals(EmptyStr)) { dtostrf(v.toFloat()/10.0, 0, 1, temp1); sprintf(temp, ":SXX%c,S%s#", c, temp1); onStep.commandBool(temp); }
+      if (!v.equals(EmptyStr)) {
+        dtostrf(nativeToCelsiusRelative(v.toFloat()/10.0), 0, 1, temp1); sprintf(temp, ":SXX%c,S%s#", c, temp1); onStep.commandBool(temp);
+      }
     } else
     if (mountStatus.featurePurpose() == INTERVALOMETER) {
       sprintf(temp, "x%cv2", c); v = www.arg(temp);

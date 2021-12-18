@@ -17,7 +17,11 @@ const char html_auxStartStop2[] PROGMEM = "','1')\" type='button'>" L_START "</b
 const char html_auxStartStop3[] PROGMEM = "','0')\" type='button'>" L_STOP "</button>\r\n";
 
 const char html_auxAnalog[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='0' max='255' value='";
-const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-50' max='200' value='";
+#if UNITS == METRIC
+  const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-50' max='200' value='";
+#else
+  const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-90' max='360' value='";
+#endif
 const char html_auxExposure[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='0' max='255' value='";
 const char html_auxDelay[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='10' max='255' value='";
 const char html_auxCount[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='1' max='255' value='";
