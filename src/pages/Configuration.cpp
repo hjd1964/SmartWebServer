@@ -712,7 +712,7 @@ bool processConfigurationGet() {
         if (s4.equals("0")) s4 = "-1"; else if (s4.equals("1")) s4 = "-2";
 
         v = s1 + "," + s2 + "," + s3 + "," + s4 + "," + s5 + "," + s6;
-        sprintf(temp, ":SXA%d,%s#", axisStr.toInt(), v.c_str());
+        sprintf(temp, ":SXA%d,%s#", (int)axisStr.toInt(), v.c_str());
         onStep.commandBool(temp);
 
         if (!www.arg("a1spwr").equals(EmptyStr)) {
@@ -747,7 +747,7 @@ bool processConfigurationGet() {
         if (s7.equals(EmptyStr)) s7 = "-1";
 
         v = s1 + "," + s2 + "," + s3 + "," + s4 + "," + s5 + "," + s6 + "," + s7;
-        sprintf(temp, ":SXA%d,%s#", axisStr.toInt(), v.c_str());
+        sprintf(temp, ":SXA%d,%s#", (int)axisStr.toInt(), v.c_str());
         onStep.commandBool(temp);
 
         if (!www.arg("a1spwr").equals(EmptyStr)) {
