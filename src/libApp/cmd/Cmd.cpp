@@ -76,7 +76,7 @@ void OnStepCmd::clearSerialChannel() {
   SemaphoreHandle_t xMutex;
 #endif
 
-// smart LX200 aware command and response over serial
+// smart LX200 aware command and response (up to 80 chars) over serial
 bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) {
 
   #ifdef ESP32
@@ -198,7 +198,7 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
     while ((long)(timeout - millis()) > 0 && b != '#') {
       if (SERIAL_ONSTEP.available()) {
         b = SERIAL_ONSTEP.read();
-        response[responsePos] = b; responsePos++; if (responsePos > 39) responsePos = 39; response[responsePos] = 0;
+        response[responsePos] = b; responsePos++; if (responsePos > 79) responsePos = 79; response[responsePos] = 0;
       }
     }
     #ifdef ESP32
@@ -216,19 +216,19 @@ bool OnStepCmd::command(const char* command, char* response) {
 }
 
 bool OnStepCmd::commandBlind(const char* command) {
-  char response[40] = "";
+  char response[80] = "";
   return processCommand(command, response, webTimeout);
 }
 
 bool OnStepCmd::commandEcho(const char* command) {
-  char response[40] = "";
+  char response[80] = "";
   char c[40] = "";
   sprintf(c, ":EC%s#", command);
   return processCommand(c, response, webTimeout);
 }
 
 bool OnStepCmd::commandBool(const char* command) {
-  char response[40] = "";
+  char response[80] = "";
   bool success = processCommand(command, response, webTimeout);
   int l = strlen(response) - 1; if (l >= 0 && response[l] == '#') response[l] = 0;
   if (!success) return false;
@@ -237,7 +237,7 @@ bool OnStepCmd::commandBool(const char* command) {
 }
 
 char* OnStepCmd::commandString(const char* command) {
-  static char response[40] = "";
+  static char response[80] = "";
   bool success = processCommand(command, response, webTimeout);
   int l = strlen(response) - 1; if (l >= 0 && response[l] == '#') response[l] = 0;
   if (!success) strcpy(response,"?");

@@ -26,10 +26,10 @@ class OnStepCmd {
     // sends 3x empty frames to OnStep to purge noise that might intefere with commands on the interface 
     void clearSerialChannel();
 
-    // low level smart LX200 aware command and response over serial (includes any '#' frame char)
+    // low level smart LX200 aware command and response (up to 80 chars) over serial (includes any '#' frame char)
     bool processCommand(const char* cmd, char* response, long timeOutMs);
 
-    // send command to OnStep and get any response (no '#' frame char)
+    // send command to OnStep and get any response (up 80 chars, no '#' frame char)
     bool command(const char* command, char* response);
 
     // send command to OnStep, expects no reply
