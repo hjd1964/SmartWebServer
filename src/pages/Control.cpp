@@ -230,7 +230,7 @@ void controlAjax() {
       data.concat("park|disabled\n");
       data.concat("unpark|enabled\n");
     } else {
-      data.concat("park|enabled\n");
+      if (mountStatus.parkFail() || mountStatus.parking()) data.concat("park|disabled\n"); else data.concat("park|enabled\n");
       data.concat("unpark|disabled\n");
     }
     if (mountStatus.inGoto()) {
@@ -280,10 +280,10 @@ void controlAjax() {
 
   if (focuserCount > 0) {
     data.concat("focuserpos|");
-    if (onStep.command(":FG#",temp)) { data.concat(temp); data.concat(" microns\n"); } else { data.concat("?\n"); }
+    if (onStep.command(":FG#", temp)) { data.concat(temp); data.concat(" microns\n"); } else { data.concat("?\n"); }
 
     if (mountStatus.getVersionMajor() >= 10) {
-      if (onStep.command(":FA#",temp)) {
+      if (onStep.command(":FA#", temp)) {
         if (temp[0] == '1' && temp[1] == 0) data.concat("foc1_sel|disabled\n"); else data.concat("foc1_sel|enabled\n");
         if (temp[0] == '2' && temp[1] == 0) data.concat("foc2_sel|disabled\n"); else data.concat("foc2_sel|enabled\n");
         if (temp[0] == '3' && temp[1] == 0) data.concat("foc3_sel|disabled\n"); else data.concat("foc3_sel|enabled\n");
@@ -299,7 +299,7 @@ void controlAjax() {
 
   if (rotator) {
     data.concat("rotatorpos|");
-    if (onStep.command(":rG#",temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
+    if (onStep.command(":rG#", temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
   }
 
 #if OPERATIONAL_MODE != WIFI

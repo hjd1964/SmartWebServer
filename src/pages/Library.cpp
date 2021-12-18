@@ -120,8 +120,8 @@ void libraryAjax() {
     strcpy(currentCatName,"");
     if (currentCatalog != 0) {
       if (onStep.commandBool(":L$#")) {
-        char temp[40]="";
-        onStep.command(":LR#",temp);
+        char temp[80] = "";
+        onStep.command(":LR#", temp);
         if (temp[0] == '$') {
           for (int i=1; i<10; i++) {
             currentCatName[i-1]=0; currentCatName[i]=0;
@@ -144,38 +144,38 @@ void libraryAjax() {
   if (downloadCatalogData) {
     if (currentCatalog != 0) {
       data.concat("catData&");
-      bool success=false;
-      char temp[40]="";
-      sprintf(temp,":Lo%ld#",(long)currentCatalog-1);
+      bool success = false;
+      char temp[80] = "";
+      sprintf(temp, ":Lo%ld#", (long)currentCatalog-1);
       if (onStep.commandBool(temp)) {
         data.concat("$");
         data.concat(currentCatName);
         data.concat("\r");
 
         while (true) {
-          onStep.command(":LR#",temp);
+          onStep.command(":LR#", temp);
           if (temp[0] == ',') { success=true; break; }
           if (temp[0] == 0)  break;
 
           // isolate the individual fields (and error check)
-          int i=0;
-          String r=temp;
-          String nameS="";
-          String catS="";
-          String raS="";
-          String decS="";
+          int i = 0;
+          String r = temp;
+          String nameS = "";
+          String catS = "";
+          String raS = "";
+          String decS = "";
 
-          r=r+",";
-          i=r.indexOf(","); if (i>=0) { nameS = r.substring(0,i); r=r.substring(i+1); } else { success=false; break; }
-          i=r.indexOf(","); if (i>=0) { catS  = r.substring(0,i); r=r.substring(i+1); } else { success=false; break; }
-          i=r.indexOf(","); if (i>=0) { raS   = r.substring(0,i); r=r.substring(i+1); } else { success=false; break; }
-          i=r.indexOf(","); if (i>=0) { decS  = r.substring(0,i); r=r.substring(i+1); } else { success=false; break; }
+          r = r + ",";
+          i = r.indexOf(","); if (i >= 0) { nameS = r.substring(0, i); r = r.substring(i + 1); } else { success = false; break; }
+          i = r.indexOf(","); if (i >= 0) { catS  = r.substring(0, i); r = r.substring(i + 1); } else { success = false; break; }
+          i = r.indexOf(","); if (i >= 0) { raS   = r.substring(0, i); r = r.substring(i + 1); } else { success = false; break; }
+          i = r.indexOf(","); if (i >= 0) { decS  = r.substring(0, i); r = r.substring(i + 1); } else { success = false; break; }
 
           // pad to the correct length (and error check)
-          i=11-nameS.length(); if (i>=0) { for (int j=0; j<i; j++) nameS=nameS+" "; } else { success=false; break; }
-          i=3-catS.length(); if (i>=0) { for (int j=0; j<i; j++) catS=catS+" "; } else { success=false; break; }
+          i = 11 - nameS.length(); if (i >= 0) { for (int j = 0; j < i; j++) nameS = nameS + " "; } else { success = false; break; }
+          i = 3 - catS.length(); if (i >= 0) { for (int j = 0; j < i; j++) catS = catS + " "; } else { success = false; break; }
 
-          r=nameS+","+catS+","+raS+","+decS;
+          r = nameS + "," + catS + "," + raS + "," + decS;
 
           data.concat(r);
           data.concat("\r");

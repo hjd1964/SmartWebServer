@@ -89,11 +89,11 @@ void handlePec() {
 }
 
 void pecAjax() {
-  String data="";
-  char temp[80]="";
+  String data = "";
+  char temp[80] = "";
   
   data.concat("status|");
-  if ((mountStatus.mountType() != MT_ALTAZM) && (mountStatus.update()) && (onStep.command(":$QZ?#",temp))) {
+  if ((mountStatus.mountType() != MT_ALTAZM) && (mountStatus.update()) && (onStep.command(":$QZ?#", temp))) {
     if (temp[0] == 'I') data.concat(L_PEC_IDLE); else
     if (temp[0] == 'p') data.concat(L_PEC_WAIT_PLAY); else
     if (temp[0] == 'P') data.concat(L_PEC_PLAYING); else
