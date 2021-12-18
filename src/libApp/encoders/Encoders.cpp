@@ -124,7 +124,7 @@ void Encoders::init() {
     if ((long)(temp - nextEncCheckMs) > 0) {
       nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
 
-      char result[40];
+      char result[80];
       if (onStep.command(":GX42#", result) && strlen(result) > 1) {
         double f = strtod(result, &conv_end);
         if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) _osAxis1 = f;

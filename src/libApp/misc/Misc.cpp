@@ -3,6 +3,7 @@
 
 #include "Misc.h"
 #include "../../locales/Locale.h"
+#include "../status/MountStatus.h"
 
 void stripNum(char* s) {
   int pp=-1;
@@ -61,20 +62,24 @@ float byteToTime(uint8_t b) {
 }
 
 bool decodeAxisSettings(char* s, AxisSettings* a) {
+  if (mountStatus.getVersionMajor() >= 10) return decodeAxisSettingsX(s, a);
+
   if (strcmp(s,"0") != 0) {
     char *ws=s;
     char *conv_end;
     double f=strtod(ws, &conv_end); if (&s[0] != conv_end) a->stepsPerMeasure = f; else return false;
     ws=strchr(ws,','); if (ws != NULL) {
-      ws++; a->microsteps = strtol(ws, NULL, 10);
+      ws++; a->microsteps = atol(ws);
       ws=strchr(ws,','); if (ws != NULL) {
-        ws++; a->IRUN = strtol(ws, NULL, 10);
+        ws++; a->IRUN = atol(ws);
         ws=strchr(ws,','); if (ws != NULL) {
-          ws++; a->reverse = strtol(ws, NULL, 10);
+          ws++; a->reverse = atol(ws);
           ws=strchr(ws,','); if (ws != NULL) {
-            ws++; a->min = strtol(ws, NULL, 10);
+            ws++; a->min = atol(ws);
             ws=strchr(ws,','); if (ws != NULL) {
-              ws++; a->max = strtol(ws, NULL, 10);
+              ws++; a->max = atol(ws);
+              a->isServo = false;
+              a->IGOTO = OFF;
               return true;
             }
           }
@@ -85,7 +90,49 @@ bool decodeAxisSettings(char* s, AxisSettings* a) {
   return false;
 }
 
+bool decodeAxisSettingsX(char* s, AxisSettings* a) {
+  if (strcmp(s, "0") != 0) {
+    char *ws = s;
+    char *conv_end;
+    double f=strtod(ws, &conv_end);
+    if (&s[0] != conv_end) a->stepsPerMeasure = f; else return false;
+    ws=strchr(ws,','); if (ws != NULL) {
+      ws++; a->reverse = atol(ws);
+      ws=strchr(ws,','); if (ws != NULL) {
+        ws++; a->min = atol(ws);
+        ws=strchr(ws,','); if (ws != NULL) {
+          ws++; a->max = atol(ws);
+          ws=strchr(ws,','); if (ws != NULL) {
+            ws++; a->param1 = atof(ws);
+            ws=strchr(ws,','); if (ws != NULL) {
+              ws++; a->param2 = atof(ws);
+              ws=strchr(ws,','); if (ws != NULL) {
+                ws++; a->param3 = atof(ws);
+                if (strstr(ws, "V")) {
+                  a->isServo = true;
+                  a->p = a->param1;
+                  a->i = a->param2;
+                  a->d = a->param3;
+                } else {
+                  a->isServo = false;
+                  a->microsteps = round(a->param1);
+                  a->IRUN = round(a->param2);
+                  a->IGOTO = round(a->param3);
+                }
+                return true;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a) {
+  if (mountStatus.getVersionMajor() >= 10) return validateAxisSettingsX(axisNum, altAz, a);
+
   int   MinLimitL[5]   = {-270,-90,-360,  0,  0};
   int   MinLimitH[5]   = { -90,  0,   0,500,500};
   int   MaxLimitL[5]   = {  90,  0,   0,  0,  0};
@@ -101,6 +148,28 @@ bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a) {
   if (a.reverse != OFF && a.reverse != ON) return false;
   if (a.min < MinLimitL[axisNum] || a.min > MinLimitH[axisNum]) return false;
   if (a.max < MaxLimitL[axisNum] || a.max > MaxLimitH[axisNum]) return false;
+  return true;
+}
+
+bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a) {
+  int   MinLimitL[5]   = {-270,-90,-360,  0,  0};
+  int   MinLimitH[5]   = { -90,  0,   0,500,500};
+  int   MaxLimitL[5]   = {  90,  0,   0,  0,  0};
+  int   MaxLimitH[5]   = { 270, 90, 360,500,500};
+  float StepsLimitL[5] = {   150.0,   150.0,    5.0, 0.005, 0.005};
+  float StepsLimitH[5] = {122400.0,122400.0, 7200.0,  20.0,  20.0};
+  int   IrunLimitH[5]  = { 3000, 3000, 1000, 1000, 1000};
+  if (altAz) { MinLimitL[0]=-360; MinLimitH[0]=-180; MaxLimitL[0]=180; MaxLimitH[0]=360; }
+  axisNum--;
+  if (a.stepsPerMeasure < StepsLimitL[axisNum] || a.stepsPerMeasure > StepsLimitH[axisNum]) return false;
+  if (a.reverse != OFF && a.reverse != ON) return false;
+  if (a.min < MinLimitL[axisNum] || a.min > MinLimitH[axisNum]) return false;
+  if (a.max < MaxLimitL[axisNum] || a.max > MaxLimitH[axisNum]) return false;
+  if (!a.isServo) {
+    if (round(a.param1) != OFF && (round(a.param1) < 1 || round(a.param1) > 256)) return false;
+    if (round(a.param2) != OFF && (round(a.param2) < 0 || round(a.param2) > IrunLimitH[axisNum])) return false;
+    if (round(a.param3) != OFF && (round(a.param3) < 0 || round(a.param3) > IrunLimitH[axisNum])) return false;
+  }
   return true;
 }
 

@@ -13,73 +13,87 @@
 #include "MountStatus.h"
 
 bool MountStatus::update(bool all) {
-  char s[40] = "";
+  char result[80] = "";
   if (!_valid) {
-    if (!onStep.command(":GVP#", s) || s[0] == 0 || (!strstr(s, "On-Step") && !strstr(s, "OnStepX"))) { _valid = false; return false; }
-    if (!onStep.command(":GVN#", s) || s[0] == 0 ) { _valid = false; return false; }
+    if (!onStep.command(":GVP#", result) || result[0] == 0 || (!strstr(result, "On-Step") && !strstr(result, "OnStepX"))) { _valid = false; return false; }
+    if (!onStep.command(":GVN#", result) || result[0] == 0 ) { _valid = false; return false; }
     strcpy(_id, "OnStep");
-    strcpy(_ver, s);
-    if (strlen(s) > 0) { _ver_patch = s[strlen(s) - 1]; s[strlen(s) - 1] = 0; }
-    char *s1 = strchr(s, '.');
-    if (s1 != NULL) { s1[0] = 0; s1++; _ver_maj = atol(s); _ver_min = atol(s1); }
+
+    strcpy(_ver, result);
+    if (strlen(result) > 0) {
+      _ver_patch = result[strlen(result) - 1];
+      result[strlen(result) - 1] = 0;
+    }
+
+    char *resultMinor = strchr(result, '.');
+    if (resultMinor != NULL) {
+      resultMinor[0] = 0;
+      resultMinor++;
+      _ver_maj = atol(result);
+      _ver_min = atol(resultMinor);
+    }
+
     if (_ver_maj < 0 || _ver_maj > 99 || _ver_min < 0 || _ver_min > 99 || _ver_patch < 'a' || _ver_patch > 'z') {
-      _ver_maj = -1; _ver_min = -1; _ver_patch = 0; _valid = false;
+      _ver_maj = -1;
+      _ver_min = -1;
+      _ver_patch = 0;
+      _valid = false;
     }
   }
 
-  if (!onStep.command(":GU#", s) || s[0] == 0) { _valid = false; return false; }
+  if (!onStep.command(":GU#", result) || result[0] == 0) { _valid = false; return false; }
 
   _tracking = false; _inGoto = false;
-  if (!strstr(s, "N")) _inGoto = true; else _tracking = !strstr(s,"n");
+  if (!strstr(result, "N")) _inGoto = true; else _tracking = !strstr(result, "n");
 
-  _parked      = strstr(s, "P");
-  if (strstr(s, "p")) _parked = false;
-  _parking     = strstr(s, "I");
-  _parkFail    = strstr(s, "F");
+  _parked      = strstr(result, "P");
+  if (strstr(result, "p")) _parked = false;
+  _parking     = strstr(result, "I");
+  _parkFail    = strstr(result, "F");
 
-  _pecRecorded = strstr(s, "R");
-  _pecIgnore   = strstr(s, "/");
-  _pecReadyPlay= strstr(s, ",");
-  _pecPlaying  = strstr(s, "~");
-  _pecReadyRec = strstr(s, ";");
-  _pecRecording= strstr(s, "^");
+  _pecRecorded = strstr(result, "R");
+  _pecIgnore   = strstr(result, "/");
+  _pecReadyPlay= strstr(result, ",");
+  _pecPlaying  = strstr(result, "~");
+  _pecReadyRec = strstr(result, ";");
+  _pecRecording= strstr(result, "^");
   if (!_pecRecording && !_pecReadyRec && !_pecPlaying && !_pecReadyPlay && !_pecIgnore && !_pecRecorded) _pecEnabled = false; else _pecEnabled = true;
 
-  _toEncOnly   = strstr(s, "e");
-  _atHome      = strstr(s, "H");
-  _ppsSync     = strstr(s, "S");
-  _pulseGuiding= strstr(s, "G");
-  _guiding     = strstr(s, "g");
+  _toEncOnly   = strstr(result, "e");
+  _atHome      = strstr(result, "H");
+  _ppsSync     = strstr(result, "S");
+  _pulseGuiding= strstr(result, "G");
+  _guiding     = strstr(result, "g");
   if (_pulseGuiding) _guiding = true;
-  _axisFault   = strstr(s, "f");
+  _axisFault   = strstr(result, "f");
 
-  if (strstr(s, "r")) { if (strstr(s, "s")) _rateCompensation = RC_REFR_RA; else _rateCompensation = RC_REFR_BOTH; } else
-  if (strstr(s, "t")) { if (strstr(s, "s")) _rateCompensation = RC_FULL_RA; else _rateCompensation = RC_FULL_BOTH; } else _rateCompensation = RC_NONE;
+  if (strstr(result, "r")) { if (strstr(result, "s")) _rateCompensation = RC_REFR_RA; else _rateCompensation = RC_REFR_BOTH; } else
+  if (strstr(result, "t")) { if (strstr(result, "s")) _rateCompensation = RC_FULL_RA; else _rateCompensation = RC_FULL_BOTH; } else _rateCompensation = RC_NONE;
 
-  _waitingHome   = strstr(s, "w");
-  _pauseAtHome   = strstr(s, "u");
-  _buzzerEnabled = strstr(s, "z");
+  _waitingHome   = strstr(result, "w");
+  _pauseAtHome   = strstr(result, "u");
+  _buzzerEnabled = strstr(result, "z");
 
-  if (strstr(s,"E")) _mountType = MT_GEM; else
-  if (strstr(s,"K")) _mountType = MT_FORK; else
-  if (strstr(s,"k")) _mountType = MT_FORKALT; else
-  if (strstr(s,"A")) _mountType = MT_ALTAZM; else _mountType = MT_UNKNOWN;
+  if (strstr(result,"E")) _mountType = MT_GEM; else
+  if (strstr(result,"K")) _mountType = MT_FORK; else
+  if (strstr(result,"k")) _mountType = MT_FORKALT; else
+  if (strstr(result,"A")) _mountType = MT_ALTAZM; else _mountType = MT_UNKNOWN;
 
-  if (_mountType == MT_GEM) _autoMeridianFlips = strstr(s, "a"); else _autoMeridianFlips = false;
+  if (_mountType == MT_GEM) _autoMeridianFlips = strstr(result, "a"); else _autoMeridianFlips = false;
 
-  _guideRatePulse = (Errors)(s[strlen(s) - 3] - '0');
-  _guideRate = (Errors)(s[strlen(s) - 2] - '0');
+  _guideRatePulse = (Errors)(result[strlen(result) - 3] - '0');
+  _guideRate = (Errors)(result[strlen(result) - 2] - '0');
 
-  _lastError = (Errors)(s[strlen(s) - 1] - '0');
+  _lastError = (Errors)(result[strlen(result) - 1] - '0');
 
   // get a list of auxiliary features (runs once)
   featureScan();
 
   if (all) {
     // get meridian status
-    if (!onStep.command(":GX94#", s) || s[0] == 0) { _valid = false; return false; }
-    _meridianFlips = !strstr(s, "N");
-    _pierSide = strtol(&s[0], NULL, 10);
+    if (!onStep.command(":GX94#", result) || result[0] == 0) { _valid = false; return false; }
+    _meridianFlips = !strstr(result, "N");
+    _pierSide = strtol(&result[0], NULL, 10);
 
     // update auxiliary features
     featureUpdate();
@@ -113,8 +127,10 @@ bool MountStatus::update(bool all) {
     }
 
     if (_alignMaxStars == -1) {
-        _alignMaxStars = 3;
-        if (!onStep.command(":A?#",s) || s[0] != 0) { if (s[0] > '0' && s[0] <= '9') _alignMaxStars=s[0]-'0'; }
+      _alignMaxStars = 3;
+      if (!onStep.command(":A?#", result) || result[0] != 0) {
+        if (result[0] > '0' && result[0] <= '9') _alignMaxStars = result[0] - '0';
+      }
     }
   }
 
@@ -176,27 +192,35 @@ int MountStatus::featureValue1() { return _feature[_featureSelected].value1; }
 float MountStatus::featureValue2() { return _feature[_featureSelected].value2; }
 float MountStatus::featureValue3() { return _feature[_featureSelected].value3; }
 float MountStatus::featureValue4() { return _feature[_featureSelected].value4; }
+
 bool MountStatus::featureScan() {
   // scan features once
   static bool scan_features = true;
 
+  char cmd[40], out[40], present[40];
+
+  // check which feature #'s are present
+  if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 9) _valid = false;
+  if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
+
   // get feature status
   for (uint8_t i = 0; i < 8; i++) {
     char *purpose_str = NULL;
-    char s[40], s1[40];
+
+    if (present[i] == '0') continue;
 
     if (scan_features) {
-        sprintf(s1, ":GXY%d#", i+1);
-        if (!onStep.command(s1, s) || s[0] == 0) _valid = false;
+        sprintf(cmd, ":GXY%d#", i+1);
+        if (!onStep.command(cmd, out) || out[0] == 0) _valid = false;
         if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
-        if (strlen(s) > 1) {
-        purpose_str = strstr(s,",");
+        if (strlen(out) > 1) {
+        purpose_str = strstr(out,",");
         if (purpose_str) {
             purpose_str[0] = 0;
             purpose_str++;
         } else _valid = false;
-        char *name_str = s; if (!name_str) _valid = false;
+        char *name_str = out; if (!name_str) _valid = false;
 
         if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
@@ -219,14 +243,14 @@ bool MountStatus::featureUpdate(bool all) {
     char *value2_str = NULL;
     char *value3_str = NULL;
     char *value4_str = NULL;
-    char s[40], s1[40];
+    char cmd[40], out[40];
 
     if (all || (_feature[i].purpose == SWITCH || _feature[i].purpose == ANALOG_OUTPUT || _feature[i].purpose == DEW_HEATER || _feature[i].purpose == INTERVALOMETER)) {
-      sprintf(s1,":GXX%d#",i+1);
-      if (!onStep.command(s1,s) || strlen(s) == 0) _valid = false;
+      sprintf(cmd,":GXX%d#",i+1);
+      if (!onStep.command(cmd, out) || strlen(out) == 0) _valid = false;
       if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; return false; }
 
-      value2_str = strstr(s,",");
+      value2_str = strstr(out,",");
       if (value2_str) {
         value2_str[0]=0;
         value2_str++;
@@ -241,7 +265,7 @@ bool MountStatus::featureUpdate(bool all) {
           }
         }
       }
-      value1_str = s; if (!value1_str) _valid = false;
+      value1_str = out; if (!value1_str) _valid = false;
 
       if (_valid) {
         if (value1_str) _feature[i].value1 = atoi(value1_str);
