@@ -20,7 +20,7 @@ const static int8_t steps[DRIVER_MODEL_COUNT][9] =
  {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC5160
  {  0,  0,  0,  0,  0,  0,  0,  0,  0}};  // GENERIC
 
-#if DEBUG_MODE != OFF
+#if DEBUG != OFF
   const char* DRIVER_NAME[DRIVER_MODEL_COUNT] = {
   "A4988", "DRV8825", "S109", "LV8729", "RAPS128", "TMC2100",
   "TMC2208", "TMC2209", "ST820", "TMC2130", "TMC5160", "GENERIC" };
@@ -33,18 +33,18 @@ StepDirDriver::StepDirDriver(uint8_t axisNumber, const DriverModePins *Pins, con
   settings = *Settings;
 }
 
-void StepDirDriver::init(int16_t microsteps, int16_t current) {
+void StepDirDriver::init(int16_t microsteps, int16_t currentRun, int16_t currentGoto) {
   if (settings.currentRun != OFF) {
-    if (settings.currentRun != current) {
-      // update the current from initialization setting
-      settings.currentRun = current;
-      settings.currentGoto = current;
-      settings.currentHold = lround(current/2.0F);
-    } else {
-      // automatically set goto and hold current if they are disabled
-      if (settings.currentGoto == OFF) settings.currentGoto = settings.currentRun;
-      if (settings.currentHold == OFF) settings.currentHold = lround(settings.currentRun/2.0F);
-    }
+    // disable any custom currentHold if a new currentRun is specified
+    if (settings.currentRun != currentRun) settings.currentHold = OFF;
+
+    // adopt any runtime settings
+    settings.currentRun = currentRun;
+    settings.currentGoto = currentGoto;
+
+    // automatically set goto and hold current if they are disabled
+    if (settings.currentGoto == OFF) settings.currentGoto = settings.currentRun;
+    if (settings.currentHold == OFF) settings.currentHold = lround(settings.currentRun/2.0F);
   } else {
     // set current defaults for TMC drivers
     settings.currentRun = 600;
@@ -73,7 +73,7 @@ void StepDirDriver::init(int16_t microsteps, int16_t current) {
       if (settings.decayGoto == OFF) settings.decayGoto = SPREADCYCLE;
       tmcDriver.init(settings.model, Pins->m0, Pins->m1, Pins->m2, Pins->m3);
       VF("MSG: StepDvr"); V(axisNumber); VF(", TMC ");
-      if (current == OFF) {
+      if (currentRun == OFF) {
         VLF("current control OFF (set by Vref)");
       } else {
         VF("Ihold="); V(settings.currentHold); VF("mA, ");

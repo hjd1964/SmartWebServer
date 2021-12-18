@@ -40,10 +40,10 @@
 #include "HAL_HWTIMERS.h"
 #include "OnTask.h"
 
-#define roundPeriod(x) ((unsigned long)((x)+0.5))
+#define roundPeriod(x) ((unsigned long)((x)+(double)0.5L))
 
 unsigned char _task_postpone = false;
-unsigned long _taskMasterFrequencyRatio = 16000000;
+unsigned long _taskMasterFrequencyRatio = 16000000UL;
 
 // Task object
 Task::Task(uint32_t period, uint32_t duration, bool repeat, uint8_t priority, void (*volatile callback)()) {
@@ -322,11 +322,15 @@ void Task::setHardwareTimerPeriod() {
 }
 
 void tasksMonitor() {
-  uint8_t handle = tasks.getFirstHandle();
-  for (int i = 0; i < TASKS_MAX; i++) {
-    if (handle == 0) break;
-    tasks.refreshPeriod(handle);
-    handle = tasks.getNextHandle(handle);
+  static unsigned long _lastTaskMasterFrequencyRatio = 16000000UL;
+  if (_lastTaskMasterFrequencyRatio != _taskMasterFrequencyRatio) {
+    _lastTaskMasterFrequencyRatio = _taskMasterFrequencyRatio;
+    uint8_t handle = tasks.getFirstHandle();
+    for (int i = 0; i < TASKS_MAX; i++) {
+      if (handle == 0) break;
+      tasks.refreshPeriod(handle);
+      handle = tasks.getNextHandle(handle);
+    }
   }
 }
 

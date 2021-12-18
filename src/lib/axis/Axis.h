@@ -34,15 +34,18 @@ typedef struct AxisLimits {
 // helpers for step/dir and servo parameters
 #define subdivisions param1
 #define integral param1
-#define current param2
+#define currentRun param2
 #define porportional param2
+#define currentGoto param3
+#define derivative param3
 
-#define AxisSettingsSize 25
+#define AxisSettingsSize 33
 typedef struct AxisSettings {
   double     stepsPerMeasure;
   int8_t     reverse;
-  int16_t    param1;       // subdivision or integral
-  int16_t    param2;       // current or proportional
+  float      param1;       // stepper driver subdivision  or servo driver proportional
+  float      param2;       // stepper driver current run  or servo driver integral
+  float      param3;       // stepper driver current slew or servo driver derivative
   AxisLimits limits;
   float      backlashFreq;
 } AxisSettings;
@@ -68,7 +71,7 @@ typedef struct AxisErrors {
   uint8_t maxLimitSensed:1;
 } AxisErrors;
 
-enum AutoRate: uint8_t {AR_NONE, AR_RATE_BY_DISTANCE, AR_RATE_BY_TIME_FORWARD, AR_RATE_BY_TIME_REVERSE, AR_RATE_BY_TIME_END, AR_RATE_BY_TIME_ABORT};
+enum AutoRate: uint8_t {AR_NONE, AR_RATE_BY_TIME_ABORT, AR_RATE_BY_TIME_END, AR_RATE_BY_DISTANCE, AR_RATE_BY_TIME_FORWARD, AR_RATE_BY_TIME_REVERSE};
 enum HomingStage: uint8_t {HOME_NONE, HOME_FINE, HOME_SLOW, HOME_FAST};
 
 class Axis {
@@ -177,7 +180,7 @@ class Axis {
     float getFrequency();
 
     // get frequency in steps per second
-    long getFrequencySteps() { return motor->getFrequencySteps(); }
+    float getFrequencySteps() { return motor->getFrequencySteps(); }
 
     // gets backlash frequency in "measures" (degrees, microns, etc.) per second
     float getBacklashFrequency();
@@ -255,6 +258,9 @@ class Axis {
     // checks for an error that would disallow motion in a given direction or DIR_BOTH for any motion
     bool motionError(Direction direction);
 
+    // checks for an sense error that would disallow motion in a given direction or DIR_BOTH for any motion
+    bool motionErrorSensed(Direction direction);
+
     // monitor movement
     void poll();
 
@@ -288,9 +294,11 @@ class Axis {
 
     bool decodeAxisSettings(char *s, AxisSettings &a);
 
-    bool validateAxisSettings(int axisNum, AxisSettings a);
+    bool validateAxisSettings(int axisNum, AxisSettings a, bool isServo = false);
     
     AxisErrors errors;
+    bool lastErrorResult = false;
+    bool commonMinMaxSense = false;
 
     uint8_t axisNumber = 0;
     char axisPrefix[13] = "MSG: Axis_, ";

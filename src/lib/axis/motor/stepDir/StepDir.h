@@ -9,9 +9,9 @@
 #include "StepDirDrivers.h"
 #include "../Motor.h"
 
-#define DirSetRev 253
-#define DirSetFwd 254
-#define DirNone 255
+#define DirNone 253
+#define DirSetRev 254
+#define DirSetFwd 255
 
 typedef struct StepDirPins {
   int16_t   step;
@@ -35,7 +35,7 @@ class StepDirMotor : public Motor {
     void setReverse(int8_t state);
 
     // set default driver microsteps and current
-    void setParam(int16_t microsteps, int16_t current);
+    void setParam(float microsteps, float currentRun, float currentGoto);
 
     // sets motor power on/off (if possible)
     void power(bool value);

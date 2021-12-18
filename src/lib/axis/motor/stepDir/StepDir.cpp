@@ -80,8 +80,8 @@ void StepDirMotor::setReverse(int8_t state) {
 }
 
 // set default driver microsteps and current
-void StepDirMotor::setParam(int16_t microsteps, int16_t current) {
-  driver->init(microsteps, current);
+void StepDirMotor::setParam(float microsteps, float currentRun, float currentGoto) {
+  driver->init(round(microsteps), round(currentRun), round(currentGoto));
   homeSteps = driver->getMicrostepRatio();
   V(axisPrefix); VF("sequencer homes every "); V(homeSteps); VLF(" step(s)");
 }
@@ -241,6 +241,8 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
 
 #if STEP_WAVE_FORM == SQUARE
   IRAM_ATTR void StepDirMotor::move(const int8_t stepPin) {
+    if (direction > DirNone) return;
+
     if (microstepModeControl == MMC_SLEWING_REQUEST && (motorSteps + backlashSteps) % homeSteps == 0) {
       microstepModeControl = MMC_SLEWING_PAUSE;
       tasks.immediate(mtrHandle);
@@ -323,6 +325,8 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
 #else
   IRAM_ATTR void StepDirMotor::move(const int8_t stepPin) {
     digitalWriteF(stepPin, stepClr);
+
+    if (direction > DirNone) return;
 
     if (microstepModeControl == MMC_SLEWING_REQUEST && (motorSteps + backlashSteps) % homeSteps == 0) {
       microstepModeControl = MMC_SLEWING_PAUSE;
