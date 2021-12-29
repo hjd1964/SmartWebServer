@@ -57,6 +57,11 @@
 #define STA_GW_ADDR         {192,168,1,1} // ..,168,1,1}, Wifi Station/Ethernet GATEWAY Address.                              Adjust
 #define STA_SN_MASK       {255,255,255,0} // ..55,255,0}, Wifi Station/Ethernet SUBNET Mask.                                  Adjust
 
+// ONSTEP RESET CONTROL ------------------------------------------------------------------------------------------------------------
+#define RESET_PIN                     OFF //         OFF, Specify a pin# used to reset OnStep.                                Infreq
+#define RESET_PIN_STATE               LOW //         OFF, Specify state of RESET_PIN pin otherwise OPEN when inactive.        Infreq
+                                          //             
+
 // NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
 #define NV_WIPE                       OFF //         OFF, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
                                           //              ***     IMPORTANT: ENABLE THIS OPTION THEN UPLOAD, WAIT A MINUTE    ***

@@ -649,16 +649,38 @@ bool processConfigurationGet() {
     }
   }
 
-  String ssa=www.arg("advanced");
+  String ssa = www.arg("advanced");
   #if DISPLAY_RESET_CONTROLS != OFF
-    if (ssa.equals("reset")) { onStep.commandBlind(":ERESET#"); return false; }
+    if (ssa.equals("reset")) {
+
+      #if RESET_PIN == OFF
+        onStep.commandBlind(":ERESET#");
+      #else
+        digitalWrite(RESET_PIN, RESET_PIN_STATE);
+        pinmode(RESET_PIN, OUTPUT);
+        delay(250);
+        pinmode(RESET_PIN, INPUT);
+      #endif
+
+      delay(250);
+      return false;
+    }
     #ifdef BOOT0_PIN
       if (ssa.equals("fwu")) {
-        pinMode(BOOT0_PIN,OUTPUT);
-        digitalWrite(BOOT0_PIN,HIGH);
-        onStep.commandBlind(":ERESET#");
-        delay(500);
-        pinMode(BOOT0_PIN,INPUT);
+        digitalWrite(BOOT0_PIN, HIGH);
+        pinMode(BOOT0_PIN, OUTPUT);
+
+        #if RESET_PIN == OFF
+          onStep.commandBlind(":ERESET#");
+        #else
+          digitalWrite(RESET_PIN, RESET_PIN_STATE);
+          pinmode(RESET_PIN, OUTPUT);
+          delay(250);
+          pinmode(RESET_PIN, INPUT);
+        #endif
+
+        delay(250);
+        pinMode(BOOT0_PIN, INPUT);
         return false;
       }
     #endif
