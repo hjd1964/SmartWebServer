@@ -748,14 +748,20 @@ bool processConfigurationGet() {
       String s3 = www.arg("a" + axisStr + "min");
       String s4 = www.arg("a" + axisStr + "max");
       String s5 = www.arg("a" + axisStr + "ustp");
-      String s6, s7;
+      String s6, s7, s8, s9, s10;
       if (s5.equals(EmptyStr)) {
         s5 = www.arg("a" + axisStr + "p");
         s6 = www.arg("a" + axisStr + "i");
         s7 = www.arg("a" + axisStr + "d");
+        s8 = www.arg("a" + axisStr + "pGoto");
+        s9 = www.arg("a" + axisStr + "iGoto");
+        s10 = www.arg("a" + axisStr + "dGoto");
       } else {
         s6 = www.arg("a" + axisStr + "I");
         s7 = www.arg("a" + axisStr + "Is");
+        s8 = "";
+        s9 = "";
+        s10 = "";
       }
 
       if (axisStr.toInt() > 0 && axisStr.toInt() < 10) {
@@ -766,8 +772,11 @@ bool processConfigurationGet() {
         if (s5.equals(EmptyStr)) s5 = "-1";
         if (s6.equals(EmptyStr)) s6 = "-1";
         if (s7.equals(EmptyStr)) s7 = "-1";
+        if (s8.equals(EmptyStr)) s8 = "-1";
+        if (s9.equals(EmptyStr)) s9 = "-1";
+        if (s10.equals(EmptyStr)) s10 = "-1";
 
-        v = s1 + "," + s2 + "," + s3 + "," + s4 + "," + s5 + "," + s6 + "," + s7;
+        v = s1 + "," + s2 + "," + s3 + "," + s4 + "," + s5 + "," + s6 + "," + s7 + "," + s8 + "," + s9 + "," + s10;
         sprintf(temp, ":SXA%d,%s#", (int)axisStr.toInt(), v.c_str());
         onStep.commandBool(temp);
 
@@ -787,6 +796,10 @@ void sendAxisParams(AxisSettings* a, int axis) {
   char temp[300], temp1[40];
   String data = "";
   if (a->isServo) {
+    data.concat(L_ADV_SET_IMMEDIATE);
+    data.concat("<br/><br/>");
+    sendHtml(data);
+
     dtostrf(a->p, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisP, temp1, axis, 0, 99999999L);
@@ -802,6 +815,24 @@ void sendAxisParams(AxisSettings* a, int axis) {
     dtostrf(a->d, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisD, temp1, axis, 0, 99999999L);
+    data.concat(temp);
+    sendHtml(data);
+
+    dtostrf(a->pGoto, 1, 3, temp1);
+    stripNum(temp1);
+    sprintf_P(temp, html_configAxisGotoP, temp1, axis, 0, 99999999L);
+    data.concat(temp);
+    sendHtml(data);
+
+    dtostrf(a->iGoto, 1, 3, temp1);
+    stripNum(temp1);
+    sprintf_P(temp, html_configAxisGotoI, temp1, axis, 0, 99999999L);
+    data.concat(temp);
+    sendHtml(data);
+
+    dtostrf(a->dGoto, 1, 3, temp1);
+    stripNum(temp1);
+    sprintf_P(temp, html_configAxisGotoD, temp1, axis, 0, 99999999L);
     data.concat(temp);
     sendHtml(data);
   } else {

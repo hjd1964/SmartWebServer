@@ -108,18 +108,30 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
               ws++; a->param2 = atof(ws);
               ws=strchr(ws,','); if (ws != NULL) {
                 ws++; a->param3 = atof(ws);
-                if (strstr(ws, "V")) {
-                  a->isServo = true;
-                  a->p = a->param1;
-                  a->i = a->param2;
-                  a->d = a->param3;
-                } else {
-                  a->isServo = false;
-                  a->microsteps = round(a->param1);
-                  a->IRUN = round(a->param2);
-                  a->IGOTO = round(a->param3);
+                ws=strchr(ws,','); if (ws != NULL) {
+                  ws++; a->param4 = atof(ws);
+                  ws=strchr(ws,','); if (ws != NULL) {
+                    ws++; a->param5 = atof(ws);
+                    ws=strchr(ws,','); if (ws != NULL) {
+                      ws++; a->param6 = atof(ws);
+                      if (strstr(ws, "V")) {
+                        a->isServo = true;
+                        a->p = a->param1;
+                        a->i = a->param2;
+                        a->d = a->param3;
+                        a->pGoto = a->param4;
+                        a->iGoto = a->param5;
+                        a->dGoto = a->param6;
+                      } else {
+                        a->isServo = false;
+                        a->microsteps = round(a->param1);
+                        a->IRUN = round(a->param2);
+                        a->IGOTO = round(a->param3);
+                      }
+                      return true;
+                    }
+                  }
                 }
-                return true;
               }
             }
           }

@@ -12,10 +12,13 @@ typedef struct AxisSettings {
    int16_t microsteps;
    int16_t IRUN;
    int16_t IGOTO;
-   float p, i, d;
+   float p, i, d, pGoto, iGoto, dGoto;
    double param1;
    double param2;
    double param3;
+   double param4;
+   double param5;
+   double param6;
    bool isServo;
 } AxisSettings;
 
