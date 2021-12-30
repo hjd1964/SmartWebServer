@@ -657,9 +657,9 @@ bool processConfigurationGet() {
         onStep.commandBlind(":ERESET#");
       #else
         digitalWrite(RESET_PIN, RESET_PIN_STATE);
-        pinmode(RESET_PIN, OUTPUT);
+        pinMode(RESET_PIN, OUTPUT);
         delay(250);
-        pinmode(RESET_PIN, INPUT);
+        pinMode(RESET_PIN, INPUT);
       #endif
 
       delay(250);
@@ -674,9 +674,9 @@ bool processConfigurationGet() {
           onStep.commandBlind(":ERESET#");
         #else
           digitalWrite(RESET_PIN, RESET_PIN_STATE);
-          pinmode(RESET_PIN, OUTPUT);
+          pinMode(RESET_PIN, OUTPUT);
           delay(250);
-          pinmode(RESET_PIN, INPUT);
+          pinMode(RESET_PIN, INPUT);
         #endif
 
         delay(250);

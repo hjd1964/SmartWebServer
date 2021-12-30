@@ -9,6 +9,8 @@
 #define SERVO    -1  // general purpose flag for a SERVO driver motor
 #define STEP_DIR -2  // general purpose flag for a STEP_DIR driver motor
 
+#if defined(SERVO_DRIVER_PRESENT) || defined(SD_DRIVER_PRESENT)
+
 enum Direction: uint8_t {DIR_NONE, DIR_FORWARD, DIR_REVERSE, DIR_BOTH};
 
 class Motor {
@@ -141,3 +143,5 @@ class Motor {
     bool poweredDown = false;
 
 };
+
+#endif
