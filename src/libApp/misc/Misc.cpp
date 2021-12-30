@@ -114,7 +114,9 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
                     ws++; a->param5 = atof(ws);
                     ws=strchr(ws,','); if (ws != NULL) {
                       ws++; a->param6 = atof(ws);
-                      if (strstr(ws, "V")) {
+                      a->isServo = false;
+                      if (strstr(ws, "P")) {
+                        // Dual PID Servo
                         a->isServo = true;
                         a->p = a->param1;
                         a->i = a->param2;
@@ -122,7 +124,9 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
                         a->pGoto = a->param4;
                         a->iGoto = a->param5;
                         a->dGoto = a->param6;
-                      } else {
+                      } else
+                      if (strstr(ws, "S")) {
+                        // Step/Dir
                         a->isServo = false;
                         a->microsteps = round(a->param1);
                         a->IRUN = round(a->param2);
