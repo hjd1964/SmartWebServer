@@ -9,7 +9,7 @@
 #define SERVO    -1  // general purpose flag for a SERVO driver motor
 #define STEP_DIR -2  // general purpose flag for a STEP_DIR driver motor
 
-#if defined(SERVO_DRIVER_PRESENT) || defined(SD_DRIVER_PRESENT)
+#ifdef MOTOR_PRESENT
 
 enum Direction: uint8_t {DIR_NONE, DIR_FORWARD, DIR_REVERSE, DIR_BOTH};
 
@@ -21,8 +21,11 @@ class Motor {
     // set driver reverse state
     virtual void setReverse(int8_t state);
 
-    // set default driver parameters (microsteps and current for SD drivers)
-    virtual void setParam(float param1, float param2, float param3);
+    // set driver parameters
+    virtual void setParam(float param1, float param2, float param3, float param4, float param5, float param6);
+
+    // validate driver parameters
+    virtual bool validateParam(float param1, float param2, float param3, float param4, float param5, float param6);
 
     // sets motor power on/off (if possible)
     virtual void power(bool value);

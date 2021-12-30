@@ -3,7 +3,7 @@
 
 #include "Motor.h"
 
-#if defined(SERVO_DRIVER_PRESENT) || defined(SD_DRIVER_PRESENT)
+#ifdef MOTOR_PRESENT
 
 // resets motor and target angular position in steps, also zeros backlash and index 
 void Motor::resetPositionSteps(long value) {
