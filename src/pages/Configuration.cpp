@@ -421,7 +421,7 @@ void handleConfiguration() {
               data.concat(temp);
               sendHtml(data);
 
-              sprintf_P(temp, html_configAxisReverse,a.reverse == ON ? 1 : 0, focuser + 4);
+              sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, focuser + 4);
               data.concat(temp);
               sendHtml(data);
 
@@ -757,10 +757,10 @@ bool processConfigurationGet() {
         s9 = www.arg("a" + axisStr + "iGoto");
         s10 = www.arg("a" + axisStr + "dGoto");
       } else {
-        s6 = www.arg("a" + axisStr + "I");
-        s7 = www.arg("a" + axisStr + "Is");
-        s8 = "";
-        s9 = "";
+        s6 = www.arg("a" + axisStr + "ustpGoto");
+        s7 = www.arg("a" + axisStr + "Ih");;
+        s8 = www.arg("a" + axisStr + "I");
+        s9 = www.arg("a" + axisStr + "Is");
         s10 = "";
       }
 
@@ -795,7 +795,8 @@ bool processConfigurationGet() {
 void sendAxisParams(AxisSettings* a, int axis) {
   char temp[300], temp1[40];
   String data = "";
-  if (a->isServo) {
+
+  if (a->driverType == DT_SERVO) {
     data.concat(L_ADV_SET_IMMEDIATE);
     data.concat("<br/><br/>");
     sendHtml(data);
@@ -835,7 +836,54 @@ void sendAxisParams(AxisSettings* a, int axis) {
     sprintf_P(temp, html_configAxisGotoD, temp1, axis, 0, 99999999L);
     data.concat(temp);
     sendHtml(data);
-  } else {
+  } else
+
+  if (a->driverType == DT_STEP_DIR_STANDARD) {
+    data.concat(L_ADV_SET_SPECIAL);
+    data.concat("<br/><br/>");
+    sendHtml(data);
+
+    #if DRIVE_MAIN_AXES_MICROSTEPS == ON
+      sprintf_P(temp, html_configAxisMicroSteps, (int)a->microsteps, axis);
+      data.concat(temp);
+      sendHtml(data);
+
+      sprintf_P(temp, html_configAxisMicroStepsGoto, (int)a->microstepsGoto, axis);
+      data.concat(temp);
+      sendHtml(data);
+    #endif
+  } else
+
+  if (a->driverType == DT_STEP_DIR_TMC_SPI) {
+    data.concat(L_ADV_SET_SPECIAL);
+    data.concat("<br/><br/>");
+    sendHtml(data);
+
+    #if DRIVE_MAIN_AXES_MICROSTEPS == ON
+      sprintf_P(temp, html_configAxisMicroSteps, (int)a->microsteps, axis);
+      data.concat(temp);
+      sendHtml(data);
+
+      sprintf_P(temp, html_configAxisMicroStepsGoto, (int)a->microstepsGoto, axis);
+      data.concat(temp);
+      sendHtml(data);
+    #endif
+    #if DRIVE_MAIN_AXES_CURRENT == ON
+      sprintf_P(temp, html_configAxisCurrentHold, (int)a->currentHold, axis, 3000);
+      data.concat(temp);
+      sendHtml(data);
+
+      sprintf_P(temp, html_configAxisCurrentTrak, (int)a->currentRun, axis, 3000);
+      data.concat(temp);
+      sendHtml(data);
+
+      sprintf_P(temp, html_configAxisCurrentSlew, (int)a->currentGoto, axis, 3000);
+      data.concat(temp);
+      sendHtml(data);
+    #endif
+  } else
+
+  if (a->driverType == DT_STEP_DIR_LEGACY) {
     #if DRIVE_MAIN_AXES_MICROSTEPS == ON
       if (a->microsteps != OFF) {
         sprintf_P(temp, html_configAxisMicroSteps, (int)a->microsteps, axis);
@@ -844,13 +892,13 @@ void sendAxisParams(AxisSettings* a, int axis) {
       }
     #endif
     #if DRIVE_MAIN_AXES_CURRENT == ON
-      if (a->IRUN != OFF) {
-        sprintf_P(temp, html_configAxisCurrent, (int)a->IRUN, axis, 3000);
+      if (a->currentRun != OFF) {
+        sprintf_P(temp, html_configAxisCurrentTrak, (int)a->currentRun, axis, 3000);
         data.concat(temp);
         sendHtml(data);
       }
-      if (a->IGOTO != OFF) {
-        sprintf_P(temp, html_configAxisCurrentSlew, (int)a->IGOTO, axis, 3000);
+      if (a->currentGoto != OFF) {
+        sprintf_P(temp, html_configAxisCurrentSlew, (int)a->currentGoto, axis, 3000);
         data.concat(temp);
         sendHtml(data);
       }

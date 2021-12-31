@@ -357,8 +357,12 @@
 #define L_ADV_SET_MIN "Minimum position"
 #define L_ADV_SET_MAX "Maximum position"
 
-#define L_ADV_SET_us "Driver Microsteps"
-#define L_ADV_SET_ma "Driver Tracking Current in milliamps, <i>caution!</i>"
+#define L_ADV_SET_SPECIAL "A value of -1 is equivalent to Config.h OFF, HALF, or SAME:"
+#define L_ADV_SET_IMMEDIATE "Servo settings take effect immediately (no reboot required)"
+#define L_ADV_SET_TRAK_us "Driver Microsteps"
+#define L_ADV_SET_GOTO_us "Driver Microsteps Goto"
+#define L_ADV_SET_HOLD_ma "Driver Hold Current in milliamps, <i>caution!</i>"
+#define L_ADV_SET_TRAK_ma "Driver Tracking Current in milliamps, <i>caution!</i>"
 #define L_ADV_SET_SLEW_ma "Driver Slewing Current in milliamps, <i>caution!</i>"
 #define L_ADV_SET_P "Servo Tracking Porportional"
 #define L_ADV_SET_I "Servo Tracking Integral"
@@ -366,7 +370,6 @@
 #define L_ADV_SET_P_GOTO "Servo Slewing Porportional"
 #define L_ADV_SET_I_GOTO "Servo Slewing Integral"
 #define L_ADV_SET_D_GOTO "Servo Slewing Derivative"
-#define L_ADV_SET_IMMEDIATE "Servo settings take effect immediately (no reboot required)"
 
 #define L_ADV_ENABLE "Enable Advanced Configuration"
 #define L_ADV_DISABLE "Disable Advanced Configuration (all defaults on reboot)"

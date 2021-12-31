@@ -71,15 +71,15 @@ bool decodeAxisSettings(char* s, AxisSettings* a) {
     ws=strchr(ws,','); if (ws != NULL) {
       ws++; a->microsteps = atol(ws);
       ws=strchr(ws,','); if (ws != NULL) {
-        ws++; a->IRUN = atol(ws);
+        ws++; a->currentRun = atol(ws);
         ws=strchr(ws,','); if (ws != NULL) {
           ws++; a->reverse = atol(ws);
           ws=strchr(ws,','); if (ws != NULL) {
             ws++; a->min = atol(ws);
             ws=strchr(ws,','); if (ws != NULL) {
               ws++; a->max = atol(ws);
-              a->isServo = false;
-              a->IGOTO = OFF;
+              a->driverType = DT_STEP_DIR_LEGACY;
+              a->currentGoto = OFF;
               return true;
             }
           }
@@ -114,10 +114,10 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
                     ws++; a->param5 = atof(ws);
                     ws=strchr(ws,','); if (ws != NULL) {
                       ws++; a->param6 = atof(ws);
-                      a->isServo = false;
+                      a->driverType = DT_NONE;
                       if (strstr(ws, "P")) {
                         // Dual PID Servo
-                        a->isServo = true;
+                        a->driverType = DT_SERVO;
                         a->p = a->param1;
                         a->i = a->param2;
                         a->d = a->param3;
@@ -126,11 +126,19 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
                         a->dGoto = a->param6;
                       } else
                       if (strstr(ws, "S")) {
-                        // Step/Dir
-                        a->isServo = false;
+                        // Step/Dir Standard driver
+                        a->driverType = DT_STEP_DIR_STANDARD;
                         a->microsteps = round(a->param1);
-                        a->IRUN = round(a->param2);
-                        a->IGOTO = round(a->param3);
+                        a->microstepsGoto = round(a->param2);
+                      } else
+                      if (strstr(ws, "T")) {
+                        // Step/Dir TMC-SPI driver
+                        a->driverType = DT_STEP_DIR_TMC_SPI;
+                        a->microsteps = round(a->param1);
+                        a->microstepsGoto = round(a->param2);
+                        a->currentHold = round(a->param3);
+                        a->currentRun = round(a->param4);
+                        a->currentGoto = round(a->param5);
                       }
                       return true;
                     }
@@ -156,11 +164,11 @@ bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a) {
   float StepsLimitL[5] = {   150.0,   150.0,    5.0, 0.005, 0.005};
   float StepsLimitH[5] = {122400.0,122400.0, 7200.0,  20.0,  20.0};
   int   IrunLimitH[5]  = { 3000, 3000, 1000, 1000, 1000};
-  if (altAz) { MinLimitL[0]=-360; MinLimitH[0]=-180; MaxLimitL[0]=180; MaxLimitH[0]=360; }
+  if (altAz) { MinLimitL[0] = -360; MinLimitH[0] = -180; MaxLimitL[0] = 180; MaxLimitH[0] = 360; }
   axisNum--;
   if (a.stepsPerMeasure < StepsLimitL[axisNum] || a.stepsPerMeasure > StepsLimitH[axisNum]) return false;
   if (a.microsteps != OFF && (a.microsteps < 1 || a.microsteps > 256)) return false;
-  if (a.IRUN != OFF && (a.IRUN < 0 || a.IRUN > IrunLimitH[axisNum])) return false;
+  if (a.currentRun != OFF && (a.currentRun < 0 || a.currentRun > IrunLimitH[axisNum])) return false;
   if (a.reverse != OFF && a.reverse != ON) return false;
   if (a.min < MinLimitL[axisNum] || a.min > MinLimitH[axisNum]) return false;
   if (a.max < MaxLimitL[axisNum] || a.max > MaxLimitH[axisNum]) return false;
@@ -175,16 +183,18 @@ bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a) {
   float StepsLimitL[5] = {   150.0,   150.0,    5.0, 0.005, 0.005};
   float StepsLimitH[5] = {122400.0,122400.0, 7200.0,  20.0,  20.0};
   int   IrunLimitH[5]  = { 3000, 3000, 1000, 1000, 1000};
-  if (altAz) { MinLimitL[0]=-360; MinLimitH[0]=-180; MaxLimitL[0]=180; MaxLimitH[0]=360; }
+  if (altAz) { MinLimitL[0] = -360; MinLimitH[0] = -180; MaxLimitL[0] = 180; MaxLimitH[0] = 360; }
   axisNum--;
   if (a.stepsPerMeasure < StepsLimitL[axisNum] || a.stepsPerMeasure > StepsLimitH[axisNum]) return false;
   if (a.reverse != OFF && a.reverse != ON) return false;
   if (a.min < MinLimitL[axisNum] || a.min > MinLimitH[axisNum]) return false;
   if (a.max < MaxLimitL[axisNum] || a.max > MaxLimitH[axisNum]) return false;
-  if (!a.isServo) {
-    if (round(a.param1) != OFF && (round(a.param1) < 1 || round(a.param1) > 256)) return false;
-    if (round(a.param2) != OFF && (round(a.param2) < 0 || round(a.param2) > IrunLimitH[axisNum])) return false;
-    if (round(a.param3) != OFF && (round(a.param3) < 0 || round(a.param3) > IrunLimitH[axisNum])) return false;
+  if (a.driverType != DT_SERVO) {
+    if (a.microsteps     != OFF && (a.microsteps < 1     || a.microsteps > 256))     return false;
+    if (a.microstepsGoto != OFF && (a.microstepsGoto < 1 || a.microstepsGoto > 256)) return false;
+    if (a.currentHold    != OFF && (a.currentHold < 0    || a.currentHold > IrunLimitH[axisNum])) return false;
+    if (a.currentRun     != OFF && (a.currentRun < 0     || a.currentRun > IrunLimitH[axisNum]))  return false;
+    if (a.currentGoto    != OFF && (a.currentGoto < 0    || a.currentGoto > IrunLimitH[axisNum])) return false;
   }
   return true;
 }

@@ -4,14 +4,18 @@
 
 #include "../../Common.h"
 
+enum DriverType {DT_NONE, DT_SERVO, DT_STEP_DIR_STANDARD, DT_STEP_DIR_TMC_SPI, DT_STEP_DIR_LEGACY};
+
 typedef struct AxisSettings {
    double stepsPerMeasure;
    int8_t reverse;
    int16_t min;
    int16_t max;
    int16_t microsteps;
-   int16_t IRUN;
-   int16_t IGOTO;
+   int16_t microstepsGoto;
+   int16_t currentHold;
+   int16_t currentRun;
+   int16_t currentGoto;
    float p, i, d, pGoto, iGoto, dGoto;
    double param1;
    double param2;
@@ -19,7 +23,7 @@ typedef struct AxisSettings {
    double param4;
    double param5;
    double param6;
-   bool isServo;
+   DriverType driverType;
 } AxisSettings;
 
 // remove leading and trailing 0's

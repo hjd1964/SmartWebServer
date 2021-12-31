@@ -367,8 +367,12 @@
 #define L_ADV_SET_MIN "Mindestposition"
 #define L_ADV_SET_MAX "Maximale Position"
 
-#define L_ADV_SET_us "Treiber Mikroschritte"
-#define L_ADV_SET_ma "Treiber Strom in Milliampere, <i>Vorsicht!</i>"
+#define L_ADV_SET_SPECIAL "Ein Wert von -1 ist äquivalent zu Config.h OFF, HALF, or SAME:"
+#define L_ADV_SET_IMMEDIATE "Servoeinstellungen werden sofort wirksam (kein Neustart erforderlich)"
+#define L_ADV_SET_TRAK_us "Treiber Mikroschritte"
+#define L_ADV_SET_GOTO_us "Treiber Mikroschritte Gehe zu"
+#define L_ADV_SET_HOLD_ma "Treiberhaltestrom in Milliampere, <i>Vorsicht!</i>"
+#define L_ADV_SET_TRAK_ma "Treiber Strom in Milliampere, <i>Vorsicht!</i>"
 #define L_ADV_SET_SLEW_ma "Treiber Slewing Strom in Milliampere, <i>Vorsicht!</i>"
 #define L_ADV_SET_P "Servo Verfolgung Porportional"
 #define L_ADV_SET_I "Servo Verfolgung Integral"
@@ -376,7 +380,6 @@
 #define L_ADV_SET_P_GOTO "Servo Schwenken Porportional"
 #define L_ADV_SET_I_GOTO "Servo Schwenken Integral"
 #define L_ADV_SET_D_GOTO "Servo Schwenken Ableitung"
-#define L_ADV_SET_IMMEDIATE "Servoeinstellungen werden sofort wirksam (kein Neustart erforderlich)"
 
 #define L_ADV_ENABLE "Aktivieren Sie die erweiterte Konfiguration"
 #define L_ADV_DISABLE "Deaktivieren Sie die erweiterte Konfiguration (alle Standardeinstellungen beim Neustart)"
