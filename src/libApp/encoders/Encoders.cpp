@@ -38,7 +38,7 @@ extern NVS nv;
 
 void Encoders::init() { 
   // confirm the data structure size
-  if (EncoderSettingsSize < sizeof(EncoderSettings)) { nv.readOnly(true); DL("ERR: Encoders::init(); EncoderSettingsSize error NV subsystem writes disabled"); }
+  if (EncoderSettingsSize < sizeof(EncoderSettings)) { nv.protectData(true); DL("ERR: Encoders::init(); EncoderSettingsSize error NV subsystem writes disabled"); }
 
   // write the default settings to NV
   if (!nv.isKeyValid()) {
