@@ -192,9 +192,11 @@ bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a) {
   if (a.driverType != DT_SERVO) {
     if (a.microsteps     != OFF && (a.microsteps < 1     || a.microsteps > 256))     return false;
     if (a.microstepsGoto != OFF && (a.microstepsGoto < 1 || a.microstepsGoto > 256)) return false;
-    if (a.currentHold    != OFF && (a.currentHold < 0    || a.currentHold > IrunLimitH[axisNum])) return false;
-    if (a.currentRun     != OFF && (a.currentRun < 0     || a.currentRun > IrunLimitH[axisNum]))  return false;
-    if (a.currentGoto    != OFF && (a.currentGoto < 0    || a.currentGoto > IrunLimitH[axisNum])) return false;
+    if (a.driverType == DT_STEP_DIR_TMC_SPI) {
+      if (a.currentHold    != OFF && (a.currentHold < 0    || a.currentHold > IrunLimitH[axisNum])) return false;
+      if (a.currentRun     != OFF && (a.currentRun < 0     || a.currentRun > IrunLimitH[axisNum]))  return false;
+      if (a.currentGoto    != OFF && (a.currentGoto < 0    || a.currentGoto > IrunLimitH[axisNum])) return false;
+    }
   }
   return true;
 }
