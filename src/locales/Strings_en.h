@@ -357,7 +357,7 @@
 #define L_ADV_SET_MIN "Minimum position"
 #define L_ADV_SET_MAX "Maximum position"
 
-#define L_ADV_SET_SPECIAL "A value of -1 is equivalent to Config.h OFF, HALF, or SAME:"
+#define L_ADV_SET_SPECIAL "A value of -1 is equivalent to Config.h OFF"
 #define L_ADV_SET_IMMEDIATE "Servo settings take effect immediately (no reboot required)"
 #define L_ADV_SET_TRAK_us "Driver Microsteps"
 #define L_ADV_SET_GOTO_us "Driver Microsteps Goto"

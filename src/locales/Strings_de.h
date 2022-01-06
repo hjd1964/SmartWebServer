@@ -367,7 +367,7 @@
 #define L_ADV_SET_MIN "Mindestposition"
 #define L_ADV_SET_MAX "Maximale Position"
 
-#define L_ADV_SET_SPECIAL "Ein Wert von -1 ist äquivalent zu Config.h OFF, HALF, or SAME:"
+#define L_ADV_SET_SPECIAL "Ein Wert von -1 ist äquivalent zu Config.h OFF:"
 #define L_ADV_SET_IMMEDIATE "Servoeinstellungen werden sofort wirksam (kein Neustart erforderlich)"
 #define L_ADV_SET_TRAK_us "Treiber Mikroschritte"
 #define L_ADV_SET_GOTO_us "Treiber Mikroschritte Gehe zu"

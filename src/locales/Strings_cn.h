@@ -357,7 +357,7 @@
 #define L_ADV_SET_MIN "最低位置"
 #define L_ADV_SET_MAX "最大位置"
 
-#define L_ADV_SET_SPECIAL "-1 的值相当于 Config.h OFF, HALF, or SAME:"
+#define L_ADV_SET_SPECIAL "-1 的值相当于 Config.h OFF:"
 #define L_ADV_SET_IMMEDIATE "伺服 设置立即生效（无需重启）"
 #define L_ADV_SET_TRAK_us "司机 微步"
 #define L_ADV_SET_GOTO_us "驱动程序微步转到"
