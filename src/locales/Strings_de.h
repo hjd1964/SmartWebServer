@@ -104,12 +104,12 @@
 // driver status
 #define L_DRIVER_STATUS "Teriber"
 #define L_STATE "Status"
-#define L_COMMS_FAILURE "Befehlsfehler"
-#define L_STANDSTILL "Stillstand"
-#define L_OPEN_LOAD "Offene Last"
-#define L_SHORT_GND "Masseschluss"
-#define L_SHUTDOWN_OVER "Abschaltung &uuml;ber"
-#define L_PRE_WARNING "Vorwarnung"
+#define L_COMMS_FAILURE "befehlsfehler"
+#define L_STANDSTILL "stillstand"
+#define L_OPEN_LOAD "offene last"
+#define L_SHORT_GND "masseschluss"
+#define L_SHUTDOWN_OVER "abschaltung &uuml;ber"
+#define L_PRE_WARNING "vorwarnung"
 #define L_DRIVER_FAULT "Fehler"
 
 // misc. errors/workload
