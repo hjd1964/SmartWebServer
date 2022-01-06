@@ -65,9 +65,9 @@ void StepDirDriver::setParam(float param1, float param2, float param3, float par
 
   VF("MSG: StepDvr"); V(axisNumber); VF(", init model "); V(DRIVER_NAME[settings.model]);
   VF(" u-step mode "); if (settings.microsteps == OFF) { VF("OFF (assuming 1X)"); settings.microsteps = 1; } else { V(settings.microsteps); VF("X"); }
-  VF(" (goto mode "); if (settings.microstepsGoto == SAME) { VLF("SAME)"); } else { V(settings.microstepsGoto); VL("X)"); }
+  VF(" (goto mode "); if (settings.microstepsGoto == OFF) { VLF("OFF)"); } else { V(settings.microstepsGoto); VL("X)"); }
 
-  if (settings.microstepsGoto == SAME) settings.microstepsGoto = settings.microsteps;
+  if (settings.microstepsGoto == OFF) settings.microstepsGoto = settings.microsteps;
   microstepCode = subdivisionsToCode(settings.microsteps);
   microstepCodeGoto = subdivisionsToCode(settings.microstepsGoto);
   microstepRatio = settings.microsteps/settings.microstepsGoto;
@@ -97,6 +97,20 @@ void StepDirDriver::setParam(float param1, float param2, float param3, float par
     pinModeEx(decayPin, OUTPUT);
     digitalWriteEx(decayPin, getDecayPinState(settings.decay));
 
+    #if DEBUG == VERBOSE
+      VF("MSG: StepDvr"); V(axisNumber);
+      V(", pins m0="); if (Pins->m0 == OFF) V("OFF"); else V(Pins->m0);
+      V(", m1="); if (Pins->m1 == OFF) VF("OFF"); else V(Pins->m1);
+      V(", m2="); if (m2Pin == OFF) VF("OFF"); else V(m2Pin);
+      if (!isTmcSPI()) {
+        V(", decay="); if (decayPin == OFF) VF("OFF"); else V(decayPin);
+        if (settings.status == ON) {
+          V(", fault="); if (Pins->fault == OFF) VF("OFF"); else V(Pins->fault);
+        }
+      }
+      VL("");
+    #endif
+
     microstepBitCode = microstepCode;
     microstepBitCodeGoto = microstepCodeGoto;
     pinModeEx(Pins->m0, OUTPUT);
@@ -108,6 +122,8 @@ void StepDirDriver::setParam(float param1, float param2, float param3, float par
   }
 
   // automatically set fault status for known drivers
+  status.active = settings.status != OFF;
+
   if (settings.status == ON) {
     switch (settings.model) {
       case DRV8825: settings.status = LOW; break;
@@ -161,26 +177,21 @@ bool StepDirDriver::validateParam(float param1, float param2, float param3, floa
     return false;
   }
 
-  if (!isTmcSPI()) {
-    if (currentHold != OFF || currentRun != OFF || currentGoto != OFF) {
-      DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DLF(" current settings are not valid for this driver type!");
+  if (isTmcSPI()) {
+    if (currentHold != OFF && (currentHold < 0 || currentHold > maxCurrent)) {
+      DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current hold="); DL(currentHold);
       return false;
     }
-  }
 
-  if (currentHold != OFF && (currentHold < 0 || currentHold > maxCurrent)) {
-    DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current hold="); DL(currentHold);
-    return false;
-  }
+    if (currentRun != OFF && (currentRun < 0 || currentRun > maxCurrent)) {
+      DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current run="); DL(currentRun);
+      return false;
+    }
 
-  if (currentRun != OFF && (currentRun < 0 || currentRun > maxCurrent)) {
-    DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current run="); DL(currentRun);
-    return false;
-  }
-
-  if (currentGoto != OFF && (currentGoto < 0 || currentGoto > maxCurrent)) {
-    DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current goto="); DL(currentGoto);
-    return false;
+    if (currentGoto != OFF && (currentGoto < 0 || currentGoto > maxCurrent)) {
+      DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current goto="); DL(currentGoto);
+      return false;
+    }
   }
 
   return true;
@@ -199,7 +210,7 @@ void StepDirDriver::modeMicrostepTracking() {
     noInterrupts();
     digitalWriteEx(Pins->m0, bitRead(microstepBitCode, 0));
     digitalWriteEx(Pins->m1, bitRead(microstepBitCode, 1));
-    digitalWriteEx(Pins->m2, bitRead(microstepBitCode, 2));
+    digitalWriteEx(m2Pin, bitRead(microstepBitCode, 2));
     interrupts();
   }
 }
@@ -233,7 +244,7 @@ int StepDirDriver::modeMicrostepSlewing() {
       noInterrupts();
       digitalWriteEx(Pins->m0, bitRead(microstepBitCodeGoto, 0));
       digitalWriteEx(Pins->m1, bitRead(microstepBitCodeGoto, 1));
-      digitalWriteEx(Pins->m2, bitRead(microstepBitCodeGoto, 2));
+      digitalWriteEx(m2Pin, bitRead(microstepBitCodeGoto, 2));
       interrupts();
     }
   }
@@ -301,8 +312,8 @@ DriverStatus StepDirDriver::getStatus() {
 
 int8_t StepDirDriver::getDecayPinState(int8_t decay) {
   uint8_t state = OFF;
-  if (decay == SPREADCYCLE) state = LOW;  else
-  if (decay == STEALTHCHOP) state = HIGH; else
+  if (decay == SPREADCYCLE) state = HIGH; else
+  if (decay == STEALTHCHOP) state = LOW;  else
   if (decay == MIXED)       state = LOW;  else
   if (decay == FAST)        state = HIGH;
   return state;
