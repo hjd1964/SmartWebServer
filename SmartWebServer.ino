@@ -52,7 +52,9 @@ NVS nv;
 
 #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
   CmdServer persistentCmdSvr1(9996, 120L*1000L, true);
-  CmdServer persistentCmdSvr2(9997, 120L*1000L, true);
+  #if OPERATIONAL_MODE != ETHERNET_W5100
+    CmdServer persistentCmdSvr2(9997, 120L*1000L, true);
+  #endif
   CmdServer persistentCmdSvr3(9998, 120L*1000L, true);
 #endif
 
@@ -231,8 +233,10 @@ Again:
   #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
     VLF("MSG: Starting port 9996 cmd server");
     persistentCmdSvr3.begin();
-    VLF("MSG: Starting port 9997 cmd server");
-    persistentCmdSvr2.begin();
+    #if OPERATIONAL_MODE != ETHERNET_W5100
+      VLF("MSG: Starting port 9997 cmd server");
+      persistentCmdSvr2.begin();
+    #endif
     VLF("MSG: Starting port 9998 cmd server");
     persistentCmdSvr1.begin();
   #endif
@@ -276,7 +280,9 @@ void loop(void) {
 
   #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
     persistentCmdSvr1.handleClient(); Y;
-    persistentCmdSvr2.handleClient(); Y;
+    #if OPERATIONAL_MODE != ETHERNET_W5100
+      persistentCmdSvr2.handleClient(); Y;
+    #endif
     persistentCmdSvr3.handleClient(); Y;
   #endif
 
