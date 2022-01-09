@@ -37,6 +37,6 @@
 
 #define NV_TIMEOUT_CMD               5      // 2 bytes
 #define NV_TIMEOUT_WEB               7      // 2 bytes
-#define NV_ETHERNET_SETTINGS_BASE    100    // 67 bytes
+#define NV_ETHERNET_SETTINGS_BASE    100    // 88 bytes
 #define NV_WIFI_SETTINGS_BASE        200    // 427 bytes
 #define NV_ENCODER_SETTINGS_BASE     700    // 88 bytes
