@@ -18,7 +18,6 @@ bool MountStatus::update(bool all) {
     if (!onStep.command(":GVP#", result) || result[0] == 0 || (!strstr(result, "On-Step") && !strstr(result, "OnStepX"))) { _valid = false; return false; }
     if (!onStep.command(":GVN#", result) || result[0] == 0 ) { _valid = false; return false; }
     strcpy(_id, "OnStep");
-
     strcpy(_ver, result);
     if (strlen(result) > 0) {
       _ver_patch = result[strlen(result) - 1];
@@ -38,6 +37,7 @@ bool MountStatus::update(bool all) {
       _ver_min = -1;
       _ver_patch = 0;
       _valid = false;
+      return false;
     }
   }
 
@@ -140,9 +140,9 @@ bool MountStatus::update(bool all) {
 
 bool MountStatus::getId(char id[]) { if (!_valid) return false; else { strcpy(id, _id); return true; } }
 bool MountStatus::getVersionStr(char ver[]) { if (!_valid) return false; else { strcpy(ver, _ver); return true; } }
-int  MountStatus::getVersionMajor() { if (!_valid) return -1; else return _ver_maj; }
-int  MountStatus::getVersionMinor() { if (!_valid) return -1; else return _ver_min; }
-char MountStatus::getVersionPatch() { if (!_valid) return 0; else return _ver_patch; }
+int  MountStatus::getVersionMajor() { return _ver_maj; }
+int  MountStatus::getVersionMinor() { return _ver_min; }
+char MountStatus::getVersionPatch() { return _ver_patch; }
 bool MountStatus::valid() { return _valid; }
 bool MountStatus::aligning() {
   char s[20] = "";
@@ -194,14 +194,13 @@ float MountStatus::featureValue3() { return _feature[_featureSelected].value3; }
 float MountStatus::featureValue4() { return _feature[_featureSelected].value4; }
 
 bool MountStatus::featureScan() {
-  // scan features once
-  static bool scan_features = true;
-
+  static bool scanned = false;
+  bool valid;
   char cmd[40], out[40], present[40];
 
   // check which feature #'s are present
-  if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 9) _valid = false;
-  if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
+  if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true;
+  if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
   // get feature status
   for (uint8_t i = 0; i < 8; i++) {
@@ -209,36 +208,37 @@ bool MountStatus::featureScan() {
 
     if (present[i] == '0') continue;
 
-    if (scan_features) {
-        sprintf(cmd, ":GXY%d#", i+1);
-        if (!onStep.command(cmd, out) || out[0] == 0) _valid = false;
-        if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
+    if (!scanned) {
+      sprintf(cmd, ":GXY%d#", i+1);
+      if (!onStep.command(cmd, out) || out[0] == 0) valid = false;
+      if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
-        if (strlen(out) > 1) {
+      if (strlen(out) > 1) {
         purpose_str = strstr(out,",");
         if (purpose_str) {
-            purpose_str[0] = 0;
-            purpose_str++;
-        } else _valid = false;
-        char *name_str = out; if (!name_str) _valid = false;
-
-        if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
+          purpose_str[0] = 0;
+          purpose_str++;
+        } else valid = false;
+        char *name_str = out; if (!name_str) valid = false;
+        if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
         if (strlen(name_str) > 10) name_str[11] = 0;
         strcpy(_feature[i].name, name_str);
         if (purpose_str) _feature[i].purpose = atoi(purpose_str);
 
         _featureFound = true;
-        }
+      }
     }
   }
-  scan_features = false;
+  scanned = true;
   return true;
 }
 
 bool MountStatus::featureUpdate(bool all) {
+  bool valid;
+
   // get feature status
-  for (uint8_t i=0; i<8; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
     char *value1_str = NULL;
     char *value2_str = NULL;
     char *value3_str = NULL;
@@ -246,13 +246,13 @@ bool MountStatus::featureUpdate(bool all) {
     char cmd[40], out[40];
 
     if (all || (_feature[i].purpose == SWITCH || _feature[i].purpose == ANALOG_OUTPUT || _feature[i].purpose == DEW_HEATER || _feature[i].purpose == INTERVALOMETER)) {
-      sprintf(cmd,":GXX%d#",i+1);
-      if (!onStep.command(cmd, out) || strlen(out) == 0) _valid = false;
-      if (!_valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; return false; }
+      sprintf(cmd,":GXX%d#", i + 1);
+      if (!onStep.command(cmd, out) || strlen(out) == 0) valid = false; else valid = true;
+      if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; return false; }
 
       value2_str = strstr(out,",");
       if (value2_str) {
-        value2_str[0]=0;
+        value2_str[0] = 0;
         value2_str++;
         value3_str = strstr(value2_str, ",");
         if (value3_str) {
@@ -265,9 +265,10 @@ bool MountStatus::featureUpdate(bool all) {
           }
         }
       }
-      value1_str = out; if (!value1_str) _valid = false;
+      value1_str = out;
+      if (!value1_str) valid = false;
 
-      if (_valid) {
+      if (valid) {
         if (value1_str) _feature[i].value1 = atoi(value1_str);
         if (value2_str) _feature[i].value2 = atof(value2_str);
         if (value3_str) _feature[i].value3 = atof(value3_str);
