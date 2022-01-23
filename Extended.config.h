@@ -68,7 +68,3 @@
 // Warning --->                           //              ***     OR TWO THEN SET THIS OPTION TO OFF AND UPLOAD AGAIN.        ***
                                           //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
                                           //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
-
-#define NV_DEFAULT                     ON //          ON, Uses HAL specified default, for remembering settings when           Infreq
-                                          //              powered off.  This is usually done using the microcontrollers
-                                          //              built-in EEPROM or FLASH emulation of EEPROM.
