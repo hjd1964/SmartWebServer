@@ -144,11 +144,17 @@ void StepDirMotor::setFrequencySteps(float frequency) {
 
     // change the motor rate/direction
     if (step != dir) step = 0;
-    tasks.setPeriodSubMicros(taskHandle, lastPeriod);
+    if (lastPeriodSet != lastPeriod) {
+      tasks.setPeriodSubMicros(taskHandle, lastPeriod);
+      lastPeriodSet = lastPeriod;
+    }
     step = dir;
 
     if (microstepModeControl == MMC_TRACKING_READY) microstepModeControl = MMC_TRACKING;
-    if (microstepModeControl == MMC_SLEWING_READY) microstepModeControl = MMC_SLEWING;
+    if (microstepModeControl == MMC_SLEWING_READY) {
+      V(axisPrefix); VF("high speed swap in took "); V(millis() - switchStartTimeMs); VLF(" ms");
+      microstepModeControl = MMC_SLEWING;
+    }
 
   } else {
     noInterrupts();
@@ -179,6 +185,7 @@ void StepDirMotor::modeSwitch() {
 
     if (microstepModeControl == MMC_TRACKING) {
       microstepModeControl = MMC_SLEWING_REQUEST;
+      switchStartTimeMs = millis();
     } else
     if (microstepModeControl == MMC_SLEWING_PAUSE) {
 
