@@ -11,12 +11,16 @@
 // Default serial port where OnStep is attached ------------------------------------------------------
 #define SERIAL_ONSTEP Serial
 
-// Non-volatile storage ------------------------------------------------------------------------------
+// Non-volatile storage ----------------------------------------------------------------------------
+#if NV_DRIVER == NV_DEFAULT
+  #include "../lib/nv/NV_EEPROM.h"
+  #define HAL_NV_INIT() nv.init(2048, true, 0, false);
+#endif
 
 //----------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
 #ifndef HAL_INIT
-  #define HAL_INIT { nv.init(2048, true, 0, false); }
+  #define HAL_INIT { ; }
 #endif
 
 //-----------------------------------------------------------------------------------------------------

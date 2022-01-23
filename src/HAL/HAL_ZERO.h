@@ -16,15 +16,16 @@
 #define SERIAL_ONSTEP Serial1
 
 // Non-volatile storage ------------------------------------------------------------------------------
-#ifdef NV_DEFAULT
+#if NV_DRIVER == NV_DEFAULT
   // Library FlashStorage defaults to 1024 bytes https://github.com/cmaglie/FlashStorage
   #define E2END 1023
   #include "../lib/nv/NV_M0.h"
+  #define HAL_NV_INIT() { nv.init(E2END + 1, false, 1000, false); }
 #endif
 
 //----------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT() { nv.init(E2END + 1, false, 1000, false); }
+#define HAL_INIT() { ; }
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation

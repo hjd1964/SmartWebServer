@@ -13,16 +13,17 @@
 #define SERIAL_ONSTEP Serial1
 
 // Non-volatile storage ------------------------------------------------------------------------------
-#ifdef NV_DEFAULT
+#if NV_DRIVER == NV_DEFAULT
   #define E2END 1023
   #undef  NV_ENDURANCE
   #define NV_ENDURANCE NVE_LOW
   #include "../lib/nv/NV_ESP.h"
+  #define HAL_NV_INIT { nv.init(E2END + 1, false, 1000, false); }
 #endif
 
 //--------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT() { nv.init(E2END + 1, false, 1000, false); }
+#define HAL_INIT() { ; }
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation

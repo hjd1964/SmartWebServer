@@ -92,6 +92,7 @@ void setup(void) {
   // call hardware specific initialization
   VLF("MSG: Init HAL");
   HAL_INIT();
+  HAL_NV_INIT();
 
   #if LED_STATUS != OFF
     pinMode(LED_STATUS_PIN, OUTPUT);

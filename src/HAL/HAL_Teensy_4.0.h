@@ -9,8 +9,9 @@
 #define HAL_WIRE_CLOCK 100000
 
 // Non-volatile storage ------------------------------------------------------------------------------
-#ifdef NV_DEFAULT
+#if NV_DRIVER == NV_DEFAULT
   #include "../lib/nv/NV_EEPROM.h"
+  #define HAL_NV_INIT() 
 #endif
 
 // Default serial port where OnStep is attached ------------------------------------------------------
