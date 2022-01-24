@@ -13,3 +13,8 @@
 #ifndef RESET_PIN_STATE
   #define RESET_PIN_STATE              LOW
 #endif
+
+// use the HAL specified default NV driver
+#ifndef NV_DRIVER
+  #define NV_DRIVER                    NV_DEFAULT
+#endif
