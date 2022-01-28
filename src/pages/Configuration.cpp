@@ -451,7 +451,7 @@ void handleConfiguration() {
       data.concat(F("<button name='advanced' type='submit' "));
       if (numShown == 0) data.concat("value='enable'>" L_ADV_ENABLE "</button>"); else data.concat("value='disable'>" L_ADV_DISABLE "</button>");
       data.concat("</form>\r\n");
-      data.concat(FPSTR(html_configAxesNotes));
+      if (numShown > 0) data.concat(FPSTR(html_configAxesNotes));
     #endif
 
     #if DISPLAY_RESET_CONTROLS != OFF
