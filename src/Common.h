@@ -9,7 +9,6 @@
 #include "Constants.h"
 #include "lib/Constants.h"
 #include "../Config.h"
-#include "../Extended.config.h"
 #include "Config.defaults.h"
 #include "HAL/HAL.h"
 #include "lib/Macros.h"

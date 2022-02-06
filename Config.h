@@ -83,3 +83,4 @@
 
 // THAT'S IT FOR USER CONFIGURATION!
 // -------------------------------------------------------------------------------
+#include "Extended.config.h"
