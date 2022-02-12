@@ -2,7 +2,7 @@
  * Title       OnStep Smart Web Server
  * by          Howard Dutton
  *
- * Copyright (C) 2016 to 2021 Howard Dutton
+ * Copyright (C) 2016 to 2022 Howard Dutton
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
 #define FirmwareVersionMinor  "02"
-#define FirmwareVersionPatch  "c"
+#define FirmwareVersionPatch  "d"
 
 // Use Config.h to configure the SWS to your requirements
 
