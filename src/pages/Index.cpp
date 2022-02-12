@@ -59,7 +59,7 @@ void handleRoot() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   data.concat("<div style='width: 27em;'>");
 
@@ -332,5 +332,5 @@ void handleRoot() {
   data.concat("</div></body></html>");
 
   sendHtml(data);
-  sendHtmlDone(data);
+  sendHtmlDone();
 }

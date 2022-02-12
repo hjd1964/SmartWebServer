@@ -7,9 +7,11 @@
 
 #if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
   void handleNotFound() {
-    String message = "File Not Found\n\n";
-    sendHtmlDone(message);
     VLF("File not found");
+    String message = "File Not Found\n\n";
+
+    sendHtml(message);
+    sendHtmlDone();
   }
 #else
   void handleNotFound() {

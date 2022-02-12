@@ -63,7 +63,7 @@ void handleAux() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   // scripts
   sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt"); data.concat(temp);
@@ -221,7 +221,7 @@ void handleAux() {
   data.concat("</div></body></html>");
 
   sendHtml(data);
-  sendHtmlDone(data);
+  sendHtmlDone();
 }
 
 void auxAjaxGet() {
@@ -282,11 +282,8 @@ void auxAjax() {
     }
   }
 
-#if OPERATIONAL_MODE != WIFI
-  sendHtmlDone(data);
-#else
-  www.send(200, "text/plain",data);
-#endif
+  sendHtml(data);
+  sendHtmlDone();
 }
 
 void processAuxGet() {

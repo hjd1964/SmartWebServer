@@ -79,7 +79,7 @@
     sendHtml(data);
 
     // OnStep wasn't found, show warning and info.
-    if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
+    if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
     data.concat("<div style='width: 35em;'>");
 
@@ -132,9 +132,9 @@
     
     strcpy(temp,"</div></div></body></html>");
     data.concat(temp);
-    sendHtml(data);
 
-    sendHtmlDone(data);
+    sendHtml(data);
+    sendHtmlDone();
   }
 
   void encAjax() {
@@ -143,11 +143,8 @@
     data.concat("eas_on|");  if (encoders.autoSync) data.concat("disabled\n"); else data.concat("enabled\n");
     data.concat("eas_off|"); if (encoders.autoSync) data.concat("enabled\n"); else data.concat("disabled\n");
 
-    #if OPERATIONAL_MODE != WIFI
-      sendHtmlDone(data);
-    #else
-      www.send(200, "text/plain", data);
-    #endif
+    sendHtml(data);
+    sendHtmlDone();
   }
 
   void encAjaxGet() {

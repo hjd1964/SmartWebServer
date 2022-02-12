@@ -72,7 +72,7 @@ void handleControl() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   // scripts
   sprintf_P(temp, html_ajaxScript, "controlA.txt"); data.concat(temp);
@@ -201,7 +201,7 @@ void handleControl() {
   data.concat("</div></body></html>");
 
   sendHtml(data);
-  sendHtmlDone(data);
+  sendHtmlDone();
 }
 
 void controlAjaxGet() {
@@ -302,11 +302,8 @@ void controlAjax() {
     if (onStep.command(":rG#", temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
   }
 
-#if OPERATIONAL_MODE != WIFI
-  sendHtmlDone(data);
-#else
-  www.send(200, "text/plain",data);
-#endif
+  sendHtml(data);
+  sendHtmlDone();
 }
 
 int get_temp_month;

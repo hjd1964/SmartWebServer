@@ -66,7 +66,7 @@ void handlePec() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat( FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   data.concat(FPSTR(html_pec1));
 
@@ -85,7 +85,7 @@ void handlePec() {
   }
 
   sendHtml(data);
-  sendHtmlDone(data);
+  sendHtmlDone();
 }
 
 void pecAjax() {
@@ -103,11 +103,8 @@ void pecAjax() {
   } else { data.concat("?"); }
   data.concat("\n");
 
-#if OPERATIONAL_MODE != WIFI
-  sendHtmlDone(data);
-#else
-  www.send(200, "text/plain",data);
-#endif
+  sendHtml(data);
+  sendHtmlDone();
 }
 
 void processPecGet() {

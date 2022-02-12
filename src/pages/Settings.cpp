@@ -67,7 +67,7 @@ void handleSettings() {
   sendHtml(data);
  
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(data); return; }
+  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   data.concat("<div style='width: 35em;'>");
 
@@ -108,7 +108,7 @@ void handleSettings() {
   data.concat("</div></div></body></html>");
   
   sendHtml(data);
-  sendHtmlDone(data);
+  sendHtmlDone();
 }
 
 void settingsAjaxGet() {
@@ -236,12 +236,8 @@ void settingsAjax() {
     data.concat("sr_vs|disabled\n");
   }
 
-  
-#if OPERATIONAL_MODE != WIFI
-  sendHtmlDone(data);
-#else
-  www.send(200, "text/plain",data);
-#endif
+  sendHtml(data);
+  sendHtmlDone();
 }
 
 void processSettingsGet() {
