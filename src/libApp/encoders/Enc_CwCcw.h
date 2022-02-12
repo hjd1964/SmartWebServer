@@ -11,9 +11,7 @@
       int32_t read();
       void write(int32_t v);
     private:
-      int16_t _cwPin;
-      int16_t _ccwPin;
-      int16_t _axis;
+      int16_t axis;
   };
 
   #if AXIS1_ENC == CWCCW

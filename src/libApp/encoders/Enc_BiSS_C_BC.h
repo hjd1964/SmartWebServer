@@ -40,13 +40,13 @@
       // read encoder position
       bool readEnc(uint32_t &encPos);
 
-      uint32_t _position = 0;
-      uint32_t _lastValidTime = 0;
-      uint32_t _lastValidPos = 0;
-      int32_t _offset = 0;
-      int16_t _clkPin;
-      int16_t _sloPin;
-      int16_t _axis;
+      uint32_t position = 0;
+      uint32_t lastValidTime = 0;
+      uint32_t lastValidPos = 0;
+      int32_t offset = 0;
+      int16_t clkPin;
+      int16_t sloPin;
+      int16_t axis;
   };
 
   #if AXIS1_ENC == BC_BISSC

@@ -16,20 +16,6 @@
 // encoder polling rate in seconds, default 1.5
 #define POLLING_RATE 1.5
 
-#if AXIS1_ENC_RATE_CONTROL == ON
-  #if AXIS1_ENC_BIN_AVG > 0
-    extern volatile uint32_t StaBins[AXIS1_ENC_BIN_AVG];
-    extern volatile uint32_t LtaBins[AXIS1_ENC_BIN_AVG];
-    extern volatile uint32_t T1Bins[AXIS1_ENC_BIN_AVG];
-  #endif
-  extern volatile int32_t Tsta;
-  extern volatile int32_t Tlta;
-  extern unsigned long msPerTickMax;
-  extern volatile uint32_t usPerBinTickMin;
-  extern volatile uint32_t usPerBinTickMax;
-  extern volatile uint32_t clocksPerTickMin;
-#endif
-
 #if defined(ESP8266) || defined(ESP32)
   #define GetClockCount ESP.getCycleCount()
   #define ClockCountToMicros ((uint32_t)ESP.getCpuFreqMHz())
@@ -94,10 +80,6 @@ class Encoders {
       void syncToOnStep();
       void poll();
 
-      #if AXIS1_ENC_RATE_CONTROL == ON
-        void clearAverages();
-      #endif
-      
       double getAxis1();
       double getAxis2();
       bool   validAxis1();
@@ -116,45 +98,13 @@ class Encoders {
       int32_t Axis2EncDiffFrom    = AXIS2_ENC_DIFF_LIMIT_FROM;
       int32_t Axis2EncDiffAbs     = 0;
 
-      // encoder rate control
-      #if AXIS1_ENC_RATE_CONTROL == ON
-        // user interface and settings
-        bool sweep = true;
-
-        float arcSecondsPerTick;
-        float usPerTick;
-        
-        // averages & rate calculation
-        float rateSta = 1.0;
-        float rateLta = 1.0;
-        float rateControl = 0.0;
-        float axis1Rate = 1.0;
-
-        #if AXIS1_ENC_INTPOL_COS == ON
-          long cosIntPolPeriod = AXIS1_ENC_BIN_AVG;
-          long cosIntPolPhase = 1;
-          long cosIntPolMag = 0;
-          float cosIntpolComp = 0.0F;
-          float cosIntpolPhaseF = 0.0F;
-        #endif
-
-        #if AXIS1_ENC_RATE_AUTO > 0
-          static unsigned long nextWormPeriod = 0;
-          static float rateDelta = 0.0F;
-        #endif
-
-        // guiding
-        float guideCorrection = 0;
-        long guideCorrectionMillis = 0;
-      #endif
-
     private:
-      double _osAxis1      = 0;
-      double _osAxis2      = 0;
-      double _enAxis1      = 0;
-      double _enAxis2      = 0;
-      bool   _enAxis1Fault = false;
-      bool   _enAxis2Fault = false;
+      double osAxis1      = 0;
+      double osAxis2      = 0;
+      double enAxis1      = 0;
+      double enAxis2      = 0;
+      bool   enAxis1Fault = false;
+      bool   enAxis2Fault = false;
 
     #endif
 };
