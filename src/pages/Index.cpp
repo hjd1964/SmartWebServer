@@ -146,33 +146,24 @@ void handleRoot() {
 
   // polar align
 
-  // get latitude in degrees
-  long lat = 90L;
-  if (onStep.command(":Gt#", temp)) {
-    temp[3] = 0;
-    if (temp[0] == '+') temp[0] = '0';
-    lat = atol(temp);
+  // keep numeric latitude for later, in degrees
+  long lat = LONG_MIN;
+  if (onStep.command(":Gt#", temp1)) {
+    temp1[3] = 0;
+    if (temp1[0] == '+') temp1[0] = '0';
+    lat = atol(temp1);
   }
 
-  if (abs(lat) <= 89) {
-    long ud = LONG_MIN; if (onStep.command(":GX02#", temp1)) { ud = strtol(&temp1[0], NULL, 10); if (lat < 0) ud = -ud; }
-    long lr = LONG_MIN; if (onStep.command(":GX03#", temp1)) { lr = strtol(&temp1[0], NULL, 10); lr = lr/cos(lat/57.295); }
+  if (lat != LONG_MIN && abs(lat) <= 89) {
+    data.concat("<br /><b>" L_POLAR_ALIGN ":</b><br />");
 
-    if (lat != LONG_MIN && ud != LONG_MIN && lr != LONG_MIN) {
-      data.concat("<br /><b>" L_POLAR_ALIGN ":</b><br />");
+    strcpy(temp1, L_ZENITH);
+    if (mountStatus.mountType() != MT_ALTAZM) { if (lat < 0) strcpy(temp1, L_SCP); else strcpy(temp1, L_NCP); }
 
-      if (mountStatus.mountType() == MT_ALTAZM) {
-        strcpy(temp3, L_ZENITH);
-      } else {
-        if (lat < 0) strcpy(temp3, L_SCP); else strcpy(temp3, L_NCP);
-      }
-
-      sprintf_P(temp, html_indexCorPolar, "?", "?", temp3);
-
-      data.concat(temp);
-    }
+    sprintf_P(temp, html_indexCorPolar, "?", "?", temp1);
+    data.concat(temp);
+    sendHtml(data);
   }
-  sendHtml(data);
 
   data.concat("<br /><b>" L_OPERATIONS ":</b><br />");
 
@@ -205,9 +196,7 @@ void handleRoot() {
   if (mountStatus.getVersionMajor() >= 10) numAxes = 9;
   for (int axis = 0; axis < numAxes; axis++) {
     if (mountStatus.driver[axis].valid) {
-      sprintf(temp, "&nbsp;&nbsp;Axis%d", axis + 1);
-      data.concat(temp);
-      sprintf_P(temp, html_indexDriverStatus, axis, "?");
+      sprintf_P(temp, html_indexDriverStatus, axis + 1, axis, "?");
       data.concat(temp);
     }
   }
@@ -340,11 +329,11 @@ void handleRootAjax() {
     data.concat("mdn_flip|"); data.concat(temp2); data.concat("\n");
 
     // polar align
-    if (abs(lat) <= 89) {
+    if (lat != LONG_MIN && abs(lat) <= 89) {
       long ud = LONG_MIN; if (onStep.command(":GX02#", temp1)) { ud = strtol(&temp1[0], NULL, 10); if (lat < 0) ud = -ud; }
       long lr = LONG_MIN; if (onStep.command(":GX03#", temp1)) { lr = strtol(&temp1[0], NULL, 10); lr = lr/cos(lat/57.295); }
 
-      if (lat != LONG_MIN && ud != LONG_MIN && lr != LONG_MIN) {
+      if (ud != LONG_MIN && lr != LONG_MIN) {
         char units = '"';
         if (abs(ud) >= 300 || abs(lr) >= 300) { 
           ud = ud/60.0; lr = lr/60.0;

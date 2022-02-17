@@ -57,7 +57,7 @@ const char html_indexMaxSpeed[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXSLEW ": <s
 
 const char html_indexTPHD[] PROGMEM = "&nbsp;&nbsp;%s <span id='tphd_%c' class='c'>%s</span><br />";
 
-const char html_indexDriverStatus[] PROGMEM = " " L_DRIVER_STATUS ": <span id='dvr_stat%d' class='c'>%s</span><br />";
+const char html_indexDriverStatus[] PROGMEM = "&nbsp;&nbsp;Axis%d " L_DRIVER_STATUS ": <span id='dvr_stat%d' class='c'>%s</span><br />";
 const char html_indexGeneralError[] PROGMEM = "&nbsp;&nbsp;" L_LAST_GENERAL_ERROR ": <span id='last_err' class='c'>%s</span><br />";
 const char html_indexWorkload[] PROGMEM = "&nbsp;&nbsp;" L_WORKLOAD ": <span id='work_load' class='c'>%s</span><br />";
 #if DISPLAY_WIFI_SIGNAL_STRENGTH == ON
