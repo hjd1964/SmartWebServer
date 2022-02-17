@@ -13,8 +13,8 @@
 #include "Enc_CwCcw.h"
 #include "Enc_BiSS_C_BC.h"
 
-// encoder polling rate in seconds, default 1.5
-#define POLLING_RATE 1.5
+// encoder polling rate in milli-seconds
+#define ENCODER_POLLING_RATE_MS 1500
 
 #if defined(ESP8266) || defined(ESP32)
   #define GetClockCount ESP.getCycleCount()

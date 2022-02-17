@@ -6,12 +6,15 @@ extern NVS nv;
 
 #include "../status/MountStatus.h"
 #include "../cmd/Cmd.h"
+#include "../../lib/tasks/OnTask.h"
 #include "../../lib/convert/Convert.h"
 #include "../misc/Misc.h"
 
 #if defined(ESP8266) || defined(ESP32)
   #include <Esp.h>
 #endif
+
+void pollEncoders() { encoders.poll(); }
 
 // ----------------------------------------------------------------------------------------------------------------
 // background process position/rate control for encoders 
@@ -28,6 +31,10 @@ void Encoders::init() {
 
   // read the settings
   nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
+
+  // start polling task
+  VF("MSG: Encoders, start polling task (priority 6)... ");
+  if (tasks.add(ENCODER_POLLING_RATE_MS, 0, true, 6, pollEncoders, "EncPoll")) { VLF("success"); } else { VLF("FAILED!"); }
 }
 
 #if ENCODERS == ON
@@ -74,45 +81,40 @@ void Encoders::init() {
     onStep.commandBool(":SX42,1#");
   }
 
-  // check encoders and auto sync OnStep if diff is too great, checks every 1.5 seconds
+  // check encoders and auto sync OnStep if diff is too great
   void Encoders::poll() {
-    static unsigned long nextEncCheckMs = millis() + (unsigned long)(POLLING_RATE*1000.0);
-    unsigned long temp = millis();
     char *conv_end;
-    if ((long)(temp - nextEncCheckMs) > 0) {
-      nextEncCheckMs = temp + (unsigned long)(POLLING_RATE*1000.0);
 
-      char result[80];
-      if (onStep.command(":GX42#", result) && strlen(result) > 1) {
-        double f = strtod(result, &conv_end);
-        if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) osAxis1 = f;
-      }
-      if (onStep.command(":GX43#", result) && strlen(result) > 1) {
-        double f = strtod(result, &conv_end);
-        if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) osAxis2 = f;
-      }
-      
-      long pos = axis1Pos.read();
-      if (pos == INT32_MAX) enAxis1Fault = true; else enAxis1Fault = false;
-      enAxis1 = (double)pos/settings.axis1.ticksPerDeg;
-      if (settings.axis1.reverse == ON) enAxis1 = -enAxis1;
+    char result[80];
+    if (onStep.command(":GX42#", result) && strlen(result) > 1) {
+      double f = strtod(result, &conv_end);
+      if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) osAxis1 = f;
+    }
+    if (onStep.command(":GX43#", result) && strlen(result) > 1) {
+      double f = strtod(result, &conv_end);
+      if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) osAxis2 = f;
+    }
 
-      pos = axis2Pos.read();
-      if (pos == INT32_MAX) enAxis2Fault = true; else enAxis2Fault = false;
-      enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
-      if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
+    long pos = axis1Pos.read();
+    if (pos == INT32_MAX) enAxis1Fault = true; else enAxis1Fault = false;
+    enAxis1 = (double)pos/settings.axis1.ticksPerDeg;
+    if (settings.axis1.reverse == ON) enAxis1 = -enAxis1;
 
-      mountStatus.update();
-      if (autoSync && mountStatus.valid() && !enAxis1Fault && !enAxis2Fault) {
-        if (mountStatus.atHome() || mountStatus.parked() || mountStatus.aligning() || mountStatus.syncToEncodersOnly()) {
-          syncFromOnStep();
-          // re-enable normal operation once we're updated here
-          if (mountStatus.syncToEncodersOnly()) onStep.commandBool(":SX43,1#");
-        } else
-          if (!mountStatus.inGoto() && !mountStatus.guiding()) {
-            if ((fabs(osAxis1 - enAxis1) > (double)(settings.axis1.diffTo/3600.0)) ||
-                (fabs(osAxis2 - enAxis2) > (double)(settings.axis2.diffTo/3600.0))) syncToOnStep();
-        }
+    pos = axis2Pos.read();
+    if (pos == INT32_MAX) enAxis2Fault = true; else enAxis2Fault = false;
+    enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
+    if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
+
+    mountStatus.update();
+    if (autoSync && mountStatus.valid() && !enAxis1Fault && !enAxis2Fault) {
+      if (mountStatus.atHome() || mountStatus.parked() || mountStatus.aligning() || mountStatus.syncToEncodersOnly()) {
+        syncFromOnStep();
+        // re-enable normal operation once we're updated here
+        if (mountStatus.syncToEncodersOnly()) onStep.commandBool(":SX43,1#");
+      } else
+        if (!mountStatus.inGoto() && !mountStatus.guiding()) {
+          if ((fabs(osAxis1 - enAxis1) > (double)(settings.axis1.diffTo/3600.0)) ||
+              (fabs(osAxis2 - enAxis2) > (double)(settings.axis2.diffTo/3600.0))) syncToOnStep();
       }
     }
   }

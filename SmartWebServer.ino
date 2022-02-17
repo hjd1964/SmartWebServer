@@ -297,10 +297,6 @@ Again:
 }
 
 void loop(void) {
-  #if ENCODERS == ON
-    encoders.poll(); Y;
-  #endif
-  
   #if BLE_GAMEPAD == ON
     bleTimers(); Y;
     bleConnTest(); Y;
@@ -308,3 +304,4 @@ void loop(void) {
 
   tasks.yield();
 }
+
