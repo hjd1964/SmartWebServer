@@ -10,6 +10,7 @@ void handleRoot() {
   char temp1[180] = "";
   char temp2[180] = "";
   char temp3[180] = "";
+  const char *str;
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
@@ -73,19 +74,18 @@ void handleRoot() {
   data.concat(FPSTR(html_settingsBrowserTime));
 
   // UTC Date
-  if (!onStep.command(":GX81#", temp1)) strcpy(temp1, "?");
-  stripNum(temp1);
-  sprintf_P(temp, html_indexDate, "?");
+  str = (*state.doc)["date_ut"];
+  sprintf_P(temp, html_indexDate, str);
   data.concat(temp);
 
   // UTC Time
-  if (!onStep.command(":GX80#", temp1)) strcpy(temp1, "?");
-  sprintf_P(temp, html_indexTime, "?");
+  str = (*state.doc)["time_ut"];
+  sprintf_P(temp, html_indexTime, str);
   data.concat(temp);
 
   // LST
-  if (!onStep.command(":GS#", temp1)) strcpy(temp1, "?");
-  sprintf_P(temp, html_indexSidereal, "?");
+  str = (*state.doc)["time_lst"];
+  sprintf_P(temp, html_indexSidereal, str);
   data.concat(temp);
 
   // Longitude and Latitude
@@ -183,7 +183,7 @@ void handleRoot() {
   } else {
     // fall back to MaxRate display if not supported
     if ((onStep.command(":GX92#", temp1)) && (onStep.command(":GX93#", temp2))) { 
-      sprintf_P(temp, html_indexMaxRate, "?", "?");
+      sprintf_P(temp, html_indexMaxRate, 0, 0);
     } else sprintf_P(temp, html_indexMaxSpeed, "?");
     data.concat(temp);
   }
@@ -462,17 +462,16 @@ void handleRootAjax() {
     #endif
 
     // UTC Date
-    if (!onStep.command(":GX81#", temp)) strcpy(temp, "?");
-    stripNum(temp);
-    data.concat("date_ut|"); data.concat(temp); data.concat("\n");
+    const char *str = (*state.doc)["date_ut"];
+    data.concat("date_ut|"); data.concat(str); data.concat("\n");
 
     // UTC Time
-    if (!onStep.command(":GX80#", temp)) strcpy(temp, "?");
-    data.concat("time_ut|"); data.concat(temp); data.concat("\n");
+    str = (*state.doc)["time_ut"];
+    data.concat("time_ut|"); data.concat(str); data.concat("\n");
 
     // LST
-    if (!onStep.command(":GS#", temp)) strcpy(temp, "?");
-    data.concat("time_lst|"); data.concat(temp); data.concat("\n");
+    str = (*state.doc)["time_lst"];
+    data.concat("time_lst|"); data.concat(str); data.concat("\n");
 
     // Update web-browser time
     data.concat("call|update_date_time\n");
