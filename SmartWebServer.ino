@@ -66,6 +66,24 @@ void systemServices() {
   nv.poll();
 }
 
+void pollWebSvr() {
+  www.handleClient();
+}
+
+void pollCmdSvr() {
+  #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
+    persistentCmdSvr1.handleClient(); Y;
+    #if OPERATIONAL_MODE != ETHERNET_W5100
+      persistentCmdSvr2.handleClient(); Y;
+    #endif
+    persistentCmdSvr3.handleClient(); Y;
+  #endif
+
+  #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
+    cmdSvr.handleClient(); Y;
+  #endif
+}
+
 void setup(void) {
   #if OPERATIONAL_MODE == WIFI
     WiFi.disconnect();
@@ -267,6 +285,14 @@ Again:
     delay(100);
   }
     
+  VF("MSG: Setup, starting cmd channel polling");
+  VF(" task (rate 10ms priority 4)... ");
+  if (tasks.add(10, 0, true, 4, pollCmdSvr, "cmdPoll")) { VL("success"); } else { VL("FAILED!"); }
+
+  VF("MSG: Setup, starting web server polling");
+  VF(" task (rate 10ms priority 4)... ");
+  if (tasks.add(10, 0, true, 4, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
+
   VLF("MSG: SmartWebServer ready");
 }
 
@@ -279,20 +305,6 @@ void loop(void) {
     bleTimers(); Y;
     bleConnTest(); Y;
   #endif
-
-  #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
-    persistentCmdSvr1.handleClient(); Y;
-    #if OPERATIONAL_MODE != ETHERNET_W5100
-      persistentCmdSvr2.handleClient(); Y;
-    #endif
-    persistentCmdSvr3.handleClient(); Y;
-  #endif
-
-  #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
-    cmdSvr.handleClient(); Y;
-  #endif
-
-  www.handleClient();
 
   tasks.yield();
 }
