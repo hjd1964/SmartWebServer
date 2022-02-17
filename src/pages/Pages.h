@@ -9,6 +9,7 @@
 #include "EncoderControl.h"
 
 void handleRoot();
+void handleRootAjax();
 
 void handleConfiguration();
 void configurationAjaxGet();

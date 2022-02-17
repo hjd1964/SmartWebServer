@@ -201,20 +201,28 @@ bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a) {
   return true;
 }
 
-void localeTemperature(char* temperatureStr, char* units) {
-  float t=atof(temperatureStr);
+void localeTemperature(char* temperatureStr) {
+  float t = atof(temperatureStr);
   if (DISPLAY_UNITS == IMPERIAL) {
-    t=t*(9.0/5.0)+32.0;
-    dtostrf(t,3,1,temperatureStr);
-    strcpy(units,"&deg;F");
-  } else strcpy(units,"&deg;C");
+    t = t*(9.0/5.0) + 32.0;
+    dtostrf(t, 3, 1, temperatureStr);
+    strcat(temperatureStr, "&deg;F");
+  } else strcat(temperatureStr, "&deg;C");
+  if (isnan(t)) strcpy(temperatureStr, "?");
 }
 
-void localePressure(char* pressureStr, char* units) {
-  float p=atof(pressureStr);
+void localePressure(char* pressureStr) {
+  float p = atof(pressureStr);
   if (DISPLAY_UNITS == IMPERIAL) {
-    p=p/33.864;
-    dtostrf(p,4,2,pressureStr);
-    strcpy(units,"inHg");
-  } else strcpy(units,"mb");
+    p = p/33.864;
+    dtostrf(p, 4, 2, pressureStr);
+    strcat(pressureStr, "inHg");
+  } else strcat(pressureStr, "mb");
+  if (isnan(p)) strcpy(pressureStr, "?");
+}
+
+void localeHumidity(char* humidityStr) {
+  float h = atof(humidityStr);
+  strcat(humidityStr, "%");
+  if (isnan(h)) strcpy(humidityStr, "?");
 }

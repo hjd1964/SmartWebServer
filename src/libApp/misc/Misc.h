@@ -51,7 +51,10 @@ bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a);
 bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a);
 
 // return temperature string with proper value and units for this locale
-void localeTemperature(char* temperatureStr, char* units);
+void localeTemperature(char* temperatureStr);
 
 // return pressure string with proper value and units for this locale
-void localePressure(char* pressureStr, char* units);
+void localePressure(char* pressureStr);
+
+// return humidity string with proper value and units for this locale
+void localeHumidity(char* humidityStr);

@@ -23,47 +23,43 @@
 
 const char html_settingsBrowserTime[] PROGMEM =
 "&nbsp;&nbsp;<span id=\"datetime\"></span> " L_TIME_BROWSER_UT
-"<script> "
-"function pad(num, size) { var s = '000000000' + num; return s.substr(s.length-size); }"
-"var now = new Date(); document.getElementById('datetime').innerHTML = (now.getUTCMonth()+1)+'/'+"
-"pad(now.getUTCDate().toString(),2)+'/'+pad(now.getUTCFullYear().toString().substr(-2),2)+"
-"' '+pad(now.getUTCHours().toString(),2)+':'+pad(now.getUTCMinutes().toString(),2)+':'+pad(now.getUTCSeconds().toString(),2); "
-"</script><br />\r\n";
+"<script>update_date_time();</script>"
+"<br />\n";
 
-const char html_indexDate[] PROGMEM = "&nbsp;&nbsp;<font class='c'>%s</font>";
-const char html_indexTime[] PROGMEM = "&nbsp;<font class='c'>%s</font>&nbsp;" L_UT;
-const char html_indexSidereal[] PROGMEM = "&nbsp;(<font class='c'>%s</font>&nbsp; " L_LST ")<br />";
+const char html_indexDate[] PROGMEM = "&nbsp;&nbsp;<span id='date_ut' class='c'>%s</span>";
+const char html_indexTime[] PROGMEM = "&nbsp;<span id='time_ut' class='c'>%s</span>&nbsp;" L_UT;
+const char html_indexSidereal[] PROGMEM = "&nbsp;(<span id='time_lst' class='c'>%s</span>&nbsp; " L_LST ")<br />";
 const char html_indexSite[] PROGMEM =
-"&nbsp;&nbsp;" L_LONG " <font class='c'>%s</font>, " L_LAT " <font class='c'>%s</font><br />";
+"&nbsp;&nbsp;" L_LONG " <span id='site_long' class='c'>%s</span>, " L_LAT " <span id='site_lat' class='c'>%s</span><br />";
 
 const char html_indexPosition[] PROGMEM =
-"&nbsp;&nbsp;" L_CURRENT ": " Axis1 " <font class='c'>%s</font>, " Axis2 " <font class='c'>%s</font><br />";
+"&nbsp;&nbsp;" L_CURRENT ": " Axis1 " <span id='idx_a1' class='c'>%s</span>, " Axis2 " <span id='idx_a2' class='c'>%s</span><br />";
 const char html_indexTarget[] PROGMEM =
-"&nbsp;&nbsp;" L_TARGET ": " Axis1 " <font class='c'>%s</font>, " Axis2 " <font class='c'>%s</font><br />";
+"&nbsp;&nbsp;" L_TARGET ": " Axis1 " <span id='tgt_a1' class='c'>%s</span>, " Axis2 " <span id='tgt_a2' class='c'>%s</span><br />";
 #if ENCODERS == ON
   const char html_indexEncoder1[] PROGMEM =
-  "&nbsp;&nbsp;OnStep: Ax1 <font class='c'>%s</font>, Ax2 <font class='c'>%s</font><br />";
+  "&nbsp;&nbsp;OnStep: Ax1 <span id='raw_a1' class='c'>%s</span>, Ax2 <span id='raw_a2' class='c'>%s</span><br />";
   const char html_indexEncoder2[] PROGMEM =
-  "&nbsp;&nbsp;" L_ENCODER ": Ax1 <font class='c'>%s</font>, Ax2 <font class='c'>%s</font><br />";
+  "&nbsp;&nbsp;" L_ENCODER ": Ax1 <span id='enc_a1' class='c'>%s</span>, Ax2 <span id='enc_a2' class='c'>%s</span><br />";
 #endif
 const char html_indexPier[] PROGMEM =
-"&nbsp;&nbsp;" L_PIER_SIDE ": <font class='c'>%s</font> (" L_MERIDIAN_FLIPS " <font class='c'>%s</font>)<br />";
+"&nbsp;&nbsp;" L_PIER_SIDE ": <span id='pier_side' class='c'>%s</span> (" L_MERIDIAN_FLIPS " <span id='mdn_flip' class='c'>%s</span>)<br />";
 
 const char html_indexCorPolar[] PROGMEM =
-"&nbsp;&nbsp;%s <font class='c'>%ld</font>%c &nbsp; %s <font class='c'>%ld</font>%c &nbsp;(" L_ALIGN_MESSAGE " %s)<br />";
+"&nbsp;&nbsp;<span id='align_lr' class='c'>%s</span> &nbsp;&amp;&nbsp; <span id='align_ud' class='c'>%s</span> &nbsp;(" L_ALIGN_MESSAGE " %s)<br />";
 
-const char html_indexPark[] PROGMEM = "&nbsp;&nbsp;" L_PARKING ": <font class='c'>%s</font><br />";
-const char html_indexTracking[] PROGMEM = "&nbsp;&nbsp;" L_TRACKING ": <font class='c'>%s %s</font><br />";
+const char html_indexPark[] PROGMEM = "&nbsp;&nbsp;" L_PARKING ": <span id='park' class='c'>%s</span><br />";
+const char html_indexTracking[] PROGMEM = "&nbsp;&nbsp;" L_TRACKING ": <span id='track' class='c'>%s %s</span><br />";
+const char html_indexTrackingRate[] PROGMEM = "&nbsp;&nbsp;" L_TRACKING ": <span id='track_rate' class='c'>%s %s</span><br />";
 const char html_indexMaxRate[] PROGMEM =
-"&nbsp;&nbsp;" L_CURRENT_MAXRATE ": <font class='c'>%ld</font> (" L_DEFAULT_MAXRATE ": <font class='c'>%ld</font>)<br />";
-const char html_indexMaxSpeed[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXSLEW ": <font class='c'>%s</font>&deg;/s<br />";
+"&nbsp;&nbsp;" L_CURRENT_MAXRATE ": <span id='mr_current' class='c'>%ld</font> (" L_DEFAULT_MAXRATE ": <span id='mr_slew' class='c'>%ld</span>)<br />";
+const char html_indexMaxSpeed[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXSLEW ": <span id='mr_slew' class='c'>%s</span>&deg;/s<br />";
 
-const char html_indexTPHD[] PROGMEM = "&nbsp;&nbsp;%s <font class='c'>%s</font>%s<br />";
+const char html_indexTPHD[] PROGMEM = "&nbsp;&nbsp;%s <span id='tphd_%c' class='c'>%s</span><br />";
 
-const char html_indexDriverStatus[] PROGMEM = " " L_DRIVER_STATUS ": <font class='c'>%s</font><br />";
-const char html_indexGeneralError[] PROGMEM = "&nbsp;&nbsp;" L_LAST_GENERAL_ERROR ": <font class='c'>%s</font><br />";
-const char html_indexCmdErrorLog[] PROGMEM = "&nbsp;&nbsp;&nbsp;&nbsp;%s %s<br />";
-const char html_indexWorkload[] PROGMEM = "&nbsp;&nbsp;" L_WORKLOAD ": <font class='c'>%s</font><br />";
+const char html_indexDriverStatus[] PROGMEM = " " L_DRIVER_STATUS ": <span id='dvr_stat%d' class='c'>%s</span><br />";
+const char html_indexGeneralError[] PROGMEM = "&nbsp;&nbsp;" L_LAST_GENERAL_ERROR ": <span id='last_err' class='c'>%s</span><br />";
+const char html_indexWorkload[] PROGMEM = "&nbsp;&nbsp;" L_WORKLOAD ": <span id='work_load' class='c'>%s</span><br />";
 #if DISPLAY_WIFI_SIGNAL_STRENGTH == ON
-  const char html_indexSignalStrength[] PROGMEM = "&nbsp;&nbsp;" L_WIRELESS_SIGNAL_STRENGTH ": <font class=\"c\">%s</font><br />";
+  const char html_indexSignalStrength[] PROGMEM = "&nbsp;&nbsp;" L_WIRELESS_SIGNAL_STRENGTH ": <span id='signal' class='c'>%s</span><br />";
 #endif

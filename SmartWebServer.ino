@@ -205,6 +205,7 @@ Again:
 
   VLF("MSG: Set webpage handlers");
   www.on("/index.htm", handleRoot);
+  www.on("/index.txt", handleRootAjax);
   www.on("/configuration.htm", handleConfiguration);
   www.on("/configurationA.txt", configurationAjaxGet);
   www.on("/settings.htm", handleSettings);
