@@ -19,7 +19,7 @@ void handleConfiguration() {
   
   mountStatus.update();
  
-  bool success=processConfigurationGet();
+  processConfigurationGet();
 
   sendHtmlStart();
 
