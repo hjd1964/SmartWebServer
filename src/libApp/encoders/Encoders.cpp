@@ -30,9 +30,11 @@ void Encoders::init() {
   // read the settings
   nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
 
-  // start polling task
-  VF("MSG: Encoders, start polling task (priority 6)... ");
-  if (tasks.add(ENCODER_POLLING_RATE_MS, 0, true, 6, pollEncoders, "EncPoll")) { VLF("success"); } else { VLF("FAILED!"); }
+  #if ENCODERS == ON
+    // start polling task
+    VF("MSG: Encoders, start polling task (priority 6)... ");
+    if (tasks.add(ENCODER_POLLING_RATE_MS, 0, true, 6, pollEncoders, "EncPoll")) { VLF("success"); } else { VLF("FAILED!"); }
+  #endif
 }
 
 #if ENCODERS == ON
