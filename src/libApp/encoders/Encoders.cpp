@@ -14,8 +14,6 @@ extern NVS nv;
   #include <Esp.h>
 #endif
 
-void pollEncoders() { encoders.poll(); }
-
 // ----------------------------------------------------------------------------------------------------------------
 // background process position/rate control for encoders 
 
@@ -38,6 +36,8 @@ void Encoders::init() {
 }
 
 #if ENCODERS == ON
+  void pollEncoders() { encoders.poll(); }
+
   void Encoders::syncFromOnStep() {
     if (Axis1EncDiffFrom == OFF || fabs(osAxis1 - enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
       if (settings.axis1.reverse == ON)
