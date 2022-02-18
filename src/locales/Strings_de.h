@@ -91,10 +91,10 @@
 #define L_PPS_SYNC "PPS Sync"
 
 // tracking
-#define L_REFR_COMP_RA "Refr. Komp. RA Achse"
-#define L_REFR_COMP_BOTH "Refr. Komp. Beide Achsen"
-#define L_FULL_COMP_RA "Volle Komp. RA Achse"
-#define L_FULL_COMP_BOTH "Volle Komp. Beide Achsen"
+#define L_REFR_COMP_RA "refr. komp."
+#define L_REFR_COMP_BOTH "refr. komp. beide achsen"
+#define L_FULL_COMP_RA "volle komp."
+#define L_FULL_COMP_BOTH "volle komp. beide achsen"
 #define L_TRACKING "Verfolgung"
 #define L_TRACKING_RATE "Nachf&uuml;hrgeschwindigkeit"
 #define L_CURRENT_MAXRATE "Aktuelle maximale Rate"
