@@ -19,18 +19,21 @@ void State::poll() {
 
   // UTC Date
   if (!onStep.command(":GX81#", temp)) strcpy(temp, "?");
-  if (temp[0] == '0') strcpy(&temp[0], &temp[1]);
-  (*doc)["date_ut"] = temp;
+ // if (temp[0] == '0') strcpy(&temp[0], &temp[1]);
+ // (*doc)["date_ut"] = temp;
+  strcpy(date, temp);
   Y;
 
   // UTC Time
   if (!onStep.command(":GX80#", temp)) strcpy(temp, "?");
-  (*doc)["time_ut"] = temp;
+ // (*doc)["time_ut"] = temp;
+  strcpy(time, temp);
   Y;
 
   // LST
   if (!onStep.command(":GS#", temp)) strcpy(temp, "?");
-  (*doc)["time_lst"] = temp;
+ // (*doc)["time_lst"] = temp;
+  strcpy(last, temp);
   Y;
 }
 

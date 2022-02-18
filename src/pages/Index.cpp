@@ -10,7 +10,6 @@ void handleRoot() {
   char temp1[180] = "";
   char temp2[180] = "";
   char temp3[180] = "";
-  const char *str;
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
@@ -74,17 +73,21 @@ void handleRoot() {
   data.concat(FPSTR(html_settingsBrowserTime));
 
   // UTC Date
-  str = (*state.doc)["date_ut"];
+//  const char *str = (*state.doc)["date_ut"];
+  const char *str = state.date;
+  stripNum(temp1);
   sprintf_P(temp, html_indexDate, str);
   data.concat(temp);
 
   // UTC Time
-  str = (*state.doc)["time_ut"];
+//  str = (*state.doc)["time_ut"];
+  str = state.time;
   sprintf_P(temp, html_indexTime, str);
   data.concat(temp);
 
   // LST
-  str = (*state.doc)["time_lst"];
+//  str = (*state.doc)["time_lst"];
+  str = state.last;
   sprintf_P(temp, html_indexSidereal, str);
   data.concat(temp);
 
@@ -183,7 +186,7 @@ void handleRoot() {
   } else {
     // fall back to MaxRate display if not supported
     if ((onStep.command(":GX92#", temp1)) && (onStep.command(":GX93#", temp2))) { 
-      sprintf_P(temp, html_indexMaxRate, 0, 0);
+      sprintf_P(temp, html_indexMaxRate, 0L, 0L);
     } else sprintf_P(temp, html_indexMaxSpeed, "?");
     data.concat(temp);
   }
@@ -462,15 +465,18 @@ void handleRootAjax() {
     #endif
 
     // UTC Date
-    const char *str = (*state.doc)["date_ut"];
+  //  const char *str = (*state.doc)["date_ut"];
+    const char *str = state.date;
     data.concat("date_ut|"); data.concat(str); data.concat("\n");
 
     // UTC Time
-    str = (*state.doc)["time_ut"];
+  //  str = (*state.doc)["time_ut"];
+    str = state.time;
     data.concat("time_ut|"); data.concat(str); data.concat("\n");
 
     // LST
-    str = (*state.doc)["time_lst"];
+  //  str = (*state.doc)["time_lst"];
+    str = state.last;
     data.concat("time_lst|"); data.concat(str); data.concat("\n");
 
     // Update web-browser time
