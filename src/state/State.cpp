@@ -19,7 +19,7 @@ void State::poll() {
 
   // UTC Date
   if (!onStep.command(":GX81#", temp)) strcpy(temp, "?");
- // if (temp[0] == '0') strcpy(&temp[0], &temp[1]);
+  if (temp[0] == '0') strcpy(&temp[0], &temp[1]);
  // (*doc)["date_ut"] = temp;
   strcpy(date, temp);
   Y;
