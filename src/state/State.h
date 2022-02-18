@@ -51,7 +51,7 @@ class State {
     char parkStr[40] = "?";
     char trackStr[40] = "?";
 
-    char slewSpeedStr[10] = "?";
+    char slewSpeedStr[16] = "?";
 
     char driverStatusStr[9][40] = {"?","?","?","?","?","?","?","?","?"};
 

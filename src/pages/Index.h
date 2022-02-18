@@ -46,7 +46,7 @@ const char html_indexCorPolar[] PROGMEM =
 const char html_indexPark[] PROGMEM = "&nbsp;&nbsp;" L_PARKING ": <span id='park' class='c'>%s</span><br />";
 const char html_indexTracking[] PROGMEM = "&nbsp;&nbsp;" L_TRACKING ": <span id='track' class='c'>%s</span><br />";
 const char html_indexTrackingRate[] PROGMEM = "&nbsp;&nbsp;" L_TRACKING ": <span id='track_rate' class='c'>%s %s</span><br />";
-const char html_indexMaxSpeed[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXSLEW ": <span id='mr_slew' class='c'>%s</span>&deg;/s<br />";
+const char html_indexMaxSpeed[] PROGMEM = "&nbsp;&nbsp;" L_CURRENT_MAXSLEW ": <span id='mr_slew' class='c'>%s</span><br />";
 
 const char html_indexTPHD[] PROGMEM = "&nbsp;&nbsp;%s <span id='tphd_%c' class='c'>%s</span><br />";
 

@@ -184,7 +184,7 @@ void State::pollSlow() {
   if (mountStatus.tracking()) {
     if (onStep.command(":GT#", temp)) {
       double tr = atof(temp);
-      dtostrf(tr, 5, 3, temp);
+      sprintF(temp, "%5.3fHz", tr);
     } else strcpy(temp, "?");
   } else strcpy(temp, L_OFF);
   if (mountStatus.inGoto()) strcpy(temp, L_INGOTO);
@@ -202,8 +202,8 @@ void State::pollSlow() {
   strncpy(trackStr, temp, 40); trackStr[39] = 0; Y;
 
   // Slew speed
-  if (!onStep.command(":GX97#", temp)) strcpy(temp, "?");
-  strncpy(slewSpeedStr, temp, 10); slewSpeedStr[9] = 0; Y;
+  if (!onStep.command(":GX97#", temp)) strcpy(temp, "?"); else strcat(temp, "&deg;/s");
+  strncpy(slewSpeedStr, temp, 16); slewSpeedStr[15] = 0; Y;
 
   // Driver status
   int numAxes = 2;
