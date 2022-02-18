@@ -32,7 +32,7 @@
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
 #define FirmwareVersionMinor  "02"
-#define FirmwareVersionPatch  "e"
+#define FirmwareVersionPatch  "f"
 
 // Use Config.h to configure the SWS to your requirements
 
@@ -306,4 +306,3 @@ void loop(void) {
 
   tasks.yield();
 }
-
