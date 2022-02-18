@@ -32,6 +32,10 @@
 #define TIMEOUT_WEB                  200
 #define TIMEOUT_CMD                  200
 
+// task manager
+#define TASKS_MAX                   32     // up to 32 tasks
+#define TASKS_SKIP_MISSED
+
 // EEPROM contents
 #define INIT_NV_KEY                  698623879UL
 

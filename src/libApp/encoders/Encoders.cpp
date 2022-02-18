@@ -14,6 +14,10 @@ extern NVS nv;
   #include <Esp.h>
 #endif
 
+#if ENCODERS == ON
+  void pollEncoders() { encoders.poll(); }
+#endif
+
 // ----------------------------------------------------------------------------------------------------------------
 // background process position/rate control for encoders 
 
@@ -31,15 +35,12 @@ void Encoders::init() {
   nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
 
   #if ENCODERS == ON
-    // start polling task
-    VF("MSG: Encoders, start polling task (priority 6)... ");
-    if (tasks.add(ENCODER_POLLING_RATE_MS, 0, true, 6, pollEncoders, "EncPoll")) { VLF("success"); } else { VLF("FAILED!"); }
+    VF("MSG: Encoders, start polling task (priority 4)... ");
+    if (tasks.add(ENCODER_POLLING_RATE_MS, 0, true, 4, pollEncoders, "EncPoll")) { VLF("success"); } else { VLF("FAILED!"); }
   #endif
 }
 
 #if ENCODERS == ON
-  void pollEncoders() { encoders.poll(); }
-
   void Encoders::syncFromOnStep() {
     if (Axis1EncDiffFrom == OFF || fabs(osAxis1 - enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
       if (settings.axis1.reverse == ON)

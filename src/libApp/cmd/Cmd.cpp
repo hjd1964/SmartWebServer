@@ -198,7 +198,10 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
     while ((long)(timeout - millis()) > 0 && b != '#') {
       if (SERIAL_ONSTEP.available()) {
         b = SERIAL_ONSTEP.read();
-        response[responsePos] = b; responsePos++; if (responsePos > 79) responsePos = 79; response[responsePos] = 0;
+        response[responsePos] = b;
+        responsePos++;
+        if (responsePos > 79) responsePos = 79;
+        response[responsePos] = 0;
       }
     }
     #ifdef ESP32

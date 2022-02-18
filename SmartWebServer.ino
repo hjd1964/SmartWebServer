@@ -288,12 +288,12 @@ Again:
   state.init();
 
   VF("MSG: Setup, starting cmd channel polling");
-  VF(" task (rate 10ms priority 4)... ");
-  if (tasks.add(10, 0, true, 4, pollCmdSvr, "cmdPoll")) { VL("success"); } else { VL("FAILED!"); }
+  VF(" task (rate 10ms priority 2)... ");
+  if (tasks.add(10, 0, true, 2, pollCmdSvr, "cmdPoll")) { VL("success"); } else { VL("FAILED!"); }
 
   VF("MSG: Setup, starting web server polling");
-  VF(" task (rate 10ms priority 4)... ");
-  if (tasks.add(10, 0, true, 4, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
+  VF(" task (rate 10ms priority 3)... ");
+  if (tasks.add(10, 0, true, 3, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
 
   VLF("MSG: SmartWebServer ready");
 }
