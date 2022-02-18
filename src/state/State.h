@@ -9,10 +9,12 @@ class State {
   public:
     void init();
     void poll();
+
     DynamicJsonDocument *doc;
     char date[10];
     char time[10];
     char last[10];
+
   private:
 };
 
