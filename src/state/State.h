@@ -58,11 +58,23 @@ class State {
     char controllerTemperatureStr[10] = "?";;
     char lastErrorStr[40] = "?";;
     char workLoadStr[20] = "?";;
-    char signalStrengthStr[20] = "?";;
+    char signalStrengthStr[20] = "?";
+
+    int focuserCount = 0;
+    bool focuserPresent[6] = {false,false,false,false,false,false};
+    char focuserPositionStr[20] = "?";
+    int focuserActive = 0;
+
+    bool rotatorPresent = false;
+    bool derotatorPresent = false;
+    char rotatorPositionStr[20] = "?";
 
    // DynamicJsonDocument *doc;
 
   private:
+    bool focusersChecked = false;
+    bool rotatorChecked = false;
+
 };
 
 extern State state;

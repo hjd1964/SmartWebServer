@@ -7,11 +7,6 @@
 
 void processControlGet();
 
-int focuserCount = 0;
-bool focuserPresent[6];
-bool rotator;
-bool deRotator;
-
 void handleControl() {
   char temp[240] = "";
 
@@ -24,7 +19,7 @@ void handleControl() {
 
   sendHtmlStart();
   
-  String data=FPSTR(html_headB);
+  String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
   data.concat(FPSTR(html_main_css1));
   data.concat(FPSTR(html_main_css2));
@@ -51,8 +46,10 @@ void handleControl() {
   sendHtml(data);
 
   // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(FPSTR(html_onstep_header1));
+  data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
@@ -133,29 +130,16 @@ void handleControl() {
   sendHtml(data);
 
   // Focusing ------------------------------------------------
-  focuserCount = 0;
-  for (int i = 0; i < 6; i++) focuserPresent[i] = false;
-  if (mountStatus.getVersionMajor() >= 10) {
-    if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
-    if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
-    if (onStep.commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
-    if (onStep.commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
-    if (onStep.commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
-    if (onStep.commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
-  } else {
-    if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
-    if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
-  }
-  if (focuserCount > 0) {
+  if (state.focuserCount > 0) {
     data.concat(FPSTR(html_controlFocusBeg));
     data.concat("<div style='float: left;'>" L_FOCUSER ":</div><div style='float: right; text-align: right;' id='focuserpos'>?</div><br />");
-    if (focuserCount > 1) {
-      if (focuserPresent[0]) data.concat(FPSTR(html_selectFocuser1));
-      if (focuserPresent[1]) data.concat(FPSTR(html_selectFocuser2));
-      if (focuserPresent[2]) data.concat(FPSTR(html_selectFocuser3));
-      if (focuserPresent[3]) data.concat(FPSTR(html_selectFocuser4));
-      if (focuserPresent[4]) data.concat(FPSTR(html_selectFocuser5));
-      if (focuserPresent[5]) data.concat(FPSTR(html_selectFocuser6));
+    if (state.focuserCount > 1) {
+      if (state.focuserPresent[0]) data.concat(FPSTR(html_selectFocuser1));
+      if (state.focuserPresent[1]) data.concat(FPSTR(html_selectFocuser2));
+      if (state.focuserPresent[2]) data.concat(FPSTR(html_selectFocuser3));
+      if (state.focuserPresent[3]) data.concat(FPSTR(html_selectFocuser4));
+      if (state.focuserPresent[4]) data.concat(FPSTR(html_selectFocuser5));
+      if (state.focuserPresent[5]) data.concat(FPSTR(html_selectFocuser6));
     }
     data.concat(FPSTR(html_setFocus1));
     data.concat(FPSTR(html_setFocus2));
@@ -168,13 +152,7 @@ void handleControl() {
   }
 
   // Rotate/De-Rotate ----------------------------------------
-  rotator = false;
-  deRotator = false;
-  if (onStep.command(":GX98#", temp)) {
-    if (temp[0] == 'R') rotator = true;
-    if (temp[0] == 'D') { rotator = true; deRotator = true; }
-  }
-  if (rotator) {
+  if (state.rotatorPresent) {
     data.concat(FPSTR(html_controlRotateBeg));
     data.concat("<div style='float: left;'>" L_ROTATOR ":</div><div style='float: right; text-align: right;' id='rotatorpos'>?</div><br />");
     data.concat(FPSTR(html_setRotate1));
@@ -184,7 +162,7 @@ void handleControl() {
     data.concat(FPSTR(html_controlRotate2));
     data.concat(FPSTR(html_controlRotate3));
     sendHtml(data);
-    if (deRotator) {
+    if (state.derotatorPresent) {
       data.concat(FPSTR(html_controlDeRotate1));
       data.concat(FPSTR(html_controlDeRotate2));
       sendHtml(data);
@@ -205,19 +183,17 @@ void handleControl() {
 }
 
 void controlAjaxGet() {
+  sendTextStart();
   processControlGet();
-  #if OPERATIONAL_MODE != WIFI
-    www.sendContent("");
-  #else
-    www.send(200, "text/html", "");
-  #endif
+  sendTextDone();
 }
 
 void controlAjax() {
   String data = "";
   char temp[120] = "";
 
-  mountStatus.update();
+  sendTextStart();
+
   if (mountStatus.valid()) {
     if (mountStatus.tracking()) {
       data.concat("trk_on|disabled\n");
@@ -278,32 +254,28 @@ void controlAjax() {
     data.concat("rpa|disabled\n");
   }
 
-  if (focuserCount > 0) {
-    data.concat("focuserpos|");
-    if (onStep.command(":FG#", temp)) { data.concat(temp); data.concat(" microns\n"); } else { data.concat("?\n"); }
+  if (state.focuserCount > 0) {
+    data.concat("focuserpos|"); data.concat(state.focuserPositionStr); data.concat("\n");
 
     if (mountStatus.getVersionMajor() >= 10) {
-      if (onStep.command(":FA#", temp)) {
-        if (temp[0] == '1' && temp[1] == 0) data.concat("foc1_sel|disabled\n"); else data.concat("foc1_sel|enabled\n");
-        if (temp[0] == '2' && temp[1] == 0) data.concat("foc2_sel|disabled\n"); else data.concat("foc2_sel|enabled\n");
-        if (temp[0] == '3' && temp[1] == 0) data.concat("foc3_sel|disabled\n"); else data.concat("foc3_sel|enabled\n");
-        if (temp[0] == '4' && temp[1] == 0) data.concat("foc4_sel|disabled\n"); else data.concat("foc4_sel|enabled\n");
-        if (temp[0] == '5' && temp[1] == 0) data.concat("foc5_sel|disabled\n"); else data.concat("foc5_sel|enabled\n");
-        if (temp[0] == '6' && temp[1] == 0) data.concat("foc6_sel|disabled\n"); else data.concat("foc6_sel|enabled\n");
-      }
+      if (state.focuserActive == 1) data.concat("foc1_sel|disabled\n"); else data.concat("foc1_sel|enabled\n");
+      if (state.focuserActive == 2) data.concat("foc2_sel|disabled\n"); else data.concat("foc2_sel|enabled\n");
+      if (state.focuserActive == 3) data.concat("foc3_sel|disabled\n"); else data.concat("foc3_sel|enabled\n");
+      if (state.focuserActive == 4) data.concat("foc4_sel|disabled\n"); else data.concat("foc4_sel|enabled\n");
+      if (state.focuserActive == 5) data.concat("foc5_sel|disabled\n"); else data.concat("foc5_sel|enabled\n");
+      if (state.focuserActive == 6) data.concat("foc6_sel|disabled\n"); else data.concat("foc6_sel|enabled\n");
     } else {
-        data.concat("foc1_sel|enabled\n");
-        if (focuserCount > 1) data.concat("foc2_sel|enabled\n");
+      data.concat("foc1_sel|enabled\n");
+      if (state.focuserCount > 1) data.concat("foc2_sel|enabled\n");
     }
   }
 
-  if (rotator) {
-    data.concat("rotatorpos|");
-    if (onStep.command(":rG#", temp)) { temp[9]=temp[5]; temp[10]=temp[6]; temp[11]=0; temp[4]='&'; temp[5]='d'; temp[6]='e'; temp[7]='g'; temp[8]=';'; data.concat(temp); data.concat("&#39;\n"); } else { data.concat("?\n"); }
+  if (state.rotatorPresent) {
+    data.concat("rotatorpos|"); data.concat(state.rotatorPositionStr); data.concat("\n");
   }
 
-  sendHtml(data);
-  sendHtmlDone();
+  sendText(data);
+  sendTextDone();
 }
 
 int get_temp_month;

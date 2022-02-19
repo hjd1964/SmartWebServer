@@ -42,8 +42,10 @@ void handleAux() {
   sendHtml(data);
 
   // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(FPSTR(html_onstep_header1));
+  data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
@@ -66,12 +68,13 @@ void handleAux() {
   if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   // scripts
-  sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt"); data.concat(temp);
+  sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt");
+  data.concat(temp);
   data.concat(FPSTR(html_ajaxScriptShort));
 
   // active ajax page is: auxAjax();
-  data +="<script>var ajaxPage='auxiliary.txt';</script>\n";
-  data +=FPSTR(html_ajax_active);
+  data.concat("<script>var ajaxPage='auxiliary.txt';</script>\n");
+  data.concat(FPSTR(html_ajax_active));
   sendHtml(data);
 
   // Auxiliary Features --------------------------------------
@@ -79,19 +82,19 @@ void handleAux() {
   if (mountStatus.featureFound()) {
     data.concat(FPSTR(html_auxAuxB));
 
-    for (int i=0; i<8; i++) {
+    for (int i = 0; i < 8; i++) {
       mountStatus.selectFeature(i);
 
       if (mountStatus.featurePurpose() != 0 && j > 0) {
-        data.concat(F("<br/><div style='float: left; width: 26em'><hr></div>\r\n"));
+        data.concat(F("<br/><div style='float: left; width: 26em'><hr></div>\n"));
       }
       if (mountStatus.featurePurpose() == SWITCH) {
         data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
         data.concat(mountStatus.featureName());
         data.concat("&bull;");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
-        sprintf_P(temp,html_auxOnSwitch,i+1,i+1); data.concat(temp);
-        sprintf_P(temp,html_auxOffSwitch,i+1,i+1); data.concat(temp);
+        sprintf_P(temp, html_auxOnSwitch, i + 1, i + 1); data.concat(temp);
+        sprintf_P(temp, html_auxOffSwitch, i + 1, i + 1); data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         data.concat("</div>\r\n");
         sendHtml(data);
@@ -106,7 +109,7 @@ void handleAux() {
         sprintf(temp,"%d' onchange=\"sf('x%dv1',this.value)\">",mountStatus.featureValue1(),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        sprintf(temp,"<span id='x%dv1'>%d</span>%%",i+1,(int)lround((mountStatus.featureValue1()/255.0)*100.0));
+        sprintf(temp,"<span id='x%dv1'>%d</span>%%", i + 1, (int)lround((mountStatus.featureValue1()/255.0)*100.0));
         data.concat(temp);
         data.concat("</div>\r\n");
         sendHtml(data);
@@ -225,17 +228,16 @@ void handleAux() {
 }
 
 void auxAjaxGet() {
+  sendTextStart();
   processAuxGet();
-  #if OPERATIONAL_MODE != WIFI
-    www.sendContent("");
-  #else
-    www.send(200, "text/html", "");
-  #endif
+  sendTextDone();
 }
 
 void auxAjax() {
   String data="";
   char temp[120]="";
+
+  sendTextStart();
 
   // update auxiliary feature values
   if (mountStatus.featureFound()) {
@@ -282,8 +284,8 @@ void auxAjax() {
     }
   }
 
-  sendHtml(data);
-  sendHtmlDone();
+  sendText(data);
+  sendTextDone();
 }
 
 void processAuxGet() {

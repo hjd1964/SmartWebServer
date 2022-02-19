@@ -32,7 +32,7 @@ void handleNetwork() {
   sendHtmlStart();
 
   // send a standard http response header
-  String data=FPSTR(html_headB);
+  String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
   data.concat(FPSTR(html_main_css1));
   data.concat(FPSTR(html_main_css2));
@@ -49,8 +49,10 @@ void handleNetwork() {
   sendHtml(data);
 
   // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(FPSTR(html_onstep_header1));
+  data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));

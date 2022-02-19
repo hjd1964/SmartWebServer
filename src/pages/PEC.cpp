@@ -10,15 +10,13 @@ void handlePec() {
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
-      
-  mountStatus.update();
 
   processPecGet();
 
   sendHtmlStart();
 
   // send a standard http response header
-  String data=FPSTR(html_headB);
+  String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
   data.concat(FPSTR(html_main_css1));
   data.concat(FPSTR(html_main_css2));
@@ -45,8 +43,10 @@ void handlePec() {
   }
 
   // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(FPSTR(html_onstep_header1));
+  data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
@@ -91,9 +91,11 @@ void handlePec() {
 void pecAjax() {
   String data = "";
   char temp[80] = "";
-  
+
+  sendTextStart();
+ 
   data.concat("status|");
-  if ((mountStatus.mountType() != MT_ALTAZM) && (mountStatus.update()) && (onStep.command(":$QZ?#", temp))) {
+  if (mountStatus.mountType() != MT_ALTAZM && onStep.command(":$QZ?#", temp)) {
     if (temp[0] == 'I') data.concat(L_PEC_IDLE); else
     if (temp[0] == 'p') data.concat(L_PEC_WAIT_PLAY); else
     if (temp[0] == 'P') data.concat(L_PEC_PLAYING); else
@@ -103,8 +105,8 @@ void pecAjax() {
   } else { data.concat("?"); }
   data.concat("\n");
 
-  sendHtml(data);
-  sendHtmlDone();
+  sendText(data);
+  sendTextDone();
 }
 
 void processPecGet() {

@@ -6,6 +6,7 @@
 #include "../../../Config.h"
 #include "../../../Extended.config.h"
 #include "../../lib/debug/Debug.h"
+#include "../../lib/tasks/OnTask.h"
 
 #include "../../locales/Locale.h"
 #include "../cmd/Cmd.h"
@@ -15,8 +16,8 @@
 bool MountStatus::update(bool all) {
   char result[80] = "";
   if (!_valid) {
-    if (!onStep.command(":GVP#", result) || result[0] == 0 || (!strstr(result, "On-Step") && !strstr(result, "OnStepX"))) { _valid = false; return false; }
-    if (!onStep.command(":GVN#", result) || result[0] == 0 ) { _valid = false; return false; }
+    if (!onStep.command(":GVP#", result) || result[0] == 0 || (!strstr(result, "On-Step") && !strstr(result, "OnStepX"))) { _valid = false; return false; } Y;
+    if (!onStep.command(":GVN#", result) || result[0] == 0 ) { _valid = false; return false; } Y;
     strcpy(_id, "OnStep");
     strcpy(_ver, result);
     if (strlen(result) > 0) {
@@ -41,7 +42,7 @@ bool MountStatus::update(bool all) {
     }
   }
 
-  if (!onStep.command(":GU#", result) || result[0] == 0) { _valid = false; return false; }
+  if (!onStep.command(":GU#", result) || result[0] == 0) { _valid = false; return false; } Y;
 
   _tracking = false; _inGoto = false;
   if (!strstr(result, "N")) _inGoto = true; else _tracking = !strstr(result, "n");
@@ -91,7 +92,7 @@ bool MountStatus::update(bool all) {
 
   if (all) {
     // get meridian status
-    if (!onStep.command(":GX94#", result) || result[0] == 0) { _valid = false; return false; }
+    if (!onStep.command(":GX94#", result) || result[0] == 0) { _valid = false; return false; } Y;
     _meridianFlips = !strstr(result, "N");
     _pierSide = strtol(&result[0], NULL, 10);
 
@@ -123,6 +124,7 @@ bool MountStatus::update(bool all) {
           driverStatusFailedAttempts[axis]++;
           driver[axis].valid = false;
         }
+        Y;
       }
     }
 
@@ -131,6 +133,7 @@ bool MountStatus::update(bool all) {
       if (!onStep.command(":A?#", result) || result[0] != 0) {
         if (result[0] > '0' && result[0] <= '9') _alignMaxStars = result[0] - '0';
       }
+      Y;
     }
   }
 
@@ -167,12 +170,7 @@ bool MountStatus::pulseGuiding() { return _pulseGuiding; }
 bool MountStatus::guiding() { return _guiding; }
 bool MountStatus::guideRate() { return _guideRate; }
 bool MountStatus::guideRatePulse() { return _guideRatePulse; }
-bool MountStatus::focuserPresent() {
-  static int p = -1;
-  if (p == -1) p = onStep.commandBool(":FA#");
-  return p;
-}
-
+bool MountStatus::focuserPresent() { static int p = -1; if (p == -1) p = onStep.commandBool(":FA#"); return p; }
 bool MountStatus::axisFault() { return _axisFault; }
 bool MountStatus::waitingHome() { return _waitingHome; }
 bool MountStatus::pauseAtHome() { return _pauseAtHome; }
@@ -199,7 +197,7 @@ bool MountStatus::featureScan() {
   char cmd[40], out[40], present[40];
 
   // check which feature #'s are present
-  if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true;
+  if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true; Y;
   if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
   // get feature status
@@ -210,7 +208,7 @@ bool MountStatus::featureScan() {
 
     if (!scanned) {
       sprintf(cmd, ":GXY%d#", i+1);
-      if (!onStep.command(cmd, out) || out[0] == 0) valid = false;
+      if (!onStep.command(cmd, out) || out[0] == 0) valid = false; Y;
       if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; _featureFound = false; return false; }
 
       if (strlen(out) > 1) {
@@ -247,7 +245,7 @@ bool MountStatus::featureUpdate(bool all) {
 
     if (all || (_feature[i].purpose == SWITCH || _feature[i].purpose == ANALOG_OUTPUT || _feature[i].purpose == DEW_HEATER || _feature[i].purpose == INTERVALOMETER)) {
       sprintf(cmd,":GXX%d#", i + 1);
-      if (!onStep.command(cmd, out) || strlen(out) == 0) valid = false; else valid = true;
+      if (!onStep.command(cmd, out) || strlen(out) == 0) valid = false; else valid = true; Y;
       if (!valid) { for (uint8_t j = 0; j < 8; j++) _feature[j].purpose = 0; return false; }
 
       value2_str = strstr(out,",");

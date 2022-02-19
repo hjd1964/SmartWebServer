@@ -241,7 +241,7 @@ void State::pollSlow() {
 
   // MCU Temperature
   #if DISPLAY_INTERNAL_TEMPERATURE == ON
-    if (!onStep.command(":GX9F#", temp1)) strcpy(temp1, "?"); else localeTemperature(temp1);
+    if (!onStep.command(":GX9F#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
     strncpy(controllerTemperatureStr, temp, 10); controllerTemperatureStr[9] = 0; Y;
   #endif
 
@@ -268,6 +268,48 @@ void State::pollSlow() {
     sprintf(temp, "%lddBm (%ld%%)", signal_strength_dbm, signal_strength_qty);
     strncpy(signalStrengthStr, temp, 20); signalStrengthStr[19] = 0; Y;
   #endif
+
+  // identify focusers (once)
+  if (!focusersChecked) {
+    if (mountStatus.getVersionMajor() >= 10) {
+      if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; } Y;
+      if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; } Y;
+      if (onStep.commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; } Y;
+      if (onStep.commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; } Y;
+      if (onStep.commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; } Y;
+      if (onStep.commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; } Y;
+    } else {
+      if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; } Y;
+      if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; } Y;
+    }
+    focusersChecked = true;
+  }
+
+  if (focuserCount > 0) {
+    // identify active focuser
+    if (onStep.command(":FA#", temp)) focuserActive = atoi(temp); else focuserActive = 0; Y;
+
+    // focuser position
+    if (!onStep.command(":FG#", temp)) strcpy(temp, "?"); else strcat(temp, " microns"); Y;
+    strncpy(focuserPositionStr, temp, 20); focuserPositionStr[19] = 0; Y;
+  }
+
+  // identify rotator/derotator (once)
+  if (!rotatorChecked) {
+    rotatorPresent = false;
+    derotatorPresent = false;
+    if (onStep.command(":GX98#", temp)) {
+      if (temp[0] == 'R') rotatorPresent = true;
+      if (temp[0] == 'D') { rotatorPresent = true; derotatorPresent = true; }
+    } Y;
+  }
+
+  // rotator position
+  if (onStep.command(":rG#", temp1)) { temp1[4] = 0; strcpy(temp, temp1); strcat(temp, "&deg;"); strcat(temp, &temp1[5]); strcat(temp1, "&#39;"); } else strcpy(temp, "?");
+  strncpy(rotatorPositionStr, temp, 20); rotatorPositionStr[19] = 0; Y;
+
+  // update mount status
+  mountStatus.update(true);
 }
 
 void State::pollFast() {

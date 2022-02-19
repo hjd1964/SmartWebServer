@@ -108,7 +108,6 @@ void Encoders::init() {
     enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
 
-    mountStatus.update();
     if (autoSync && mountStatus.valid() && !enAxis1Fault && !enAxis2Fault) {
       if (mountStatus.atHome() || mountStatus.parked() || mountStatus.aligning() || mountStatus.syncToEncodersOnly()) {
         syncFromOnStep();

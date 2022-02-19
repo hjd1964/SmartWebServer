@@ -17,7 +17,7 @@ void handleSettings() {
   
   sendHtmlStart();
  
-  String data=FPSTR(html_headB);
+  String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
   data.concat(FPSTR(html_main_css1));
   data.concat(FPSTR(html_main_css2));
@@ -43,11 +43,14 @@ void handleSettings() {
   data.concat("<script>var ajaxPage='settings.txt';</script>\n");
   data.concat(FPSTR(html_ajax_active));
   data.concat("<script>auto2Rate=2;</script>");
-  sprintf_P(temp, html_ajaxScript, "settingsA.txt"); data.concat(temp);
+  sprintf_P(temp, html_ajaxScript, "settingsA.txt");
+  data.concat(temp);
 
   // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(FPSTR(html_onstep_header1));
+  data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
@@ -112,17 +115,16 @@ void handleSettings() {
 }
 
 void settingsAjaxGet() {
+  sendTextStart();
   processSettingsGet();
-  #if OPERATIONAL_MODE != WIFI
-    www.sendContent("");
-  #else
-    www.send(200, "text/html", "");
-  #endif
+  sendTextDone();
 }
 
 void settingsAjax() {
-  String data="";
-  mountStatus.update();
+  String data = "";
+
+  sendTextStart();
+
   if (mountStatus.valid()) {
     data.concat("bzr_on|");  if (mountStatus.buzzerEnabled()) data.concat("disabled\n"); else data.concat("enabled\n");
     data.concat("bzr_off|"); if (mountStatus.buzzerEnabled()) data.concat("enabled\n"); else data.concat("disabled\n");
@@ -236,8 +238,8 @@ void settingsAjax() {
     data.concat("sr_vs|disabled\n");
   }
 
-  sendHtml(data);
-  sendHtmlDone();
+  sendText(data);
+  sendTextDone();
 }
 
 void processSettingsGet() {

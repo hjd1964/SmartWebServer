@@ -3,9 +3,6 @@
 
 #include "Configuration.h"
 
-extern int focuserCount;
-extern bool focuserPresent[6];
-
 bool processConfigurationGet();
 void sendAxisParams(AxisSettings* a, int axis);
 
@@ -16,15 +13,13 @@ void handleConfiguration() {
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
-  
-  mountStatus.update();
  
   processConfigurationGet();
 
   sendHtmlStart();
 
   // send a standard http response header
-  String data=FPSTR(html_headB);
+  String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
   data.concat(FPSTR(html_main_css1));
   data.concat(FPSTR(html_main_css2));
@@ -43,8 +38,10 @@ void handleConfiguration() {
   sendHtml(data);
 
   // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1)); data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2)); data.concat(firmwareVersion.str);
+  data.concat(FPSTR(html_onstep_header1));
+  data.concat("OnStep");
+  data.concat(FPSTR(html_onstep_header2));
+  data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
   if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
@@ -88,12 +85,12 @@ void handleConfiguration() {
   if (temp1[0] == '+') temp1[0] = '0'; // remove +
   stripNum(temp1);
   while (temp1[0] == '0' && strlen(temp1) > 1) memmove(&temp1[0], &temp1[1], strlen(temp1)); // remove leading 0's
-  sprintf_P(temp,html_configLongDeg,temp1);
+  sprintf_P(temp, html_configLongDeg, temp1);
   data.concat(temp);
-  sprintf_P(temp,html_configLongMin,(char*)&temp1[5]);
+  sprintf_P(temp, html_configLongMin, (char*)&temp1[5]);
   data.concat(temp);
   if (mountStatus.getVersionMajor() > 3) {
-    sprintf_P(temp,html_configLongSec,(char*)&temp1[8]);
+    sprintf_P(temp, html_configLongSec, (char*)&temp1[8]);
     data.concat(temp);
   }
   sendHtml(data);
@@ -192,59 +189,33 @@ void handleConfiguration() {
 
   if (mountStatus.getVersionMajor() > 3) {
 
-    // Axis3 Rotator
-    int i = 0;
-    static int rotatorPresent = -1;
-    if (rotatorPresent == -1) {
-      onStep.command(":rT#", temp1);
-      if (temp1[0] == '0') rotatorPresent = false; else rotatorPresent = true;
-    }
-
-    if (rotatorPresent) {
+    if (state.rotatorPresent) {
       data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
       data.concat(FPSTR(html_configFormBegin));
       // Backlash
       if (!onStep.command(":rb#", temp1)) strcpy(temp1, "0");
-      i = (int)strtol(&temp1[0], NULL, 10);
-      sprintf_P(temp, html_configBlAxis3, i);
+      sprintf_P(temp, html_configBlAxis3, atoi(temp1));
       data.concat(temp);
       data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
       data.concat(FPSTR(html_configFormEnd));
       sendHtml(data);
     }
 
-    // Axis4 to 9 Focusers
-    focuserCount = 0;
-    for (int i = 0; i < 6; i++) focuserPresent[i] = false;
-    if (mountStatus.getVersionMajor() >= 10) {
-      if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; }
-      if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; }
-      if (onStep.commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; }
-      if (onStep.commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; }
-      if (onStep.commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; }
-      if (onStep.commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; }
-    } else {
-      if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; }
-      if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; }
-    }
-
     for (int focuser = 0; focuser < 6; focuser++) {
-      if (focuserPresent[focuser]) {
+      if (state.focuserPresent[focuser]) {
         sprintf_P(temp, html_configFocuser, focuser + 4, focuser + 1);
         data.concat(temp);
         data.concat(FPSTR(html_configFormBegin));
         // Backlash
         if (!onStep.command(":Fb#", temp1)) strcpy(temp1, "0");
-        i = (int)strtol(&temp1[0], NULL, 10);
-        sprintf_P(temp, html_configBacklash, i, focuser + 4);
+        sprintf_P(temp, html_configBacklash, atoi(temp1), focuser + 4);
         data.concat(temp);
         // TCF Enable
         sprintf_P(temp, html_configTcfEnable, (int)onStep.commandBool(":Fc#"), focuser + 4);
         data.concat(temp);
         // TCF Deadband
         if (!onStep.command(":Fd#", temp1)) strcpy(temp1, "0");
-        i = (int)strtol(&temp1[0], NULL, 10);
-        sprintf_P(temp,html_configDeadband, i, focuser + 4);
+        sprintf_P(temp,html_configDeadband, atoi(temp1), focuser + 4);
         data.concat(temp);
         sendHtml(data);
         // TCF Coef
@@ -406,7 +377,7 @@ void handleConfiguration() {
 
       // Axis4 to Axis9 Focusers
       for (int focuser = 0; focuser < 6; focuser++) {
-        if (focuserPresent[focuser]) {
+        if (state.focuserPresent[focuser]) {
           sprintf(temp2, ":GXA%d#", focuser + 4);
           if (!onStep.command(temp2, temp1)) strcpy(temp1, "0");
           if (decodeAxisSettings(temp1, &a)) {
@@ -479,12 +450,9 @@ void handleConfiguration() {
 }
 
 void configurationAjaxGet() {
+  sendTextStart();
   processConfigurationGet();
-  #if OPERATIONAL_MODE != WIFI
-    www.sendContent("");
-  #else
-    www.send(200, "text/html", "");
-  #endif
+  sendTextDone();
 }
 
 bool processConfigurationGet() {
