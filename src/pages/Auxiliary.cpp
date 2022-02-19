@@ -274,7 +274,7 @@ void auxAjax() {
         float v; int d;
         
         v=mountStatus.featureValue1();
-        if (abs(v) < 0.001) sprintf(temp,"x%dv1|-\n",i+1); else sprintf(temp,"x%dv1|%d\n",i+1,(int)v); data.concat(temp);
+        if (fabs(v) < 0.001) sprintf(temp,"x%dv1|-\n",i+1); else sprintf(temp,"x%dv1|%d\n",i+1,(int)v); data.concat(temp);
         v=mountStatus.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
         v=mountStatus.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;

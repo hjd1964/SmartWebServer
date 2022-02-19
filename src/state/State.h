@@ -50,6 +50,10 @@ class State {
 
     char parkStr[40] = "?";
     char trackStr[40] = "?";
+    bool trackingSidereal = false;
+    bool trackingLunar = false;
+    bool trackingSolar = false;
+    bool trackingKing = false;
 
     char slewSpeedStr[16] = "?";
 

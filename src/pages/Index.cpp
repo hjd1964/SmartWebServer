@@ -130,7 +130,7 @@ void handleRoot() {
   sendHtml(data);
 
   // polar align
-  if (!isnan(state.latitude) && abs(state.latitude) <= 89) {
+  if (!isnan(state.latitude) && fabs(state.latitude) <= 89) {
     data.concat("<br /><b>" L_POLAR_ALIGN ":</b><br />");
 
     strcpy(temp1, L_ZENITH);
@@ -254,7 +254,7 @@ void handleRootAjax() {
     data.concat("mdn_flip|"); data.concat(state.meridianFlipStr); data.concat("\n");
 
     // polar align
-    if (!isnan(state.latitude) && abs(state.latitude) <= 89) {
+    if (!isnan(state.latitude) && fabs(state.latitude) <= 89) {
       data.concat("align_lr|"); data.concat(state.alignLrStr); data.concat("\n");
       data.concat("align_ud|"); data.concat(state.alignUdStr); data.concat("\n");
     }

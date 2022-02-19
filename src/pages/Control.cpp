@@ -195,13 +195,6 @@ void controlAjax() {
   sendTextStart();
 
   if (mountStatus.valid()) {
-    if (mountStatus.tracking()) {
-      data.concat("trk_on|disabled\n");
-      data.concat("trk_off|enabled\n");
-    } else {
-      data.concat("trk_on|enabled\n");
-      data.concat("trk_off|disabled\n");
-    }
     if (mountStatus.atHome() || mountStatus.parked()) {
       data.concat("park|disabled\n");
       data.concat("unpark|enabled\n");
@@ -209,21 +202,21 @@ void controlAjax() {
       if (mountStatus.parkFail() || mountStatus.parking()) data.concat("park|disabled\n"); else data.concat("park|enabled\n");
       data.concat("unpark|disabled\n");
     }
-    if (mountStatus.inGoto()) {
-      data.concat("c_goto|enabled\n");
-    } else {
-      data.concat("c_goto|disabled\n");
-    }
+    if (mountStatus.inGoto()) data.concat("c_goto|enabled\n"); else data.concat("c_goto|disabled\n");
     if (mountStatus.tracking()) {
+      data.concat("trk_on|disabled\n");
+      data.concat("trk_off|enabled\n");
       data.concat("alg1|disabled\n");
       data.concat("alg2|disabled\n");
       data.concat("alg3|disabled\n");
-      if (mountStatus.aligning()) {
-        data.concat("alga|enabled\n");
-      } else {
-        data.concat("alga|disabled\n");
-      }
+      if (mountStatus.aligning()) data.concat("alga|enabled\n"); else data.concat("alga|disabled\n");
+      if (!mountStatus.aligning()) data.concat("rpa|enabled\n"); else data.concat("rpa|disabled\n");
+      if (state.trackingSidereal) data.concat("trk_sid|disabled\n"); else data.concat("trk_sid|enabled\n");
+      if (state.trackingSolar) data.concat("trk_sol|disabled\n"); else data.concat("trk_sol|enabled\n");
+      if (state.trackingLunar) data.concat("trk_lun|disabled\n"); else data.concat("trk_lun|enabled\n");
     } else {
+      data.concat("trk_on|enabled\n");
+      data.concat("trk_off|disabled\n");
       if (!mountStatus.parked() && mountStatus.atHome()) {
         data.concat("alg1|enabled\n");
         data.concat("alg2|enabled\n");
@@ -235,11 +228,9 @@ void controlAjax() {
         data.concat("alg3|disabled\n");
         data.concat("alga|disabled\n");
       }
-    }
-    if (mountStatus.tracking() && !mountStatus.aligning()) {
-      data.concat("rpa|enabled\n");
-    } else {
-      data.concat("rpa|disabled\n");
+      data.concat("trk_sid|disabled\n");
+      data.concat("trk_sol|disabled\n");
+      data.concat("trk_lun|disabled\n");
     }
   } else {
     data.concat("trk_on|disabled\n");
@@ -252,6 +243,9 @@ void controlAjax() {
     data.concat("alg3|disabled\n");
     data.concat("alga|disabled\n");
     data.concat("rpa|disabled\n");
+    data.concat("trk_sid|disabled\n");
+    data.concat("trk_sol|disabled\n");
+    data.concat("trk_lun|disabled\n");
   }
 
   if (state.focuserCount > 0) {

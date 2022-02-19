@@ -149,7 +149,7 @@ void State::pollSlow() {
   // polar align
   strcpy(alignLrStr, "?");
   strcpy(alignUdStr, "?");
-  if (!isnan(latitude) && abs(latitude) <= 89) {
+  if (!isnan(latitude) && fabs(latitude) <= 89) {
     long ud = LONG_MIN;
     if (onStep.command(":GX02#", temp)) { ud = strtol(&temp[0], NULL, 10); if (latitude < 0) ud = -ud; }
     long lr = LONG_MIN;
@@ -157,17 +157,17 @@ void State::pollSlow() {
 
     if (ud != LONG_MIN && lr != LONG_MIN) {
       char units = '"';
-      if (abs(ud) >= 300 || abs(lr) >= 300) { ud = ud/60; lr = lr/60; units = '\''; }
+      if (labs(ud) >= 300 || labs(lr) >= 300) { ud = ud/60; lr = lr/60; units = '\''; }
 
       char lr_s[2];
       if (lr >= 0) strcpy(lr_s, leftTri); else strcpy(lr_s, rightTri);
       char ud_s[2];
       if (ud >= 0) strcpy(ud_s, upTri); else strcpy(ud_s, downTri);
 
-      sprintf_P(temp, "%s %ld%c", lr_s, (long)(abs(lr)), units);
+      sprintf_P(temp, "%s %ld%c", lr_s, labs(lr), units);
       strncpy(alignLrStr, temp, 10); alignLrStr[9] = 0;
 
-      sprintf_P(temp, "%s %ld%c", ud_s, (long)(abs(ud)), units);
+      sprintf_P(temp, "%s %ld%c", ud_s, labs(ud), units);
       strncpy(alignUdStr, temp, 10); alignUdStr[9] = 0; Y;
     }
   }
@@ -181,14 +181,19 @@ void State::pollSlow() {
   strncpy(parkStr, temp, 40); parkStr[39] = 0; Y;
 
   // Tracking
+  double r = 0;
   if (mountStatus.tracking()) {
     if (onStep.command(":GT#", temp)) {
-      double tr = atof(temp);
-      sprintF(temp, "%5.3fHz", tr);
+      r = atof(temp);
+      sprintF(temp, "%5.3fHz", r);
     } else strcpy(temp, "?");
   } else strcpy(temp, L_OFF);
   if (mountStatus.inGoto()) strcpy(temp, L_INGOTO);
   if (!mountStatus.valid()) strcpy(temp, "?");
+  trackingSidereal = fabs(r - 60.164) < 0.001;
+  trackingLunar = fabs(r - 57.900) < 0.001; 
+  trackingSolar = fabs(r - 60.000) < 0.001;
+  trackingKing  = fabs(r - 60.136) < 0.001;
   
   strcpy(temp1, "(");
   if (mountStatus.ppsSync()) strcat(temp1, L_PPS_SYNC ", ");

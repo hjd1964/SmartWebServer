@@ -36,11 +36,11 @@ const char html_controlTrack1[] PROGMEM =
 "<button id='trk_on' class='btns_right' onpointerdown=\"s('dr','T1')\" type='button' disabled>" L_ON "</button>";
 const char html_controlTrack2[] PROGMEM =
 "<button id='trk_off' class='btns_left' onpointerdown=\"s('dr','T0')\" type='button' disabled>" L_OFF "</button><br />"
-"<button class='bbh' style='width: 2em' onpointerdown=\"g('Ts')\" title='" L_HINT_RATE_SIDEREAL "' type='button'>" SIDEREAL_CH "</button>";
+"<button id='trk_sid' class='bbh' style='width: 2em' onpointerdown=\"g('Ts')\" title='" L_HINT_RATE_SIDEREAL "' type='button' disabled>" SIDEREAL_CH "</button>";
 const char html_controlTrack3[] PROGMEM =
-"<button class='bbh' style='width: 2em' onpointerdown=\"g('Tl')\" title='" L_HINT_RATE_LUNAR "' type='button'>" LUNAR_CH "</button>";
+"<button id='trk_lun' class='bbh' style='width: 2em' onpointerdown=\"g('Tl')\" title='" L_HINT_RATE_LUNAR "' type='button' disabled>" LUNAR_CH "</button>";
 const char html_controlTrack4[] =
-"<button class='bbh' style='width: 2em' onpointerdown=\"g('Th')\" title='" L_HINT_RATE_SOLAR "' type='button'>" SOLAR_CH "</button>"
+"<button id='trk_sol' class='bbh' style='width: 2em' onpointerdown=\"g('Th')\" title='" L_HINT_RATE_SOLAR "' type='button' disabled>" SOLAR_CH "</button>"
 "</div>";
 
 const char html_controlAlign1[] PROGMEM = 
