@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Common.h"
+#include "../../Common.h"
 
 // state polling rates in milli-seconds
-#define STATE_POLLING_RATE_MS 1000
-#define STATE_SLOW_POLLING_RATE_MS 2000
-#define STATE_FAST_POLLING_RATE_MS 500
+#define STATE_POLLING_RATE_MS 2000
+#define STATE_SLOW_POLLING_RATE_MS 4000
+#define STATE_FAST_POLLING_RATE_MS 1000
 
 #define leftTri  "&#x25c4;"
 #define rightTri "&#x25ba;"
@@ -64,19 +64,14 @@ class State {
     char workLoadStr[20] = "?";;
     char signalStrengthStr[20] = "?";
 
-    int focuserCount = 0;
-    bool focuserPresent[6] = {false,false,false,false,false,false};
     char focuserPositionStr[20] = "?";
     int focuserActive = 0;
 
-    bool rotatorPresent = false;
-    bool derotatorPresent = false;
     char rotatorPositionStr[20] = "?";
 
    // DynamicJsonDocument *doc;
 
   private:
-    bool focusersChecked = false;
     bool rotatorChecked = false;
 
 };

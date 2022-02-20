@@ -38,17 +38,17 @@ void handleRoot() {
   data.concat(FPSTR(html_onstep_header2));
   data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
-  if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
+  if (status.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatS));
   data.concat(FPSTR(html_linksCtrlN));
-  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
   data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
@@ -56,7 +56,7 @@ void handleRoot() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   // active ajax page is: handleRootAjax();
   data.concat("<script>var ajaxPage='index.txt';</script>\n");
@@ -96,7 +96,7 @@ void handleRoot() {
   #endif
 
   // Focuser/telescope temperature
-  if (mountStatus.focuserPresent()) {
+  if (status.focuserFound) {
     sprintf_P(temp, html_indexTPHD, L_TELE_TEMPERATURE ":", 'f', state.telescopeTemperatureStr); data.concat(temp);
   }
 
@@ -132,7 +132,7 @@ void handleRoot() {
     data.concat("<br /><b>" L_POLAR_ALIGN ":</b><br />");
 
     strcpy(temp1, L_ZENITH);
-    if (mountStatus.mountType() != MT_ALTAZM) { if (state.latitude < 0) strcpy(temp1, L_SCP); else strcpy(temp1, L_NCP); }
+    if (status.mountType != MT_ALTAZM) { if (state.latitude < 0) strcpy(temp1, L_SCP); else strcpy(temp1, L_NCP); }
 
     sprintf_P(temp, html_indexCorPolar, state.alignLrStr, state.alignUdStr, temp1);
     data.concat(temp);
@@ -158,9 +158,9 @@ void handleRoot() {
 
   // Driver status
   int numAxes = 2;
-  if (mountStatus.getVersionMajor() >= 10) numAxes = 9;
+  if (status.getVersionMajor() >= 10) numAxes = 9;
   for (int axis = 0; axis < numAxes; axis++) {
-    if (mountStatus.driver[axis].valid) {
+    if (status.driver[axis].valid) {
       sprintf_P(temp, html_indexDriverStatus, axis + 1, axis, state.driverStatusStr[axis]);
       data.concat(temp);
     }
@@ -177,7 +177,7 @@ void handleRoot() {
   data.concat(temp);
 
   // Loop time
-  if (mountStatus.getVersionMajor() < 10) {
+  if (status.getVersionMajor() < 10) {
     sprintf_P(temp, html_indexWorkload, state.workLoadStr);
     data.concat(temp);
   }
@@ -201,7 +201,7 @@ void handleRootAjax() {
 
   sendTextStart();
 
-  if (mountStatus.valid()) {
+  if (status.valid) {
 
     // UTC Date
     data.concat("date_ut|"); data.concat(state.dateStr); data.concat("\n");
@@ -225,7 +225,7 @@ void handleRootAjax() {
     #endif
 
     // Focuser/telescope temperature
-    if (mountStatus.focuserPresent()) {
+    if (status.focuserFound) {
       data.concat("tphd_f|"); data.concat(state.telescopeTemperatureStr); data.concat("\n");
     }
 
@@ -268,9 +268,9 @@ void handleRootAjax() {
 
     // Driver status
     int numAxes = 2;
-    if (mountStatus.getVersionMajor() >= 10) numAxes = 9;
+    if (status.getVersionMajor() >= 10) numAxes = 9;
     for (int axis = 0; axis < numAxes; axis++) {
-      if (mountStatus.driver[axis].valid) {
+      if (status.driver[axis].valid) {
         sprintf(temp, "dvr_stat%d|%s", axis, state.driverStatusStr[axis]);
         data.concat(temp); data.concat("\n");
       }
@@ -285,7 +285,7 @@ void handleRootAjax() {
     data.concat("last_err|"); data.concat(state.lastErrorStr); data.concat("\n");
 
     // Loop time
-    if (mountStatus.getVersionMajor() < 10) {
+    if (status.getVersionMajor() < 10) {
       data.concat("work_load|"); data.concat(state.workLoadStr); data.concat("\n");
     }
 

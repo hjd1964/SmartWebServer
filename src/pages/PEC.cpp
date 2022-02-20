@@ -35,7 +35,7 @@ void handlePec() {
   data.concat(FPSTR(html_bodyB));
   sendHtml(data);
 
-  if (mountStatus.pecEnabled()) {
+  if (status.pecEnabled) {
     // active ajax page is: pecAjax();
     data.concat("<script>var ajaxPage='pec.txt';</script>\n");
     data.concat(FPSTR(html_ajax_active));
@@ -48,17 +48,17 @@ void handlePec() {
   data.concat(FPSTR(html_onstep_header2));
   data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
-  if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
+  if (status.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));
   data.concat(FPSTR(html_linksCtrlN));
-  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
   data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecS));
+  if (status.pecEnabled) data.concat(FPSTR(html_linksPecS));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
@@ -66,11 +66,11 @@ void handlePec() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   data.concat(FPSTR(html_pec1));
 
-  if (mountStatus.pecEnabled()) {
+  if (status.pecEnabled) {
     data.concat(FPSTR(html_pec2));
     data.concat(FPSTR(html_pecControls0));
     data.concat(FPSTR(html_pecControls1));
@@ -95,13 +95,13 @@ void pecAjax() {
   sendTextStart();
  
   data.concat("status|");
-  if (mountStatus.mountType() != MT_ALTAZM && onStep.command(":$QZ?#", temp)) {
+  if (status.mountType != MT_ALTAZM && onStep.command(":$QZ?#", temp)) {
     if (temp[0] == 'I') data.concat(L_PEC_IDLE); else
     if (temp[0] == 'p') data.concat(L_PEC_WAIT_PLAY); else
     if (temp[0] == 'P') data.concat(L_PEC_PLAYING); else
     if (temp[0] == 'r') data.concat(L_PEC_WAIT_REC); else
     if (temp[0] == 'R') data.concat(L_PEC_RECORDING); else data.concat(L_PEC_UNK);
-    if (mountStatus.pecRecording()) data.concat(" (" L_PEC_EEWRITING ")");
+    if (status.pecRecording) data.concat(" (" L_PEC_EEWRITING ")");
   } else { data.concat("?"); }
   data.concat("\n");
 

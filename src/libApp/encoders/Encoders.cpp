@@ -4,7 +4,7 @@
 #include "Encoders.h"
 extern NVS nv;
 
-#include "../status/MountStatus.h"
+#include "../status/Status.h"
 #include "../cmd/Cmd.h"
 #include "../../lib/tasks/OnTask.h"
 #include "../../lib/convert/Convert.h"
@@ -108,13 +108,13 @@ void Encoders::init() {
     enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
 
-    if (autoSync && mountStatus.valid() && !enAxis1Fault && !enAxis2Fault) {
-      if (mountStatus.atHome() || mountStatus.parked() || mountStatus.aligning() || mountStatus.syncToEncodersOnly()) {
+    if (autoSync && status.valid && !enAxis1Fault && !enAxis2Fault) {
+      if (status.atHome || status.parked || status.aligning || status.syncToEncodersOnly) {
         syncFromOnStep();
         // re-enable normal operation once we're updated here
-        if (mountStatus.syncToEncodersOnly()) onStep.commandBool(":SX43,1#");
+        if (status.syncToEncodersOnly) onStep.commandBool(":SX43,1#");
       } else
-        if (!mountStatus.inGoto() && !mountStatus.guiding()) {
+        if (!status.inGoto && !status.guiding) {
           if ((fabs(osAxis1 - enAxis1) > (double)(settings.axis1.diffTo/3600.0)) ||
               (fabs(osAxis2 - enAxis2) > (double)(settings.axis2.diffTo/3600.0))) syncToOnStep();
       }

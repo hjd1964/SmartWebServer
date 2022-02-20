@@ -43,7 +43,7 @@ NVS nv;
 #include "src/libApp/bleGamepad/BleGamepad.h"
 #include "src/libApp/encoders/Encoders.h"
 #include "src/pages/Pages.h"
-#include "src/libApp/status/MountStatus.h"
+#include "src/libApp/status/Status.h"
 
 #include "src/lib/ethernet/cmdServer/CmdServer.h"
 #include "src/lib/ethernet/webServer/WebServer.h"
@@ -280,8 +280,8 @@ Again:
     encoders.init();
   #endif
 
-  if (mountStatus.valid()) {
-    mountStatus.update(false);
+  if (status.valid) {
+    status.update(false);
     delay(100);
   }
 

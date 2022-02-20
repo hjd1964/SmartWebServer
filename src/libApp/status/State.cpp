@@ -1,17 +1,17 @@
 // scan OnStep state in the background
 
-#include "State.h"
 #include <limits.h>
+#include "State.h"
+#include "Status.h"
 #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
-  #include "..\lib\wifi\WifiManager.h"
+  #include "../../lib/wifi/WifiManager.h"
 #endif
-#include "..\lib\tasks\OnTask.h"
-#include "..\lib\convert\Convert.h"
-#include "..\libApp\misc\Misc.h"
-#include "..\libApp\cmd\Cmd.h"
-#include "..\libApp\status\MountStatus.h"
-#include "..\libApp\encoders\Encoders.h"
-#include "..\locales\Locale.h"
+#include "../../lib/tasks/OnTask.h"
+#include "../../lib/convert/Convert.h"
+#include "../../libApp/misc/Misc.h"
+#include "../../libApp/cmd/Cmd.h"
+#include "../../libApp/encoders/Encoders.h"
+#include "../../locales/Locale.h"
 
 void pollState() { state.poll(); }
 void pollStateSlow() { state.pollSlow(); }
@@ -95,7 +95,7 @@ void State::pollSlow() {
   char temp[80], temp1[80];
 
   // Latitude
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
     if (!onStep.command(":GtH#", temp)) strcpy(temp, "?");
   } else {
     if (!onStep.command(":Gt#", temp)) strcpy(temp, "?");
@@ -104,7 +104,7 @@ void State::pollSlow() {
   convert.dmsToDouble(&latitude, latitudeStr, true);
 
   // Longitude
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
     if (!onStep.command(":GgH#", temp)) strcpy(temp, "?");
   } else {
     if (!onStep.command(":Gg#", temp)) strcpy(temp, "?");
@@ -124,26 +124,26 @@ void State::pollSlow() {
   #endif
 
   // Focuser/telescope temperature
-  if (mountStatus.focuserPresent()) {
+  if (status.focuserFound) {
     if (!onStep.command(":Ft#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
     strncpy(telescopeTemperatureStr, temp, 10); telescopeTemperatureStr[9] = 0; Y;
   }
 
   // pier side
-  if ((mountStatus.pierSide() == PierSideFlipWE1) || (mountStatus.pierSide() == PierSideFlipWE2) || (mountStatus.pierSide() == PierSideFlipWE3)) strcpy(temp, L_MERIDIAN_FLIP_W_TO_E); else
-  if ((mountStatus.pierSide() == PierSideFlipEW1) || (mountStatus.pierSide() == PierSideFlipEW2) || (mountStatus.pierSide() == PierSideFlipEW3)) strcpy(temp, L_MERIDIAN_FLIP_E_TO_W); else
-  if (mountStatus.pierSide() == PierSideWest) strcpy(temp, L_WEST); else
-  if (mountStatus.pierSide() == PierSideEast) strcpy(temp, L_EAST); else
-  if (mountStatus.pierSide() == PierSideNone) strcpy(temp, L_NONE); else strcpy(temp, L_UNKNOWN);
-  if (!mountStatus.valid()) strcpy(temp, "?");
+  if ((status.pierSide == PierSideFlipWE1) || (status.pierSide == PierSideFlipWE2) || (status.pierSide == PierSideFlipWE3)) strcpy(temp, L_MERIDIAN_FLIP_W_TO_E); else
+  if ((status.pierSide == PierSideFlipEW1) || (status.pierSide == PierSideFlipEW2) || (status.pierSide == PierSideFlipEW3)) strcpy(temp, L_MERIDIAN_FLIP_E_TO_W); else
+  if (status.pierSide == PierSideWest) strcpy(temp, L_WEST); else
+  if (status.pierSide == PierSideEast) strcpy(temp, L_EAST); else
+  if (status.pierSide == PierSideNone) strcpy(temp, L_NONE); else strcpy(temp, L_UNKNOWN);
+  if (!status.valid) strcpy(temp, "?");
   strncpy(pierSideStr, temp, 10); pierSideStr[9] = 0; Y;
 
   // meridian flip
-  if (mountStatus.meridianFlips()) {
+  if (status.meridianFlips) {
     strcpy(temp, "On");
-    if (mountStatus.autoMeridianFlips()) strcat(temp, ", " L_AUTO);
+    if (status.autoMeridianFlips) strcat(temp, ", " L_AUTO);
   } else strcpy(temp, "Off");
-  if (!mountStatus.valid()) strcpy(temp, "?");
+  if (!status.valid) strcpy(temp, "?");
   strncpy(meridianFlipStr, temp, 10); pierSideStr[9] = 0; Y;
 
   // polar align
@@ -173,35 +173,35 @@ void State::pollSlow() {
   }
 
   // Park
-  if (mountStatus.parked()) strcpy(temp, L_PARKED); else strcpy(temp, L_NOT_PARKED);
-  if (mountStatus.parking()) strcpy(temp, L_PARKING); else
-  if (mountStatus.parkFail()) strcpy(temp, L_PARK_FAILED);
-  if (mountStatus.atHome()) strcat(temp, " (" L_AT_HOME ")");
-  if (!mountStatus.valid()) strcpy(temp, "?");
+  if (status.parked) strcpy(temp, L_PARKED); else strcpy(temp, L_NOT_PARKED);
+  if (status.parking) strcpy(temp, L_PARKING); else
+  if (status.parkFail) strcpy(temp, L_PARK_FAILED);
+  if (status.atHome) strcat(temp, " (" L_AT_HOME ")");
+  if (!status.valid) strcpy(temp, "?");
   strncpy(parkStr, temp, 40); parkStr[39] = 0; Y;
 
   // Tracking
   double r = 0;
-  if (mountStatus.tracking()) {
+  if (status.tracking) {
     if (onStep.command(":GT#", temp)) {
       r = atof(temp);
       sprintF(temp, "%5.3fHz", r);
     } else strcpy(temp, "?");
   } else strcpy(temp, L_OFF);
-  if (mountStatus.inGoto()) strcpy(temp, L_INGOTO);
-  if (!mountStatus.valid()) strcpy(temp, "?");
+  if (status.inGoto) strcpy(temp, L_INGOTO);
+  if (!status.valid) strcpy(temp, "?");
   trackingSidereal = fabs(r - 60.164) < 0.001;
   trackingLunar = fabs(r - 57.900) < 0.001; 
   trackingSolar = fabs(r - 60.000) < 0.001;
   trackingKing  = fabs(r - 60.136) < 0.001;
   
   strcpy(temp1, "(");
-  if (mountStatus.ppsSync()) strcat(temp1, L_PPS_SYNC ", ");
-  if (mountStatus.rateCompensation() == RC_REFR_RA)   strcat(temp1, L_REFR_COMP_RA ", ");
-  if (mountStatus.rateCompensation() == RC_REFR_BOTH) strcat(temp1, L_REFR_COMP_BOTH ", ");
-  if (mountStatus.rateCompensation() == RC_FULL_RA)   strcat(temp1, L_FULL_COMP_RA ", ");
-  if (mountStatus.rateCompensation() == RC_FULL_BOTH) strcat(temp1, L_FULL_COMP_BOTH ", ");
-  if (!mountStatus.valid()) strcpy(temp1, "?");
+  if (status.ppsSync) strcat(temp1, L_PPS_SYNC ", ");
+  if (status.rateCompensation == RC_REFR_RA)   strcat(temp1, L_REFR_COMP_RA ", ");
+  if (status.rateCompensation == RC_REFR_BOTH) strcat(temp1, L_REFR_COMP_BOTH ", ");
+  if (status.rateCompensation == RC_FULL_RA)   strcat(temp1, L_FULL_COMP_RA ", ");
+  if (status.rateCompensation == RC_FULL_BOTH) strcat(temp1, L_FULL_COMP_BOTH ", ");
+  if (!status.valid) strcpy(temp1, "?");
   if (temp1[strlen(temp1) - 2] == ',') { temp1[strlen(temp1) - 2] = 0; strcat(temp1, ")"); } else strcpy(temp1, "");
   strcat(temp, " "); strcat(temp, temp1);
   strncpy(trackStr, temp, 40); trackStr[39] = 0; Y;
@@ -212,29 +212,29 @@ void State::pollSlow() {
 
   // Driver status
   int numAxes = 2;
-  if (mountStatus.getVersionMajor() >= 10) numAxes = 9;
+  if (status.getVersionMajor() >= 10) numAxes = 9;
   for (int axis = 0; axis < numAxes; axis++) {
-    if (mountStatus.driver[axis].valid) {
+    if (status.driver[axis].valid) {
       strcpy(temp1, "");
-      if (mountStatus.driver[axis].fault) strcat(temp1, L_DRIVER_FAULT "  ");
-      if (mountStatus.driver[axis].communicationFailure) strcat(temp1, L_COMMS_FAILURE ", ");
-      if (!mountStatus.driver[axis].communicationFailure) {
-        if (mountStatus.driver[axis].standstill) strcat(temp1, L_STANDSTILL ", "); else {
-          if (mountStatus.driver[axis].outputA.openLoad || mountStatus.driver[axis].outputB.openLoad) {
+      if (status.driver[axis].fault) strcat(temp1, L_DRIVER_FAULT "  ");
+      if (status.driver[axis].communicationFailure) strcat(temp1, L_COMMS_FAILURE ", ");
+      if (!status.driver[axis].communicationFailure) {
+        if (status.driver[axis].standstill) strcat(temp1, L_STANDSTILL ", "); else {
+          if (status.driver[axis].outputA.openLoad || status.driver[axis].outputB.openLoad) {
             strcat(temp1, L_OPEN_LOAD " ");
-            if (mountStatus.driver[axis].outputA.openLoad) strcat(temp1,"A");
-            if (mountStatus.driver[axis].outputB.openLoad) strcat(temp1,"B");
+            if (status.driver[axis].outputA.openLoad) strcat(temp1,"A");
+            if (status.driver[axis].outputB.openLoad) strcat(temp1,"B");
             strcat(temp1,", ");
           }
         }
-        if (mountStatus.driver[axis].outputA.shortToGround || mountStatus.driver[axis].outputB.shortToGround) {
+        if (status.driver[axis].outputA.shortToGround || status.driver[axis].outputB.shortToGround) {
           strcat(temp1, L_SHORT_GND " ");
-          if (mountStatus.driver[axis].outputA.shortToGround) strcat(temp1,"A");
-          if (mountStatus.driver[axis].outputB.shortToGround) strcat(temp1,"B");
+          if (status.driver[axis].outputA.shortToGround) strcat(temp1,"A");
+          if (status.driver[axis].outputB.shortToGround) strcat(temp1,"B");
           strcat(temp1,", ");
         }
-        if (mountStatus.driver[axis].overTemperature) strcat(temp1, L_SHUTDOWN_OVER " 150C, ");
-        if (mountStatus.driver[axis].overTemperaturePreWarning) strcat(temp1, L_PRE_WARNING " &gt;120C, ");
+        if (status.driver[axis].overTemperature) strcat(temp1, L_SHUTDOWN_OVER " 150C, ");
+        if (status.driver[axis].overTemperaturePreWarning) strcat(temp1, L_PRE_WARNING " &gt;120C, ");
       }
       if (strlen(temp1) > 2) temp1[strlen(temp1) - 2] = 0;
       if (strlen(temp1) == 0) strcpy(temp1, "Ok");
@@ -252,14 +252,14 @@ void State::pollSlow() {
 
   // General Error
   strcpy(temp, "");
-  if (mountStatus.lastError() != ERR_NONE) strcat(temp, "<font class=\"y\">"); 
-  mountStatus.getLastErrorMessage(temp1);
-  if (!mountStatus.valid()) strcat(temp, "?"); else strcat(temp, temp1);
-  if (mountStatus.lastError() != ERR_NONE) strcat(temp, "</font>"); 
+  if (status.lastError != ERR_NONE) strcat(temp, "<font class=\"y\">"); 
+  status.getLastErrorMessage(temp1);
+  if (!status.valid) strcat(temp, "?"); else strcat(temp, temp1);
+  if (status.lastError != ERR_NONE) strcat(temp, "</font>"); 
   strncpy(lastErrorStr, temp, 40); lastErrorStr[39] = 0; Y;
 
   // Loop time
-  if (mountStatus.getVersionMajor() < 10) {
+  if (status.getVersionMajor() < 10) {
     if (!onStep.command(":GXFA#", temp)) strcpy(temp, "?%");
     strncpy(workLoadStr, temp, 20); workLoadStr[19] = 0; Y;
   }
@@ -274,23 +274,15 @@ void State::pollSlow() {
     strncpy(signalStrengthStr, temp, 20); signalStrengthStr[19] = 0; Y;
   #endif
 
-  // identify focusers (once)
-  if (!focusersChecked) {
-    if (mountStatus.getVersionMajor() >= 10) {
-      if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; } Y;
-      if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; } Y;
-      if (onStep.commandBool(":F3a#")) { focuserPresent[2] = true; focuserCount++; } Y;
-      if (onStep.commandBool(":F4a#")) { focuserPresent[3] = true; focuserCount++; } Y;
-      if (onStep.commandBool(":F5a#")) { focuserPresent[4] = true; focuserCount++; } Y;
-      if (onStep.commandBool(":F6a#")) { focuserPresent[5] = true; focuserCount++; } Y;
-    } else {
-      if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; } Y;
-      if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; } Y;
-    }
-    focusersChecked = true;
-  }
+  // update mount status
+  status.update(true);
 
-  if (focuserCount > 0) {
+}
+
+void State::pollFast() {
+  char temp[80], temp1[80];
+
+  if (status.focuserFound) {
     // identify active focuser
     if (onStep.command(":FA#", temp)) focuserActive = atoi(temp); else focuserActive = 0; Y;
 
@@ -299,25 +291,11 @@ void State::pollSlow() {
     strncpy(focuserPositionStr, temp, 20); focuserPositionStr[19] = 0; Y;
   }
 
-  // identify rotator/derotator (once)
-  if (!rotatorChecked) {
-    rotatorPresent = false;
-    derotatorPresent = false;
-    if (onStep.command(":GX98#", temp)) {
-      if (temp[0] == 'R') rotatorPresent = true;
-      if (temp[0] == 'D') { rotatorPresent = true; derotatorPresent = true; }
-    } Y;
-  }
-
   // rotator position
-  if (onStep.command(":rG#", temp1)) { temp1[4] = 0; strcpy(temp, temp1); strcat(temp, "&deg;"); strcat(temp, &temp1[5]); strcat(temp1, "&#39;"); } else strcpy(temp, "?");
-  strncpy(rotatorPositionStr, temp, 20); rotatorPositionStr[19] = 0; Y;
-
-  // update mount status
-  mountStatus.update(true);
-}
-
-void State::pollFast() {
+  if (status.rotatorFound) {
+    if (onStep.command(":rG#", temp1)) { temp1[4] = 0; strcpy(temp, temp1); strcat(temp, "&deg;"); strcat(temp, &temp1[5]); strcat(temp1, "&#39;"); } else strcpy(temp, "?");
+    strncpy(rotatorPositionStr, temp, 20); rotatorPositionStr[19] = 0; Y;
+  }
 }
 
 State state;

@@ -3,7 +3,7 @@
 
 #include "Misc.h"
 #include "../../locales/Locale.h"
-#include "../status/MountStatus.h"
+#include "../status/Status.h"
 
 void stripNum(char* s) {
   int pp=-1;
@@ -62,7 +62,7 @@ float byteToTime(uint8_t b) {
 }
 
 bool decodeAxisSettings(char* s, AxisSettings* a) {
-  if (mountStatus.getVersionMajor() >= 10) return decodeAxisSettingsX(s, a);
+  if (status.getVersionMajor() >= 10) return decodeAxisSettingsX(s, a);
 
   if (strcmp(s,"0") != 0) {
     char *ws=s;
@@ -155,7 +155,7 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
 }
 
 bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a) {
-  if (mountStatus.getVersionMajor() >= 10) return validateAxisSettingsX(axisNum, altAz, a);
+  if (status.getVersionMajor() >= 10) return validateAxisSettingsX(axisNum, altAz, a);
 
   int   MinLimitL[5]   = {-270,-90,-360,  0,  0};
   int   MinLimitH[5]   = { -90,  0,   0,500,500};

@@ -49,17 +49,17 @@ void handleControl() {
   data.concat(FPSTR(html_onstep_header2));
   data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
-  if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
+  if (status.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));
   data.concat(FPSTR(html_linksCtrlS));
-  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
   data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
@@ -67,7 +67,7 @@ void handleControl() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   // scripts
   sprintf_P(temp, html_ajaxScript, "controlA.txt"); data.concat(temp);
@@ -84,7 +84,7 @@ void handleControl() {
   // Quick controls ------------------------------------------
   data.concat(FPSTR(html_controlQuick1));
   data.concat(FPSTR(html_controlQuick1a));
-  if (mountStatus.mountType()==MT_GEM) data.concat(FPSTR(html_controlQuick2));
+  if (status.mountType==MT_GEM) data.concat(FPSTR(html_controlQuick2));
   data.concat(FPSTR(html_controlQuick3));
   data.concat(FPSTR(html_controlQuick4));
   data.concat(FPSTR(html_controlQuick5));
@@ -101,14 +101,14 @@ void handleControl() {
   data.concat(FPSTR(html_controlAlign1));
   byte sc[3];
   int n=1;
-  if (mountStatus.alignMaxStars()<3) { n=1; sc[0]=1; } else
-  if (mountStatus.alignMaxStars()<4) { n=3; sc[0]=1; sc[1]=2; sc[2]=3; } else
-  if (mountStatus.alignMaxStars()<6) { n=3; sc[0]=1; sc[1]=3; sc[2]=4; } else
-  if (mountStatus.alignMaxStars()<8) { n=3; sc[0]=1; sc[1]=3; sc[2]=6; } else
+  if (status.alignMaxStars < 3) { n=1; sc[0]=1; } else
+  if (status.alignMaxStars < 4) { n=3; sc[0]=1; sc[1]=2; sc[2]=3; } else
+  if (status.alignMaxStars < 6) { n=3; sc[0]=1; sc[1]=3; sc[2]=4; } else
+  if (status.alignMaxStars < 8) { n=3; sc[0]=1; sc[1]=3; sc[2]=6; } else
                                      { n=3; sc[0]=1; sc[1]=3; sc[2]=9; }
   for (int i=0; i<n; i++) { char temp2[120]=""; sprintf_P(temp2,html_controlAlign2,i+1,sc[i],sc[i],SIDEREAL_CH); data.concat(temp2); }
   data.concat(FPSTR(html_controlAlign3));
-  if (mountStatus.mountType() != MT_ALTAZM) {
+  if (status.mountType != MT_ALTAZM) {
     data.concat(FPSTR(html_controlAlign4));
   }
   sendHtml(data);
@@ -128,16 +128,16 @@ void handleControl() {
   sendHtml(data);
 
   // Focusing ------------------------------------------------
-  if (state.focuserCount > 0) {
+  if (status.focuserFound) {
     data.concat(FPSTR(html_controlFocusBeg));
     data.concat("<div style='float: left;'>" L_FOCUSER ":</div><div style='float: right; text-align: right;' id='focuserpos'>?</div><br />");
-    if (state.focuserCount > 1) {
-      if (state.focuserPresent[0]) data.concat(FPSTR(html_selectFocuser1));
-      if (state.focuserPresent[1]) data.concat(FPSTR(html_selectFocuser2));
-      if (state.focuserPresent[2]) data.concat(FPSTR(html_selectFocuser3));
-      if (state.focuserPresent[3]) data.concat(FPSTR(html_selectFocuser4));
-      if (state.focuserPresent[4]) data.concat(FPSTR(html_selectFocuser5));
-      if (state.focuserPresent[5]) data.concat(FPSTR(html_selectFocuser6));
+    if (status.focuserCount > 1) {
+      if (status.focuserPresent[0]) data.concat(FPSTR(html_selectFocuser1));
+      if (status.focuserPresent[1]) data.concat(FPSTR(html_selectFocuser2));
+      if (status.focuserPresent[2]) data.concat(FPSTR(html_selectFocuser3));
+      if (status.focuserPresent[3]) data.concat(FPSTR(html_selectFocuser4));
+      if (status.focuserPresent[4]) data.concat(FPSTR(html_selectFocuser5));
+      if (status.focuserPresent[5]) data.concat(FPSTR(html_selectFocuser6));
     }
     data.concat(FPSTR(html_setFocus1));
     data.concat(FPSTR(html_setFocus2));
@@ -150,7 +150,7 @@ void handleControl() {
   }
 
   // Rotate/De-Rotate ----------------------------------------
-  if (state.rotatorPresent) {
+  if (status.rotatorFound) {
     data.concat(FPSTR(html_controlRotateBeg));
     data.concat("<div style='float: left;'>" L_ROTATOR ":</div><div style='float: right; text-align: right;' id='rotatorpos'>?</div><br />");
     data.concat(FPSTR(html_setRotate1));
@@ -160,7 +160,7 @@ void handleControl() {
     data.concat(FPSTR(html_controlRotate2));
     data.concat(FPSTR(html_controlRotate3));
     sendHtml(data);
-    if (state.derotatorPresent) {
+    if (status.derotatorFound) {
       data.concat(FPSTR(html_controlDeRotate1));
       data.concat(FPSTR(html_controlDeRotate2));
       sendHtml(data);
@@ -188,34 +188,33 @@ void controlAjaxGet() {
 
 void controlAjax() {
   String data = "";
-  char temp[120] = "";
 
   sendTextStart();
 
-  if (mountStatus.valid()) {
-    if (mountStatus.atHome() || mountStatus.parked()) {
+  if (status.valid) {
+    if (status.atHome || status.parked) {
       data.concat("park|disabled\n");
       data.concat("unpark|enabled\n");
     } else {
-      if (mountStatus.parkFail() || mountStatus.parking()) data.concat("park|disabled\n"); else data.concat("park|enabled\n");
+      if (status.parkFail || status.parking) data.concat("park|disabled\n"); else data.concat("park|enabled\n");
       data.concat("unpark|disabled\n");
     }
-    if (mountStatus.inGoto()) data.concat("c_goto|enabled\n"); else data.concat("c_goto|disabled\n");
-    if (mountStatus.tracking()) {
+    if (status.inGoto) data.concat("c_goto|enabled\n"); else data.concat("c_goto|disabled\n");
+    if (status.tracking) {
       data.concat("trk_on|disabled\n");
       data.concat("trk_off|enabled\n");
       data.concat("alg1|disabled\n");
       data.concat("alg2|disabled\n");
       data.concat("alg3|disabled\n");
-      if (mountStatus.aligning()) data.concat("alga|enabled\n"); else data.concat("alga|disabled\n");
-      if (!mountStatus.aligning()) data.concat("rpa|enabled\n"); else data.concat("rpa|disabled\n");
+      if (status.aligning) data.concat("alga|enabled\n"); else data.concat("alga|disabled\n");
+      if (!status.aligning) data.concat("rpa|enabled\n"); else data.concat("rpa|disabled\n");
       if (state.trackingSidereal) data.concat("trk_sid|disabled\n"); else data.concat("trk_sid|enabled\n");
       if (state.trackingSolar) data.concat("trk_sol|disabled\n"); else data.concat("trk_sol|enabled\n");
       if (state.trackingLunar) data.concat("trk_lun|disabled\n"); else data.concat("trk_lun|enabled\n");
     } else {
       data.concat("trk_on|enabled\n");
       data.concat("trk_off|disabled\n");
-      if (!mountStatus.parked() && mountStatus.atHome()) {
+      if (!status.parked && status.atHome) {
         data.concat("alg1|enabled\n");
         data.concat("alg2|enabled\n");
         data.concat("alg3|enabled\n");
@@ -246,10 +245,10 @@ void controlAjax() {
     data.concat("trk_lun|disabled\n");
   }
 
-  if (state.focuserCount > 0) {
+  if (status.focuserFound) {
     data.concat("focuserpos|"); data.concat(state.focuserPositionStr); data.concat("\n");
 
-    if (mountStatus.getVersionMajor() >= 10) {
+    if (status.getVersionMajor() >= 10) {
       if (state.focuserActive == 1) data.concat("foc1_sel|disabled\n"); else data.concat("foc1_sel|enabled\n");
       if (state.focuserActive == 2) data.concat("foc2_sel|disabled\n"); else data.concat("foc2_sel|enabled\n");
       if (state.focuserActive == 3) data.concat("foc3_sel|disabled\n"); else data.concat("foc3_sel|enabled\n");
@@ -258,11 +257,11 @@ void controlAjax() {
       if (state.focuserActive == 6) data.concat("foc6_sel|disabled\n"); else data.concat("foc6_sel|enabled\n");
     } else {
       data.concat("foc1_sel|enabled\n");
-      if (state.focuserCount > 1) data.concat("foc2_sel|enabled\n");
+      if (status.focuserCount > 1) data.concat("foc2_sel|enabled\n");
     }
   }
 
-  if (state.rotatorPresent) {
+  if (status.rotatorFound) {
     data.concat("rotatorpos|"); data.concat(state.rotatorPositionStr); data.concat("\n");
   }
 

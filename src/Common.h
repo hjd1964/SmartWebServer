@@ -7,6 +7,7 @@
 #include <Arduino.h>
 //#include <ArduinoJson.h>
 #include "libApp/status/Version.h"
+#include "libApp/status/State.h"
 #include "Constants.h"
 #include "lib/Constants.h"
 #include "../Config.h"
@@ -16,5 +17,4 @@
 #include "pinmaps/Models.h"
 #include "lib/debug/Debug.h"
 #include "lib/nv/NV.h"
-#include "state/State.h"
 extern NVS nv;

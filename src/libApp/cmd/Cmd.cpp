@@ -207,7 +207,8 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
     #ifdef ESP32
       xSemaphoreGive(xMutex);
     #endif
-    return (response[0] != 0);
+    return response[strlen(response) - 1] == '#';
+//    return (response[0] != 0);
   }
 }
 
@@ -242,7 +243,8 @@ bool OnStepCmd::commandBool(const char* command) {
 char* OnStepCmd::commandString(const char* command) {
   static char response[80] = "";
   bool success = processCommand(command, response, webTimeout);
-  int l = strlen(response) - 1; if (l >= 0 && response[l] == '#') response[l] = 0;
+  int l = strlen(response) - 1;
+  if (l >= 0 && response[l] == '#') response[l] = 0;
   if (!success) strcpy(response,"?");
   return response;
 }

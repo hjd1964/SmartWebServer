@@ -50,17 +50,17 @@ void handleSettings() {
   data.concat(FPSTR(html_onstep_header2));
   data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
-  if (mountStatus.getVersionStr(temp)) data.concat(temp); else data.concat("?");
+  if (status.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));
   data.concat(FPSTR(html_linksCtrlN));
-  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
   data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetS));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
@@ -68,7 +68,7 @@ void handleSettings() {
   sendHtml(data);
  
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   data.concat("<div style='width: 35em;'>");
 
@@ -79,7 +79,7 @@ void handleSettings() {
   data.concat(FPSTR(html_settingsSlewSpeed2));
   sendHtml(data);
 
-  if (mountStatus.mountType() != MT_ALTAZM) {
+  if (status.mountType != MT_ALTAZM) {
     data.concat(FPSTR(html_settingsTrackComp1));
     data.concat(FPSTR(html_settingsTrackComp2));
     data.concat(FPSTR(html_settingsTrackComp3));
@@ -95,8 +95,8 @@ void handleSettings() {
   data.concat(FPSTR(html_settingsBuzzer1));
   data.concat(FPSTR(html_settingsBuzzer2));
 
-  if (mountStatus.mountType() == MT_GEM ||
-     (mountStatus.getVersionMajor() >= 10 && mountStatus.mountType() == MT_FORK)) {
+  if (status.mountType == MT_GEM ||
+     (status.getVersionMajor() >= 10 && status.mountType == MT_FORK)) {
     data.concat(FPSTR(html_settingsMFAuto1));
     data.concat(FPSTR(html_settingsMFAuto2));
     data.concat(FPSTR(html_settingsMFPause1));
@@ -123,47 +123,47 @@ void settingsAjax() {
 
   sendTextStart();
 
-  if (mountStatus.valid()) {
-    data.concat("bzr_on|");  if (mountStatus.buzzerEnabled()) data.concat("disabled\n"); else data.concat("enabled\n");
-    data.concat("bzr_off|"); if (mountStatus.buzzerEnabled()) data.concat("enabled\n"); else data.concat("disabled\n");
-    if (mountStatus.mountType() == MT_GEM ||
-       (mountStatus.getVersionMajor() >= 10 && mountStatus.mountType() == MT_FORK)) {
-      data.concat("mfa_on|");  if (mountStatus.autoMeridianFlips()) data.concat("disabled\n"); else data.concat("enabled\n");
-      data.concat("mfa_off|"); if (mountStatus.autoMeridianFlips()) data.concat("enabled\n"); else data.concat("disabled\n");
-      data.concat("mfp_on|");  if (mountStatus.pauseAtHome()) data.concat("disabled\n"); else data.concat("enabled\n");
-      data.concat("mfp_off|"); if (mountStatus.pauseAtHome()) data.concat("enabled\n"); else data.concat("disabled\n");
+  if (status.valid) {
+    data.concat("bzr_on|");  if (status.buzzerEnabled) data.concat("disabled\n"); else data.concat("enabled\n");
+    data.concat("bzr_off|"); if (status.buzzerEnabled) data.concat("enabled\n"); else data.concat("disabled\n");
+    if (status.mountType == MT_GEM ||
+       (status.getVersionMajor() >= 10 && status.mountType == MT_FORK)) {
+      data.concat("mfa_on|");  if (status.autoMeridianFlips) data.concat("disabled\n"); else data.concat("enabled\n");
+      data.concat("mfa_off|"); if (status.autoMeridianFlips) data.concat("enabled\n"); else data.concat("disabled\n");
+      data.concat("mfp_on|");  if (status.pauseAtHome) data.concat("disabled\n"); else data.concat("enabled\n");
+      data.concat("mfp_off|"); if (status.pauseAtHome) data.concat("enabled\n"); else data.concat("disabled\n");
     }
-    if (mountStatus.mountType() != MT_ALTAZM) {
+    if (status.mountType != MT_ALTAZM) {
       // RC_NONE, RC_REFR_RA, RC_REFR_BOTH, RC_FULL_RA, RC_FULL_BOTH
-      if (mountStatus.rateCompensation() == RC_NONE) {
+      if (status.rateCompensation == RC_NONE) {
         data.concat("ot_on|enabled\n");
         data.concat("ot_ref|enabled\n");
         data.concat("ot_off|disabled\n");
         data.concat("ot_dul|disabled\n");
         data.concat("ot_sgl|disabled\n");
       } else
-      if (mountStatus.rateCompensation() == RC_REFR_RA) {
+      if (status.rateCompensation == RC_REFR_RA) {
         data.concat("ot_on|enabled\n");
         data.concat("ot_ref|disabled\n");
         data.concat("ot_off|enabled\n");
         data.concat("ot_dul|enabled\n");
         data.concat("ot_sgl|disabled\n");
       } else
-      if (mountStatus.rateCompensation() == RC_REFR_BOTH) {
+      if (status.rateCompensation == RC_REFR_BOTH) {
         data.concat("ot_on|enabled\n");
         data.concat("ot_ref|disabled\n");
         data.concat("ot_off|enabled\n");
         data.concat("ot_dul|disabled\n");
         data.concat("ot_sgl|enabled\n");
       } else
-      if (mountStatus.rateCompensation() == RC_FULL_RA) {
+      if (status.rateCompensation == RC_FULL_RA) {
         data.concat("ot_on|disabled\n");
         data.concat("ot_ref|enabled\n");
         data.concat("ot_off|enabled\n");
         data.concat("ot_dul|enabled\n");
         data.concat("ot_sgl|disabled\n");
       } else
-      if (mountStatus.rateCompensation() == RC_FULL_BOTH) {
+      if (status.rateCompensation == RC_FULL_BOTH) {
         data.concat("ot_on|disabled\n");
         data.concat("ot_ref|enabled\n");
         data.concat("ot_off|enabled\n");

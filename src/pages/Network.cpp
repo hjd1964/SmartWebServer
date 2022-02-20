@@ -52,17 +52,17 @@ void handleNetwork() {
   data.concat(FPSTR(html_onstep_header2));
   data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
-  if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
+  if (status.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));
   data.concat(FPSTR(html_linksCtrlN));
-  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
   data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupS));
@@ -70,7 +70,7 @@ void handleNetwork() {
   sendHtml(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
 
   data.concat("<div>");
 

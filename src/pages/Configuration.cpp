@@ -43,17 +43,17 @@ void handleConfiguration() {
   data.concat(FPSTR(html_onstep_header2));
   data.concat(firmwareVersion.str);
   data.concat(" (OnStep");
-  if (mountStatus.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
+  if (status.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
   data.concat(FPSTR(html_onstep_header3));
   data.concat(FPSTR(html_linksStatN));
   data.concat(FPSTR(html_linksCtrlN));
-  if (mountStatus.featureFound()) data.concat(FPSTR(html_linksAuxN));
+  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
   data.concat(FPSTR(html_linksLibN));
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
   sendHtml(data);
-  if (mountStatus.pecEnabled()) data.concat(FPSTR(html_linksPecN));
+  if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgS));
   data.concat(FPSTR(html_linksSetupN));
@@ -61,7 +61,7 @@ void handleConfiguration() {
   sendHtml(data);
   
   // OnStep wasn't found, show warning and info.
-  if (!mountStatus.valid()) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
   
   // scripts
   sprintf_P(temp, html_ajaxScript, "configurationA.txt"); data.concat(temp);
@@ -74,7 +74,7 @@ void handleConfiguration() {
   data.concat(FPSTR(html_configFormBegin));
 
   // Longitude
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
     if (!onStep.command(":GgH#", temp1)) strcpy(temp1, "+000*00:00");
   } else {
     if (!onStep.command(":Gg#", temp1)) strcpy(temp1, "+000*00");
@@ -89,7 +89,7 @@ void handleConfiguration() {
   data.concat(temp);
   sprintf_P(temp, html_configLongMin, (char*)&temp1[5]);
   data.concat(temp);
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
     sprintf_P(temp, html_configLongSec, (char*)&temp1[8]);
     data.concat(temp);
   }
@@ -97,7 +97,7 @@ void handleConfiguration() {
   data.concat(FPSTR(html_configLongMsg));
 
   // Latitude
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
     if (!onStep.command(":GtH#", temp1)) strcpy(temp1, "+00*00:00");
   } else {
     if (!onStep.command(":Gt#", temp1)) strcpy(temp1, "+00*00");
@@ -111,7 +111,7 @@ void handleConfiguration() {
   data.concat(temp);
   sprintf_P(temp, html_configLatMin, (char*)&temp1[4]);
   data.concat(temp);
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
     sprintf_P(temp, html_configLatSec, (char*)&temp1[7]);
     data.concat(temp);
   }
@@ -160,7 +160,7 @@ void handleConfiguration() {
   data.concat(temp);
   sendHtml(data);
   // Meridian Limits
-  if (mountStatus.mountType() == MT_GEM && (onStep.command(":GXE9#", temp1)) && (onStep.command(":GXEA#",temp2))) {
+  if (status.mountType == MT_GEM && (onStep.command(":GXE9#", temp1)) && (onStep.command(":GXEA#",temp2))) {
     int degPastMerE = (int)strtol(&temp1[0], NULL, 10);
     degPastMerE = round((degPastMerE*15.0)/60.0);
     sprintf_P(temp, html_configPastMerE, degPastMerE);
@@ -187,9 +187,9 @@ void handleConfiguration() {
   data.concat(FPSTR(html_configFormEnd));
   sendHtml(data);
 
-  if (mountStatus.getVersionMajor() > 3) {
+  if (status.getVersionMajor() > 3) {
 
-    if (state.rotatorPresent) {
+    if (status.rotatorFound) {
       data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
       data.concat(FPSTR(html_configFormBegin));
       // Backlash
@@ -202,7 +202,7 @@ void handleConfiguration() {
     }
 
     for (int focuser = 0; focuser < 6; focuser++) {
-      if (state.focuserPresent[focuser]) {
+      if (status.focuserPresent[focuser]) {
         sprintf_P(temp, html_configFocuser, focuser + 4, focuser + 1);
         data.concat(temp);
         data.concat(FPSTR(html_configFormBegin));
@@ -239,7 +239,7 @@ void handleConfiguration() {
 
     // Mount type
     int mt = 0;
-    if (mountStatus.getVersionMajor() >= 5) {
+    if (status.getVersionMajor() >= 5) {
       if (!onStep.command(":GXEM#", temp1)) strcpy(temp1, "0");
       mt = atoi(temp1);
     }
@@ -263,7 +263,7 @@ void handleConfiguration() {
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis1 RA/Azm</button>"));
         data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(1, mountStatus.mountType() == MT_ALTAZM, a)) {
+        if (validateAxisSettings(1, status.mountType == MT_ALTAZM, a)) {
           if (!onStep.command(":GXE7#", temp1)) strcpy(temp1, "0");
 
           long spwr = strtol(temp1, NULL, 10);
@@ -307,7 +307,7 @@ void handleConfiguration() {
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis2 Dec/Alt</button>"));
         data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(2, mountStatus.mountType() == MT_ALTAZM, a)) {
+        if (validateAxisSettings(2, status.mountType == MT_ALTAZM, a)) {
 
           dtostrf(a.stepsPerMeasure, 1, 3, temp1);
           stripNum(temp1);
@@ -344,7 +344,7 @@ void handleConfiguration() {
       if (decodeAxisSettings(temp1, &a)) {
         data.concat(F("<button type='button' class='collapsible'>Axis3 " L_ROTATOR "</button>"));
         data.concat(FPSTR(html_configFormBegin));
-        if (validateAxisSettings(3, mountStatus.mountType() == MT_ALTAZM, a)) {
+        if (validateAxisSettings(3, status.mountType == MT_ALTAZM, a)) {
 
           dtostrf(a.stepsPerMeasure, 1, 3, temp1);
           stripNum(temp1);
@@ -377,14 +377,14 @@ void handleConfiguration() {
 
       // Axis4 to Axis9 Focusers
       for (int focuser = 0; focuser < 6; focuser++) {
-        if (state.focuserPresent[focuser]) {
+        if (status.focuserPresent[focuser]) {
           sprintf(temp2, ":GXA%d#", focuser + 4);
           if (!onStep.command(temp2, temp1)) strcpy(temp1, "0");
           if (decodeAxisSettings(temp1, &a)) {
             sprintf_P(temp, html_configFocuser, focuser + 4, focuser + 1);
             data.concat(temp);
             data.concat(FPSTR(html_configFormBegin));
-            if (validateAxisSettings(focuser + 4, mountStatus.mountType() == MT_ALTAZM, a)) {
+            if (validateAxisSettings(focuser + 4, status.mountType == MT_ALTAZM, a)) {
 
               dtostrf(a.stepsPerMeasure, 1, 3, temp1);
               stripNum(temp1);
@@ -587,10 +587,10 @@ bool processConfigurationGet() {
   // Location
   v = www.arg("g1");  // long deg
   v1 = www.arg("g2"); // long min
-  if (mountStatus.getVersionMajor() > 3) v2 = www.arg("g3"); else v2 = "0"; // long sec
+  if (status.getVersionMajor() > 3) v2 = www.arg("g3"); else v2 = "0"; // long sec
   if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
     if (v.toInt() >= -180 && v.toInt() <= 180 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
-      if (mountStatus.getVersionMajor() > 3)
+      if (status.getVersionMajor() > 3)
         sprintf(temp,":Sg%+04d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
       else
         sprintf(temp,":Sg%+04d*%02d#", (int16_t)v.toInt(), (int16_t)v1.toInt());
@@ -600,7 +600,7 @@ bool processConfigurationGet() {
 
   v = www.arg("t1");  // lat deg
   v1 = www.arg("t2"); // lat min
-  if (mountStatus.getVersionMajor() > 3) v2 = www.arg("t3"); else v2 = "0"; // lat sec
+  if (status.getVersionMajor() > 3) v2 = www.arg("t3"); else v2 = "0"; // lat sec
   if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
     if (v.toInt() >= -90 && v.toInt() <= 90 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
       sprintf(temp,":St%+03d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
@@ -683,7 +683,7 @@ bool processConfigurationGet() {
     if (!www.arg("a8spu").equals(EmptyStr)) axisStr = "8"; else
     if (!www.arg("a9spu").equals(EmptyStr)) axisStr = "9";
 
-    if (mountStatus.getVersionMajor() < 10) {
+    if (status.getVersionMajor() < 10) {
       // send axis settings to OnStep
       String s1 = www.arg("a" + axisStr + "spd");
       String s2 = www.arg("a" + axisStr + "ustp");
