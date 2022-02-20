@@ -13,8 +13,6 @@ void handleControl() {
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
-  mountStatus.update(true);
-
   processControlGet();
 
   sendHtmlStart();

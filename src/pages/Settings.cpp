@@ -11,8 +11,6 @@ void handleSettings() {
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
-  mountStatus.update(true);
-
   processSettingsGet();
   
   sendHtmlStart();

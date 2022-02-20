@@ -11,8 +11,6 @@ void handleRoot() {
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
-  mountStatus.update(true);
-
   sendHtmlStart();
 
   String data = FPSTR(html_headB);

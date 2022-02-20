@@ -25,8 +25,6 @@ void handleNetwork() {
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
   
-  mountStatus.update(true);
-  
   processNetworkGet();
 
   sendHtmlStart();

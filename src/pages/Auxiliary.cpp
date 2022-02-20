@@ -9,8 +9,6 @@ void handleAux() {
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
-  mountStatus.update(true);
-
   char temp[240] = "";
   char temp1[80] = "";
 

@@ -199,7 +199,6 @@
       scanTimer = 0;                                          // reinitalize the scan timer
       digitalWrite(LED_STATUS_PIN, LED_STATUS_ON_STATE);      // indicate connected
       VLF("MSG: BLE GamePad Connected");
-      mountStatus.update(false);
     }
     
     void onDisconnect(BLEClient* pclient)
@@ -512,8 +511,6 @@
       
       if (GP_BUTTON_M == buttons)
       {
-        mountStatus.update(false);
-
         // emergency stop
         if (mountStatus.inGoto())
         {   
