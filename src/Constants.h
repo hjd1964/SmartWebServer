@@ -17,9 +17,9 @@
 #define CWCCW                        2
 #define BC_BISSC                     3
 
-#define DEFAULT_AJAX_RATE            "5"   // normally 5 seconds between updates
-#define DEFAULT_FAST_AJAX_RATE       "1"   // fast update is 1 second/update
-#define DEFAULT_AJAX_SHED_TIME       "15"  // time before return to normal update rate
+#define DEFAULT_AJAX_RATE            "2"     // normally 2 seconds between updates
+#define DEFAULT_FAST_AJAX_RATE       "1"     // fast update is 1 second/update
+#define DEFAULT_AJAX_SHED_TIME       "15"    // time before return to normal update rate
 
 // various auxillary features
 #define SWITCH                       1
