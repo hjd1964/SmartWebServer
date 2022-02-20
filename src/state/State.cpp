@@ -159,9 +159,9 @@ void State::pollSlow() {
       char units = '"';
       if (labs(ud) >= 300 || labs(lr) >= 300) { ud = ud/60; lr = lr/60; units = '\''; }
 
-      char lr_s[2];
+      char lr_s[12];
       if (lr >= 0) strcpy(lr_s, leftTri); else strcpy(lr_s, rightTri);
-      char ud_s[2];
+      char ud_s[12];
       if (ud >= 0) strcpy(ud_s, upTri); else strcpy(ud_s, downTri);
 
       sprintf_P(temp, "%s %ld%c", lr_s, labs(lr), units);
