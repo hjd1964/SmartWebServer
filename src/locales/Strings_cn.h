@@ -39,6 +39,9 @@
 #define L_RANGE "范围"
 #define L_UNKNOWN "未知"
 #define L_FAULT "故障"
+#define L_POINT "观点"
+#define L_COMPLETE "完全的"
+#define L_INACTIVE "不活跃"
 
 // ---------------------------- Index ----------------------------
 // date/time

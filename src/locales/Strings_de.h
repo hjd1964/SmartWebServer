@@ -48,6 +48,9 @@
 #define L_RANGE "Bereich"
 #define L_UNKNOWN "Unbekannt"
 #define L_FAULT "Fehler"
+#define L_POINT "Punkt"
+#define L_COMPLETE "Vollständig"
+#define L_INACTIVE "Inaktiv"
 
 // ---------------------------- Index ----------------------------
 // date/time

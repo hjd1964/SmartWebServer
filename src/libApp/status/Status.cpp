@@ -83,8 +83,12 @@ bool Status::update(bool all) {
 
   if (mountType == MT_GEM) autoMeridianFlips = strstr(result, "a"); else autoMeridianFlips = false;
 
-  guideRatePulse = (Errors)(result[strlen(result) - 3] - '0');
-  guideRate = (Errors)(result[strlen(result) - 2] - '0');
+  guideRatePulse = result[strlen(result) - 3] - '0';
+  if (guideRatePulse < 0) guideRatePulse = 0;
+  if (guideRatePulse > 9) guideRatePulse = 9;
+  guideRate = result[strlen(result) - 2] - '0';
+  if (guideRate < 0) guideRate = 0;
+  if (guideRate > 9) guideRate = 9;
 
   lastError = (Errors)(result[strlen(result) - 1] - '0');
 
@@ -97,10 +101,12 @@ bool Status::update(bool all) {
   char s[20] = "";
   if (onStep.command(":A?#", s) && strlen(s) == 3 && s[1] <= s[2] && s[1] != '0') aligning = true; else aligning = false;
 
-  if (alignMaxStars == -1) {
+  if (alignMaxStars == -1 || aligning) {
     alignMaxStars = 3;
     if (!onStep.command(":A?#", result) || result[0] != 0) {
       if (result[0] > '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
+      if (result[1] > '0' && result[1] <= '9') alignThisStar = result[1] - '0';
+      if (result[2] > '0' && result[2] <= '9') alignLastStar = result[2] - '0';
     }
     Y;
   }

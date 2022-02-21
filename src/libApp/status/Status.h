@@ -11,6 +11,8 @@ enum Errors {
   ERR_UNDER_POLE, ERR_MERIDIAN, ERR_SYNC, ERR_PARK, ERR_GOTO_SYNC, ERR_UNSPECIFIED,
   ERR_ALT_MAX, ERR_WEATHER_INIT, ERR_SITE_INIT, ERR_NV_INIT};
 
+const char GuideRatesStr[][8] = {"1/4X", "1/2X", "1X", "2X", "4X", "8X", "20X", "48X", "1/2 Max", "Max"};
+
 #define PierSideNone     0
 #define PierSideEast     1
 #define PierSideWest     2
@@ -74,8 +76,8 @@ class Status {
 
     bool ppsSync = false;
 
-    int guideRate = -1;
-    int guideRatePulse = -1;
+    int guideRate = 2;
+    int guideRatePulse = 2;
     bool pulseGuiding = false;
     bool guiding = false;
 
@@ -94,6 +96,8 @@ class Status {
 
     bool aligning = false;
     int alignMaxStars = -1;
+    int alignThisStar = -1;
+    int alignLastStar = -1;
 
     Errors lastError = ERR_NONE;
 

@@ -43,9 +43,9 @@ const char html_controlTrack4[] =
 "<button id='trk_sol' class='bbh' style='width: 2em' onpointerdown=\"g('Th')\" title='" L_HINT_RATE_SOLAR "' type='button' disabled>" SOLAR_CH "</button>"
 "</div>";
 
+const char html_controlAlignBeg[] PROGMEM = 
+"<div class='b1' style='width: 16.2em'>";
 const char html_controlAlign1[] PROGMEM = 
-"<div class='b1' style='width: 16.2em'>"
-"<div align='left'>" L_ALIGN ":</div>"
 "<form method='get' action='/control.htm'>";
 const char html_controlAlign2[] PROGMEM =
 "<button id='alg%d' class='bbh' onpointerdown=\"s('al','%d')\" type='button' disabled>%d%s</button>";
@@ -56,13 +56,12 @@ const char html_controlAlign4[] PROGMEM =
 "<div class='content' style='padding: 5px'>" L_REFINE_MESSAGE1 L_REFINE_MESSAGE2 L_REFINE_MESSAGE3
 "<br /><button id='rpa' onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('rp','a')\" type='button'>" L_REFINE_PA "</button>"
 "<br /></div>";
-
-const char html_controlTrack5[] PROGMEM =
+const char html_controlAlignEnd[] PROGMEM =
 "</form></div><br class='clear' />\r\n";
 
+const char html_controlGuideBeg[] PROGMEM =
+"<div class='b1' style='width: 27em'>";
 const char html_controlGuide1[] PROGMEM =
-"<div class='b1' style='width: 27em'>"
-"<div align='left'>" L_GUIDE ":</div>"
 "<button class='gb' onpointerdown=\"g('n1')\" onpointerup=\"g('n0')\" type='button'>" BUTTON_N "</button><br />";
 const char html_controlGuide2[] PROGMEM =
 "<button class='gb' onpointerdown=\"g('e1')\" onpointerup=\"g('e0')\" type='button'>" BUTTON_E "</button>";
@@ -81,7 +80,8 @@ const char html_controlGuide6[] PROGMEM =
 "<button class='bbh' onpointerdown=\"g('R6')\" type='button'>" L_FIND_RATE "</button>";
 const char html_controlGuide7[] PROGMEM =
 "<button class='bbh' onpointerdown=\"g('R7')\" type='button'>" L_FAST_RATE "</button>"
-"<button class='bbh' onpointerdown=\"g('R8')\" type='button'>" L_VFAST_RATE "</button>"
+"<button class='bbh' onpointerdown=\"g('R8')\" type='button'>" L_VFAST_RATE "</button>";
+const char html_controlGuideEnd[] PROGMEM =
 "</div><br class='clear' />\r\n";
 
 const char html_controlFocusBeg[] PROGMEM =
