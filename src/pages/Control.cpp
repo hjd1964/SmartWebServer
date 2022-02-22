@@ -99,7 +99,6 @@ void handleControl() {
 
   // Get the align mode --------------------------------------
   data.concat(FPSTR(html_controlAlignBeg));
-  //"<div align='left'>" L_ALIGN ":</div>"
   data.concat("<div style='float: left;'>" L_ALIGN ":</div><div style='float: right; text-align: right;' id='align_progress' class='c'>");
   data.concat(state.alignProgress);
   data.concat("</div><br />");

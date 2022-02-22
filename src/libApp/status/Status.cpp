@@ -98,18 +98,17 @@ bool Status::update(bool all) {
   pierSide = strtol(&result[0], NULL, 10);
 
   // align status
-  char s[20] = "";
-  if (onStep.command(":A?#", s) && strlen(s) == 3 && s[1] <= s[2] && s[1] != '0') aligning = true; else aligning = false;
-
-  if (alignMaxStars == -1 || aligning) {
-    alignMaxStars = 3;
-    if (!onStep.command(":A?#", result) || result[0] != 0) {
-      if (result[0] > '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
-      if (result[1] > '0' && result[1] <= '9') alignThisStar = result[1] - '0';
-      if (result[2] > '0' && result[2] <= '9') alignLastStar = result[2] - '0';
-    }
-    Y;
+  if (onStep.command(":A?#", result) && strlen(result) == 3) {
+    if (result[0] > '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
+    if (result[1] > '0' && result[1] <= '9') alignThisStar = result[1] - '0';
+    if (result[2] > '0' && result[2] <= '9') alignLastStar = result[2] - '0';
+  } else {
+    alignMaxStars = 0;
+    alignThisStar = 0;
+    alignLastStar = 0;
   }
+  if (alignThisStar != 0 && alignThisStar <= alignLastStar) aligning = true; else aligning = false;
+  Y;
 
   focuserScan();
 
