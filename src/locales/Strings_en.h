@@ -107,7 +107,7 @@
 #define L_DRIVER_FAULT "Fault"
 
 // misc. errors/workload
-#define L_INTERNAL_TEMP "Controller Internal Temperature"
+#define L_INTERNAL_TEMP "Controller Temperature"
 #define L_LAST_GENERAL_ERROR "Last Error"
 #define L_WORKLOAD "Workload"
 #define L_WIRELESS_SIGNAL_STRENGTH "Wireless signal strength"

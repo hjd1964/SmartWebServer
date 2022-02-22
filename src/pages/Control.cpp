@@ -100,7 +100,9 @@ void handleControl() {
   // Get the align mode --------------------------------------
   data.concat(FPSTR(html_controlAlignBeg));
   //"<div align='left'>" L_ALIGN ":</div>"
-  data.concat("<div style='float: left;'>" L_ALIGN ":</div><div style='float: right; text-align: right;' id='align_progress' class='c'>?</div><br />");
+  data.concat("<div style='float: left;'>" L_ALIGN ":</div><div style='float: right; text-align: right;' id='align_progress' class='c'>");
+  data.concat(state.alignProgress);
+  data.concat("</div><br />");
   data.concat(FPSTR(html_controlAlign1));
   byte sc[3];
   int n=1;
@@ -119,7 +121,9 @@ void handleControl() {
 
   // Guiding -------------------------------------------------
   data.concat(FPSTR(html_controlGuideBeg));
-  data.concat("<div style='float: left;'>" L_GUIDE ":</div><div style='float: right; text-align: right;' id='guide_rates' class='c'>?</div><br />");
+  data.concat("<div style='float: left;'>" L_GUIDE ":</div><div style='float: right; text-align: right;' id='guide_rates' class='c'>");
+  data.concat(GuideRatesStr[status.guideRate]); data.concat(" ("); data.concat(GuideRatesStr[status.guideRatePulse]); data.concat(")");
+  data.concat("</div><br />");
   data.concat(FPSTR(html_controlGuide1));
   data.concat(FPSTR(html_controlGuide2));
   data.concat(FPSTR(html_controlGuide3));
@@ -134,7 +138,9 @@ void handleControl() {
   // Focusing ------------------------------------------------
   if (status.focuserFound) {
     data.concat(FPSTR(html_controlFocusBeg));
-    data.concat("<div style='float: left;'>" L_FOCUSER ":</div><div style='float: right; text-align: right;' id='focuserpos' class='c'>?</div><br />");
+    data.concat("<div style='float: left;'>" L_FOCUSER ":</div><div style='float: right; text-align: right;' id='focuserpos' class='c'>");
+    data.concat(state.focuserPositionStr);
+    data.concat("</div><br />");
     if (status.focuserCount > 1) {
       if (status.focuserPresent[0]) data.concat(FPSTR(html_selectFocuser1));
       if (status.focuserPresent[1]) data.concat(FPSTR(html_selectFocuser2));
@@ -156,7 +162,9 @@ void handleControl() {
   // Rotate/De-Rotate ----------------------------------------
   if (status.rotatorFound) {
     data.concat(FPSTR(html_controlRotateBeg));
-    data.concat("<div style='float: left;'>" L_ROTATOR ":</div><div style='float: right; text-align: right;' id='rotatorpos' class='c'>?</div><br />");
+    data.concat("<div style='float: left;'>" L_ROTATOR ":</div><div style='float: right; text-align: right;' id='rotatorpos' class='c'>");
+    data.concat(state.rotatorPositionStr);
+    data.concat("</div><br />");
     data.concat(FPSTR(html_setRotate1));
     data.concat(FPSTR(html_setRotate2));
     data.concat("<br />");
@@ -249,20 +257,10 @@ void controlAjax() {
     data.concat("trk_lun|disabled\n");
   }
 
-  data.concat("align_progress|");
-  if (status.aligning && status.alignThisStar >= 0 && status.alignLastStar >= 0) {
-    char temp[80];
-    sprintf(temp, L_POINT " %d of %d\n", status.alignThisStar, status.alignLastStar);
-    data.concat(temp);
-  } else {
-    if (status.alignThisStar > status.alignLastStar) data.concat(L_COMPLETE "\n"); else data.concat(L_INACTIVE "\n");
-  }
+  data.concat("align_progress|"); data.concat(state.alignProgress); data.concat("\n");
 
   data.concat("guide_rates|");
-  data.concat(GuideRatesStr[status.guideRate]);
-  data.concat(" (");
-  data.concat(GuideRatesStr[status.guideRatePulse]);
-  data.concat(")\n");
+  data.concat(GuideRatesStr[status.guideRate]); data.concat(" ("); data.concat(GuideRatesStr[status.guideRatePulse]); data.concat(")\n");
 
   if (status.focuserFound) {
     data.concat("focuserpos|"); data.concat(state.focuserPositionStr); data.concat("\n");

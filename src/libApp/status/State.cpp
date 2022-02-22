@@ -114,19 +114,19 @@ void State::pollSlow() {
   // Ambient conditions
   #if DISPLAY_WEATHER == ON
     if (!onStep.command(":GX9A#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
-    strncpy(siteTemperatureStr, temp, 10); siteTemperatureStr[9] = 0; Y;
+    strncpy(siteTemperatureStr, temp, 16); siteTemperatureStr[15] = 0; Y;
     if (!onStep.command(":GX9B#", temp)) strcpy(temp, "?"); else localePressure(temp);
-    strncpy(sitePressureStr, temp, 10); sitePressureStr[9] = 0; Y;
+    strncpy(sitePressureStr, temp, 16); sitePressureStr[15] = 0; Y;
     if (!onStep.command(":GX9C#", temp)) strcpy(temp, "?"); else localeHumidity(temp);
-    strncpy(siteHumidityStr, temp, 10); siteHumidityStr[9] = 0; Y;
+    strncpy(siteHumidityStr, temp, 16); siteHumidityStr[15] = 0; Y;
     if (!onStep.command(":GX9E#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
-    strncpy(siteDewPointStr, temp, 10); siteDewPointStr[9] = 0; Y;
+    strncpy(siteDewPointStr, temp, 16); siteDewPointStr[15] = 0; Y;
   #endif
 
   // Focuser/telescope temperature
   if (status.focuserFound) {
     if (!onStep.command(":Ft#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
-    strncpy(telescopeTemperatureStr, temp, 10); telescopeTemperatureStr[9] = 0; Y;
+    strncpy(telescopeTemperatureStr, temp, 16); telescopeTemperatureStr[15] = 0; Y;
   }
 
   // pier side
@@ -171,6 +171,15 @@ void State::pollSlow() {
       strncpy(alignUdStr, temp, 16); alignUdStr[15] = 0; Y;
     }
   }
+
+  // align progress
+  if (status.aligning && status.alignThisStar >= 0 && status.alignLastStar >= 0) {
+    char temp[80];
+    sprintf(temp, L_POINT " %d of %d\n", status.alignThisStar, status.alignLastStar);
+  } else {
+    if (status.alignThisStar > status.alignLastStar) strcpy(temp, L_COMPLETE "\n"); else strcpy(temp, L_INACTIVE "\n");
+  }
+  strncpy(alignProgress, temp, 16); alignProgress[15] = 0;
 
   // Park
   if (status.parked) strcpy(temp, L_PARKED); else strcpy(temp, L_NOT_PARKED);
@@ -247,7 +256,7 @@ void State::pollSlow() {
   // MCU Temperature
   #if DISPLAY_INTERNAL_TEMPERATURE == ON
     if (!onStep.command(":GX9F#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
-    strncpy(controllerTemperatureStr, temp, 10); controllerTemperatureStr[9] = 0; Y;
+    strncpy(controllerTemperatureStr, temp, 16); controllerTemperatureStr[15] = 0; Y;
   #endif
 
   // General Error
@@ -293,7 +302,7 @@ void State::pollFast() {
 
   // rotator position
   if (status.rotatorFound) {
-    if (onStep.command(":rG#", temp1)) { temp1[4] = 0; strcpy(temp, temp1); strcat(temp, "&deg;"); strcat(temp, &temp1[5]); strcat(temp1, "&#39;"); } else strcpy(temp, "?");
+    if (onStep.command(":rG#", temp1)) { temp1[4] = 0; strcpy(temp, temp1); strcat(temp, "&deg;"); strcat(temp, &temp1[5]); strcat(temp, "&#39;"); } else strcpy(temp, "?");
     strncpy(rotatorPositionStr, temp, 20); rotatorPositionStr[19] = 0; Y;
   }
 }

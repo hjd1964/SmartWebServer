@@ -216,8 +216,8 @@ void localePressure(char* pressureStr) {
   if (DISPLAY_UNITS == IMPERIAL) {
     p = p/33.864;
     dtostrf(p, 4, 2, pressureStr);
-    strcat(pressureStr, "inHg");
-  } else strcat(pressureStr, "mb");
+    strcat(pressureStr, " inHg");
+  } else strcat(pressureStr, " mb");
   if (isnan(p)) strcpy(pressureStr, "?");
 }
 

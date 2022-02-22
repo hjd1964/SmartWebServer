@@ -25,12 +25,12 @@ class State {
     double latitude = NAN;
     char latitudeStr[10] = "?";
     char longitudeStr[11] = "?";
-    char siteTemperatureStr[10] = "?";
-    char sitePressureStr[10] = "?";
-    char siteHumidityStr[10] = "?";
-    char siteDewPointStr[10] = "?";
+    char siteTemperatureStr[16] = "?";
+    char sitePressureStr[16] = "?";
+    char siteHumidityStr[16] = "?";
+    char siteDewPointStr[16] = "?";
 
-    char telescopeTemperatureStr[10] = "?";
+    char telescopeTemperatureStr[16] = "?";
 
     char indexRaStr[14] = "?";
     char indexDecStr[14] = "?";
@@ -47,6 +47,7 @@ class State {
 
     char alignUdStr[16] = "?";
     char alignLrStr[16] = "?";
+    char alignProgress[32] = "?";
 
     char parkStr[40] = "?";
     char trackStr[40] = "?";
@@ -59,7 +60,7 @@ class State {
 
     char driverStatusStr[9][40] = {"?","?","?","?","?","?","?","?","?"};
 
-    char controllerTemperatureStr[10] = "?";;
+    char controllerTemperatureStr[16] = "?";;
     char lastErrorStr[40] = "?";;
     char workLoadStr[20] = "?";;
     char signalStrengthStr[20] = "?";
