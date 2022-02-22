@@ -174,7 +174,6 @@ void State::pollSlow() {
 
   // align progress
   if (status.aligning && status.alignThisStar >= 0 && status.alignLastStar >= 0) {
-    char temp[80];
     sprintf(temp, L_POINT " %d of %d\n", status.alignThisStar, status.alignLastStar);
   } else {
     if (status.alignThisStar > status.alignLastStar) strcpy(temp, L_COMPLETE "\n"); else strcpy(temp, L_INACTIVE "\n");
