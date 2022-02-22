@@ -45,8 +45,8 @@ class State {
     char pierSideStr[10] = "?";
     char meridianFlipStr[10] = "?";
 
-    char alignUdStr[10] = "?";
-    char alignLrStr[10] = "?";
+    char alignUdStr[16] = "?";
+    char alignLrStr[16] = "?";
 
     char parkStr[40] = "?";
     char trackStr[40] = "?";

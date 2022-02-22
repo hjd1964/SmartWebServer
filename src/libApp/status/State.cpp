@@ -165,10 +165,10 @@ void State::pollSlow() {
       if (ud >= 0) strcpy(ud_s, upTri); else strcpy(ud_s, downTri);
 
       sprintf_P(temp, "%s %ld%c", lr_s, labs(lr), units);
-      strncpy(alignLrStr, temp, 10); alignLrStr[9] = 0;
+      strncpy(alignLrStr, temp, 16); alignLrStr[15] = 0;
 
       sprintf_P(temp, "%s %ld%c", ud_s, labs(ud), units);
-      strncpy(alignUdStr, temp, 10); alignUdStr[9] = 0; Y;
+      strncpy(alignUdStr, temp, 16); alignUdStr[15] = 0; Y;
     }
   }
 
