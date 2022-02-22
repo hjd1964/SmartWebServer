@@ -99,9 +99,9 @@ bool Status::update(bool all) {
 
   // align status
   if (onStep.command(":A?#", result) && strlen(result) == 3) {
-    if (result[0] > '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
-    if (result[1] > '0' && result[1] <= '9') alignThisStar = result[1] - '0';
-    if (result[2] > '0' && result[2] <= '9') alignLastStar = result[2] - '0';
+    if (result[0] >= '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
+    if (result[1] >= '0' && result[1] <= '9') alignThisStar = result[1] - '0';
+    if (result[2] >= '0' && result[2] <= '9') alignLastStar = result[2] - '0';
   } else {
     alignMaxStars = 0;
     alignThisStar = 0;
