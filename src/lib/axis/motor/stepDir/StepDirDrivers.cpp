@@ -9,37 +9,55 @@ const static int8_t steps[DRIVER_MODEL_COUNT][9] =
 //  1   2   4   8  16  32  64 128 256x
 {{  0,  1,  2,  3,  7,OFF,OFF,OFF,OFF},   // A4988
  {  0,  1,  2,  3,  4,  5,OFF,OFF,OFF},   // DRV8825
- {  4,  2,  6,  5,  3,  7,OFF,OFF,OFF},   // S109
+ {  0,  0,  0,  0,  0,  0,  0,  0,  0},   // GENERIC
  {  0,  1,  2,  3,  4,  5,  6,  7,OFF},   // LV8729
+ {  4,  2,  6,  5,  3,  7,OFF,OFF,OFF},   // S109
+ {  0,  1,  2,  3,  4,  5,OFF,  6,  7},   // ST820
  {  0,  1,  2,  3,  4,  5,  6,  7,OFF},   // RAPS128
  {  0,  1,  2,OFF,  3,OFF,OFF,OFF,OFF},   // TMC2100
- {OFF,  1,  2,  0,  3,OFF,OFF,OFF,OFF},   // TMC2208
- {OFF,OFF,OFF,  0,  3,  1,  2,OFF,OFF},   // TMC2209
- {  0,  1,  2,  3,  4,  5,OFF,  6,  7},   // ST820
+ {  0,  1,  2,OFF,  3,OFF,OFF,OFF,OFF},   // TMC2130S
  {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC2130
- {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC5160
- {  0,  0,  0,  0,  0,  0,  0,  0,  0}};  // GENERIC
+ {OFF,  1,  2,  0,  3,OFF,OFF,OFF,OFF},   // TMC2208S
+ {OFF,OFF,OFF,  0,  3,  1,  2,OFF,OFF},   // TMC2209S
+ {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC2209U
+ {  8,  7,  6,  5,  4,  3,  2,  1,  0}    // TMC5160
+};
 
 const static int32_t DriverPulseWidth[DRIVER_MODEL_COUNT] =
 // minimum step pulse width, in ns
 { 1000,  // A4988
   2000,  // DRV8825
-  300,   // S109
+  OFF,   // GENERIC
   500,   // LV8729
   7000,  // RAPS128
-  103,   // TMC2100
-  103,   // TMC2208
-  103,   // TMC2209
+  300,   // S109
   20,    // ST820
+  103,   // TMC2100
+  103,   // TMC2130S
   103,   // TMC2130
-  103,   // TMC5160
-  OFF    // GENERIC
+  103,   // TMC2208S
+  103,   // TMC2209S
+  103,   // TMC2209U
+  103    // TMC5160
 };
 
 #if DEBUG != OFF
-  const char* DRIVER_NAME[DRIVER_MODEL_COUNT] = {
-  "A4988", "DRV8825", "S109", "LV8729", "RAPS128", "TMC2100",
-  "TMC2208", "TMC2209", "ST820", "TMC2130", "TMC5160", "GENERIC" };
+  const char* DRIVER_NAME[DRIVER_MODEL_COUNT] =
+  { "A4988",
+    "DRV8825",
+    "GENERIC",
+    "LV8729",
+    "RAPS128",
+    "S109",
+    "ST820",
+    "TMC2100",
+    "TMC2130 Stand-alone",
+    "TMC2130 SPI",
+    "TMC2208 Stand-alone",
+    "TMC2209 Stand-alone",
+    "TMC2209 UART",
+    "TMC5160 SPI"
+  };
 #endif
 
 // constructor
@@ -76,7 +94,7 @@ void StepDirDriver::setParam(float param1, float param2, float param3, float par
     }
   #endif
 
-  if (!isTmcSPI()) {
+  if (!isTmcSPI() && !isTmcUART()) {
     if (settings.currentHold != OFF || settings.currentRun != OFF || settings.currentGoto != OFF) {
       VF("WRN: StepDvr"); V(axisNumber); VLF(", incorrect model for current control, disabling current settings");
       settings.currentHold = OFF;
@@ -106,11 +124,11 @@ void StepDirDriver::setParam(float param1, float param2, float param3, float par
   microstepCodeGoto = subdivisionsToCode(settings.microstepsGoto);
   microstepRatio = settings.microsteps/settings.microstepsGoto;
 
-  if (isTmcSPI()) {
-    #ifdef TMC_DRIVER_PRESENT
+  if (isTmcSPI() || isTmcUART()) {
+    #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
       if (settings.decay == OFF) settings.decay = STEALTHCHOP;
       if (settings.decayGoto == OFF) settings.decayGoto = SPREADCYCLE;
-      tmcDriver.init(settings.model, Pins->m0, Pins->m1, Pins->m2, Pins->m3);
+      tmcDriver.init(settings.model, Pins->m0, Pins->m1, Pins->m2, Pins->m3, axisNumber);
       VF("MSG: StepDvr"); V(axisNumber); VF(", TMC ");
       if (settings.currentRun == OFF) {
         VLF("current control OFF (set by Vref)");
@@ -126,7 +144,8 @@ void StepDirDriver::setParam(float param1, float param2, float param3, float par
       }
       tmcDriver.mode(true, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
     #endif
-  } else {
+  } else
+  {
     if (isDecayOnM2()) { decayPin = Pins->m2; m2Pin = OFF; } else { decayPin = Pins->decay; m2Pin = Pins->m2; }
     pinModeEx(decayPin, OUTPUT);
     digitalWriteEx(decayPin, getDecayPinState(settings.decay));
@@ -182,7 +201,8 @@ bool StepDirDriver::validateParam(float param1, float param2, float param3, floa
 
   int maxCurrent;
   if (settings.model == TMC2130) maxCurrent = 1500; else
-  if (settings.model == TMC5160) maxCurrent = 3000; else maxCurrent = OFF;
+  if (settings.model == TMC5160) maxCurrent = 3000; else
+  if (settings.model == TMC2209U) maxCurrent = 2000; else maxCurrent = OFF;
 
   long subdivisions = round(param1);
   long subdivisionsGoto = round(param2);
@@ -211,7 +231,7 @@ bool StepDirDriver::validateParam(float param1, float param2, float param3, floa
     return false;
   }
 
-  if (isTmcSPI()) {
+  if (isTmcSPI() || isTmcUART()) {
     if (currentHold != OFF && (currentHold < 0 || currentHold > maxCurrent)) {
       DF("ERR, StepDirDrivers::validateParam(): Axis"); D(axisNumber); DF(" bad current hold="); DL(currentHold);
       return false;
@@ -236,8 +256,8 @@ bool StepDirDriver::modeSwitchAllowed() {
 }
 
 void StepDirDriver::modeMicrostepTracking() {
-  if (isTmcSPI()) {
-    #ifdef TMC_DRIVER_PRESENT
+  if (isTmcSPI() || isTmcUART()) {
+    #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
       tmcDriver.refresh_CHOPCONF(microstepCode);
     #endif
   } else {
@@ -250,8 +270,8 @@ void StepDirDriver::modeMicrostepTracking() {
 }
 
 void StepDirDriver::modeDecayTracking() {
-  if (isTmcSPI()) {
-    #ifdef TMC_DRIVER_PRESENT
+  if (isTmcSPI() || isTmcUART()) {
+    #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
       tmcDriver.mode(true, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
     #endif
   } else {
@@ -270,8 +290,8 @@ int StepDirDriver::getMicrostepRatio() {
 
 int StepDirDriver::modeMicrostepSlewing() {
   if (microstepRatio > 1) {
-    if (isTmcSPI()) {
-      #ifdef TMC_DRIVER_PRESENT
+    if (isTmcSPI() || isTmcUART()) {
+      #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
         tmcDriver.refresh_CHOPCONF(microstepCodeGoto);
       #endif
     } else {
@@ -286,8 +306,8 @@ int StepDirDriver::modeMicrostepSlewing() {
 }
 
 void StepDirDriver::modeDecaySlewing() {
-  if (isTmcSPI()) {
-    #ifdef TMC_DRIVER_PRESENT
+  if (isTmcSPI() || isTmcUART()) {
+    #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
       int IGOTO = settings.currentGoto;
       if (IGOTO == OFF) IGOTO = settings.currentRun;
       tmcDriver.mode(true, settings.decayGoto, microstepCode, IGOTO, settings.currentHold);
@@ -302,36 +322,58 @@ void StepDirDriver::modeDecaySlewing() {
 }
 
 void StepDirDriver::updateStatus() {
-  #ifdef TMC_DRIVER_PRESENT
+  #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
     if (settings.status == ON) {
-      if (tmcDriver.refresh_DRVSTATUS()) {
-        status.outputA.shortToGround = tmcDriver.get_DRVSTATUS_s2gA();
-        status.outputA.openLoad      = tmcDriver.get_DRVSTATUS_olA();
-        status.outputB.shortToGround = tmcDriver.get_DRVSTATUS_s2gB();
-        status.outputB.openLoad      = tmcDriver.get_DRVSTATUS_olB();
-        status.overTemperaturePreWarning = tmcDriver.get_DRVSTATUS_otpw();
-        status.overTemperature       = tmcDriver.get_DRVSTATUS_ot();
-        status.standstill            = tmcDriver.get_DRVSTATUS_stst();
+      if ((long)(millis() - timeLastStatusUpdate) > 200) {
+        if (tmcDriver.refresh_DRVSTATUS()) {
+          status.outputA.shortToGround = tmcDriver.get_DRVSTATUS_s2gA();
+          status.outputA.openLoad      = tmcDriver.get_DRVSTATUS_olA();
+          status.outputB.shortToGround = tmcDriver.get_DRVSTATUS_s2gB();
+          status.outputB.openLoad      = tmcDriver.get_DRVSTATUS_olB();
+          status.overTemperaturePreWarning = tmcDriver.get_DRVSTATUS_otpw();
+          status.overTemperature       = tmcDriver.get_DRVSTATUS_ot();
+          status.standstill            = tmcDriver.get_DRVSTATUS_stst();
 
-        // open load indication is not reliable in standstill
-        if (
-          status.outputA.shortToGround ||
-          (status.outputA.openLoad && !status.standstill) ||
-          status.outputB.shortToGround ||
-          (status.outputB.openLoad && !status.standstill) ||
-          status.overTemperaturePreWarning ||
-          status.overTemperature
-        ) status.fault = true; else status.fault = false;
+          // open load indication is not reliable in standstill
+          if (
+            status.outputA.shortToGround ||
+            status.outputB.shortToGround ||
+            status.overTemperaturePreWarning ||
+            status.overTemperature
+          ) status.fault = true; else status.fault = false;
+        } else {
+          status.outputA.shortToGround = true;
+          status.outputA.openLoad      = true;
+          status.outputB.shortToGround = true;
+          status.outputB.openLoad      = true;
+          status.overTemperaturePreWarning = true;
+          status.overTemperature       = true;
+          status.standstill            = true;
+          status.fault                 = true;
+        }
 
-      } else {
-        status.outputA.shortToGround = true;
-        status.outputA.openLoad      = true;
-        status.outputB.shortToGround = true;
-        status.outputB.openLoad      = true;
-        status.overTemperaturePreWarning = true;
-        status.overTemperature       = true;
-        status.standstill            = true;
-        status.fault                 = true;
+        #if DEBUG != OFF
+          if ((status.outputA.shortToGround != lastStatus.outputA.shortToGround) ||
+              (status.outputA.openLoad      != lastStatus.outputA.openLoad) ||
+              (status.outputB.shortToGround != lastStatus.outputB.shortToGround) ||
+              (status.outputB.openLoad      != lastStatus.outputB.openLoad) ||
+              (status.overTemperaturePreWarning != lastStatus.overTemperaturePreWarning) ||
+              (status.overTemperature       != lastStatus.overTemperature) ||
+              (status.standstill            != lastStatus.standstill) ||
+              (status.fault                 != lastStatus.fault)) {
+            VF("MSG: StepDvr"); V(axisNumber); VF(", status change ");
+            VF("SGA"); if (status.outputA.shortToGround) VF("! "); else VF(". "); 
+            VF("OLA"); if (status.outputA.openLoad) VF("! "); else VF(". "); 
+            VF("SGB"); if (status.outputB.shortToGround) VF("! "); else VF(". "); 
+            VF("OLB"); if (status.outputB.openLoad) VF("! "); else VF(". "); 
+            VF("OTP"); if (status.overTemperaturePreWarning) VF("! "); else VF(". "); 
+            VF("OTE"); if (status.overTemperature) VF("! "); else VF(". "); 
+            VF("SST"); if (status.standstill) VF("! "); else VF(". "); 
+            VF("FLT"); if (status.fault) VLF("!"); else VLF("."); 
+          }
+          lastStatus = status;
+        #endif
+        timeLastStatusUpdate = millis();
       }
     } else
   #endif
@@ -355,7 +397,7 @@ int8_t StepDirDriver::getDecayPinState(int8_t decay) {
 
 // secondary way to power down not using the enable pin
 void StepDirDriver::power(bool state) {
-  #ifdef TMC_DRIVER_PRESENT
+  #if defined(TMC_DRIVER_PRESENT) || defined(TMC_UART_DRIVER_PRESENT)
     int I_run = 0, I_hold = 0;
     if (state) { I_run = settings.currentRun; I_hold = settings.currentHold; }
     tmcDriver.mode(true, settings.decay, microstepCode, I_run, I_hold);
@@ -373,8 +415,17 @@ bool StepDirDriver::isTmcSPI() {
   #endif
 }
 
+// checks for TMC UART driver
+bool StepDirDriver::isTmcUART() {
+  #ifdef TMC_UART_DRIVER_PRESENT
+    if (settings.model == TMC2209U) return true; else return false;
+  #else
+    return false;
+  #endif
+}
+
 bool StepDirDriver::isDecayOnM2() {
-  if (settings.model == TMC2209) return true; else return false;
+  if (settings.model == TMC2209S) return true; else return false;
 }
 
 // different models of stepper drivers have different bit settings for microsteps

@@ -227,6 +227,8 @@ double Axis::getOriginOrTargetDistance() {
 void Axis::setSlewAccelerationRate(float mpsps) {
   if (autoRate == AR_NONE) {
     slewMpspfs = mpsps/FRACTIONAL_SEC;
+    // cap the acceleration rate so we can stay within the backlash frequency
+    if (slewMpspfs > settings.backlashFreq/2.0F) slewMpspfs = settings.backlashFreq/2.0F;
     slewAccelTime = NAN;
   }
 }
@@ -400,10 +402,18 @@ void Axis::poll() {
   if (autoRate != AR_NONE && !motor->inBacklash) {
 
     if (autoRate != AR_RATE_BY_TIME_ABORT) {
-      if (motionError(motor->getDirection())) { autoSlewAbort(); return; }
+      if (motionError(motor->getDirection())) {
+        V(axisPrefix); VLF("motionError slew aborting");
+        autoSlewAbort();
+        return;
+      }
     }
     if (autoRate == AR_RATE_BY_DISTANCE) {
-      if (commonMinMaxSensed) { autoSlewAbort(); return; }
+      if (commonMinMaxSensed) {
+        V(axisPrefix); VLF("commonMinMaxSensed slew aborting");
+        autoSlewAbort();
+        return;
+      }
 
       if (motor->getTargetDistanceSteps() == 0) {
         motor->setSlewing(false);
@@ -435,7 +445,11 @@ void Axis::poll() {
       if (freq < -slewFreq) freq = -slewFreq;
     } else
     if (autoRate == AR_RATE_BY_TIME_END) {
-      if (commonMinMaxSensed) { autoSlewAbort(); return; }
+      if (commonMinMaxSensed) {
+        V(axisPrefix); VLF("commonMinMaxSensed slew aborting");
+        autoSlewAbort();
+        return;
+      }
 
       if (freq > slewMpspfs) freq -= slewMpspfs; else if (freq < -slewMpspfs) freq += slewMpspfs; else freq = 0.0F;
       if (fabs(freq) <= slewMpspfs) {
