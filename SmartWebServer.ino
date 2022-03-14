@@ -50,6 +50,10 @@ NVS nv;
 #include "src/lib/wifi/cmdServer/CmdServer.h"
 #include "src/lib/wifi/webServer/WebServer.h"
 
+#if DEBUG == PROFILER
+  extern void profiler();
+#endif
+
 #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
   CmdServer persistentCmdSvr1(9996, 120L*1000L, true);
   #if OPERATIONAL_MODE != ETHERNET_W5100
@@ -294,6 +298,11 @@ Again:
   VF("MSG: Setup, starting web server polling");
   VF(" task (rate 10ms priority 3)... ");
   if (tasks.add(10, 0, true, 3, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
+
+  // start task manager debug events
+  #if DEBUG == PROFILER
+    tasks.add(142, 0, true, 7, profiler, "Profilr");
+  #endif
 
   VLF("MSG: SmartWebServer ready");
 }
