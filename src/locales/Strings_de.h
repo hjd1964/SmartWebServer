@@ -99,20 +99,21 @@
 #define L_FULL_COMP_RA "volle komp."
 #define L_FULL_COMP_BOTH "volle komp. beide achsen"
 #define L_TRACKING "Verfolgung"
-#define L_TRACKING_RATE "Nachf&uuml;hrgeschwindigkeit"
 #define L_CURRENT_MAXRATE "Aktuelle maximale Rate"
 #define L_DEFAULT_MAXRATE "Standard maximale Rate"
 #define L_CURRENT_MAXSLEW "Maximale Schwenkgeschwindigkeit"
 
+#define L_FREQUENCY_ADJUST "Frequenzanpassung"
+
 // driver status
 #define L_DRIVER_STATUS "Teriber"
 #define L_STATE "Status"
-#define L_COMMS_FAILURE "befehlsfehler"
-#define L_STANDSTILL "stillstand"
-#define L_OPEN_LOAD "offene last"
-#define L_SHORT_GND "masseschluss"
-#define L_SHUTDOWN_OVER "abschaltung &uuml;ber"
-#define L_PRE_WARNING "vorwarnung"
+#define L_COMMS_FAILURE "Befehlsfehler"
+#define L_STANDSTILL "Dtillstand"
+#define L_OPEN_LOAD "Offene last"
+#define L_SHORT_GND "Masseschluss"
+#define L_SHUTDOWN_OVER "Abschaltung &uuml;ber"
+#define L_PRE_WARNING "Vorwarnung"
 #define L_DRIVER_FAULT "Fehler"
 
 // misc. errors/workload

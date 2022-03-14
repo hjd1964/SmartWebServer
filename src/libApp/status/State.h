@@ -61,7 +61,7 @@ class State {
     char driverStatusStr[9][40] = {"?","?","?","?","?","?","?","?","?"};
 
     char controllerTemperatureStr[16] = "?";;
-    char lastErrorStr[40] = "?";;
+    char lastErrorStr[80] = "?";;
     char workLoadStr[20] = "?";;
     char signalStrengthStr[20] = "?";
 

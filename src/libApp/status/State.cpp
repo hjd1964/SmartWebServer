@@ -248,7 +248,7 @@ void State::pollSlow() {
       if (strlen(temp1) == 0) strcpy(temp1, "Ok");
 
       char *thisDriverStatusStr = driverStatusStr[axis];
-      strncpy(thisDriverStatusStr, temp, 40); thisDriverStatusStr[39] = 0; Y;
+      strncpy(thisDriverStatusStr, temp1, 40); thisDriverStatusStr[39] = 0; Y;
     }
   }
 
@@ -264,7 +264,7 @@ void State::pollSlow() {
   status.getLastErrorMessage(temp1);
   if (!status.valid) strcat(temp, "?"); else strcat(temp, temp1);
   if (status.lastError != ERR_NONE) strcat(temp, "</font>"); 
-  strncpy(lastErrorStr, temp, 40); lastErrorStr[39] = 0; Y;
+  strncpy(lastErrorStr, temp, 80); lastErrorStr[79] = 0; Y;
 
   // Loop time
   if (status.getVersionMajor() < 10) {

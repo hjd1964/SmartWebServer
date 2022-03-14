@@ -90,20 +90,21 @@
 #define L_FULL_COMP_RA "full comp."
 #define L_FULL_COMP_BOTH "full comp. dual axis"
 #define L_TRACKING "Tracking"
-#define L_TRACKING_RATE "Tracking Rate"
 #define L_CURRENT_MAXRATE "Current MaxRate"
 #define L_DEFAULT_MAXRATE "Default MaxRate"
 #define L_CURRENT_MAXSLEW "Maximum slew speed"
 
+#define L_FREQUENCY_ADJUST "Frequency Adjust"
+
 // driver status
 #define L_DRIVER_STATUS "Driver"
 #define L_STATE "Status"
-#define L_COMMS_FAILURE "comms failure"
-#define L_STANDSTILL "standstill"
-#define L_OPEN_LOAD "open load"
-#define L_SHORT_GND "short gnd"
-#define L_SHUTDOWN_OVER "shutdown over"
-#define L_PRE_WARNING "pre-warning"
+#define L_COMMS_FAILURE "Comms failure"
+#define L_STANDSTILL "Standstill"
+#define L_OPEN_LOAD "Open load"
+#define L_SHORT_GND "Short gnd"
+#define L_SHUTDOWN_OVER "Shutdown over"
+#define L_PRE_WARNING "Pre-warning"
 #define L_DRIVER_FAULT "Fault"
 
 // misc. errors/workload

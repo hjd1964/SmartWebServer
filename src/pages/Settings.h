@@ -36,7 +36,7 @@ L_PARK ": <br />"
 "<br /><br />\r\n";
 
 const char html_settingsTrack1[] PROGMEM =
-L_TRACKING_RATE ": <br />";
+L_FREQUENCY_ADJUST ": <br />";
 const char html_settingsTrack2[] PROGMEM =
 "<button onpointerdown=\"s('tk','f')\" type='button'>+ (0.02Hz " L_TRK_FASTER ")</button>"
 "<button onpointerdown=\"s('tk','-')\" type='button'>- (0.02Hz " L_TRK_SLOWER ")</button>"

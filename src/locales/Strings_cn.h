@@ -90,10 +90,11 @@
 #define L_FULL_COMP_RA "完整的RA轴"
 #define L_FULL_COMP_BOTH "完全补偿两个轴"
 #define L_TRACKING "追踪"
-#define L_TRACKING_RATE "跟踪速度"
 #define L_CURRENT_MAXRATE "当前最大速率"
 #define L_DEFAULT_MAXRATE "标准最大速率"
 #define L_CURRENT_MAXSLEW "最大平移速度"
+
+#define L_FREQUENCY_ADJUST "频率调整"
 
 // driver status
 #define L_DRIVER_STATUS "运转"
