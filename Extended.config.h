@@ -18,6 +18,13 @@
 #define SERIAL_DEBUG               Serial //      Serial, Or use any h/w serial port. Serial1 or Serial2, etc. as supported.  Option
 #define SERIAL_DEBUG_BAUD            9600 //        9600, n. Where n=9600,19200,57600,115200 (common baud rates.)             Option
 
+// NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
+#define NV_WIPE                       OFF //         OFF, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
+                                          //              ***     IMPORTANT: ENABLE THIS OPTION THEN UPLOAD, WAIT A MINUTE    ***
+// Warning --->                           //              ***     OR TWO THEN SET THIS OPTION TO OFF AND UPLOAD AGAIN.        ***
+                                          //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
+                                          //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
+
 // STATUS LED ----------------------------------------------------------------------------------------------------------------------
 #define LED_STATUS_ON_STATE           LOW //         LOW, Use HIGH so indicator stays on when connected if needed.            Option
 
@@ -61,10 +68,4 @@
 #define RESET_PIN                     OFF //         OFF, Specify a pin# used to reset OnStep.                                Infreq
 #define RESET_PIN_STATE               LOW //         OFF, Specify state of RESET_PIN pin otherwise OPEN when inactive.        Infreq
                                           //             
-
-// NON-VOLATILE STORAGE ------------------------------------------------------------------------------------------------------------
-#define NV_WIPE                       OFF //         OFF, Causes the defaults to be written back into NV (FLASH,EEPROM,etc.)  Infreq
-                                          //              ***     IMPORTANT: ENABLE THIS OPTION THEN UPLOAD, WAIT A MINUTE    ***
-// Warning --->                           //              ***     OR TWO THEN SET THIS OPTION TO OFF AND UPLOAD AGAIN.        ***
-                                          //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
-                                          //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
+                                          

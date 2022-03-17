@@ -185,12 +185,9 @@ Again:
 
   // get NV ready
   if (!nv.isKeyValid(INIT_NV_KEY)) {
-    VF("MSG: Wipe NV "); V(nv.size); VLF(" Bytes");
-    nv.wipe();
-    VLF("MSG: Wipe NV waiting for commit");
-    nv.wait();
-    VLF("MSG: NV reset to defaults");
-  } else { VLF("MSG: Correct NV key found"); }
+    VF("MSG: NV, invalid key wipe "); V(nv.size); VLF(" bytes");
+    if (nv.verify()) { VLF("MSG: NV, ready for reset to defaults"); }
+  } else { VLF("MSG: NV, correct key found"); }
 
   // get the command and web timeouts
   if (!nv.isKeyValid()) {
@@ -214,12 +211,10 @@ Again:
   #endif
 
   // init is done, write the NV key if necessary
-  if (!nv.isKeyValid()) {
-    nv.writeKey((uint32_t)INIT_NV_KEY);
-    nv.ignoreCache(true);
-    if (!nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV reset failed to read back key!"); } else { VLF("MSG: NV reset complete"); }
-    nv.ignoreCache(false);
-  }
+  if (!nv.isKeyValid(INIT_NV_KEY)) {
+    VF("MSG: NV, invalid key wipe "); V(nv.size); VLF(" bytes");
+    if (nv.verify()) { VLF("MSG: NV, ready for reset to defaults"); }
+  } else { VLF("MSG: NV, correct key found"); }
 
   #if BLE_GAMEPAD == ON
     bleSetup();
