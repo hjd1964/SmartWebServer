@@ -26,7 +26,7 @@ void Encoders::init() {
   if (EncoderSettingsSize < sizeof(EncoderSettings)) { nv.initError = true; DL("ERR: Encoders::init(); EncoderSettingsSize error NV subsystem writes disabled"); }
 
   // write the default settings to NV
-  if (!nv.isKeyValid()) {
+  if (!nv.hasValidKey()) {
     VLF("MSG: Encoders, writing defaults to NV");
     nv.writeBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
   }

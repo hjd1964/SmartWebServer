@@ -180,9 +180,6 @@ Again:
   VF(" task (rate 10ms priority 7)... ");
   if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
 
-  // if requested, cause defaults to be written back into NV
-  if (NV_WIPE == ON) { nv.writeKey(0); }
-
   // get NV ready
   if (!nv.isKeyValid(INIT_NV_KEY)) {
     VF("MSG: NV, invalid key wipe "); V(nv.size); VLF(" bytes");
@@ -190,7 +187,7 @@ Again:
   } else { VLF("MSG: NV, correct key found"); }
 
   // get the command and web timeouts
-  if (!nv.isKeyValid()) {
+  if (!nv.hasValidKey()) {
     nv.write(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
     nv.write(NV_TIMEOUT_WEB, (int16_t)webTimeout);
   }

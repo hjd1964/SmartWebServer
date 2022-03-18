@@ -7,11 +7,6 @@
 #define NV_DRIVER                     NV_DEFAULT
 #endif
 
-// option to clear NV
-#ifndef NV_WIPE
-#define NV_WIPE                       OFF
-#endif
-
 // Wifi related
 #define STA_AP_FALLBACK               true // activate SoftAP if station fails to connect
 
