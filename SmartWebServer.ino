@@ -208,10 +208,13 @@ Again:
   #endif
 
   // init is done, write the NV key if necessary
-  if (!nv.isKeyValid(INIT_NV_KEY)) {
-    VF("MSG: NV, invalid key wipe "); V(nv.size); VLF(" bytes");
-    if (nv.verify()) { VLF("MSG: NV, ready for reset to defaults"); }
-  } else { VLF("MSG: NV, correct key found"); }
+  if (!nv.hasValidKey()) {
+    if (!nv.initError) {
+      nv.writeKey((uint32_t)INIT_NV_KEY);
+      nv.wait();
+      if (!nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV, failed to read back key!"); } else { VLF("MSG: NV, reset complete"); }
+    }
+  }
 
   #if BLE_GAMEPAD == ON
     bleSetup();
