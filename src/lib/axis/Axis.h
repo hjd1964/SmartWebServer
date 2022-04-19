@@ -20,6 +20,16 @@
 #endif
 #define FRACTIONAL_SEC_US           (lround(1000000.0F/FRACTIONAL_SEC))
 
+// time limit in seconds for slew home refine phases
+#ifndef SLEW_HOME_REFINE_TIME_LIMIT
+#define SLEW_HOME_REFINE_TIME_LIMIT 30
+#endif
+
+// ON blocks all motion when min/max are on the same pin, applies to all axes (mount/rotator/focusers)
+#ifndef LIMIT_SENSE_STRICT
+#define LIMIT_SENSE_STRICT          OFF
+#endif
+
 #include "../../libApp/commands/ProcessCmds.h"
 #include "motor/Motor.h"
 #include "motor/stepDir/StepDir.h"
@@ -57,6 +67,7 @@ typedef struct AxisSettings {
 typedef struct AxisSense {
   int32_t    homeTrigger;
   int8_t     homeInit;
+  float      homeDistLimit;
   int32_t    minTrigger;
   int32_t    maxTrigger;
   int8_t     minMaxInit;
@@ -76,11 +87,12 @@ typedef struct AxisErrors {
 
 enum AutoRate: uint8_t {AR_NONE, AR_RATE_BY_TIME_ABORT, AR_RATE_BY_TIME_END, AR_RATE_BY_DISTANCE, AR_RATE_BY_TIME_FORWARD, AR_RATE_BY_TIME_REVERSE};
 enum HomingStage: uint8_t {HOME_NONE, HOME_FINE, HOME_SLOW, HOME_FAST};
+enum AxisMeasure: uint8_t {AXIS_MEASURE_UNKNOWN, AXIS_MEASURE_MICRONS, AXIS_MEASURE_DEGREES, AXIS_MEASURE_RADIANS};
 
 class Axis {
   public:
     // constructor
-    Axis(uint8_t axisNumber, const AxisPins *pins, const AxisSettings *settings);
+    Axis(uint8_t axisNumber, const AxisPins *pins, const AxisSettings *settings, const AxisMeasure axisMeasure);
 
     // process axis commands
     bool command(char *reply, char *command, char *parameter, bool *supressFrame, bool *numericReply, CommandError *commandError);
@@ -222,8 +234,11 @@ class Axis {
     // \param frequency: optional frequency of slew in "measures" (radians, microns, etc.) per second
     CommandError autoSlew(Direction direction, float frequency = NAN);
 
-    // slew to home, with acceleration in "measures" per second per second
-    CommandError autoSlewHome(unsigned long timeout);
+     // slew to home using home sensor, with acceleration in "measures" per second per second
+    CommandError autoSlewHome(unsigned long timeout = 0);
+
+    // check if a home sensor is available
+    inline bool hasHomeSense() { return pins->axisSense.homeTrigger != OFF; }
 
     // stops, with deacceleration by time
     void autoSlewStop();
@@ -266,6 +281,8 @@ class Axis {
 
     AxisSettings settings;
 
+    bool commonMinMaxSense = false;
+
   private:
     // set frequency in "measures" (degrees, microns, etc.) per second (0 stops motion)
     void setFrequency(float frequency);
@@ -295,10 +312,11 @@ class Axis {
     
     AxisErrors errors;
     bool lastErrorResult = false;
-    bool commonMinMaxSense = false;
 
     uint8_t axisNumber = 0;
     char axisPrefix[13] = "MSG: Axis_, ";
+    char unitsStr[3] = "?";
+    bool unitsRadians = false;
 
     bool enabled = false;        // enable/disable logical state (disabled is powered down)
     bool limitsCheck = true;     // enable/disable numeric position range limits (doesn't apply to limit switches)

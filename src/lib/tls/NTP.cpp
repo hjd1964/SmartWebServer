@@ -8,8 +8,13 @@
 
 #include <TimeLib.h> // https://github.com/PaulStoffregen/Time/archive/master.zip
 
-#include <Ethernet.h>
-EthernetUDP Udp;
+#if OPERATIONAL_MODE == WIFI
+  #include <WiFiUdp.h>
+  WiFiUDP Udp;
+#else
+  #include <Ethernet.h>
+  EthernetUDP Udp;
+#endif
 
 #include "../tasks/OnTask.h"
 
@@ -24,7 +29,6 @@ void ntpWrapper() {
 
 // initialize
 bool TimeLocationSource::init() {
-  Udp.begin(localPort);
   
   VF("MSG: TLS, start NTP monitor task (rate 5 min priority 7)... ");
   handle = tasks.add(5*60*1000L, 0, true, 7, ntpWrapper, "ntp");
@@ -45,7 +49,6 @@ bool TimeLocationSource::init() {
 }
 
 void TimeLocationSource::restart() {
-  Udp.begin(localPort);
 }
 
 void TimeLocationSource::set(JulianDate ut1) {
@@ -63,6 +66,8 @@ void TimeLocationSource::get(JulianDate &ut1) {
 }
 
 void TimeLocationSource::poll() {
+  Udp.begin(localPort);
+
   // discard any previously received packets
   unsigned long tOut = millis() + 3000L;
   while ((Udp.parsePacket() > 0) && ((long)(millis() - tOut) < 0)) Y;
@@ -88,6 +93,8 @@ void TimeLocationSource::poll() {
       DLF("MSG: TLS, next NTP query in 24 hours");
       tasks.setPeriod(handle, 24L*60L*60L*1000L);
       ready = true;
+
+      Udp.stop();
       return;
     }
     Y;
@@ -95,6 +102,8 @@ void TimeLocationSource::poll() {
   DLF("MSG: TLS, no NTP Response :-(");
   DLF("MSG: TLS, next NTP query in 5 minutes");
   tasks.setPeriod(handle, 5*60*1000L);
+
+  Udp.stop();
 }
 
 // send an NTP request to the time server at the given address
