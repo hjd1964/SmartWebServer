@@ -27,7 +27,9 @@ void handleNetwork() {
   
   processNetworkGet();
 
-  sendHtmlStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
 
   // send a standard http response header
   String data = FPSTR(html_headB);
@@ -37,14 +39,14 @@ void handleNetwork() {
   data.concat(FPSTR(html_main_css3));
   data.concat(FPSTR(html_main_css4));
   data.concat(FPSTR(html_main_css5));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css6));
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1));
@@ -61,16 +63,21 @@ void handleNetwork() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupS));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
 
   data.concat("<div>");
 
@@ -98,7 +105,7 @@ void handleNetwork() {
       temp1[strlen(temp1) - 1] = 0;
 
       sprintf_P(temp,htmL_NET_MAC,"sta", temp1); data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
       sprintf_P(temp,htmL_NET_IP, "sta", (int)wifiManager.sta->ip[0], "sta", (int)wifiManager.sta->ip[1], "sta", (int)wifiManager.sta->ip[2], "sta", (int)wifiManager.sta->ip[3]); data.concat(temp);
       sprintf_P(temp,htmL_NET_GW, "sta", (int)wifiManager.sta->gw[0], "sta", (int)wifiManager.sta->gw[1], "sta", (int)wifiManager.sta->gw[2], "sta", (int)wifiManager.sta->gw[3]); data.concat(temp);
       sprintf_P(temp,htmL_NET_SN, "sta", (int)wifiManager.sta->sn[0], "sta", (int)wifiManager.sta->sn[1], "sta", (int)wifiManager.sta->sn[2], "sta", (int)wifiManager.sta->sn[3]); data.concat(temp);
@@ -106,7 +113,7 @@ void handleNetwork() {
       sprintf_P(temp,htmL_NETWORKSSID2, wifiManager.sta->dhcpEnabled ? "checked" : "",wifiManager.settings.stationEnabled ? "checked" : ""); data.concat(temp);
       data.concat(FPSTR(htmL_NETWORKSSID3A));
       sprintf_P(temp,htmL_NETWORKSSID3B, wifiManager.settings.ap.ssid, "", wifiManager.settings.ap.channel); data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
     
       uint8_t macap[6] = {0,0,0,0,0,0}; WiFi.softAPmacAddress(macap); temp1[0] = 0;
       for (int i = 0; i < 6; i++) {
@@ -117,7 +124,7 @@ void handleNetwork() {
       temp1[strlen(temp1) - 1] = 0;
       
       sprintf_P(temp,htmL_NET_MAC,"ap", temp1); data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
       sprintf_P(temp,htmL_NET_IP, "ap", (int)wifiManager.settings.ap.ip[0], "ap", (int)wifiManager.settings.ap.ip[1], "ap", (int)wifiManager.settings.ap.ip[2], "ap", (int)wifiManager.settings.ap.ip[3]); data.concat(temp);
       sprintf_P(temp,htmL_NET_GW, "ap", (int)wifiManager.settings.ap.gw[0], "ap", (int)wifiManager.settings.ap.gw[1], "ap", (int)wifiManager.settings.ap.gw[2], "ap", (int)wifiManager.settings.ap.gw[3]); data.concat(temp);
       sprintf_P(temp,htmL_NET_SN, "ap", (int)wifiManager.settings.ap.sn[0], "ap", (int)wifiManager.settings.ap.sn[1], "ap", (int)wifiManager.settings.ap.sn[2], "ap", (int)wifiManager.settings.ap.sn[3]); data.concat(temp);
@@ -128,13 +135,13 @@ void handleNetwork() {
       for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, ethernetManager.settings.mac[i]); } temp1[strlen(temp1) - 1] = 0;
 
       sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
       sprintf_P(temp,htmL_NET_IP, "eth", (int)ethernetManager.settings.ip[0], "eth", (int)ethernetManager.settings.ip[1], "eth", (int)ethernetManager.settings.ip[2], "eth", (int)ethernetManager.settings.ip[3]); data.concat(temp);
       sprintf_P(temp,htmL_NET_GW, "eth", (int)ethernetManager.settings.gw[0], "eth", (int)ethernetManager.settings.gw[1], "eth", (int)ethernetManager.settings.gw[2], "eth", (int)ethernetManager.settings.gw[3]); data.concat(temp);
       sprintf_P(temp,htmL_NET_SN, "eth", (int)ethernetManager.settings.sn[0], "eth", (int)ethernetManager.settings.sn[1], "eth", (int)ethernetManager.settings.sn[2], "eth", (int)ethernetManager.settings.sn[3]); data.concat(temp);
 
       data.concat(FPSTR(htmL_NETWORK_ETH_END));
-      sendHtml(data);
+      www.sendContentAndClear(data);
     #endif
 
     data.concat(FPSTR(html_logout));
@@ -143,8 +150,8 @@ void handleNetwork() {
   strcpy(temp,"</div></div></body></html>");
   data.concat(temp);
 
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void processNetworkGet() {

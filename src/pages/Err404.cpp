@@ -5,27 +5,23 @@
 #include "htmlMessages.h"
 #include "htmlScripts.h"
 
-#if OPERATIONAL_MODE == ETHERNET_W5100 || OPERATIONAL_MODE == ETHERNET_W5500
-  void handleNotFound() {
-    VLF("File not found");
-    String message = "File Not Found\n\n";
+void handleNotFound() {
+  String message = "<body>";
 
-    sendHtml(message);
-    sendHtmlDone();
+  message.concat("SmartWebServer, 404 File Not Found<br /><br />\n");
+  message.concat("URI: " + www.uri() + "<br />\n");
+
+  message.concat("Method: ");
+  if (www.method() == HTTP_GET) message.concat("GET<br />\n"); else
+  if (www.method() == HTTP_PUT) message.concat("PUT<br />\n"); else
+  if (www.method() == HTTP_POST) message.concat("POST<br />\n"); else message.concat("Unknown<br />\n");
+
+  message.concat("\nArguments: " + String(www.args()) + "<br />\n");
+  for (uint8_t i = 0; i < www.args(); i++){
+    message.concat(" " + www.argName(i) + ": " + www.arg(i) + "<br />\n");
   }
-#else
-  void handleNotFound() {
-    String message = "File Not Found\n\n";
-    message.concat("URI: ");
-    message.concat(www.uri());
-    message.concat("\nMethod: ");
-    message.concat((www.method() == HTTP_GET)?"GET":"POST");
-    message.concat("\nArguments: ");
-    message.concat(www.args());
-    message.concat("\n");
-    for (uint8_t i = 0; i < www.args(); i++){
-      message.concat(" " + www.argName(i) + ": " + www.arg(i) + "\n");
-    }
-    www.send(404, "text/plain", message);
-  }
-#endif
+
+  message.concat("</body>");
+
+  www.send(404, "text/html", message);
+}

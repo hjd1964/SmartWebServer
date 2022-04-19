@@ -13,7 +13,9 @@ void handleSettings() {
 
   processSettingsGet();
   
-  sendHtmlStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
  
   String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
@@ -22,19 +24,19 @@ void handleSettings() {
   data.concat(FPSTR(html_main_css3));
   data.concat(FPSTR(html_main_css4));
   data.concat(FPSTR(html_main_css5));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css6));
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
   data.concat(FPSTR(html_main_css_btns1));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css_btns2));
   data.concat(FPSTR(html_main_css_btns3));
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
 
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // scripts
   // active ajax page is: settingsAjax();
@@ -59,16 +61,21 @@ void handleSettings() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetS));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
  
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
 
   data.concat("<div style='width: 35em;'>");
 
@@ -77,20 +84,20 @@ void handleSettings() {
   // Slew speed
   data.concat(FPSTR(html_settingsSlewSpeed1));
   data.concat(FPSTR(html_settingsSlewSpeed2));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   if (status.mountType != MT_ALTAZM) {
     data.concat(FPSTR(html_settingsTrackComp1));
     data.concat(FPSTR(html_settingsTrackComp2));
     data.concat(FPSTR(html_settingsTrackComp3));
-    sendHtml(data);
+    www.sendContentAndClear(data);
   }
 
   data.concat(FPSTR(html_settingsTrack1));
   data.concat(FPSTR(html_settingsTrack2));
   
   data.concat(FPSTR(html_settingsPark1));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   data.concat(FPSTR(html_settingsBuzzer1));
   data.concat(FPSTR(html_settingsBuzzer2));
@@ -108,20 +115,26 @@ void handleSettings() {
   data.concat("<br />");
   data.concat("</div></div></body></html>");
   
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void settingsAjaxGet() {
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
+
   processSettingsGet();
-  sendTextDone();
+
+  www.sendContent("");
 }
 
 void settingsAjax() {
   String data = "";
 
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
 
   if (status.valid) {
     data.concat("bzr_on|");  if (status.buzzerEnabled) data.concat("disabled\n"); else data.concat("enabled\n");
@@ -236,8 +249,8 @@ void settingsAjax() {
     data.concat("sr_vs|disabled\n");
   }
 
-  sendText(data);
-  sendTextDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void processSettingsGet() {

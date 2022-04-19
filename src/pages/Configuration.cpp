@@ -16,7 +16,9 @@ void handleConfiguration() {
  
   processConfigurationGet();
 
-  sendHtmlStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
 
   // send a standard http response header
   String data = FPSTR(html_headB);
@@ -25,7 +27,7 @@ void handleConfiguration() {
   data.concat(FPSTR(html_main_css2));
   data.concat(FPSTR(html_main_css3));
   data.concat(FPSTR(html_main_css4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css5));
   data.concat(FPSTR(html_main_css6));
   data.concat(FPSTR(html_main_css7));
@@ -35,7 +37,7 @@ void handleConfiguration() {
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1));
@@ -52,23 +54,28 @@ void handleConfiguration() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgS));
   data.concat(FPSTR(html_linksSetupN));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
   
   // scripts
   sprintf_P(temp, html_ajaxScript, "configurationA.txt"); data.concat(temp);
   
   data+="<div style='width: 35em;'>";
   data.concat(L_BASIC_SET_TITLE "<br /><br />");
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   data.concat(F("<button type='button' class='collapsible'>" L_LOCATION_TITLE "</button>"));
   data.concat(FPSTR(html_configFormBegin));
@@ -93,7 +100,7 @@ void handleConfiguration() {
     sprintf_P(temp, html_configLongSec, (char*)&temp1[8]);
     data.concat(temp);
   }
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_configLongMsg));
 
   // Latitude
@@ -116,7 +123,7 @@ void handleConfiguration() {
     data.concat(temp);
   }
   data.concat(FPSTR(html_configLatMsg));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // UTC Offset
   if (!onStep.command(":GG#", temp1)) strcpy(temp1, "+00");
@@ -133,7 +140,7 @@ void handleConfiguration() {
   data.concat(temp);
   data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
   data.concat(FPSTR(html_configFormEnd));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Overhead and Horizon Limits
   data.concat(F("<button type='button' class='collapsible'>" L_LIMITS_TITLE "</button>"));
@@ -148,7 +155,7 @@ void handleConfiguration() {
   data.concat(temp);
   data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
   data.concat(FPSTR(html_configFormEnd));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Axis1 RA/Azm
   data.concat(F("<br /><button type='button' class='collapsible'>Axis1 RA/Azm</button>"));
@@ -158,7 +165,7 @@ void handleConfiguration() {
   int backlashAxis1 = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configBlAxis1, backlashAxis1);
   data.concat(temp);
-  sendHtml(data);
+  www.sendContentAndClear(data);
   // Meridian Limits
   if (status.mountType == MT_GEM && (onStep.command(":GXE9#", temp1)) && (onStep.command(":GXEA#",temp2))) {
     int degPastMerE = (int)strtol(&temp1[0], NULL, 10);
@@ -170,10 +177,10 @@ void handleConfiguration() {
     sprintf_P(temp, html_configPastMerW, degPastMerW);
     data.concat(temp);
   } else data.concat("<br />\r\n");
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
   data.concat(FPSTR(html_configFormEnd));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Axis2 Dec/Alt
   data.concat(F("<button type='button' class='collapsible'>Axis2 Dec/Alt</button>"));
@@ -185,7 +192,7 @@ void handleConfiguration() {
   data.concat(temp);
   data.concat("<button type='submit'>" L_UPLOAD "</button>\r\n");
   data.concat(FPSTR(html_configFormEnd));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   if (status.getVersionMajor() > 3) {
 
@@ -198,7 +205,7 @@ void handleConfiguration() {
       data.concat(temp);
       data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
       data.concat(FPSTR(html_configFormEnd));
-      sendHtml(data);
+      www.sendContentAndClear(data);
     }
 
     for (int focuser = 0; focuser < 6; focuser++) {
@@ -217,7 +224,7 @@ void handleConfiguration() {
         if (!onStep.command(":Fd#", temp1)) strcpy(temp1, "0");
         sprintf_P(temp,html_configDeadband, atoi(temp1), focuser + 4);
         data.concat(temp);
-        sendHtml(data);
+        www.sendContentAndClear(data);
         // TCF Coef
         if (!onStep.command(":FC#", temp1)) strcpy(temp1, "0");
         char *conv_end;
@@ -229,7 +236,7 @@ void handleConfiguration() {
         data.concat(temp);
         data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
         data.concat(FPSTR(html_configFormEnd));
-        sendHtml(data);
+        www.sendContentAndClear(data);
       }
     }
 
@@ -269,27 +276,27 @@ void handleConfiguration() {
           long spwr = strtol(temp1, NULL, 10);
           sprintf_P(temp, html_configAxisSpwr, spwr, 1, 0, 129600000L);
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           dtostrf(a.stepsPerMeasure, 1, 3, temp1);
           stripNum(temp1);
           sprintf_P(temp, html_configAxisSpd, temp1, 1, 150, 122400L);
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           #if DRIVE_MAIN_AXES_REVERSE == ON
             sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, 1);
             data.concat(temp);
-            sendHtml(data);
+            www.sendContentAndClear(data);
           #endif
 
           sprintf_P(temp, html_configAxisMin, (int)a.min, 1, -360, -90, "&deg;,");
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sprintf_P(temp, html_configAxisMax, (int)a.max, 1, 90, 360, "&deg;,");
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sendAxisParams(&a, 1);
 
@@ -298,7 +305,7 @@ void handleConfiguration() {
         sprintf_P(temp, html_configAxisRevert, 1);
         data.concat(temp);
         data.concat(FPSTR(html_configFormEnd));
-        sendHtml(data);
+        www.sendContentAndClear(data);
         numShown++;
       }
 
@@ -313,7 +320,7 @@ void handleConfiguration() {
           stripNum(temp1);
           sprintf_P(temp, html_configAxisSpd, temp1, 2, 150, 122400L);
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           #if DRIVE_MAIN_AXES_REVERSE == ON
             sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, 2);
@@ -322,11 +329,11 @@ void handleConfiguration() {
 
           sprintf_P(temp, html_configAxisMin, (int)a.min, 2, -90, 0, "&deg;,");
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sprintf_P(temp, html_configAxisMax, (int)a.max, 2, 0, 90, "&deg;,");
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sendAxisParams(&a, 2);
 
@@ -335,7 +342,7 @@ void handleConfiguration() {
         sprintf_P(temp, html_configAxisRevert, 2);
         data.concat(temp);
         data.concat(FPSTR(html_configFormEnd));
-        sendHtml(data);
+        www.sendContentAndClear(data);
         numShown++;
       }
 
@@ -350,19 +357,19 @@ void handleConfiguration() {
           stripNum(temp1);
           sprintf_P(temp, html_configAxisSpd, temp1, 3, 10, 3600L);
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, 3);
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sprintf_P(temp, html_configAxisMin, (int)a.min, 3, -360, 0, "&deg;,");
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sprintf_P(temp, html_configAxisMax, (int)a.max, 3, 0, 360, "&deg;,");
           data.concat(temp);
-          sendHtml(data);
+          www.sendContentAndClear(data);
 
           sendAxisParams(&a, 3);
 
@@ -371,7 +378,7 @@ void handleConfiguration() {
         sprintf_P(temp, html_configAxisRevert, 3);
         data.concat(temp);
         data.concat(FPSTR(html_configFormEnd));
-        sendHtml(data);
+        www.sendContentAndClear(data);
         numShown++;
       }
 
@@ -390,19 +397,19 @@ void handleConfiguration() {
               stripNum(temp1);
               sprintf_P(temp, html_configAxisSpu, temp1, focuser + 4);
               data.concat(temp);
-              sendHtml(data);
+              www.sendContentAndClear(data);
 
               sprintf_P(temp, html_configAxisReverse, a.reverse == ON ? 1 : 0, focuser + 4);
               data.concat(temp);
-              sendHtml(data);
+              www.sendContentAndClear(data);
 
               sprintf_P(temp, html_configAxisMin, (int)a.min, focuser + 4, -500, 500, "mm,");
               data.concat(temp);
-              sendHtml(data);
+              www.sendContentAndClear(data);
 
               sprintf_P(temp, html_configAxisMax, (int)a.max, focuser + 4, -500, 500, "mm,");
               data.concat(temp);
-              sendHtml(data);
+              www.sendContentAndClear(data);
 
               sendAxisParams(&a, focuser + 4);
 
@@ -411,7 +418,7 @@ void handleConfiguration() {
             sprintf_P(temp, html_configAxisRevert, focuser + 4);
             data.concat(temp);
             data.concat(FPSTR(html_configFormEnd));
-            sendHtml(data);
+            www.sendContentAndClear(data);
             numShown++;
           }
         }
@@ -426,7 +433,7 @@ void handleConfiguration() {
     #endif
 
     #if DISPLAY_RESET_CONTROLS != OFF
-      sendHtml(data);
+      www.sendContentAndClear(data);
       data.concat("<hr>" L_RESET_TITLE "<br/><br/>");
       data.concat("<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('advanced','reset')\" type='button'>" L_RESET "!</button>");
       #if defined(BOOT0_PIN) && DISPLAY_RESET_CONTROLS == FWU
@@ -445,14 +452,18 @@ void handleConfiguration() {
   strcpy(temp,"</div></div></body></html>");
   data.concat(temp);
 
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void configurationAjaxGet() {
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
+
   processConfigurationGet();
-  sendTextDone();
+
+  www.sendContent("");
 }
 
 bool processConfigurationGet() {
@@ -767,87 +778,87 @@ void sendAxisParams(AxisSettings* a, int axis) {
   if (a->driverType == DT_SERVO) {
     data.concat(L_ADV_SET_IMMEDIATE);
     data.concat("<br/><br/>");
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     dtostrf(a->p, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisP, temp1, axis, 0, 99999999L);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     dtostrf(a->i, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisI, temp1, axis, 0, 99999999L);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     dtostrf(a->d, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisD, temp1, axis, 0, 99999999L);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     dtostrf(a->pGoto, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisGotoP, temp1, axis, 0, 99999999L);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     dtostrf(a->iGoto, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisGotoI, temp1, axis, 0, 99999999L);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     dtostrf(a->dGoto, 1, 3, temp1);
     stripNum(temp1);
     sprintf_P(temp, html_configAxisGotoD, temp1, axis, 0, 99999999L);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
   } else
 
   if (a->driverType == DT_STEP_DIR_STANDARD) {
     data.concat(L_ADV_SET_SPECIAL);
     data.concat("<br/><br/>");
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     #if DRIVE_MAIN_AXES_MICROSTEPS == ON
       sprintf_P(temp, html_configAxisMicroSteps, (int)a->microsteps, axis);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
 
       sprintf_P(temp, html_configAxisMicroStepsGoto, (int)a->microstepsGoto, axis);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
     #endif
   } else
 
   if (a->driverType == DT_STEP_DIR_TMC_SPI) {
     data.concat(L_ADV_SET_SPECIAL);
     data.concat("<br/><br/>");
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     #if DRIVE_MAIN_AXES_MICROSTEPS == ON
       sprintf_P(temp, html_configAxisMicroSteps, (int)a->microsteps, axis);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
 
       sprintf_P(temp, html_configAxisMicroStepsGoto, (int)a->microstepsGoto, axis);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
     #endif
     #if DRIVE_MAIN_AXES_CURRENT == ON
       sprintf_P(temp, html_configAxisCurrentHold, (int)a->currentHold, axis, 3000);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
 
       sprintf_P(temp, html_configAxisCurrentTrak, (int)a->currentRun, axis, 3000);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
 
       sprintf_P(temp, html_configAxisCurrentSlew, (int)a->currentGoto, axis, 3000);
       data.concat(temp);
-      sendHtml(data);
+      www.sendContentAndClear(data);
     #endif
   } else
 
@@ -856,19 +867,19 @@ void sendAxisParams(AxisSettings* a, int axis) {
       if (a->microsteps != OFF) {
         sprintf_P(temp, html_configAxisMicroSteps, (int)a->microsteps, axis);
         data.concat(temp);
-        sendHtml(data);
+        www.sendContentAndClear(data);
       }
     #endif
     #if DRIVE_MAIN_AXES_CURRENT == ON
       if (a->currentRun != OFF) {
         sprintf_P(temp, html_configAxisCurrentTrak, (int)a->currentRun, axis, 3000);
         data.concat(temp);
-        sendHtml(data);
+        www.sendContentAndClear(data);
       }
       if (a->currentGoto != OFF) {
         sprintf_P(temp, html_configAxisCurrentSlew, (int)a->currentGoto, axis, 3000);
         data.concat(temp);
-        sendHtml(data);
+        www.sendContentAndClear(data);
       }
     #endif
   }

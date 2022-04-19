@@ -15,7 +15,9 @@ void handleControl() {
 
   processControlGet();
 
-  sendHtmlStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
   
   String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
@@ -25,7 +27,7 @@ void handleControl() {
   data.concat(FPSTR(html_main_css4));
   data.concat(FPSTR(html_main_css5));
   data.concat(FPSTR(html_main_css6));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
   data.concat(FPSTR(html_main_css_no_select));
@@ -33,7 +35,7 @@ void handleControl() {
   data.concat(FPSTR(html_main_css_control2));
   data.concat(FPSTR(html_main_css_control3));
   data.concat(FPSTR(html_main_css_btns1));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css_btns2));
   data.concat(FPSTR(html_main_css_btns3));
   data.concat(FPSTR(html_main_css_collapse1));
@@ -41,7 +43,7 @@ void handleControl() {
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1));
@@ -58,16 +60,21 @@ void handleControl() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
 
   // scripts
   sprintf_P(temp, html_ajaxScript, "controlA.txt"); data.concat(temp);
@@ -79,7 +86,7 @@ void handleControl() {
   // active ajax page is: controlAjax();
   data.concat("<script>var ajaxPage='control.txt';</script>\n");
   data.concat(FPSTR(html_ajax_active));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Quick controls ------------------------------------------
   data.concat(FPSTR(html_controlQuick1));
@@ -88,14 +95,14 @@ void handleControl() {
   data.concat(FPSTR(html_controlQuick3));
   data.concat(FPSTR(html_controlQuick4));
   data.concat(FPSTR(html_controlQuick5));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Tracking control ----------------------------------------
   data.concat(FPSTR(html_controlTrack1));
   data.concat(FPSTR(html_controlTrack2));
   data.concat(FPSTR(html_controlTrack3));
   data.concat(FPSTR(html_controlTrack4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Get the align mode --------------------------------------
   data.concat(FPSTR(html_controlAlignBeg));
@@ -116,7 +123,7 @@ void handleControl() {
     data.concat(FPSTR(html_controlAlign4));
   }
   data.concat(FPSTR(html_controlAlignEnd));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Guiding -------------------------------------------------
   data.concat(FPSTR(html_controlGuideBeg));
@@ -127,12 +134,12 @@ void handleControl() {
   data.concat(FPSTR(html_controlGuide2));
   data.concat(FPSTR(html_controlGuide3));
   data.concat(FPSTR(html_controlGuide4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_controlGuide5));
   data.concat(FPSTR(html_controlGuide6));
   data.concat(FPSTR(html_controlGuide7));
   data.concat(FPSTR(html_controlGuideEnd));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Focusing ------------------------------------------------
   if (status.focuserFound) {
@@ -155,7 +162,7 @@ void handleControl() {
     data.concat(FPSTR(html_controlFocus2));
     data.concat(FPSTR(html_controlFocus3));
     data.concat(FPSTR(html_controlFocusEnd));
-    sendHtml(data);
+    www.sendContentAndClear(data);
   }
 
   // Rotate/De-Rotate ----------------------------------------
@@ -170,14 +177,14 @@ void handleControl() {
     data.concat(FPSTR(html_controlRotate1));
     data.concat(FPSTR(html_controlRotate2));
     data.concat(FPSTR(html_controlRotate3));
-    sendHtml(data);
+    www.sendContentAndClear(data);
     if (status.derotatorFound) {
       data.concat(FPSTR(html_controlDeRotate1));
       data.concat(FPSTR(html_controlDeRotate2));
-      sendHtml(data);
+      www.sendContentAndClear(data);
     }
     data.concat(FPSTR(html_controlRotateEnd));
-    sendHtml(data);
+    www.sendContentAndClear(data);
   }
 
   data.concat(FPSTR(html_controlEnd));
@@ -187,20 +194,26 @@ void handleControl() {
   
   data.concat("</div></body></html>");
 
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void controlAjaxGet() {
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
+
   processControlGet();
-  sendTextDone();
+
+  www.sendContent("");
 }
 
 void controlAjax() {
   String data = "";
 
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
 
   if (status.valid) {
     if (status.atHome || status.parked) {
@@ -281,8 +294,8 @@ void controlAjax() {
     data.concat("rotatorpos|"); data.concat(state.rotatorPositionStr); data.concat("\n");
   }
 
-  sendText(data);
-  sendTextDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 int get_temp_month;

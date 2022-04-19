@@ -20,7 +20,9 @@
 
     processEncodersGet();
 
-    sendHtmlStart();
+    www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+    www.sendHeader("Cache-Control", "no-cache");
+    www.send(200, "text/html", String());
 
     String data = FPSTR(html_headB);
 
@@ -28,12 +30,12 @@
     data.concat("<script>var ajaxPage='enc.txt';</script>\n");
     data.concat(FPSTR(html_ajax_active));
     data.concat("<script>auto2Rate=2;</script>");
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     // scripts
     sprintf_P(temp, html_ajaxScript, "encA.txt");
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     // send a standard http response header
     data.concat(FPSTR(html_main_cssB));
@@ -42,20 +44,20 @@
     data.concat(FPSTR(html_main_css3));
     data.concat(FPSTR(html_main_css4));
     data.concat(FPSTR(html_main_css5));
-    sendHtml(data);
+    www.sendContentAndClear(data);
     data.concat(FPSTR(html_main_css6));
     data.concat(FPSTR(html_main_css7));
     data.concat(FPSTR(html_main_css8));
     data.concat(FPSTR(html_main_css_btns1));
     data.concat(FPSTR(html_main_css_btns2));
     data.concat(FPSTR(html_main_css_btns3));
-    sendHtml(data);
+    www.sendContentAndClear(data);
     data.concat(FPSTR(html_main_css_collapse1));
     data.concat(FPSTR(html_main_css_collapse2));
     data.concat(FPSTR(html_main_cssE));
     data.concat(FPSTR(html_headE));
     data.concat(FPSTR(html_bodyB));
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     // finish the standard http response header
     data.concat(FPSTR(html_onstep_header1));
@@ -71,16 +73,21 @@
     if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
     data.concat(FPSTR(html_linksLibN));
     data.concat(FPSTR(html_linksEncS));
-    sendHtml(data);
+    www.sendContentAndClear(data);
     if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
     data.concat(FPSTR(html_linksSetN));
     data.concat(FPSTR(html_linksCfgN));
     data.concat(FPSTR(html_linksSetupN));
     data.concat(FPSTR(html_onstep_header4));
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     // OnStep wasn't found, show warning and info.
-    if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+    if (!status.valid) {
+      data.concat(FPSTR(html_bad_comms_message));
+      www.sendContentAndClear(data);
+      www.sendContent("");
+      return;
+    }
 
     data.concat("<div style='width: 35em;'>");
 
@@ -94,7 +101,7 @@
     // Autosync
     data.concat(FPSTR(html_encEn1));
     data.concat(FPSTR(html_encEn2));
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     // Encoder configuration section
     data.concat(L_ENC_CONF ":<br />");
@@ -106,11 +113,11 @@
     sprintf_P(temp,html_encAxisTpd,temp1,1,1,100000L); data.concat(temp);         // Encoder counts per degree
     sprintf_P(temp,html_encAxisReverse,encoders.settings.axis1.reverse==ON?1:0,1); data.concat(temp); // Encode reverse count
     sprintf_P(temp,html_encMxAxis1,(long)encoders.settings.axis1.diffTo); data.concat(temp);      // Encoder sync thresholds
-    sendHtml(data);
+    www.sendContentAndClear(data);
     data.concat("<button type='submit'>" L_UPLOAD "</button>\r\n");
     data.concat("<button name='revert' value='1' type='submit'>" L_REVERT "</button>");
     data.concat(FPSTR(html_encFormEnd));
-    sendHtml(data);
+    www.sendContentAndClear(data);
 
     // Axis2 Dec/Alt
     data.concat("<button type='button' class='collapsible'>Axis2 Dec/Alt</button>");
@@ -119,11 +126,11 @@
     sprintf_P(temp,html_encAxisTpd,temp1,2,1,100000L); data.concat(temp);         // Encoder counts per degree
     sprintf_P(temp,html_encAxisReverse,encoders.settings.axis2.reverse==ON?1:0,2); data.concat(temp); // Encode reverse count
     sprintf_P(temp,html_encMxAxis2,(long)encoders.settings.axis2.diffTo); data.concat(temp);      // Encoder sync thresholds
-    sendHtml(data);
+    www.sendContentAndClear(data);
     data.concat("<button type='submit'>" L_UPLOAD "</button>\r\n");
     data.concat("<button name='revert' value='2' type='submit'>" L_REVERT "</button>");
     data.concat(FPSTR(html_encFormEnd));
-    sendHtml(data);
+    www.sendContentAndClear(data);
     
     // end of page
     data.concat("<br />");
@@ -134,26 +141,32 @@
     strcpy(temp,"</div></div></body></html>");
     data.concat(temp);
 
-    sendHtml(data);
-    sendHtmlDone();
+    www.sendContentAndClear(data);
+    www.sendContent("");
   }
 
   void encAjax() {
     String data = "";
 
-    sendTextStart();
+    www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+    www.sendHeader("Cache-Control", "no-cache");
+    www.send(200, "text/plain", String());
 
     data.concat("eas_on|");  if (encoders.autoSync) data.concat("disabled\n"); else data.concat("enabled\n");
     data.concat("eas_off|"); if (encoders.autoSync) data.concat("enabled\n"); else data.concat("disabled\n");
 
-    sendText(data);
-    sendTextDone();
+    www.sendContentAndClear(data);
+    www.sendContent("");
   }
 
   void encAjaxGet() {
-    sendTextStart();
+    www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+    www.sendHeader("Cache-Control", "no-cache");
+    www.send(200, "text/plain", String());
+
     processEncodersGet();
-    sendTextDone();
+
+    www.sendContent("");
   }
 
   void processEncodersGet() {

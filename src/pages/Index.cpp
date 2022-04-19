@@ -11,7 +11,9 @@ void handleRoot() {
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
-  sendHtmlStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
 
   String data = FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
@@ -21,7 +23,7 @@ void handleRoot() {
   data.concat(FPSTR(html_main_css4));
   data.concat(FPSTR(html_main_css5));
   data.concat(FPSTR(html_main_css6));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
   data.concat(FPSTR(html_main_css_control1));
@@ -30,7 +32,7 @@ void handleRoot() {
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1));
@@ -47,21 +49,26 @@ void handleRoot() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
 
   // active ajax page is: handleRootAjax();
   data.concat("<script>var ajaxPage='index.txt';</script>\n");
   data.concat(FPSTR(html_ajax_active));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   data.concat("<div style='width: 27em;'>");
 
@@ -84,7 +91,7 @@ void handleRoot() {
   // Longitude and Latitude
   sprintf_P(temp, html_indexSite, state.longitudeStr, state.latitudeStr);
   data.concat(temp);
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Ambient conditions
   #if DISPLAY_WEATHER == ON
@@ -92,7 +99,7 @@ void handleRoot() {
     sprintf_P(temp, html_indexTPHD, L_PRESSURE ":", 'p', state.sitePressureStr); data.concat(temp);
     sprintf_P(temp, html_indexTPHD, L_HUMIDITY ":", 'h', state.siteHumidityStr); data.concat(temp);
     sprintf_P(temp, html_indexTPHD, L_DEW_POINT ":", 'd', state.siteDewPointStr); data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
   #endif
 
   // Focuser/telescope temperature
@@ -109,7 +116,7 @@ void handleRoot() {
   // RA,Dec target
   sprintf_P(temp, html_indexTarget, state.targetRaStr, state.targetDecStr); 
   data.concat(temp);
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   #if ENCODERS == ON
     // RA,Dec OnStep position
@@ -119,13 +126,13 @@ void handleRoot() {
     // RA,Dec encoder position
     sprintf_P(temp, html_indexEncoder2, state.encAngleAxis1Str, state.encAngleAxis2Str);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
   #endif
 
   // pier side and meridian flips
   sprintf_P(temp, html_indexPier, state.pierSideStr, state.meridianFlipStr);
   data.concat(temp);
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // polar align
   if (!isnan(state.latitude) && fabs(state.latitude) <= 89) {
@@ -136,7 +143,7 @@ void handleRoot() {
 
     sprintf_P(temp, html_indexCorPolar, state.alignLrStr, state.alignUdStr, temp1);
     data.concat(temp);
-    sendHtml(data);
+    www.sendContentAndClear(data);
   }
 
   data.concat("<br /><b>" L_OPERATIONS ":</b><br />");
@@ -152,7 +159,7 @@ void handleRoot() {
   // Slew speed
   sprintf_P(temp, html_indexMaxSpeed, state.slewSpeedStr);
   data.concat(temp);
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   data.concat("<br /><b>" L_STATE ":</b><br />");
 
@@ -191,15 +198,17 @@ void handleRoot() {
   data.concat("</div><br class=\"clear\" />\r\n");
   data.concat("</div></body></html>");
 
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void handleRootAjax() {
   String data = "";
   char temp[120] = "";
 
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
 
   if (status.valid) {
 
@@ -298,6 +307,6 @@ void handleRootAjax() {
     data.concat("call|update_date_time\n");
   }
 
-  sendText(data);
-  sendTextDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }

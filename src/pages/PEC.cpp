@@ -13,7 +13,9 @@ void handlePec() {
 
   processPecGet();
 
-  sendHtmlStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
 
   // send a standard http response header
   String data = FPSTR(html_headB);
@@ -24,7 +26,7 @@ void handlePec() {
   data.concat(FPSTR(html_main_css4));
   data.concat(FPSTR(html_main_css5));
   data.concat(FPSTR(html_main_css6));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
   data.concat(FPSTR(html_main_css_control1));
@@ -33,7 +35,7 @@ void handlePec() {
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   if (status.pecEnabled) {
     // active ajax page is: pecAjax();
@@ -57,16 +59,21 @@ void handlePec() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecS));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
 
   data.concat(FPSTR(html_pec1));
 
@@ -84,15 +91,17 @@ void handlePec() {
     data.concat("</div><br class='clear' /></body></html>");
   }
 
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void pecAjax() {
   String data = "";
   char temp[80] = "";
 
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
  
   data.concat("status|");
   if (status.mountType != MT_ALTAZM && onStep.command(":$QZ?#", temp)) {
@@ -105,8 +114,8 @@ void pecAjax() {
   } else { data.concat("?"); }
   data.concat("\n");
 
-  sendText(data);
-  sendTextDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void processPecGet() {

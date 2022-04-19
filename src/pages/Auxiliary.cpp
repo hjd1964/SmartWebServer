@@ -14,8 +14,10 @@ void handleAux() {
 
   processAuxGet();
 
-  sendHtmlStart();
-  
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/html", String());
+
   String data=FPSTR(html_headB);
   data.concat(FPSTR(html_main_cssB));
   data.concat(FPSTR(html_main_css1));
@@ -24,20 +26,20 @@ void handleAux() {
   data.concat(FPSTR(html_main_css4));
   data.concat(FPSTR(html_main_css5));
   data.concat(FPSTR(html_main_css6));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css7));
   data.concat(FPSTR(html_main_css8));
   data.concat(FPSTR(html_main_css_control1));
   data.concat(FPSTR(html_main_css_control2));
   data.concat(FPSTR(html_main_css_control3));
   data.concat(FPSTR(html_main_css_btns1));
-  sendHtml(data);
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_main_css_btns2));
   data.concat(FPSTR(html_main_css_btns3));
   data.concat(FPSTR(html_main_cssE));
   data.concat(FPSTR(html_headE));
   data.concat(FPSTR(html_bodyB));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // finish the standard http response header
   data.concat(FPSTR(html_onstep_header1));
@@ -54,16 +56,21 @@ void handleAux() {
   #if ENCODERS == ON
     data.concat(FPSTR(html_linksEncN));
   #endif
-  sendHtml(data);
+  www.sendContentAndClear(data);
   if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
   data.concat(FPSTR(html_linksSetN));
   data.concat(FPSTR(html_linksCfgN));
   data.concat(FPSTR(html_linksSetupN));
   data.concat(FPSTR(html_onstep_header4));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) { data.concat(FPSTR(html_bad_comms_message)); sendHtml(data); sendHtmlDone(); return; }
+  if (!status.valid) {
+    data.concat(FPSTR(html_bad_comms_message));
+    www.sendContentAndClear(data);
+    www.sendContent("");
+    return;
+  }
 
   // scripts
   sprintf_P(temp, html_ajaxScript, "auxiliaryA.txt");
@@ -73,7 +80,7 @@ void handleAux() {
   // active ajax page is: auxAjax();
   data.concat("<script>var ajaxPage='auxiliary.txt';</script>\n");
   data.concat(FPSTR(html_ajax_active));
-  sendHtml(data);
+  www.sendContentAndClear(data);
 
   // Auxiliary Features --------------------------------------
   int j = 0;
@@ -95,7 +102,7 @@ void handleAux() {
         sprintf_P(temp, html_auxOffSwitch, i + 1, i + 1); data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         data.concat("</div>\r\n");
-        sendHtml(data);
+        www.sendContentAndClear(data);
         j++;
       } else
       if (status.featurePurpose() == ANALOG_OUTPUT) {
@@ -110,7 +117,7 @@ void handleAux() {
         sprintf(temp,"<span id='x%dv1'>%d</span>%%", i + 1, (int)lround((status.featureValue1()/255.0)*100.0));
         data.concat(temp);
         data.concat("</div>\r\n");
-        sendHtml(data);
+        www.sendContentAndClear(data);
         j++;
       } else
       if (status.featurePurpose() == DEW_HEATER) {
@@ -150,7 +157,7 @@ void handleAux() {
         data.concat(temp);
         data.concat("</div>\r\n");
 
-        sendHtml(data);
+        www.sendContentAndClear(data);
         j++;
       } else
       if (status.featurePurpose() == INTERVALOMETER) {
@@ -209,7 +216,7 @@ void handleAux() {
         data.concat(temp);
         data.concat("</div>\r\n");
 
-        sendHtml(data);
+        www.sendContentAndClear(data);
         j++;
       }
     }
@@ -221,21 +228,27 @@ void handleAux() {
   
   data.concat("</div></body></html>");
 
-  sendHtml(data);
-  sendHtmlDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void auxAjaxGet() {
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
+
   processAuxGet();
-  sendTextDone();
+
+  www.sendContent("");
 }
 
 void auxAjax() {
   String data="";
   char temp[120]="";
 
-  sendTextStart();
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
 
   // update auxiliary feature values
   if (status.featureFound) {
@@ -281,8 +294,8 @@ void auxAjax() {
     }
   }
 
-  sendText(data);
-  sendTextDone();
+  www.sendContentAndClear(data);
+  www.sendContent("");
 }
 
 void processAuxGet() {
