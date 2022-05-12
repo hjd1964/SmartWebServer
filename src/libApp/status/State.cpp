@@ -38,7 +38,7 @@ void State::init() {
     status.update();
     if (status.getVersionMajor() >= 10) {
       char result[40];
-      if (onStep.command(":GXGO#", result) && strlen(result) == 4) {
+      if (onStep.command(":GXGO#", result) && strlen(result) == 8) {
         VF("MSG: State, start gpio polling task (rate "); V(STATE_GPIO_POLLING_RATE_MS); VF("ms, priority 5)... ");
         if (tasks.add(STATE_GPIO_POLLING_RATE_MS, 0, true, 5, pollStateGpio, "GioPoll")) { VLF("success"); } else { VLF("FAILED!"); }
       }
@@ -323,62 +323,26 @@ void State::pollFast() {
 
 #if ENCODERS == OFF
   void State::pollGpio() {
+    const int vGpioPin[8] = {VGPIO_PIN_0, VGPIO_PIN_1, VGPIO_PIN_2, VGPIO_PIN_3, VGPIO_PIN_4, VGPIO_PIN_5, VGPIO_PIN_6, VGPIO_PIN_7};
     char cmd[40], result[40];
-    if (!onStep.command(":GXGO#", result) || strlen(result) != 4) return;
 
-    if (result[0] == '1') digitalWrite(AXIS1_ENC_A_PIN, HIGH); else
-    if (result[0] == '0') digitalWrite(AXIS1_ENC_A_PIN, LOW); else
-    if (result[0] == 'I') { pinMode(AXIS1_ENC_A_PIN, INPUT); gpioMode[0] = result[0]; } else
-    if (result[0] == 'U') { pinMode(AXIS1_ENC_A_PIN, INPUT_PULLUP); gpioMode[0] = result[0]; } else
-    if (result[0] == 'O') { pinMode(AXIS1_ENC_A_PIN, OUTPUT); gpioMode[0] = result[0]; }
+    if (!onStep.command(":GXGO#", result) || strlen(result) != 8) return;
 
-    if (result[1] == '1') digitalWrite(AXIS1_ENC_B_PIN, HIGH); else
-    if (result[1] == '0') digitalWrite(AXIS1_ENC_B_PIN, LOW); else
-    if (result[1] == 'I') { pinMode(AXIS1_ENC_B_PIN, INPUT); gpioMode[1] = result[1]; } else
-    if (result[1] == 'U') { pinMode(AXIS1_ENC_B_PIN, INPUT_PULLUP); gpioMode[1] = result[1]; } else
-    if (result[1] == 'O') { pinMode(AXIS1_ENC_B_PIN, OUTPUT); gpioMode[1] = result[1]; }
-
-    if (result[2] == '1') digitalWrite(AXIS2_ENC_A_PIN, HIGH); else
-    if (result[2] == '0') digitalWrite(AXIS2_ENC_A_PIN, LOW); else
-    if (result[2] == 'I') { pinMode(AXIS2_ENC_A_PIN, INPUT); gpioMode[2] = result[2]; } else
-    if (result[2] == 'O') { pinMode(AXIS2_ENC_A_PIN, OUTPUT); gpioMode[2] = result[2]; } else
-    if (result[2] == 'U') { pinMode(AXIS2_ENC_A_PIN, INPUT_PULLUP); gpioMode[2] = result[2]; }
-
-    if (result[3] == '1') digitalWrite(AXIS2_ENC_B_PIN, HIGH); else
-    if (result[3] == '0') digitalWrite(AXIS2_ENC_B_PIN, LOW); else
-    if (result[3] == 'I') { pinMode(AXIS2_ENC_B_PIN, INPUT); gpioMode[3] = result[3]; } else
-    if (result[3] == 'U') { pinMode(AXIS2_ENC_B_PIN, INPUT_PULLUP); gpioMode[3] = result[3]; } else
-    if (result[3] == 'O') { pinMode(AXIS2_ENC_B_PIN, OUTPUT); gpioMode[3] = result[3]; }
-
-    if (gpioMode[0] == 'I') {
-      int gpioState = digitalRead(AXIS1_ENC_A_PIN);
-      if (gpioState != gpioLastState[0]) {
-        sprintf(cmd, ":SXG0,%d#", gpioState);
-        if (onStep.commandBool(cmd)) gpioLastState[0] = gpioState;
-      }
+    for (int i = 0; i < 8; i++) {
+      if (result[0] == '1') { if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], HIGH); } else
+      if (result[0] == '0') { if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], LOW); } else
+      if (result[0] == 'I') { if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT);        vGpioMode[0] = result[0]; } else
+      if (result[0] == 'U') { if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT_PULLUP); vGpioMode[0] = result[0]; } else
+      if (result[0] == 'O') { if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], OUTPUT);       vGpioMode[0] = result[0]; }
     }
 
-    if (gpioMode[1] == 'I') {
-      int gpioState = digitalRead(AXIS1_ENC_B_PIN);
-      if (gpioState != gpioLastState[1]) {
-        sprintf(cmd, ":SXG1,%d#", gpioState);
-        if (onStep.commandBool(cmd)) gpioLastState[1] = gpioState;
-      }
-    }
-
-    if (gpioMode[2] == 'I') {
-      int gpioState = digitalRead(AXIS2_ENC_A_PIN);
-      if (gpioState != gpioLastState[2]) {
-        sprintf(cmd, ":SXG2,%d#", gpioState);
-        if (onStep.commandBool(cmd)) gpioLastState[2] = gpioState;
-      }
-    }
-
-    if (gpioMode[3] == 'I') {
-      int gpioState = digitalRead(AXIS2_ENC_B_PIN);
-      if (gpioState != gpioLastState[3]) {
-        sprintf(cmd, ":SXG3,%d#", gpioState);
-        if (onStep.commandBool(cmd)) gpioLastState[3] = gpioState;
+    for (int i = 0; i < 8; i++) {
+      if (vGpioMode[0] == 'I' && vGpioPin[i] != OFF) {
+        int vGpioState = digitalRead(vGpioPin[i]);
+        if (vGpioState != vGpioLastState[i]) {
+          sprintf(cmd, ":SXG%d,%d#", i, vGpioState);
+          if (onStep.commandBool(cmd)) vGpioLastState[0] = vGpioState;
+        }
       }
     }
   }

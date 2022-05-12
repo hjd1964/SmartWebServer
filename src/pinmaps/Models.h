@@ -2,11 +2,6 @@
 // Loads pinmap model for current configuration
 #pragma once
 
-#include <Arduino.h>
-#include "../Constants.h"
-#include "../../Config.h"
-#include "../../Extended.config.h"
-
 #include "Pins.Esp32.h"
 #include "Pins.Esp8266.h"
 #include "Pins.M0.h"

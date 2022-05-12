@@ -75,8 +75,15 @@ class State {
    // DynamicJsonDocument *doc;
 
   private:
-    char gpioMode[4] = {'X', 'X', 'X', 'X'};
-    int gpioLastState[4] = {-1, -1, -1, -1};
+    char vGpioMode[8] = {
+      'X', 'X', 'X', 'X',
+      'X', 'X', 'X', 'X'
+    };
+
+    int vGpioLastState[8] = {
+      -1, -1, -1, -1,
+      -1, -1, -1, -1
+    };
 
     bool rotatorChecked = false;
 
