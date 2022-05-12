@@ -24,9 +24,20 @@ bool Mcp23017::init() {
   return found;
 }
 
+// no command processing
+bool Mcp23017::command(char *reply, char *command, char *parameter, bool *supressFrame, bool *numericReply, CommandError *commandError) {
+  UNUSED(reply);
+  UNUSED(command);
+  UNUSED(parameter);
+  UNUSED(supressFrame);
+  UNUSED(numericReply);
+  UNUSED(commandError);
+  return false;
+}
+
 // set GPIO pin (0 to 15) mode for INPUT, INPUT_PULLUP, or OUTPUT
 void Mcp23017::pinMode(int pin, int mode) {
-  if (found && pin >= 0 && pin <= 16) {
+  if (found && pin >= 0 && pin <= 15) {
     #ifdef INPUT_PULLDOWN
       if (mode == INPUT_PULLDOWN) mode = INPUT;
     #endif
@@ -36,7 +47,6 @@ void Mcp23017::pinMode(int pin, int mode) {
 }
 
 // one sixteen channel MCP23017 GPIO is supported, this gets the last set value
-// index 0 to 15 are auxiliary features #1, #2, etc.
 int Mcp23017::digitalRead(int pin) {
   if (found && pin >= 0 && pin <= 15) {
     if (mode[pin] == INPUT || mode[pin] == INPUT_PULLUP) {
@@ -46,7 +56,6 @@ int Mcp23017::digitalRead(int pin) {
 }
 
 // one sixteen channel MCP23017 GPIO is supported, this sets each output on or off
-// index 0 to 15 are auxiliary features #1, #2, etc.
 void Mcp23017::digitalWrite(int pin, bool value) {
   if (found && pin >= 0 && pin <= 15) {
     state[pin] = value;

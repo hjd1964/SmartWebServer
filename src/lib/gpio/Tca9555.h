@@ -1,16 +1,16 @@
 // -----------------------------------------------------------------------------------
-// I2C MCP23017 GPIO support
+// I2C TCA9555 GPIO support
 #pragma once
 
 #include "../../Common.h"
 
-#if defined(GPIO_DEVICE) && GPIO_DEVICE == MCP23017
+#if defined(GPIO_DEVICE) && GPIO_DEVICE == X9555
 
 #include "../commands/CommandErrors.h"
 
-class Mcp23017 {
+class Tca9555 {
   public:
-    // scan for MCP23017 device on the 1-wire bus
+    // scan for TCA9555 device on the 1-wire bus
     bool init();
 
     // process any gpio commands
@@ -18,10 +18,10 @@ class Mcp23017 {
 
     void pinMode(int pin, int mode);
 
-    // one sixteen channel MCP23017 GPIO is supported, this gets the last set value
+    // one sixteen channel TCA9555 GPIO is supported, this gets the last set value
     int digitalRead(int pin);
 
-    // one sixteen channel MCP23017 GPIO is supported, this sets each output on or off
+    // one sixteen channel TCA9555 GPIO is supported, this sets each output on or off
     void digitalWrite(int pin, bool value);
 
   private:
@@ -31,6 +31,6 @@ class Mcp23017 {
     bool state[16] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
 };
 
-extern Mcp23017 gpio;
+extern Tca9555 gpio;
 
 #endif
