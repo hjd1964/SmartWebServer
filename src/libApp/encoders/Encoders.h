@@ -6,6 +6,8 @@
 
 #if AXIS1_ENC > 0 && AXIS2_ENC > 0
   #define ENCODERS ON
+#else
+  #define ENCODERS OFF
 #endif
 
 // bring in support for the various encoder types

@@ -6,6 +6,7 @@
 #define STATE_POLLING_RATE_MS 2000
 #define STATE_SLOW_POLLING_RATE_MS 4000
 #define STATE_FAST_POLLING_RATE_MS 1000
+#define STATE_GPIO_POLLING_RATE_MS 100
 
 #define leftTri  "&#x25c4;"
 #define rightTri "&#x25ba;"
@@ -18,6 +19,7 @@ class State {
     void poll();
     void pollSlow();
     void pollFast();
+    void pollGpio();
 
     char dateStr[10] = "?";
     char timeStr[10] = "?";
@@ -73,6 +75,9 @@ class State {
    // DynamicJsonDocument *doc;
 
   private:
+    char gpioMode[4] = {'X', 'X', 'X', 'X'};
+    int gpioLastState[4] = {-1, -1, -1, -1};
+
     bool rotatorChecked = false;
 
 };

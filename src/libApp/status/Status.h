@@ -121,7 +121,6 @@ class Status {
 
   private:
     void focuserScan();
-
     void rotatorScan();
 
     bool auxiliaryFeatureScan();

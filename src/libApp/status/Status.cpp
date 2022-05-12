@@ -111,13 +111,9 @@ bool Status::update(bool all) {
   Y;
 
   focuserScan();
-
   rotatorScan();
-
   auxiliaryFeatureScan();
-
   auxiliaryFeatureUpdate();
-
   axisStatusUpdate();
 
   valid = true;
