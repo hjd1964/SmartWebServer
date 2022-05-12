@@ -331,15 +331,15 @@ void State::pollGpio() {
     } else
     if (result[i] == 'I') {
       if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT);
-      vGpioMode[i] = result[i];
+      vGpioMode[i] = 'I';
     } else
     if (result[i] == 'U') {
       if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT_PULLUP);
-      vGpioMode[i] = result[i];
+      vGpioMode[i] = 'I';
     } else
     if (result[i] == 'O') {
       if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], OUTPUT);
-      vGpioMode[i] = result[i];
+      vGpioMode[i] = 'O';
     }
   }
 
