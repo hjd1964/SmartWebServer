@@ -16,10 +16,7 @@
 void pollState() { state.poll(); }
 void pollStateSlow() { state.pollSlow(); }
 void pollStateFast() { state.pollFast(); }
-
-#if ENCODERS == OFF
-  void pollStateGpio() { state.pollGpio(); }
-#endif
+void pollStateGpio() { state.pollGpio(); }
 
 void State::init() {
   //doc = new DynamicJsonDocument(2000);
@@ -34,16 +31,14 @@ void State::init() {
   VF("MSG: State, start fast polling task (rate "); V(STATE_FAST_POLLING_RATE_MS); VF("ms, priority 5)... ");
   if (tasks.add(STATE_FAST_POLLING_RATE_MS, 0, true, 5, pollStateFast, "StFPoll")) { VLF("success"); } else { VLF("FAILED!"); }
 
-  #if ENCODERS == OFF
-    status.update();
-    if (status.getVersionMajor() >= 10) {
-      char result[40];
-      if (onStep.command(":GXGO#", result) && strlen(result) == 8) {
-        VF("MSG: State, start gpio polling task (rate "); V(STATE_GPIO_POLLING_RATE_MS); VF("ms, priority 5)... ");
-        if (tasks.add(STATE_GPIO_POLLING_RATE_MS, 0, true, 5, pollStateGpio, "GioPoll")) { VLF("success"); } else { VLF("FAILED!"); }
-      }
+  status.update();
+  if (status.getVersionMajor() >= 10) {
+    char result[40];
+    if (onStep.command(":GXGO#", result) && strlen(result) == 8) {
+      VF("MSG: State, start gpio polling task (rate "); V(STATE_GPIO_POLLING_RATE_MS); VF("ms, priority 5)... ");
+      if (tasks.add(STATE_GPIO_POLLING_RATE_MS, 0, true, 5, pollStateGpio, "GioPoll")) { VLF("success"); } else { VLF("FAILED!"); }
     }
-  #endif
+  }
 }
 
 void State::poll() {
@@ -321,31 +316,42 @@ void State::pollFast() {
   }
 }
 
-#if ENCODERS == OFF
-  void State::pollGpio() {
-    const int vGpioPin[8] = {VGPIO_PIN_0, VGPIO_PIN_1, VGPIO_PIN_2, VGPIO_PIN_3, VGPIO_PIN_4, VGPIO_PIN_5, VGPIO_PIN_6, VGPIO_PIN_7};
-    char cmd[40], result[40];
+void State::pollGpio() {
+  const int vGpioPin[8] = {VGPIO_PIN_0, VGPIO_PIN_1, VGPIO_PIN_2, VGPIO_PIN_3, VGPIO_PIN_4, VGPIO_PIN_5, VGPIO_PIN_6, VGPIO_PIN_7};
+  char cmd[40], result[40];
 
-    if (!onStep.command(":GXGO#", result) || strlen(result) != 8) return;
+  if (!onStep.command(":GXGO#", result) || strlen(result) != 8) return;
 
-    for (int i = 0; i < 8; i++) {
-      if (result[0] == '1') { if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], HIGH); } else
-      if (result[0] == '0') { if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], LOW); } else
-      if (result[0] == 'I') { if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT);        vGpioMode[0] = result[0]; } else
-      if (result[0] == 'U') { if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT_PULLUP); vGpioMode[0] = result[0]; } else
-      if (result[0] == 'O') { if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], OUTPUT);       vGpioMode[0] = result[0]; }
+  for (int i = 0; i < 8; i++) {
+    if (result[i] == '1') {
+      if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], HIGH);
+    } else
+    if (result[i] == '0') {
+      if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], LOW);
+    } else
+    if (result[i] == 'I') {
+      if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT);
+      vGpioMode[i] = result[i];
+    } else
+    if (result[i] == 'U') {
+      if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], INPUT_PULLUP);
+      vGpioMode[i] = result[i];
+    } else
+    if (result[i] == 'O') {
+      if (vGpioPin[i] != OFF) pinMode(vGpioPin[i], OUTPUT);
+      vGpioMode[i] = result[i];
     }
+  }
 
-    for (int i = 0; i < 8; i++) {
-      if (vGpioMode[0] == 'I' && vGpioPin[i] != OFF) {
-        int vGpioState = digitalRead(vGpioPin[i]);
-        if (vGpioState != vGpioLastState[i]) {
-          sprintf(cmd, ":SXG%d,%d#", i, vGpioState);
-          if (onStep.commandBool(cmd)) vGpioLastState[0] = vGpioState;
-        }
+  for (int i = 0; i < 8; i++) {
+    if (vGpioMode[i] == 'I' && vGpioPin[i] != OFF) {
+      int vGpioState = digitalRead(vGpioPin[i]);
+      if (vGpioState != vGpioLastState[i]) {
+        sprintf(cmd, ":SXG%d,%d#", i, vGpioState);
+        if (onStep.commandBool(cmd)) vGpioLastState[0] = vGpioState;
       }
     }
   }
-#endif
+}
 
 State state;
