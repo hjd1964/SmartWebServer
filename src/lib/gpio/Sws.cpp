@@ -13,9 +13,7 @@ bool SwsGpio::init() {
   static bool initialized = false;
   if (initialized) return found;
 
-  if (swsPolling) {
-    found = true;
-  } else { found = false; DLF("WRN: Gpio.init(), SwsGpio ready"); }
+  found = true;
 
   return found;
 }
@@ -26,6 +24,12 @@ bool SwsGpio::command(char *reply, char *command, char *parameter, bool *supress
 
   if (command[0] == 'G') {
     if (command[1] == 'X' && parameter[2] == 0)  {
+      // :GXGA#     Get Gpio presence
+      //            Returns: 8# on success or 0 (error) if not present
+      if (parameter[0] == 'G' && parameter[1] == 'A') {
+        strcpy(reply, "8");
+        *numericReply = false;
+      } else
 
       // :GXGO#     Get Gpio Output mode or State
       //            Returns: Value
@@ -36,11 +40,11 @@ bool SwsGpio::command(char *reply, char *command, char *parameter, bool *supress
           if (mode[i] == INPUT_PULLUP) newMode = 'U'; else
           if (mode[i] == OUTPUT) newMode = 'O';
 
-          if (virtualMode[i] != mode[i]) {
+          if (virtualMode[i] != newMode) {
             reply[i] = newMode;
             virtualMode[i] = newMode;
           } else {
-            if (virtualMode[i] == 'O') reply[i] = virtualWrite[i]; else reply[i] = 'X';
+            if (virtualMode[i] == 'O') { reply[i] = (virtualWrite[i]) ? '1' : '0'; } else reply[i] = 'X';
           }
 
           reply[i + 1] = 0;
