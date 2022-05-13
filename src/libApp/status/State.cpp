@@ -35,8 +35,8 @@ void State::init() {
   if (status.getVersionMajor() >= 10) {
     char result[40];
     if (onStep.command(":GXGA#", result) && strlen(result) == 1 && result[0] == '8') {
-      VF("MSG: State, start gpio polling task (rate "); V(STATE_GPIO_POLLING_RATE_MS); VF("ms, priority 5)... ");
-      if (tasks.add(STATE_GPIO_POLLING_RATE_MS, 0, true, 5, pollStateGpio, "GioPoll")) { VLF("success"); } else { VLF("FAILED!"); }
+      VF("MSG: State, start gpio polling task (rate "); V(STATE_GPIO_POLLING_RATE_MS); VF("ms, priority 1)... ");
+      if (tasks.add(STATE_GPIO_POLLING_RATE_MS, 0, true, 1, pollStateGpio, "GioPoll")) { VLF("success"); } else { VLF("FAILED!"); }
     }
   }
 }
