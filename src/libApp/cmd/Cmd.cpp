@@ -43,6 +43,8 @@ void OnStepCmd::serialBegin(long baudRate, int swap) {
 }
 
 const char* OnStepCmd::highSpeedCommsStr(long baud) {
+  if (baud == 460800) { return ":SBB#"; }
+  if (baud == 230400) { return ":SBA#"; }
   if (baud == 115200) { return ":SB0#"; }
   if (baud == 57600) { return ":SB1#"; }
   if (baud == 38400) { return ":SB2#"; }
