@@ -97,7 +97,7 @@ void setup(void) {
   strcpy(firmwareVersion.str, FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch);
 
   // start debug serial port
-  if (DEBUG == ON || DEBUG == VERBOSE) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
+  if (DEBUG == ON || DEBUG == VERBOSE || DEBUG == PROFILER) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
   delay(2000);
 
   VF("MSG: SmartWebServer "); VL(firmwareVersion.str);
