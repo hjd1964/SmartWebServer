@@ -108,7 +108,7 @@ bool StepDirMotor::init() {
     stepSet = Pins->stepState;
     stepClr = !stepSet;
   #endif
-  pinMode(Pins->step, OUTPUT);
+  pinModeEx(Pins->step, OUTPUT);
   digitalWriteF(Pins->step, stepClr);
 
   // init default driver enable pin
@@ -399,7 +399,7 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
   }
 #else
 
-  IRAM_ATTR void StepDirMotor::move(const int8_t stepPin) {
+  IRAM_ATTR void StepDirMotor::move(const int16_t stepPin) {
     digitalWriteF(stepPin, stepClr);
 
     if (direction > DirNone) return;
@@ -455,7 +455,7 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
     }
   }
 
-  IRAM_ATTR void StepDirMotor::moveFF(const int8_t stepPin) {
+  IRAM_ATTR void StepDirMotor::moveFF(const int16_t stepPin) {
     digitalWriteF(stepPin, stepClr);
 
     if (microstepModeControl >= MMC_SLEWING_PAUSE) return;
@@ -467,7 +467,7 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
     }
   }
 
-  IRAM_ATTR void StepDirMotor::moveFR(const int8_t stepPin) {
+  IRAM_ATTR void StepDirMotor::moveFR(const int16_t stepPin) {
     digitalWriteF(stepPin, stepClr);
 
     if (microstepModeControl >= MMC_SLEWING_PAUSE) return;
