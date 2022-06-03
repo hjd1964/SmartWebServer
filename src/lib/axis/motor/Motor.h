@@ -6,9 +6,6 @@
 #include "../../../Common.h"
 #include "Drivers.h"
 
-#define SERVO    -1  // general purpose flag for a SERVO driver motor
-#define STEP_DIR -2  // general purpose flag for a STEP_DIR driver motor
-
 #ifdef MOTOR_PRESENT
 
 enum Direction: uint8_t {DIR_NONE, DIR_FORWARD, DIR_REVERSE, DIR_BOTH};
@@ -58,7 +55,7 @@ class Motor {
     long getInstrumentCoordinateSteps();
 
     // set instrument coordinate, in steps
-    void setInstrumentCoordinateSteps(long value);
+    virtual void setInstrumentCoordinateSteps(long value);
 
     // set instrument park coordinate, in steps
     // should only be called when the axis is not moving

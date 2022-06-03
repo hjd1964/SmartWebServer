@@ -8,15 +8,27 @@
 #if defined(TMC_UART_DRIVER_PRESENT) || defined(TMC_SPI_DRIVER_PRESENT)
 
 #ifdef TMC_UART_DRIVER_PRESENT
+  #ifndef SERIAL_TMC_INVERT
+    #define SERIAL_TMC_INVERT OFF
+  #endif
   #if SERIAL_TMC == SoftSerial
     #define TMC2209_SOFTWARE_SERIAL
     #include <SoftwareSerial.h>
   #endif
+  #define TMC2209_DEBUG false
   #include <TMC2209.h> // https://github.com/hjd1964/TMC2209
 #endif
 
 #ifdef TMC_SPI_DRIVER_PRESENT
   #include "../../../softSpi/SoftSpi.h"
+#endif
+
+#ifndef TMC5160_DRIVER_RSENSE
+  #define TMC5160_DRIVER_RSENSE (0.075)
+#endif
+
+#ifndef TMC2130_DRIVER_RSENSE
+  #define TMC2130_DRIVER_RSENSE (0.11 + 0.02)
 #endif
 
 class TmcDriver {

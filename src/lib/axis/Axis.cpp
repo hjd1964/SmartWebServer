@@ -88,14 +88,12 @@ bool Axis::init(Motor *motor) {
   nv.write(NV_AXIS_SETTINGS_REVERT, axesToRevert);
 
   // read axis settings from NV
-  AxisStoredSettings backupSettings = settings;
   nv.readBytes(NV_AXIS_SETTINGS_BASE + (axisNumber - 1)*AxisStoredSettingsSize, &settings, sizeof(AxisStoredSettings));
   if (!validateAxisSettings(axisNumber, settings)) {
-    V(axisPrefix); VLF("NV settings validation failed using Config.h defaults");
-    settings = backupSettings;
-    nv.initError = true;
+    DLF("ERR: Axis::init(); settings validation failed exiting!");
+    return false;
   }
-  
+
   #if DEBUG == VERBOSE
     V(axisPrefix); VF("stepsPerMeasure="); V(settings.stepsPerMeasure);
     V(", reverse="); if (settings.reverse == OFF) VLF("OFF"); else if (settings.reverse == ON) VLF("ON"); else VLF("?");
@@ -115,6 +113,8 @@ bool Axis::init(Motor *motor) {
 
   // setup motor
   if (!motor->init()) { DLF("ERR: Axis::init(); no motor exiting!"); return false; }
+  // special ODrive case, a way to pass the stepsPerMeasure to it
+  if (motor->getParameterTypeCode() == 'O') settings.param6 = settings.stepsPerMeasure;
   motor->setParameters(settings.param1, settings.param2, settings.param3, settings.param4, settings.param5, settings.param6);
   motor->setReverse(settings.reverse);
   motor->setBacklashFrequencySteps(backlashFreq*settings.stepsPerMeasure);
@@ -464,7 +464,6 @@ void Axis::poll() {
         autoSlewAbort();
         return;
       }
-
       if (motor->getTargetDistanceSteps() == 0) {
         motor->setSlewing(false);
         autoRate = AR_NONE;
@@ -472,6 +471,7 @@ void Axis::poll() {
         motor->setSynchronized(true);
         V(axisPrefix); VLF("slew stopped");
       } else {
+/*
         if (fabs(freq) > backlashFreq) {
           if (motor->getTargetDistanceSteps() < 0) rampFreq -= getRampDirection()*slewMpspfs; else rampFreq += getRampDirection()*slewMpspfs;
           freq = rampFreq;
@@ -484,6 +484,12 @@ void Axis::poll() {
           if (motor->getTargetDistanceSteps() < 0) freq = -freq;
           rampFreq = freq;
         }
+*/
+        freq = sqrtf(2.0F*(slewMpspfs*FRACTIONAL_SEC)*getOriginOrTargetDistance());
+        if (freq < backlashFreq/2.0F) freq = backlashFreq/2.0F;
+        if (freq > slewFreq) freq = slewFreq;
+        if (motor->getTargetDistanceSteps() < 0) freq = -freq;
+        rampFreq = freq;
       }
     } else
     if (autoRate == AR_RATE_BY_TIME_FORWARD) {

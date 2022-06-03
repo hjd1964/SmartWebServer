@@ -169,6 +169,18 @@ DriverStatus StepDirMotor::getDriverStatus() {
 
 // set frequency (+/-) in steps per second negative frequencies move reverse in direction (0 stops motion)
 void StepDirMotor::setFrequencySteps(float frequency) {
+
+  // chart acceleration
+  #if DEBUG != OFF && defined(DEBUG_STEPDIR_ACCEL) && DEBUG_STEPDIR_ACCEL != OFF
+    if (axisNumber == DEBUG_STEPDIR) {
+      static unsigned long t = 0;
+      if ((long)(millis() - t) > 100) {
+        DL(frequency);
+        t = millis();
+      }
+    }
+  #endif
+
   // negative frequency, convert to positive and reverse the direction
   int dir = 0;
   if (frequency > 0.0F) dir = 1; else if (frequency < 0.0F) { frequency = -frequency; dir = -1; }
@@ -315,7 +327,7 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
 }
 
 #if STEP_WAVE_FORM == SQUARE
-  IRAM_ATTR void StepDirMotor::move(const int8_t stepPin) {
+  IRAM_ATTR void StepDirMotor::move(const int16_t stepPin) {
     if (direction > DirNone) return;
 
     if (microstepModeControl == MMC_SLEWING_REQUEST && (motorSteps + backlashSteps) % homeSteps == 0) {
@@ -372,7 +384,7 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
     takeStep = !takeStep;
   }
 
-  IRAM_ATTR void StepDirMotor::moveFF(const int8_t stepPin) {
+  IRAM_ATTR void StepDirMotor::moveFF(const int16_t stepPin) {
     if (microstepModeControl >= MMC_SLEWING_PAUSE) return;
 
     if (takeStep) {
@@ -385,7 +397,7 @@ IRAM_ATTR void StepDirMotor::updateMotorDirection() {
     takeStep = !takeStep;
   }
 
-  IRAM_ATTR void StepDirMotor::moveFR(const int8_t stepPin) {
+  IRAM_ATTR void StepDirMotor::moveFR(const int16_t stepPin) {
     if (microstepModeControl >= MMC_SLEWING_PAUSE) return;
 
     if (takeStep) {

@@ -5,24 +5,25 @@
 #define AUTO                        -1
 #define OFF                         -1
 #define ON                          -2
-#define AUX                         -3
-#define SLAVE                       -4
-#define ACCESS_POINT                -5
-#define STATION                     -6
-#define STATION_DHCP                -7
-#define BOTH                        -8
-#define SoftSerial                  -9
-#define HardSerial                  -10
-#define CONSOLE                     -11
-#define PROFILER                    -12
-#define VERBOSE                     -13
-#define REMOTE                      -14
-#define WIFI                        -15
-#define ETHERNET_W5100              -16
-#define ETHERNET_W5500              -17
-#define SHARED                      -18
-#define STANDARD                    -19
-#define PERSISTENT                  -20
+#define ALT                         -3
+#define AUX                         -4
+#define SLAVE                       -5
+#define ACCESS_POINT                -6
+#define STATION                     -7
+#define STATION_DHCP                -8
+#define BOTH                        -9
+#define SoftSerial                  -10
+#define HardSerial                  -11
+#define CONSOLE                     -12
+#define PROFILER                    -13
+#define VERBOSE                     -14
+#define REMOTE                      -15
+#define WIFI                        -16
+#define ETHERNET_W5100              -17
+#define ETHERNET_W5500              -18
+#define SHARED                      -19
+#define STANDARD                    -20
+#define PERSISTENT                  -21
 #define INVALID                     -127
 
 // driver (step/dir interface, usually for stepper motors)
@@ -60,6 +61,11 @@
 #define SERVO_II                    101    // SERVO, dual pwm input connections
 #define SERVO_DRIVER_LAST           101
 
+// odrive driver
+#define ODRIVE_DRIVER_FIRST         200
+#define ODRIVE                      200    // First generation ODrive (axis 1 and 2 only)
+#define ODRIVE_DRIVER_LAST          200
+
 // servo encoder (must match Encoder library)
 #define SERVO_ENCODER_FIRST         1
 #define ENC_AB                      1      // AB quadrature encoder
@@ -75,8 +81,9 @@
 
 // driver (step/dir) and servo, misc.
 #define DEFAULT_POWER_DOWN_TIME     30000  // default standstill time (in ms) to power down an axis (see AXISn_DRIVER_POWER_DOWN)
-#define SERVO                       -1     // general purpose flag for a SERVO driver motor
-#define STEP_DIR                    -2     // general purpose flag for a STEP_DIR driver motor
+#define ODRIVER                     -10    // general purpose flag for a ODRIVE driver motor
+#define SERVO                       -11    // general purpose flag for a SERVO driver motor
+#define STEP_DIR                    -12    // general purpose flag for a STEP_DIR driver motor
 
 // NV/EEPROM
 #define NV_KEY_VALUE                111111111UL
