@@ -44,7 +44,9 @@
 
   #define ETHERNET_RESET_PIN  9   // pin# for controlling the reset of W5500 so it comes up properly
 
-  #define LED_STATUS_PIN      2   // pin 2 is a guess and is probably wrong
-                                 // should be corrected for the common WeMos D1 Mini footprint ESP32
+  #ifndef LED_STATUS_PIN      
+    #define LED_STATUS_PIN    2   // pin 2 is a guess and is probably wrong
+  #endif
+
   #define SD_CARD_CS_PIN      OFF // pin 4 to CS for SD adapter on Arduino Ethernet Shield
 #endif
