@@ -14,17 +14,15 @@ void OnStepCmd::serialBegin(long baudRate, int swap) {
   firstRun = false;
   if (swap == ON || swap == AUTO_ON) swap = 1; else swap = 0;
   #ifdef ESP32
-    // wemos d1 mini esp32
-    // not swapped: TX and RX on default pins
-    //     swapped: TX on gpio 5 and RX on gpio 23
+    // locate WeMos D1 R32 serial port pins to match WeMos D1 Mini main and swapped port pins
     if (swap) { 
         VLF("MSG: Attempting connect on swapped port");
         delay(500);
-        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 23, 5); 
+        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, SERIAL_SWAPPED_RX, SERIAL_SWAPPED_TX);
       } else {
         VLF("MSG: Attempting connect on non-swapped port");
         delay(500);
-        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, 1, 3);
+        SERIAL_ONSTEP.begin(baudRate, SERIAL_8N1, SERIAL_RX, SERIAL_TX);
       }
   #else
     VF("MSG: Set baud rate to "); VL(baudRate);
