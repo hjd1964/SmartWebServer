@@ -155,7 +155,7 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a) {
 }
 
 bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a) {
-  if (status.getVersionMajor() >= 10) return validateAxisSettingsX(axisNum, altAz, a);
+  if (status.getVersionMajor() >= 10) return validateAxisSettingsX(axisNum, a);
 
   int   MinLimitL[5]   = {-270,-90,-360,  0,  0};
   int   MinLimitH[5]   = { -90,  0,   0,500,500};
@@ -175,29 +175,41 @@ bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a) {
   return true;
 }
 
-bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a) {
-  int   MinLimitL[5]   = {-270,-90,-360,  0,  0};
-  int   MinLimitH[5]   = { -90,  0,   0,500,500};
-  int   MaxLimitL[5]   = {  90,  0,   0,  0,  0};
-  int   MaxLimitH[5]   = { 270, 90, 360,500,500};
-  float StepsLimitL[5] = {   150.0,   150.0,    5.0, 0.005, 0.005};
-  float StepsLimitH[5] = {122400.0,122400.0, 7200.0,  20.0,  20.0};
-  int   IrunLimitH[5]  = { 3000, 3000, 1000, 1000, 1000};
-  if (altAz) { MinLimitL[0] = -360; MinLimitH[0] = -180; MaxLimitL[0] = 180; MaxLimitH[0] = 360; }
+bool validateAxisSettingsX(int axisNum, AxisSettings a) {
+  long minLimitL, minLimitH, maxLimitL, maxLimitH;
+  float stepsLimitL, stepsLimitH;
+
+  if (axisNum > 3) {
+    minLimitL = 0;
+    minLimitH = 500000;
+    maxLimitL = 0;
+    maxLimitH = 500000;
+    stepsLimitL = 0.001;
+    stepsLimitH = 1000.0;
+  } else {
+    minLimitL = -360;
+    minLimitH = 360;
+    maxLimitL = -360;
+    maxLimitH = 360;
+    stepsLimitL = 1.0;
+    stepsLimitH = 360000.0;
+  }
+
   axisNum--;
-  if (a.stepsPerMeasure < StepsLimitL[axisNum] || a.stepsPerMeasure > StepsLimitH[axisNum]) return false;
+  if (a.stepsPerMeasure < stepsLimitL || a.stepsPerMeasure > stepsLimitH) return false;
   if (a.reverse != OFF && a.reverse != ON) return false;
-  if (a.min < MinLimitL[axisNum] || a.min > MinLimitH[axisNum]) return false;
-  if (a.max < MaxLimitL[axisNum] || a.max > MaxLimitH[axisNum]) return false;
+  if (a.min < minLimitL || a.min > minLimitH) return false;
+  if (a.max < maxLimitL || a.max > maxLimitH) return false;
   if (a.driverType != DT_SERVO) {
-    if (a.microsteps     != OFF && (a.microsteps < 1     || a.microsteps > 256))     return false;
+    if (a.microsteps     != OFF && (a.microsteps     < 1 || a.microsteps     > 256)) return false;
     if (a.microstepsGoto != OFF && (a.microstepsGoto < 1 || a.microstepsGoto > 256)) return false;
     if (a.driverType == DT_STEP_DIR_TMC_SPI) {
-      if (a.currentHold    != OFF && (a.currentHold < 0    || a.currentHold > IrunLimitH[axisNum])) return false;
-      if (a.currentRun     != OFF && (a.currentRun < 0     || a.currentRun > IrunLimitH[axisNum]))  return false;
-      if (a.currentGoto    != OFF && (a.currentGoto < 0    || a.currentGoto > IrunLimitH[axisNum])) return false;
+      if (a.currentHold != OFF && (a.currentHold < 0 || a.currentHold > 3000)) return false;
+      if (a.currentRun  != OFF && (a.currentRun  < 0 || a.currentRun  > 3000)) return false;
+      if (a.currentGoto != OFF && (a.currentGoto < 0 || a.currentGoto > 3000)) return false;
     }
   }
+
   return true;
 }
 

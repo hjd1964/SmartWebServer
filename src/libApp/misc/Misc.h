@@ -48,7 +48,7 @@ bool decodeAxisSettingsX(char* s, AxisSettings* a);
 bool validateAxisSettings(int axisNum, bool altAz, AxisSettings a);
 
 // validate axis settings for a given axis and mount type
-bool validateAxisSettingsX(int axisNum, bool altAz, AxisSettings a);
+bool validateAxisSettingsX(int axisNum, AxisSettings a);
 
 // return temperature string with proper value and units for this locale
 void localeTemperature(char* temperatureStr);
