@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------------------------------
-// Pin map for ESP32
+// Pin map for ESP32C3
 #pragma once
 
 // locate WeMos D1 R32 serial port pins to match WeMos D1 Mini main and swapped port pins
