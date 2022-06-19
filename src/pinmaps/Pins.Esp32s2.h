@@ -4,10 +4,10 @@
 
 // locate WeMos D1 R32 serial port pins to match WeMos D1 Mini main and swapped port pins
 #ifndef SERIAL_RX
-  #define SERIAL_RX         1
+  #define SERIAL_RX         11
 #endif
 #ifndef SERIAL_TX
-  #define SERIAL_TX         3
+  #define SERIAL_TX         12
 #endif
 #ifndef SERIAL_SWAPPED_RX
   #define SERIAL_SWAPPED_RX 23
@@ -42,7 +42,7 @@
 #define ETHERNET_RESET_PIN  9   // pin# for controlling the reset of W5500 so it comes up properly
 
 #ifndef LED_STATUS_PIN      
-  #define LED_STATUS_PIN    2   // pin 2 is a guess and is probably wrong
+  #define LED_STATUS_PIN    15   // Change in config.h if needed
 #endif
 
 #define SD_CARD_CS_PIN      OFF // pin 4 to CS for SD adapter on Arduino Ethernet Shield
