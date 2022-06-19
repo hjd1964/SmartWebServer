@@ -10,10 +10,10 @@
   #define SERIAL_TX         12
 #endif
 #ifndef SERIAL_SWAPPED_RX
-  #define SERIAL_SWAPPED_RX 43
+  #define SERIAL_SWAPPED_RX 12
 #endif
 #ifndef SERIAL_SWAPPED_TX
-  #define SERIAL_SWAPPED_TX 41
+  #define SERIAL_SWAPPED_TX 11
 #endif
 
 #define BOOT0_PIN           5   // GPIO5 to Boot0 of STM32 etc. (no swapped serial if active)
