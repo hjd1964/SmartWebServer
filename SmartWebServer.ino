@@ -214,10 +214,6 @@ Again:
     if (!nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV, failed to read back key!"); } else { VLF("MSG: NV, reset complete"); }
   }
 
-  #if BLE_GAMEPAD == ON
-    bleSetup();
-  #endif
-
   VLF("MSG: Set webpage handlers");
   www.on("/index.htm", handleRoot);
   www.on("/index.txt", handleRootAjax);
@@ -295,6 +291,10 @@ Again:
   // start task manager debug events
   #if DEBUG == PROFILER
     tasks.add(142, 0, true, 7, profiler, "Profilr");
+  #endif
+
+  #if BLE_GAMEPAD == ON
+    bleSetup();
   #endif
 
   VLF("MSG: SmartWebServer ready");
