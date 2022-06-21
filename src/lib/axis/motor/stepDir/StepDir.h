@@ -6,6 +6,10 @@
 
 #ifdef STEP_DIR_MOTOR_PRESENT
 
+#if defined(GPIO_DIRECTION_PINS) && defined(SHARED_DIRECTION_PINS)
+  #error "Configuration (Config.h): Having both GPIO_DIRECTION_PINS and SHARED_DIRECTION_PINS is not allowed"
+#endif
+
 #include "StepDirDrivers.h"
 #include "../Motor.h"
 
@@ -59,11 +63,13 @@ class StepDirMotor : public Motor {
     // set slewing state (hint that we are about to slew or are done slewing)
     void setSlewing(bool state);
 
-    // monitor and respond to motor state as required
-    void poll();
+    #if defined(GPIO_DIRECTION_PINS)
+      // monitor and respond to motor state as required
+      void poll() { updateMotorDirection(); }
 
-    // change motor direction
-    void updateMotorDirection();
+      // change motor direction on request by polling
+      void updateMotorDirection();
+    #endif
 
     // sets dir as required and moves coord toward target at setFrequencySteps() rate
     void move(const int16_t stepPin);
@@ -93,6 +99,7 @@ class StepDirMotor : public Motor {
     volatile uint8_t dirFwd = LOW;      // pin state for forward direction
     volatile uint8_t dirRev = HIGH;     // pin state for reverse direction
     volatile uint8_t direction = LOW;   // current direction in use
+    volatile uint32_t pulseWidth =2000; // step/dir driver pulse width in nanoseconds
 
     volatile int  homeSteps = 1;        // step count for microstep sequence between home positions (driver indexer)
     volatile int  slewStep = 1;         // step size during slews (for micro-step mode switching)

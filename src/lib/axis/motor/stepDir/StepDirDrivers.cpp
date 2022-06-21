@@ -430,6 +430,13 @@ bool StepDirDriver::isTmcUART() {
   #endif
 }
 
+// get the pulse width in nanoseconds, if unknown (-1) returns 2000 nanoseconds
+long StepDirDriver::getPulseWidth() {
+  long ns = DriverPulseWidth[settings.model];
+  if (ns < 0) ns = 2000;
+  return ns;
+}
+
 bool StepDirDriver::isDecayOnM2() {
   if (settings.model == TMC2209S) return true; else return false;
 }
