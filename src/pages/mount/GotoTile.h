@@ -15,8 +15,8 @@ extern void gotoTileGet();
 
 const char html_mountPositionLabels[] PROGMEM =
   "<div style='display: table; text-align: left;'><div style='display: table-cell;'>"
+  L_CURRENT ":<br /><br />"
   L_TARGET ":<br />"
-  L_CURRENT ":<br />"
   "</div>";
 
 const char html_mountPositionAxis1[] PROGMEM =
