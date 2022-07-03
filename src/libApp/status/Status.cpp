@@ -14,6 +14,8 @@
 #include "Status.h"
 
 bool Status::update(bool all) {
+  unsigned long t0,t1,t2,t3,t4,t5,t6,t=millis();
+
   char result[80] = "";
   if (!valid) {
     if (!onStep.command(":GVP#", result) || result[0] == 0 || !strstr(result, "On-Step")) { valid = false; return false; } Y;
@@ -42,79 +44,95 @@ bool Status::update(bool all) {
     }
   }
 
-  if (!onStep.command(":GU#", result) || result[0] == 0) { valid = false; return false; } Y;
+  if (!onStep.command(":GU#", result) || result[0] == 0) { mountFound = false; valid = false; return false; } else mountFound = true; Y;
 
-  tracking = false;
-  inGoto = false;
-  if (!strstr(result, "N")) inGoto = true; else tracking = !strstr(result, "n");
+  if (mountFound) {
+    tracking = false;
+    inGoto = false;
+    if (!strstr(result, "N")) inGoto = true; else tracking = !strstr(result, "n");
 
-  parked      = strstr(result, "P");
-  if (strstr(result, "p")) parked = false;
-  parking     = strstr(result, "I");
-  parkFail    = strstr(result, "F");
+    parked      = strstr(result, "P");
+    if (strstr(result, "p")) parked = false;
+    parking     = strstr(result, "I");
+    parkFail    = strstr(result, "F");
 
-  pecRecorded = strstr(result, "R");
-  pecIgnore   = strstr(result, "/");
-  pecReadyPlay= strstr(result, ",");
-  pecPlaying  = strstr(result, "~");
-  pecReadyRec = strstr(result, ";");
-  pecRecording= strstr(result, "^");
-  if (!pecRecording && !pecReadyRec && !pecPlaying && !pecReadyPlay && !pecIgnore && !pecRecorded) pecEnabled = false; else pecEnabled = true;
+    pecRecorded = strstr(result, "R");
+    pecIgnore   = strstr(result, "/");
+    pecReadyPlay= strstr(result, ",");
+    pecPlaying  = strstr(result, "~");
+    pecReadyRec = strstr(result, ";");
+    pecRecording= strstr(result, "^");
+    if (!pecRecording && !pecReadyRec && !pecPlaying && !pecReadyPlay && !pecIgnore && !pecRecorded) pecEnabled = false; else pecEnabled = true;
 
-  syncToEncodersOnly = strstr(result, "e");
-  atHome      = strstr(result, "H");
-  ppsSync     = strstr(result, "S");
-  pulseGuiding= strstr(result, "G");
-  guiding     = strstr(result, "g");
-  if (pulseGuiding) guiding = true;
-  axisFault   = strstr(result, "f");
+    syncToEncodersOnly = strstr(result, "e");
+    atHome      = strstr(result, "H");
+    homing      = strstr(result, "h");
+    ppsSync     = strstr(result, "S");
+    pulseGuiding= strstr(result, "G");
+    guiding     = strstr(result, "g");
+    if (pulseGuiding) guiding = true;
+    axisFault   = strstr(result, "f");
 
-  if (strstr(result, "r")) { if (strstr(result, "s")) rateCompensation = RC_REFR_RA; else rateCompensation = RC_REFR_BOTH; } else
-  if (strstr(result, "t")) { if (strstr(result, "s")) rateCompensation = RC_FULL_RA; else rateCompensation = RC_FULL_BOTH; } else rateCompensation = RC_NONE;
+    if (strstr(result, "r")) { if (strstr(result, "s")) rateCompensation = RC_REFR_RA; else rateCompensation = RC_REFR_BOTH; } else
+    if (strstr(result, "t")) { if (strstr(result, "s")) rateCompensation = RC_FULL_RA; else rateCompensation = RC_FULL_BOTH; } else rateCompensation = RC_NONE;
 
-  waitingHome   = strstr(result, "w");
-  pauseAtHome   = strstr(result, "u");
-  buzzerEnabled = strstr(result, "z");
+    waitingHome   = strstr(result, "w");
+    pauseAtHome   = strstr(result, "u");
+    buzzerEnabled = strstr(result, "z");
 
-  if (strstr(result,"E")) mountType = MT_GEM; else
-  if (strstr(result,"K")) mountType = MT_FORK; else
-  if (strstr(result,"k")) mountType = MT_FORKALT; else
-  if (strstr(result,"A")) mountType = MT_ALTAZM; else mountType = MT_UNKNOWN;
+    if (strstr(result,"E")) mountType = MT_GEM; else
+    if (strstr(result,"K")) mountType = MT_FORK; else
+    if (strstr(result,"k")) mountType = MT_FORKALT; else
+    if (strstr(result,"A")) mountType = MT_ALTAZM; else mountType = MT_UNKNOWN;
 
-  if (mountType == MT_GEM) autoMeridianFlips = strstr(result, "a"); else autoMeridianFlips = false;
+    if (mountType == MT_GEM) autoMeridianFlips = strstr(result, "a"); else autoMeridianFlips = false;
 
-  guideRatePulse = result[strlen(result) - 3] - '0';
-  if (guideRatePulse < 0) guideRatePulse = 0;
-  if (guideRatePulse > 9) guideRatePulse = 9;
-  guideRate = result[strlen(result) - 2] - '0';
-  if (guideRate < 0) guideRate = 0;
-  if (guideRate > 9) guideRate = 9;
+    guideRatePulse = result[strlen(result) - 3] - '0';
+    if (guideRatePulse < 0) guideRatePulse = 0;
+    if (guideRatePulse > 9) guideRatePulse = 9;
+    guideRate = result[strlen(result) - 2] - '0';
+    if (guideRate < 0) guideRate = 0;
+    if (guideRate > 9) guideRate = 9;
 
-  lastError = (Errors)(result[strlen(result) - 1] - '0');
+    lastError = (Errors)(result[strlen(result) - 1] - '0');
 
-  // get meridian status
-  if (!onStep.command(":GX94#", result) || result[0] == 0) { valid = false; return false; } Y;
-  meridianFlips = !strstr(result, "N");
-  pierSide = strtol(&result[0], NULL, 10);
+    // get meridian status
+    if (!onStep.command(":GX94#", result) || result[0] == 0) { valid = false; return false; } Y;
+    meridianFlips = !strstr(result, "N");
+    pierSide = strtol(&result[0], NULL, 10);
 
-  // align status
-  if (onStep.command(":A?#", result) && strlen(result) == 3) {
-    if (result[0] >= '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
-    if (result[1] >= '0' && result[1] <= '9') alignThisStar = result[1] - '0';
-    if (result[2] >= '0' && result[2] <= '9') alignLastStar = result[2] - '0';
-  } else {
-    alignMaxStars = 0;
-    alignThisStar = 0;
-    alignLastStar = 0;
+    // align status
+    if (onStep.command(":A?#", result) && strlen(result) == 3) {
+      if (result[0] >= '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
+      if (result[1] >= '0' && result[1] <= '9') alignThisStar = result[1] - '0';
+      if (result[2] >= '0' && result[2] <= '9') alignLastStar = result[2] - '0';
+    } else {
+      alignMaxStars = 0;
+      alignThisStar = 0;
+      alignLastStar = 0;
+    }
+    if (alignThisStar != 0 && alignThisStar <= alignLastStar) aligning = true; else aligning = false;
+    Y;
   }
-  if (alignThisStar != 0 && alignThisStar <= alignLastStar) aligning = true; else aligning = false;
-  Y;
 
+  t0=millis();
   focuserScan();
+  t1=millis();
   rotatorScan();
+  t2=millis();
   auxiliaryFeatureScan();
+  t3=millis();
   auxiliaryFeatureUpdate();
+  t4=millis();
   axisStatusUpdate();
+  t5=millis();
+
+//  V("t0="); VL(t0-t);
+//  V("t1="); VL(t1-t);
+//  V("t2="); VL(t2-t);
+//  V("t3="); VL(t3-t);
+//  V("t4="); VL(t4-t);
+//  V("t5="); VL(t5-t);
 
   valid = true;
   return true;
@@ -148,7 +166,7 @@ void Status::rotatorScan() {
     rotatorFound = false;
     derotatorFound = false;
     if (onStep.command(":GX98#", temp)) {
-      if (temp[0] == 'R') rotatorFound = true;
+      if (temp[0] == 'R') { rotatorFound = true; derotatorFound = false; }
       if (temp[0] == 'D') { rotatorFound = true; derotatorFound = true; }
     } Y;
     scanned = true;
@@ -160,9 +178,16 @@ bool Status::auxiliaryFeatureScan() {
   bool valid;
   char cmd[40], out[40], present[40];
 
+  if (scanned) return true;
+
   // check which feature #'s are present
   if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true; Y;
-  if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; featureFound = false; return false; }
+
+  // try to get the AF presense twice before giving up
+  if (!valid) {
+    if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true; Y;
+    if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = false; scanned = true; return false; }
+  }
 
   // get feature status
   for (uint8_t i = 0; i < 8; i++) {
@@ -170,27 +195,25 @@ bool Status::auxiliaryFeatureScan() {
 
     if (present[i] == '0') continue;
 
-    if (!scanned) {
-      sprintf(cmd, ":GXY%d#", i+1);
-      if (!onStep.command(cmd, out) || out[0] == 0) valid = false; Y;
-      if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; featureFound = false; return false; }
+    sprintf(cmd, ":GXY%d#", i+1);
+    if (!onStep.command(cmd, out) || out[0] == 0) valid = false; Y;
+    if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = false; return false; }
 
-      if (strlen(out) > 1) {
-        purpose_str = strstr(out,",");
-        if (purpose_str) {
-          purpose_str[0] = 0;
-          purpose_str++;
-        } else valid = false;
-        char *name_str = out; if (!name_str) valid = false;
-        if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; featureFound = false; return false; }
+    if (strlen(out) > 1) {
+      purpose_str = strstr(out,",");
+      if (purpose_str) {
+        purpose_str[0] = 0;
+        purpose_str++;
+      } else valid = false;
+      char *name_str = out; if (!name_str) valid = false;
+      if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = false; return false; }
 
-        if (strlen(name_str) > 10) name_str[11] = 0;
-        strcpy(feature[i].name, name_str);
-        if (purpose_str) feature[i].purpose = atoi(purpose_str);
-        VF("MSG: AuxFeature, found "); V(name_str); V(" purpose "); VL(feature[i].purpose);
+      if (strlen(name_str) > 10) name_str[11] = 0;
+      strcpy(feature[i].name, name_str);
+      if (purpose_str) feature[i].purpose = atoi(purpose_str);
+      VF("MSG: AuxFeature, found "); V(name_str); V(" purpose "); VL(feature[i].purpose);
 
-        featureFound = true;
-      }
+      auxiliaryFound = true;
     }
   }
   scanned = true;

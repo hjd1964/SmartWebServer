@@ -108,7 +108,7 @@ void Encoders::init() {
     enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
 
-    if (autoSync && status.valid && !enAxis1Fault && !enAxis2Fault) {
+    if (settings.autoSync && status.valid && !enAxis1Fault && !enAxis2Fault) {
       if (status.atHome || status.parked || status.aligning || status.syncToEncodersOnly) {
         syncFromOnStep();
         // re-enable normal operation once we're updated here

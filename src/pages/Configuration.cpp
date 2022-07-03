@@ -1,7 +1,9 @@
 // -----------------------------------------------------------------------------------
 // Configuration
+/*
 
 #include "Configuration.h"
+#include "Page.h"
 
 bool processConfigurationGet();
 void sendAxisParams(AxisSettings* a, int axis);
@@ -21,125 +23,36 @@ void handleConfiguration() {
   www.send(200, "text/html", String());
 
   // send a standard http response header
-  String data = FPSTR(html_headB);
-  data.concat(FPSTR(html_main_cssB));
-  data.concat(FPSTR(html_main_css1));
-  data.concat(FPSTR(html_main_css2));
-  data.concat(FPSTR(html_main_css3));
-  data.concat(FPSTR(html_main_css4));
+  String data = FPSTR(html_head_begin);
+  data.concat(FPSTR(html_main_css_begin));
   www.sendContentAndClear(data);
-  data.concat(FPSTR(html_main_css5));
-  data.concat(FPSTR(html_main_css6));
-  data.concat(FPSTR(html_main_css7));
-  data.concat(FPSTR(html_main_css8));
-  data.concat(FPSTR(html_main_css_collapse1));
-  data.concat(FPSTR(html_main_css_collapse2));
-  data.concat(FPSTR(html_main_cssE));
-  data.concat(FPSTR(html_headE));
-  data.concat(FPSTR(html_bodyB));
+  data.concat(FPSTR(html_main_css_core));
+  www.sendContentAndClear(data);
+  data.concat(FPSTR(html_main_css_collapse));
+  data.concat(FPSTR(html_main_css_end));
+  data.concat(FPSTR(html_head_end));
   www.sendContentAndClear(data);
 
-  // finish the standard http response header
-  data.concat(FPSTR(html_onstep_header1));
-  data.concat("OnStep");
-  data.concat(FPSTR(html_onstep_header2));
-  data.concat(firmwareVersion.str);
-  data.concat(" (OnStep");
-  if (status.getVersionStr(temp1)) data.concat(temp1); else data.concat("?");
-  data.concat(FPSTR(html_onstep_header3));
-  data.concat(FPSTR(html_linksStatN));
-  data.concat(FPSTR(html_linksCtrlN));
-  if (status.featureFound) data.concat(FPSTR(html_linksAuxN));
-  data.concat(FPSTR(html_linksLibN));
-  #if ENCODERS == ON
-    data.concat(FPSTR(html_linksEncN));
-  #endif
-  www.sendContentAndClear(data);
-  if (status.pecEnabled) data.concat(FPSTR(html_linksPecN));
-  data.concat(FPSTR(html_linksSetN));
-  data.concat(FPSTR(html_linksCfgS));
-  data.concat(FPSTR(html_linksSetupN));
-  data.concat(FPSTR(html_onstep_header4));
-  www.sendContentAndClear(data);
+  // show this page
+  data.concat(FPSTR(html_body_begin));
+  pageHeader(PAGE_CONFIG);
+  data.concat(FPSTR(html_onstep_page_begin));
   
   // OnStep wasn't found, show warning and info.
   if (!status.valid) {
     data.concat(FPSTR(html_bad_comms_message));
+    data.concat(FPSTR(html_page_and_body_end));
     www.sendContentAndClear(data);
     www.sendContent("");
     return;
   }
   
   // scripts
-  sprintf_P(temp, html_ajaxScript, "configurationA.txt"); data.concat(temp);
+  sprintf_P(temp, html_script_ajax_get, "configuration-ajax.txt"); data.concat(temp);
   
-  data+="<div style='width: 35em;'>";
+  // page contents
+  data += "<div style='width: 35em;'>";
   data.concat(L_BASIC_SET_TITLE "<br /><br />");
-  www.sendContentAndClear(data);
-
-  data.concat(F("<button type='button' class='collapsible'>" L_LOCATION_TITLE "</button>"));
-  data.concat(FPSTR(html_configFormBegin));
-
-  // Longitude
-  if (status.getVersionMajor() > 3) {
-    if (!onStep.command(":GgH#", temp1)) strcpy(temp1, "+000*00:00");
-  } else {
-    if (!onStep.command(":Gg#", temp1)) strcpy(temp1, "+000*00");
-  }
-  temp1[10] = 0;
-  temp1[4] = 0;                        // deg part only
-  temp1[7] = 0;                        // min part only
-  if (temp1[0] == '+') temp1[0] = '0'; // remove +
-  stripNum(temp1);
-  while (temp1[0] == '0' && strlen(temp1) > 1) memmove(&temp1[0], &temp1[1], strlen(temp1)); // remove leading 0's
-  sprintf_P(temp, html_configLongDeg, temp1);
-  data.concat(temp);
-  sprintf_P(temp, html_configLongMin, (char*)&temp1[5]);
-  data.concat(temp);
-  if (status.getVersionMajor() > 3) {
-    sprintf_P(temp, html_configLongSec, (char*)&temp1[8]);
-    data.concat(temp);
-  }
-  www.sendContentAndClear(data);
-  data.concat(FPSTR(html_configLongMsg));
-
-  // Latitude
-  if (status.getVersionMajor() > 3) {
-    if (!onStep.command(":GtH#", temp1)) strcpy(temp1, "+00*00:00");
-  } else {
-    if (!onStep.command(":Gt#", temp1)) strcpy(temp1, "+00*00");
-  }
-  temp1[9] = 0;
-  temp1[3] = 0;                        // deg part only
-  temp1[6] = 0;                        // min part only
-  if (temp1[0] == '+') temp1[0] = '0'; // remove +
-  stripNum(temp1);
-  sprintf_P(temp, html_configLatDeg, temp1);
-  data.concat(temp);
-  sprintf_P(temp, html_configLatMin, (char*)&temp1[4]);
-  data.concat(temp);
-  if (status.getVersionMajor() > 3) {
-    sprintf_P(temp, html_configLatSec, (char*)&temp1[7]);
-    data.concat(temp);
-  }
-  data.concat(FPSTR(html_configLatMsg));
-  www.sendContentAndClear(data);
-
-  // UTC Offset
-  if (!onStep.command(":GG#", temp1)) strcpy(temp1, "+00");
-  strcpy(temp2, temp1);
-  temp2[3] = 0;                        // deg. part only
-  if (temp2[0] == '+') temp2[0] = '0'; // remove +
-  stripNum(temp2);
-  sprintf_P(temp, html_configOffsetHrs, temp2);
-  data.concat(temp);
-  strcpy(temp2, temp1);
-  if (temp2[4] == '3') sprintf_P(temp, html_configOffsetMin, "", "selected", ""); else
-    if (temp2[4] == '4') sprintf_P(temp, html_configOffsetMin, "", "", "selected"); else
-      sprintf_P(temp, html_configOffsetMin, "selected", "", "");
-  data.concat(temp);
-  data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
-  data.concat(FPSTR(html_configFormEnd));
   www.sendContentAndClear(data);
 
   // Overhead and Horizon Limits
@@ -153,7 +66,7 @@ void handleConfiguration() {
   int maxAlt = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configMaxAlt, maxAlt);
   data.concat(temp);
-  data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
+  data.concat(F("<button type='submit'>" L_UPLOAD "</button>\n"));
   data.concat(FPSTR(html_configFormEnd));
   www.sendContentAndClear(data);
 
@@ -176,9 +89,9 @@ void handleConfiguration() {
     degPastMerW = round((degPastMerW*15.0)/60.0);
     sprintf_P(temp, html_configPastMerW, degPastMerW);
     data.concat(temp);
-  } else data.concat("<br />\r\n");
+  } else data.concat("<br />\n");
   www.sendContentAndClear(data);
-  data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
+  data.concat(F("<button type='submit'>" L_UPLOAD "</button>\n"));
   data.concat(FPSTR(html_configFormEnd));
   www.sendContentAndClear(data);
 
@@ -190,7 +103,7 @@ void handleConfiguration() {
   int backlashAxis2 = (int)strtol(&temp1[0], NULL, 10);
   sprintf_P(temp, html_configBlAxis2, backlashAxis2);
   data.concat(temp);
-  data.concat("<button type='submit'>" L_UPLOAD "</button>\r\n");
+  data.concat("<button type='submit'>" L_UPLOAD "</button>\n");
   data.concat(FPSTR(html_configFormEnd));
   www.sendContentAndClear(data);
 
@@ -203,7 +116,7 @@ void handleConfiguration() {
       if (!onStep.command(":rb#", temp1)) strcpy(temp1, "0");
       sprintf_P(temp, html_configBlAxis3, atoi(temp1));
       data.concat(temp);
-      data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
+      data.concat(F("<button type='submit'>" L_UPLOAD "</button>\n"));
       data.concat(FPSTR(html_configFormEnd));
       www.sendContentAndClear(data);
     }
@@ -234,13 +147,13 @@ void handleConfiguration() {
         stripNum(temp1);
         sprintf_P(temp, html_configTcfCoef, temp1, focuser + 4);
         data.concat(temp);
-        data.concat(F("<button type='submit'>" L_UPLOAD "</button>\r\n"));
+        data.concat(F("<button type='submit'>" L_UPLOAD "</button>\n"));
         data.concat(FPSTR(html_configFormEnd));
         www.sendContentAndClear(data);
       }
     }
 
-    data.concat("<br />\r\n");
+    data.concat("<br />\n");
 
     int numShown = 0;
 
@@ -256,7 +169,7 @@ void handleConfiguration() {
       data.concat(FPSTR(html_configFormBegin));
       sprintf_P(temp, html_configMountType, mt); data.concat(temp);
       data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
-      data.concat(F("<button name='revert' value='0' type='submit'>" L_REVERT "</button>\r\n"));
+      data.concat(F("<button name='revert' value='0' type='submit'>" L_REVERT "</button>\n"));
       data.concat(FPSTR(html_configFormEnd));
       data.concat("<br />");
       numShown++;
@@ -428,7 +341,7 @@ void handleConfiguration() {
       data.concat(F("<br /><form method='get' action='/configuration.htm'>"));
       data.concat(F("<button name='advanced' type='submit' "));
       if (numShown == 0) data.concat("value='enable'>" L_ADV_ENABLE "</button>"); else data.concat("value='disable'>" L_ADV_DISABLE "</button>");
-      data.concat("</form>\r\n");
+      data.concat("</form>\n");
       if (numShown > 0) data.concat(FPSTR(html_configAxesNotes));
     #endif
 
@@ -439,13 +352,13 @@ void handleConfiguration() {
       #if defined(BOOT0_PIN) && DISPLAY_RESET_CONTROLS == FWU
         data.concat(" &nbsp;&nbsp;<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('advanced','fwu')\" type='button'>" L_RESET_FWU "!</button>");
       #endif
-      data.concat("<br/>\r\n");
+      data.concat("<br/>\n");
       data.concat(FPSTR(html_resetNotes));
     #endif
   }
 
   // collapsible script
-  data.concat(FPSTR(html_collapseScript));
+  data.concat(FPSTR(html_script_collapsible));
 
   data.concat("<br/><br/>");
 
@@ -593,39 +506,6 @@ bool processConfigurationGet() {
     sprintf(temp, ":fc%s#", v.c_str());
     onStep.commandBool(":FA1#");
     onStep.commandBool(temp);
-  }
-
-  // Location
-  v = www.arg("g1");  // long deg
-  v1 = www.arg("g2"); // long min
-  if (status.getVersionMajor() > 3) v2 = www.arg("g3"); else v2 = "0"; // long sec
-  if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
-    if (v.toInt() >= -180 && v.toInt() <= 180 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
-      if (status.getVersionMajor() > 3)
-        sprintf(temp,":Sg%+04d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
-      else
-        sprintf(temp,":Sg%+04d*%02d#", (int16_t)v.toInt(), (int16_t)v1.toInt());
-      onStep.commandBool(temp);
-    }
-  }
-
-  v = www.arg("t1");  // lat deg
-  v1 = www.arg("t2"); // lat min
-  if (status.getVersionMajor() > 3) v2 = www.arg("t3"); else v2 = "0"; // lat sec
-  if (!v.equals(EmptyStr) && !v1.equals(EmptyStr) && !v2.equals(EmptyStr)) {
-    if (v.toInt() >= -90 && v.toInt() <= 90 && v1.toInt() >= 0 && v1.toInt() <= 60 && v2.toInt() >= 0 && v2.toInt() <= 60) {
-      sprintf(temp,":St%+03d*%02d:%02d#",(int16_t)v.toInt(),(int16_t)v1.toInt(),(int16_t)v2.toInt());
-      onStep.commandBool(temp);
-    }
-  }
-
-  v = www.arg("u1");  // UT hrs
-  v1 = www.arg("u2"); // UT min
-  if (!v.equals(EmptyStr) && !v1.equals(EmptyStr)) {
-    if (v.toInt() >= -14 && v.toInt() <= 12 && (v1.toInt() == 0 || v1.toInt() == 30 || v1.toInt() == 45)) {
-      sprintf(temp, ":SG%+03d:%02d#", (int16_t)v.toInt(), (int16_t)v1.toInt());
-      onStep.commandBool(temp);
-    }
   }
 
   String ssa = www.arg("advanced");
@@ -884,3 +764,4 @@ void sendAxisParams(AxisSettings* a, int axis) {
     #endif
   }
 }
+*/

@@ -17,9 +17,9 @@
 #define CWCCW                        2
 #define BC_BISSC                     3
 
-#define DEFAULT_AJAX_RATE            "1"       // normally 2 seconds between updates
-#define DEFAULT_FAST_AJAX_RATE       "0.5"     // fast update is 1 second/update
-#define DEFAULT_AJAX_SHED_TIME       "15"      // time before return to normal update rate
+// unused ajax page update feature
+#define AJAX_PAGE_UPDATE_RATE_FAST_MS 200     // fast update rate
+#define AJAX_PAGE_UPDATE_FAST_SHED_MS 5000    // time before return to normal update rate
 
 // various auxillary features
 #define SWITCH                       1
@@ -33,14 +33,14 @@
 #define TIMEOUT_CMD                  200
 
 // task manager
-#define TASKS_MAX                   32     // up to 32 tasks
+#define TASKS_MAX                   32       // up to 32 tasks
 #define TASKS_SKIP_MISSED
 
 // EEPROM contents
 #define INIT_NV_KEY                  698623879UL
 
-#define NV_TIMEOUT_CMD               5      // 2 bytes
-#define NV_TIMEOUT_WEB               7      // 2 bytes
-#define NV_ETHERNET_SETTINGS_BASE    100    // 88 bytes
-#define NV_WIFI_SETTINGS_BASE        200    // 427 bytes
-#define NV_ENCODER_SETTINGS_BASE     700    // 88 bytes
+#define NV_TIMEOUT_CMD               5       // 2 bytes
+#define NV_TIMEOUT_WEB               7       // 2 bytes
+#define NV_ETHERNET_SETTINGS_BASE    100     // 88 bytes
+#define NV_WIFI_SETTINGS_BASE        200     // 427 bytes
+#define NV_ENCODER_SETTINGS_BASE     700     // 88 bytes

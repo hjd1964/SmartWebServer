@@ -51,7 +51,7 @@ typedef struct EncoderRateControl {
 } EncoderRateControl;
 
 typedef struct EncoderSettings {
-    char autoSync;
+    bool autoSync;
     EncoderAxis axis1;
     EncoderAxis axis2;
     EncoderRateControl rateCtrl;
@@ -63,7 +63,11 @@ class Encoders {
     void init();
 
     EncoderSettings settings = {
-      false,
+      #if ENC_AUTO_SYNC_DEFAULT == ON
+        true,
+      #else
+        false,
+      #endif
       {0, AXIS1_ENC_DIFF_LIMIT_TO, AXIS1_ENC_TICKS_DEG, AXIS1_ENC_REVERSE},
       {0, AXIS2_ENC_DIFF_LIMIT_TO, AXIS2_ENC_TICKS_DEG, AXIS2_ENC_REVERSE},
       {20, 200, 0.0, 1, 0, 10, 100}
@@ -88,12 +92,6 @@ class Encoders {
       bool   validAxis2();
       double getOnStepAxis1();
       double getOnStepAxis2();
-
-      #if ENC_AUTO_SYNC_DEFAULT == ON
-        char autoSync = true;
-      #else
-        char autoSync = false;
-      #endif
 
       int32_t Axis1EncDiffFrom    = AXIS1_ENC_DIFF_LIMIT_FROM;
       int32_t Axis1EncDiffAbs     = 0;

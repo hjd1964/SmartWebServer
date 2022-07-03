@@ -2,12 +2,6 @@
 
 #include "../../Common.h"
 
-// state polling rates in milli-seconds
-#define STATE_POLLING_RATE_MS 2000
-#define STATE_SLOW_POLLING_RATE_MS 4000
-#define STATE_FAST_POLLING_RATE_MS 1000
-#define STATE_GPIO_POLLING_RATE_MS 100
-
 #define leftTri  "&#x25c4;"
 #define rightTri "&#x25ba;"
 #define upTri    "&#x25b2;"
@@ -21,6 +15,13 @@ class State {
     void pollFast();
     void pollGpio();
 
+    void updateController();
+    void updateMount();
+    void updateRotator();
+    void updateFocuser();
+    void updateAuxiliary();
+    void updateEncoders();
+
     char dateStr[10] = "?";
     char timeStr[10] = "?";
     char lastStr[10] = "?";
@@ -32,8 +33,8 @@ class State {
     char siteHumidityStr[16] = "?";
     char siteDewPointStr[16] = "?";
 
-    char telescopeTemperatureStr[16] = "?";
-
+    char indexAzmStr[14] = "?";
+    char indexAltStr[14] = "?";
     char indexRaStr[14] = "?";
     char indexDecStr[14] = "?";
     char targetRaStr[14] = "?";
@@ -58,19 +59,31 @@ class State {
     bool trackingSolar = false;
     bool trackingKing = false;
 
+    float slewSpeedNominal = NAN;
+    float slewSpeedCurrent = NAN;
     char slewSpeedStr[16] = "?";
 
     char driverStatusStr[9][40] = {"?","?","?","?","?","?","?","?","?"};
 
-    char controllerTemperatureStr[16] = "?";;
-    char lastErrorStr[80] = "?";;
-    char workLoadStr[20] = "?";;
+    char controllerTemperatureStr[16] = "?";
+    char lastErrorStr[80] = "?";
+    char workLoadStr[20] = "?";
     char signalStrengthStr[20] = "?";
 
-    char focuserPositionStr[20] = "?";
     int focuserActive = 0;
+    int focuserSelected = 0;
+    char focuserPositionStr[20] = "?";
+    bool focuserSlewing = false;
+    char focuserTemperatureStr[16] = "?";
+    char focuserBacklashStr[16] = "?";
+    char focuserDeadbandStr[16] = "?";
+    bool focuserTcfEnable = false;
+    char focuserTcfCoefStr[16] = "?";
 
     char rotatorPositionStr[20] = "?";
+    bool rotatorSlewing = false;
+    bool rotatorDerotate = false;
+    bool rotatorDerotateReverse = false;
 
    // DynamicJsonDocument *doc;
 

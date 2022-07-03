@@ -12,8 +12,8 @@
 
 #define L_UT "UT"
 #define L_LST "LST"
-#define L_LONG "Long."
-#define L_LAT "Lat."
+#define L_LONG "Longitude"
+#define L_LAT "Latitude"
 #define L_EAST "East"
 #define L_WEST "West"
 #define L_ZENITH "Zenith"
@@ -22,7 +22,7 @@
 
 #define L_NONE "None"
 #define L_AUTO "Auto"
-#define L_SET_LABEL "Set"
+#define L_SET_LABEL "Goto"
 #define L_OK "Ok"
 #define L_ON "On"
 #define L_OFF "Off"
@@ -41,6 +41,7 @@
 #define L_FAULT "Fault"
 #define L_POINT "Point"
 #define L_COMPLETE "Complete"
+#define L_ACTIVE "Active"
 #define L_INACTIVE "Inactive"
 
 // ---------------------------- Index ----------------------------
@@ -48,8 +49,8 @@
 #define L_TIME_BROWSER_UT "UT (web browser)"
 
 // weather
-#define L_TELE_TEMPERATURE "Telescope Temperature"
-#define L_TEMPERATURE "Ambient Temperature"
+#define L_TEMPERATURE "Temperature"
+#define L_AMBIENT_TEMPERATURE "Ambient Temperature"
 #define L_PRESSURE "Barometric Pressure"
 #define L_HUMIDITY "Relative Humidity"
 #define L_DEW_POINT "Dew Point Temperature"
@@ -58,7 +59,7 @@
 #define L_TRACKING "Tracking"
 #define L_SITE "Site"
 #define L_COORDINATES "Coordinates"
-#define L_CURRENT "Current"
+#define L_CURRENT "Position"
 #define L_TARGET "Target&nbsp;&nbsp;"
 #define L_ENCODER "Encodr"
 #define L_POLAR_ALIGN "Polar Alignment"
@@ -80,15 +81,16 @@
 #define L_PARK_FAILED "Park Failed"
 
 // home
+#define L_HOMING "Homing"
 #define L_AT_HOME "At Home"
-#define L_INGOTO "Slewing"
+#define L_SLEWING "Slewing"
 #define L_PPS_SYNC "PPS Sync"
 
 // tracking
-#define L_REFR_COMP_RA "refraction comp."
-#define L_REFR_COMP_BOTH "refraction comp. dual axis"
-#define L_FULL_COMP_RA "full comp."
-#define L_FULL_COMP_BOTH "full comp. dual axis"
+#define L_REFR_COMP_RA "RC"
+#define L_REFR_COMP_BOTH "RCD"
+#define L_FULL_COMP_RA "FC"
+#define L_FULL_COMP_BOTH "FCD"
 #define L_TRACKING "Tracking"
 #define L_CURRENT_MAXRATE "Current MaxRate"
 #define L_DEFAULT_MAXRATE "Default MaxRate"
@@ -97,8 +99,9 @@
 #define L_FREQUENCY_ADJUST "Frequency Adjust"
 
 // driver status
-#define L_DRIVER_STATUS "Driver"
-#define L_STATE "Status"
+#define L_DRIVER "Driver"
+#define L_STATUS "Status"
+#define L_STATE "State"
 #define L_COMMS_FAILURE "Comms failure"
 #define L_STANDSTILL "Standstill"
 #define L_OPEN_LOAD "Open load"
@@ -133,6 +136,7 @@
   #define SIDEREAL_CH "&#9733;"
   #define LUNAR_CH "&#9790;"
   #define SOLAR_CH "&#9737;"
+  #define KING_CH "&#9812;"
 #else
   #define HOME_CH "H"
   #define ARROW_DR "-&gt;"
@@ -151,6 +155,7 @@
   #define SIDEREAL_CH "*"
   #define LUNAR_CH "("
   #define SOLAR_CH "O"
+  #define KING_CH "K"
 #endif
 
 #define BUTTON_N "N"
@@ -159,36 +164,29 @@
 #define BUTTON_W "W"
 #define BUTTON_SYNC "@"
 
-#define L_CENTER_RATE "Cntr"
-#define L_FIND_RATE "Find"
-#define L_FAST_RATE "Fast"
-#define L_VFAST_RATE "VF"
-
 #define L_HINT_CLOCK "Set Date/Time"
 #define L_HINT_CONTINUE_GOTO "Continue Goto (when paused at home)"
-#define L_HINT_FIND_HOME "Find Home"
-#define L_HINT_RESET_HOME "Home (Reset)"
-#define L_HINT_UNPARK "Un-Park"
-#define L_HINT_PARK "Park"
+#define L_FIND_HOME "Find Home"
+#define L_RESET_HOME "Home (Reset)"
+#define L_UNPARK "Un-Park"
+#define L_PARK "Park"
 #define L_HINT_EMERGENCY_STOP "Emergency Stop!"
 #define L_HINT_RATE_SIDEREAL "Sidereal Rate"
 #define L_HINT_RATE_LUNAR "Lunar Rate"
 #define L_HINT_RATE_SOLAR "Solar Rate"
+#define L_HINT_RATE_KING "King Rate"
 #define L_HINT_FOC_SEL "Select Focuser"
-#define L_HINT_FOC_FIND_HOME "Find Focuser Home"
-#define L_HINT_FOC_RESET_HOME "Home (Reset) Focuser"
-#define L_HINT_ROT_FIND_HOME "Find Rotator Home"
-#define L_HINT_ROT_RESET_HOME "Home (Reset) Rotator"
-#define L_HINT_DEROTATE_ON "De-Rotate On"
-#define L_HINT_ROTATOR_REV "Reverse Rotator Motion"
+#define L_HINT_DEROTATE_ON "Derotate On"
+#define L_HINT_ROTATOR_REV "Reverse Derotator Motion"
 #define L_HINT_ROTATOR_PAR "Move Rotator to Parallactic angle"
-#define L_HINT_DEROTATE_OFF "De-Rotate Off"
+#define L_HINT_DEROTATE_OFF "Derotate Off"
 
 #define L_ALIGN "Align"
 #define L_AUX_FEATURES "Auxiliary Features"
 
 #define L_FOCUSER "Focuser"
 #define L_ROTATOR "Rotator"
+#define L_DEROTATOR "Derotator"
 #define L_CAMERA_EXPOSURE "Exposure"
 #define L_CAMERA_DELAY "Delay"
 #define L_CAMERA_COUNT "Count"
@@ -198,7 +196,6 @@
 #define L_CATALOG "Catalog"
 #define L_CATALOGS "Catalogs"
 #define L_RECS_AVAIL "records available"
-#define L_NO_CATALOG "No catalog selected"
 #define L_CAT_DATA "Data (downloaded OR to be uploaded.)"
 
 #define L_CAT_EXAMPLE1 "Fields:<br /><pre>"
@@ -212,6 +209,7 @@
 #define L_CAT_NO_NAME "Catalog selected, has no name."
 #define L_CAT_GET_NAME_FAIL "Catalog selected, get name failed."
 #define L_CAT_NO_CAT "No catalog selected."
+#define L_CAT_NO_OBJECT "No object selected."
 #define L_SELECTED "selected"
 #define L_CAT_DOWNLOAD_FAIL "Download failed, bad data."
 #define L_CAT_DOWNLOAD_SUCCESS "Download success."
@@ -243,27 +241,13 @@
 #define L_ENC_SYNC_TO_ENC "Sync OnStep to Encoders"
 #define L_ENC_SYNC_TO_ONS "Sync Encoders to OnStep"
 #define L_ENC_ZERO_TO_ONS "Set Absolute Encoder Zero to OnStep"
-#define L_ENC_AUTO_SYNC "Automatically sync. OnStep to Encoders"
+#define L_ENC_AUTO_SYNC "Automatically Sync OnStep to Encoders"
 #define L_ENC_CONF "Encoder Configuration"
 #define L_ENC_SET_TPD "Counts per degree"
-#define L_ENC_MAX_ANGLE "Max angular dist. (Enc. vs OnStep)"
-#define L_ENC_MAX_ANGLE_AXIS1 "in arc-sec 0 to 9999"
-#define L_ENC_MAX_ANGLE_AXIS2 "in arc-sec 0 to 9999"
+#define L_ENC_SYNC_THLD "Auto Sync threshold"
+#define L_ENC_SYNC_THLD_UNITS "0 to 9999 arc-sec"
 #define L_ENC_AUTO_RATE "OnStep rate control"
-#define L_ENC_SYNC_NOW "Now"
-
-// encoder rate control
-#define L_ENC_BINNED_SAMPLES "Encoder rate averaging, binned samples"
-#define L_ENC_SAMPLES "Encoder rate averaging, samples"
-#define L_ENC_PROPORTIONAL "Proportional response"
-#define L_ENC_MIN_GUIDE "Minimum guide"
-#define L_ENC_RATE_COMP "Encoder rate comp"
-#define L_ENC_MAGN "Magnitude"
-#define L_ENC_PHASE "Phase"
-#define L_ENC_COUNTS "Counts"
-#define L_ENC_STAT_RATE_AXIS1 "Axis1 rates (sidereal)"
-#define L_ENC_STAT_INTPOL_COMP "Intpol Comp"
-#define L_ENC_STAT_INTPOL_PHASE "Intpol Phase"
+#define L_NOW "Now"
 
 // ------------------------------ PEC ----------------------------
 
@@ -276,7 +260,7 @@
 #define L_PEC_CLEAR_MESSAGE "Clear erases the memory buffer not EEPROM.  During recording corrections are averaged 3:1 favoring the buffer unless cleared in which case the full correction is used."
 #define L_PEC_EEWRITE "Write to EEPROM"
 #define L_PEC_EEWRITE_MESSAGE "Writes PEC data to EEPROM so it's remembered if OnStep is restarted.  Writing the data can take a few seconds."
-#define L_PEC_NO_PEC_MESSAGE "PEC CONTROLS DISABLED"
+#define L_DISABLED_MESSAGE "DISABLED"
 #define L_PEC_IDLE "Idle"
 #define L_PEC_WAIT_PLAY "Play waiting to start"
 #define L_PEC_PLAYING "Playing"
@@ -318,33 +302,37 @@
 #define L_MAX_SLEW_SPEED "Maximum Slew Speed"
 
 // goto Rate
-#define L_VSLOW "VSlow (0.5x)"
-#define L_SLOW "Slow (0.75x)"
-#define L_NORMAL "Normal (1x)"
-#define L_FAST "Fast (1.5x)"
-#define L_VFAST "VFast (2x)"
+#define L_VSLOW "VSlow"
+#define L_SLOW "Slow"
+#define L_NORMAL "Normal"
+#define L_FAST "Fast"
+#define L_VFAST "VFast"
 
 // backlash
-#define L_BACKLASH_RANGE_AXIS1 "Backlash, in arc-seconds 0 to 3600"
-#define L_BACKLASH_RANGE_AXIS2 "Backlash, in arc-seconds 0 to 3600"
-#define L_BACKLASH_RANGE_AXIS345 "Backlash, in steps 0 to 32767"
+#define L_BACKLASH "Backlash"
+#define L_BACKLASH_RANGE_AXIS1 "Axis1, 0 to 3600 arc-sec"
+#define L_BACKLASH_RANGE_AXIS2 "Axis2, 0 to 3600 arc-sec"
+#define L_BACKLASH_RANGE_AXIS3UP "Backlash, 0 to 32767 steps"
 
 // deadband/TCF
-#define L_DEADBAND_RANGE_AXIS45 "TCF Deadband, in steps 1 to 32767"
-#define L_TCF_COEF_RANGE_AXIS45 "TCF Coef, in microns/deg. C -999.0 to 999.0"
-#define L_TCF_COEF_EN_AXIS45 "TCF Enable, 0 false or 1 true"
+#define L_DEADBAND "TCF Deadband"
+#define L_TCF_COEF "TCF Coef"
+#define L_TCF_COEF_EN "TCF Enable"
+#define L_DEADBAND_RANGE_AXIS4UP "TCF Deadband, 1 to 32767 steps"
+#define L_TCF_COEF_RANGE_AXIS4UP "TCF Coef, &pm;999.0 microns/deg. C"
+#define L_TCF_COEF_EN_AXIS4UP "TCF Enable, 0 false or 1 true"
 
 // limits
 #define L_LIMITS_TITLE "Horizon and Overhead Limits"
-#define L_LIMITS_RANGE_HORIZON "Horizon, minimum altitude in degrees +/- 30"
-#define L_LIMITS_RANGE_OVERHEAD "Overhead, maximum altitude in degrees 60 to 90"
-#define L_LIMITS_RANGE_MERIDIAN_E "Past Meridian when East of the pier, in degrees +/- 270"
-#define L_LIMITS_RANGE_MERIDIAN_W "Past Meridian when West of the pier, in degrees +/- 270"
+#define L_LIMITS_RANGE_HORIZON "Horizon, min altitude &pm;30&deg;"
+#define L_LIMITS_RANGE_OVERHEAD "Overhead, max altitude 60 to 90&deg;"
+#define L_LIMITS_RANGE_MERIDIAN_E "Past Meridian, East of pier &pm;270&deg;"
+#define L_LIMITS_RANGE_MERIDIAN_W "Past Meridian, West of pier &pm;270&deg;"
 
 // location
 #define L_LOCATION_TITLE "Site Latitude, Longitude, UTC Offset"
-#define L_LOCATION_LONG "Longitude deg. min. sec. +/- 180, W is +"
-#define L_LOCATION_LAT  "Latitude deg. min. sec. +/- 90, N is +"
+#define L_LOCATION_LONG "Longitude deg. min. sec. &pm;180, W is +"
+#define L_LOCATION_LAT  "Latitude deg. min. sec. &pm;90, N is +"
 #define L_LOCATION_RANGE_UTC_OFFSET "UTC Offset, in hours and min. -14 to +12"
 #define L_LOCATION_MESSAGE_UTC_OFFSET "Opposite of a time-zone value, this is for Standard Time (not Daylight Time.)"
 
@@ -352,12 +340,13 @@
 #define L_REVERT "Revert to Defaults"
 #define L_ADV_SET_TITLE "Advanced"
 #define L_ADV_SET_HEADER_MSG "unless noted otherwise changes below take effect after rebooting OnStep:"
-#define L_ADV_MOUNT_TYPE "Select 1 GEM, 2 EQ Fork, or 3 Alt/Azm"
+#define L_ADV_MOUNT_TYPE " select 1 GEM, 2 EQ Fork, or 3 Alt/Azm"
+#define L_ADV_BOOL "0 false or 1 true"
 
-#define L_ADV_SET_SPWR "Steps per worm rotation (0 to disable)"
+#define L_ADV_SET_SPWR "Steps per worm rotation"
 #define L_ADV_SET_SPD "Steps per degree"
 #define L_ADV_SET_SPM "Steps per micron"
-#define L_ADV_SET_REV "Reverse direction, 0 false or 1 true"
+#define L_ADV_SET_REV "Rev. direction"
 #define L_ADV_SET_MIN "Minimum position"
 #define L_ADV_SET_MAX "Maximum position"
 
@@ -377,6 +366,7 @@
 
 #define L_ADV_ENABLE "Enable Advanced Configuration"
 #define L_ADV_DISABLE "Disable Advanced Configuration (all defaults on reboot)"
+#define L_ADV_SET_AXIS_NO_EDIT "Editing of this axis has been disabled."
 #define L_ADV_SET_NO_EDIT "Editing of all axes is disabled at the moment.  Perhaps this feature is not enabled (so the related configuration defaults are active) or you need to reboot OnStep."
 #define L_ADV_SET_FOOTER_MSG1 "After pressing [Upload] take note of changes above since the upload may have been rejected due to an invalid parameter."
 #define L_ADV_SET_FOOTER_MSG2 "When you choose to [Revert] that group becomes unavailable for editing until you reboot OnStep."
@@ -428,7 +418,7 @@
 // --------------------------- Constants -------------------------
 
 #define L_DOWN_TITLE "Serial Interface to OnStep is Down!"
-#define L_DOWN_MESSAGE1 "If you just rebooted OnStep please wait for several seconds for everything to startup again, then check to be sure you're still connected to WiFi.<br /><br />"
+#define L_DOWN_MESSAGE1 "If you just rebooted OnStep please wait for several seconds for everything to startup again, then check to be sure you're still connected to WiFi."
 #define L_DOWN_MESSAGE2 "If this is a persistant problem here are other possible causes:<br /><ul>"
 #define L_DOWN_MESSAGE3 "Baud rate mismatch due to reboot of only OnStep, power everything off/on again."
 #define L_DOWN_MESSAGE4 "Incorrectly configured SWS baud rate."
@@ -436,15 +426,16 @@
 #define L_DOWN_MESSAGE6 "Incorrect wiring of the com ports."
 #define L_DOWN_MESSAGE7 "Incorrect wiring of power supply pins.  Gnd must be shared between OnStep's MCU and the Addon's MCU."
 
-#define L_PAGE_STATUS "Status"
-#define L_PAGE_CONTROL "Control"
-#define L_PAGE_AUX "Aux"
+#define L_CONTROLLER "Controller" // was Status
+#define L_PAGE_MOUNT "Mount" // was Control
+#define L_PAGE_AUXILIARY "Auxiliary"
 #define L_PAGE_LIBRARY "Library"
 #define L_PAGE_ENCODERS "Encoders"
 #define L_PAGE_PEC "PEC"
-#define L_PAGE_SETTINGS "Settings"
-#define L_PAGE_CONFIG "Config"
-#define L_PAGE_SETUP "Network"
+#define L_SETTINGS "Settings"
+#define L_CONTROLS "Controls"
+#define L_PAGE_CONFIG "Configuration"
+#define L_PAGE_NETWORK "Network"
 
 // ------------------------- MountStatus -------------------------
 

@@ -121,12 +121,12 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
         // direct focuser select command?
         if (strchr("+-QZHhF", cmd[3])) noResponse = true;
         if (strchr("1234", cmd[3])) noResponse = true;
-        if (strchr("Aap",cmd[3])) shortResponse = true;
+        if (strchr("Aapc",cmd[3])) shortResponse = true;
       } else {
         // normal command
         if (strchr("+-QZHhF", cmd[2])) noResponse = true;
         if (strchr("1234", cmd[2])) noResponse = true;
-        if (strchr("Aap",cmd[2])) shortResponse = true;
+        if (strchr("Aapc",cmd[2])) shortResponse = true;
       }
     } else
     if (cmd[1] == 'r') {

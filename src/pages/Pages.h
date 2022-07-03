@@ -6,38 +6,32 @@
 #include "../../Config.h"
 #include "../../Extended.config.h"
 
-#include "EncoderControl.h"
-
 void handleRoot();
-void handleRootAjax();
+void indexAjaxGet();
+void indexAjax();
 
-void handleConfiguration();
-void configurationAjaxGet();
+void handleMount();
+void mountAjaxGet();
+void mountAjax();
+void handleLibraryHelp();
 
-void handleSettings();
-void settingsAjaxGet();
-void settingsAjax();
+void handleRotator();
+void rotatorAjaxGet();
+void rotatorAjax();
+
+void handleFocuser();
+void focuserAjaxGet();
+void focuserAjax();
+
+void handleAux();
+void auxAjaxGet();
+void auxAjax();
 
 #if ENCODERS == ON
   void handleEncoders();
   void encAjaxGet();
   void encAjax();
 #endif
-
-void handleLibrary();
-void libraryAjaxGet();
-void libraryAjax();
-
-void handleControl();
-void controlAjaxGet();
-void controlAjax();
-
-void handleAux();
-void auxAjaxGet();
-void auxAjax();
-
-void handlePec();
-void pecAjax();
 
 void handleNetwork();
 

@@ -2,7 +2,7 @@
 // Mount status from OnStep
 #pragma once
 
-enum RateCompensation {RC_NONE, RC_REFR_RA, RC_REFR_BOTH, RC_FULL_RA, RC_FULL_BOTH};
+enum RateCompensation {RC_NONE, RC_REFR_RA, RC_REFR_BOTH, RC_FULL_RA, RC_FULL_BOTH, RC_UNKNOWN};
 
 enum MountTypes {MT_UNKNOWN, MT_GEM, MT_FORK, MT_FORKALT, MT_ALTAZM};
 
@@ -55,8 +55,10 @@ class Status {
     bool valid = false;
 
     bool atHome = false;
+    bool homing = false;
     bool waitingHome = false;
     bool pauseAtHome = false;
+
     bool tracking = false;
     bool inGoto = false;
 
@@ -101,6 +103,8 @@ class Status {
 
     Errors lastError = ERR_NONE;
 
+    bool mountFound = false;
+
     bool focuserFound = false;
     int focuserCount = 0;
     bool focuserPresent[6] = {false,false,false,false,false,false};
@@ -108,7 +112,7 @@ class Status {
     bool rotatorFound = false;
     bool derotatorFound = false;
 
-    bool featureFound = false;
+    bool auxiliaryFound = false;
     inline void selectFeature(int f) { featureSelected = f; }
     inline char* featureName() { return feature[featureSelected].name; }
     inline int featurePurpose() { return feature[featureSelected].purpose; }
