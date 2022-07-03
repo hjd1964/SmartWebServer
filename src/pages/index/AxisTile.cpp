@@ -31,7 +31,7 @@ bool axisTile(int axis, String &data)
     case 7: sprintf(axisTitleStr, "Axis%d Focuser5", 8); break;
     case 8: sprintf(axisTitleStr, "Axis%d Focuser6", 9); break;
   }
-  sprintf_P(temp, html_tile_text_beg, "22em", "10em", axisTitleStr);
+  sprintf_P(temp, html_tile_text_beg, "22em", "11em", axisTitleStr);
   data.concat(temp);
   data.concat("<br /><hr>");
   if (state.driverStatusStr[axis][0] == '?') strcpy(temp1, L_UNKNOWN); else strcpy(temp1, state.driverStatusStr[axis]);

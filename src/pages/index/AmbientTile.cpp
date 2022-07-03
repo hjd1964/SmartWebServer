@@ -10,7 +10,7 @@ void ambientTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "10em", "Weather");
+  sprintf_P(temp, html_tile_text_beg, "22em", "11em", "Weather");
   data.concat(temp);
   data.concat("<br /><hr>");
 

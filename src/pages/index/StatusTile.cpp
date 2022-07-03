@@ -10,16 +10,11 @@ void statusTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "10em", L_STATE);
+  sprintf_P(temp, html_tile_text_beg, "22em", "11em", L_STATE);
   data.concat(temp);
   data.concat("<br /><hr>");
 
   // General status
-
-#if DISPLAY_INTERNAL_TEMPERATURE == ON
-  sprintf_P(temp, html_indexTPHD, L_INTERNAL_TEMP ":", 'm', state.controllerTemperatureStr);
-  data.concat(temp);
-#endif
 
   sprintf_P(temp, html_indexGeneralError, state.lastErrorStr);
   data.concat(temp);
@@ -29,6 +24,11 @@ void statusTile(String &data)
     sprintf_P(temp, html_indexWorkload, state.workLoadStr);
     data.concat(temp);
   }
+
+  #if DISPLAY_INTERNAL_TEMPERATURE == ON
+    sprintf_P(temp, html_indexTemp, L_INTERNAL_TEMP ":", 'm', state.controllerTemperatureStr);
+    data.concat(temp);
+  #endif
 
   #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
     sprintf_P(temp, html_indexSignalStrength, state.signalStrengthStr);
