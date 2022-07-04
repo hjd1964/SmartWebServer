@@ -2,6 +2,8 @@
 // Axis tile
 #include "AxisTile.h"
 
+#if ENCODERS == ON
+
 #include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
 
@@ -195,3 +197,5 @@ extern void encAxisTileGet()
     nv.writeBytes(NV_ENCODER_SETTINGS_BASE, &encoders.settings, sizeof(EncoderSettings));
   }
 }
+
+#endif

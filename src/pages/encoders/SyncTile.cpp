@@ -2,6 +2,8 @@
 // Encoder Sync tile
 #include "SyncTile.h"
 
+#if ENCODERS == ON
+
 #include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
 
@@ -60,3 +62,5 @@ extern void syncTileGet()
     nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &encoders.settings, sizeof(EncoderSettings));
   }
 }
+
+#endif
