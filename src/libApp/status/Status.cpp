@@ -13,9 +13,8 @@
 
 #include "Status.h"
 
-bool Status::update(bool all) {
-  unsigned long t0,t1,t2,t3,t4,t5,t6,t=millis();
-
+bool Status::update(bool all)
+{
   char result[80] = "";
   if (!valid) {
     if (!onStep.command(":GVP#", result) || result[0] == 0 || !strstr(result, "On-Step")) { valid = false; return false; } Y;
@@ -115,24 +114,11 @@ bool Status::update(bool all) {
     Y;
   }
 
-  t0=millis();
   focuserScan();
-  t1=millis();
   rotatorScan();
-  t2=millis();
   auxiliaryFeatureScan();
-  t3=millis();
   auxiliaryFeatureUpdate();
-  t4=millis();
   axisStatusUpdate();
-  t5=millis();
-
-//  V("t0="); VL(t0-t);
-//  V("t1="); VL(t1-t);
-//  V("t2="); VL(t2-t);
-//  V("t3="); VL(t3-t);
-//  V("t4="); VL(t4-t);
-//  V("t5="); VL(t5-t);
 
   valid = true;
   return true;

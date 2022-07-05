@@ -33,58 +33,34 @@ void State::init()
 
 void State::poll()
 {
-  unsigned long t0,t1,t2,t3,t = millis();
-
   if (status.mountFound)
   {
     updateMount();
- t0 = millis();
 
     updateEncoders();
- t1 = millis();
   }
 
   if (status.focuserFound) updateFocuser();
- t2 = millis();
 
   if (status.auxiliaryFound) updateAuxiliary();
- t3 = millis();
-
-//  V("t0="); VL(t0 - t);
-//  V("t1="); VL(t1 - t);
-//  V("t2="); VL(t2 - t);
-//  V("t3="); VL(t3 - t);
-//  VL("");
 }
 
 void State::pollSlow()
 {
-  unsigned long t0,t = millis();
-
   updateController();
   status.update(true);
-
-//  V("t0="); VL(t0 - t);
-//  VL("");
 }
 
 void State::pollFast()
 {
-  unsigned long t0,t1,t = millis();
   char temp[80];
 
   if (status.focuserFound) {
     if (!onStep.command(":FG#", temp)) strcpy(temp, "?"); else strcat(temp, " microns"); Y;
     strncpy(focuserPositionStr, temp, 20); focuserPositionStr[19] = 0; Y;
   }
-  t0=millis();
 
   if (status.rotatorFound) updateRotator();
-  t1=millis();
-
-//  V("t0="); VL(t0 - t);
-//  V("t1="); VL(t1 - t);
-//  VL("");
 }
 
 void State::pollGpio()
