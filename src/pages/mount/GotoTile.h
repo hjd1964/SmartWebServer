@@ -46,7 +46,7 @@ const char html_gotoGo[] PROGMEM =
   "<br /><button onpointerdown=\"s('goto','go')\" type='button' class='bb'>" L_SET_LABEL "</button>";
 
 const char html_gotoStop[] PROGMEM =
-  "<button onpointerdown='\"'s('goto','stop')\" type='button' class='bb' style='height: 3em; width: 5em; color: White;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button>";
+  "<button onpointerdown=\"s('goto','stop')\" type='button' class='bb' style='height: 3em; width: 5em; color: White;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button>";
 
 const char html_gotoContinue[] PROGMEM =
   "<button id='gto_active' onpointerdown=\"s('goto','mp_cnt')\" type='button' disabled class='bb' title='" L_HINT_CONTINUE_GOTO "'>" ARROW_R2 HOME_CH ARROW_R2 "</button>";
