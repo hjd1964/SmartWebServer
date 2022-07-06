@@ -74,7 +74,8 @@ void statusTile(String &data)
     sprintf_P(temp, html_form_begin, "index.htm");
     data.concat(temp);
     data.concat(L_RESET_TITLE "<br/><br/>");
-    data.concat("<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('boot','reset')\" type='button'>" L_RESET "!</button>");
+    data.concat("<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('boot','reset')\" type='button'>" L_RESET "!</button><br />");
+    data.concat("<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('boot','wipe')\" type='button'>" L_WIPE_RESET "!</button>");
     #if defined(BOOT0_PIN) && DISPLAY_RESET_CONTROLS == FWU
       data.concat(" &nbsp;&nbsp;<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('boot','fwu')\" type='button'>" L_RESET_FWU "!</button>");
     #endif
@@ -124,7 +125,7 @@ void statusTileAjax(String &data)
 }
 
 // pass related data back to OnStep
-extern void statusTileGet()
+void statusTileGet()
 {
   char temp[80] = "";
 
@@ -132,9 +133,29 @@ extern void statusTileGet()
   #if DISPLAY_RESET_CONTROLS != OFF
     if (ssa.equals("reset"))
     {
+      delay(1000);
       #if RESET_PIN == OFF
         onStep.commandBlind(":ERESET#");
       #else
+        digitalWrite(RESET_PIN, RESET_PIN_STATE);
+        pinMode(RESET_PIN, OUTPUT);
+        delay(250);
+        pinMode(RESET_PIN, INPUT);
+      #endif
+
+      delay(250);
+      return;
+    }
+    if (ssa.equals("wipe"))
+    {
+      delay(1000);
+      #if RESET_PIN == OFF
+        onStep.commandString(":ENVRESET#");
+        delay(5000);
+        onStep.commandBlind(":ERESET#");
+      #else
+        onStep.commandString(":ENVRESET#");
+        delay(5000);
         digitalWrite(RESET_PIN, RESET_PIN_STATE);
         pinMode(RESET_PIN, OUTPUT);
         delay(250);
