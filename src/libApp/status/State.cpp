@@ -101,4 +101,59 @@ void State::pollGpio()
   }
 }
 
+void formatDegreesStr(char *s)
+{
+  char *tail;
+
+  // degrees part
+  tail = strchr(s, '*');
+  if (tail)
+  {
+    char head[80];
+    tail[0] = 0;
+    strcpy(head, s);
+    strcat(head, "&deg;");
+
+    tail++;
+    strcat(head, tail);
+    strcpy(s, head);
+  } else return;
+
+  // minutes part
+  tail = strchr(s, ':');
+  if (tail) // indicates there is a seconds part
+  {
+    tail[0] = '\'';
+    strcat(s, "\"");
+  }
+  else // there is no seconds part
+  {
+    strcat(s, "\'");
+  }
+}
+
+void formatHoursStr(char *s)
+{
+  char *tail;
+
+  // hours part
+  tail = strchr(s, ':');
+  if (tail)
+  {
+    tail[0] = 'h';
+  } else return;
+
+  // minutes part
+  tail = strchr(s, ':');
+  if (tail) // indicates there is a seconds part
+  {
+    tail[0] = 'm';
+    strcat(s, "s");
+  }
+  else // there is no seconds part
+  {
+    strcat(s, "m");
+  }
+}
+
 State state;

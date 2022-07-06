@@ -26,24 +26,24 @@ class State {
     char timeStr[10] = "?";
     char lastStr[10] = "?";
     double latitude = NAN;
-    char latitudeStr[10] = "?";
-    char longitudeStr[11] = "?";
+    char latitudeStr[20] = "?";
+    char longitudeStr[20] = "?";
     char siteTemperatureStr[16] = "?";
     char sitePressureStr[16] = "?";
     char siteHumidityStr[16] = "?";
     char siteDewPointStr[16] = "?";
 
-    char indexAzmStr[14] = "?";
-    char indexAltStr[14] = "?";
-    char indexRaStr[14] = "?";
-    char indexDecStr[14] = "?";
-    char targetRaStr[14] = "?";
-    char targetDecStr[14] = "?";
+    char indexAzmStr[20] = "?";
+    char indexAltStr[20] = "?";
+    char indexRaStr[20] = "?";
+    char indexDecStr[20] = "?";
+    char targetRaStr[20] = "?";
+    char targetDecStr[20] = "?";
 
-    char angleAxis1Str[14] = "?";
-    char angleAxis2Str[14] = "?";
-    char encAngleAxis1Str[14] = "?";
-    char encAngleAxis2Str[14] = "?";
+    char angleAxis1Str[20] = "?";
+    char angleAxis2Str[20] = "?";
+    char encAngleAxis1Str[20] = "?";
+    char encAngleAxis2Str[20] = "?";
 
     char pierSideStr[10] = "?";
     char meridianFlipStr[10] = "?";
@@ -101,5 +101,8 @@ class State {
     bool rotatorChecked = false;
 
 };
+
+void formatDegreesStr(char *s);
+void formatHoursStr(char *s);
 
 extern State state;

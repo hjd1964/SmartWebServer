@@ -346,7 +346,7 @@
 #define L_ADV_SET_SPWR "Steps per worm rotation"
 #define L_ADV_SET_SPD "Steps per degree"
 #define L_ADV_SET_SPM "Steps per micron"
-#define L_ADV_SET_REV "Rev. direction"
+#define L_ADV_SET_REV "Reverse direction"
 #define L_ADV_SET_MIN "Minimum position"
 #define L_ADV_SET_MAX "Maximum position"
 
