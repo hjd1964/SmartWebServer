@@ -87,7 +87,7 @@ void State::updateMount()
   } else {
     if (!onStep.command(":Gt#", temp)) strcpy(temp, "?");
   }
-  if (DISPLAY_HIGH_PRECISION_COORDS == ON) strncpyex(latitudeStr, temp, 13); else strncpyex(latitudeStr, temp, 10);
+  strncpyex(latitudeStr, temp, 10);
   convert.dmsToDouble(&latitude, latitudeStr, true);
   formatDegreesStr(latitudeStr);
   Y;
@@ -98,7 +98,7 @@ void State::updateMount()
   } else {
     if (!onStep.command(":Gg#", temp)) strcpy(temp, "?");
   }
-  if (DISPLAY_HIGH_PRECISION_COORDS == ON) strncpyex(longitudeStr, temp, 14); else strncpyex(longitudeStr, temp, 11);
+  strncpyex(longitudeStr, temp, 11);
   formatDegreesStr(longitudeStr);
   Y;
 
