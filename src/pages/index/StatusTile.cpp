@@ -65,12 +65,12 @@ void statusTile(String &data)
       data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
       data.concat(F("<button name='revert' value='0' type='submit'>" L_REVERT "</button>\n"));
       data.concat(FPSTR(html_form_end));
-      data.concat("<br /><hr>");
       www.sendContentAndClear(data);
     }
   #endif
 
   #if DISPLAY_RESET_CONTROLS != OFF
+    if (mountType != 0) data.concat("<br /><hr>");
     sprintf_P(temp, html_form_begin, "index.htm");
     data.concat(temp);
     data.concat(L_RESET_TITLE "<br/><br/>");
