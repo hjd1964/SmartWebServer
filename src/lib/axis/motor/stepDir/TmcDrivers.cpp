@@ -39,11 +39,11 @@ bool TmcDriver::init(int model, int16_t mosi, int16_t sck, int16_t cs, int16_t m
         rx = SERIAL_TMC_RX;
         tx = SERIAL_TMC_TX;
 
-        #ifdef TMC_UART_DRIVER_ADDRESS_REMAP_AXIS5
+        #ifdef DRIVER_UART_ADDRESS_REMAP_AXIS5
           if (deviceAddress == 4) deviceAddress = 2;
         #endif
-        #ifdef TMC_UART_DRIVER_ADDRESS_REMAP
-          deviceAddress = TMC_UART_DRIVER_ADDRESS_REMAP(axisNumber - 1);
+        #ifdef DRIVER_UART_ADDRESS_REMAP
+          deviceAddress = DRIVER_UART_ADDRESS_REMAP(axisNumber - 1);
         #else
           deviceAddress = axisNumber - 1;
         #endif
@@ -325,10 +325,9 @@ int TmcDriver::refresh_DRVSTATUS() {
       softSpi.begin();
 
       // get global status register, look for driver error bit
-      uint32_t sgResult=0;
       uint32_t data_out=0;
       uint8_t  result = read(REG_DRVSTATUS, &data_out);
-      
+
       softSpi.pause();
       
       // first write returns nothing, second the status data
@@ -354,7 +353,7 @@ int TmcDriver::refresh_DRVSTATUS() {
       }
 
       softSpi.end();
-      return sgResult;
+      return data_out != 0;
     } else
   #endif
 

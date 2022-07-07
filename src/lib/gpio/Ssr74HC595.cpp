@@ -21,10 +21,28 @@
   #error "GPIO device SSR74HC595 supports GPIO_SSR74HC595_COUNT of 8, 16, 24, or 32 only."
 #endif
 
+#ifdef ESP32
+  // ESP32 GPIO SSR74HC595 macros (if used, code below only works for pins 0 to 31)
+  #define GPIO_SSR74HC595_LATCH_LOW() { GPIO.out_w1tc = ((uint32_t)1 << GPIO_SSR74HC595_LATCH_PIN); }
+  #define GPIO_SSR74HC595_LATCH_HIGH() { GPIO.out_w1ts = ((uint32_t)1 << GPIO_SSR74HC595_LATCH_PIN); }
+  #define GPIO_SSR74HC595_CLOCK_LOW() { GPIO.out_w1tc = ((uint32_t)1 << GPIO_SSR74HC595_CLOCK_PIN); }
+  #define GPIO_SSR74HC595_CLOCK_HIGH() { GPIO.out_w1ts = ((uint32_t)1 << GPIO_SSR74HC595_CLOCK_PIN); }
+  #define GPIO_SSR74HC595_DATA_LOW() { GPIO.out_w1tc = ((uint32_t)1 << GPIO_SSR74HC595_DATA_PIN); }
+  #define GPIO_SSR74HC595_DATA_HIGH() { GPIO.out_w1ts = ((uint32_t)1 << GPIO_SSR74HC595_DATA_PIN); }
+#else
+  // generic GPIO SSR74HC595 macros
+  #define GPIO_SSR74HC595_LATCH_LOW() digitalWrite(GPIO_SSR74HC595_LATCH_PIN, LOW)
+  #define GPIO_SSR74HC595_LATCH_HIGH() digitalWrite(GPIO_SSR74HC595_LATCH_PIN, HIGH)
+  #define GPIO_SSR74HC595_CLOCK_LOW() digitalWrite(GPIO_SSR74HC595_CLOCK_PIN, LOW)
+  #define GPIO_SSR74HC595_CLOCK_HIGH() digitalWrite(GPIO_SSR74HC595_CLOCK_PIN, HIGH)
+  #define GPIO_SSR74HC595_DATA_LOW() digitalWrite(GPIO_SSR74HC595_DATA_PIN, LOW)
+  #define GPIO_SSR74HC595_DATA_HIGH() digitalWrite(GPIO_SSR74HC595_DATA_PIN, HIGH)
+#endif
+
 #include "../tasks/OnTask.h"
 
 // designed for a 20MHz max bit rate
-IRAM_ATTR void shiftOut20MHz(uint8_t dataPin, uint8_t clockPin, uint32_t val) {
+IRAM_ATTR void shiftOut20MHz(uint32_t val) {
   if ((val & 0b10000000) == 0) { GPIO_SSR74HC595_DATA_LOW(); } else { GPIO_SSR74HC595_DATA_HIGH(); }
   GPIO_SSR74HC595_CLOCK_HIGH();
   GPIO_SSR74HC595_CLOCK_LOW();
@@ -107,10 +125,10 @@ void Ssr74HC595::digitalWrite(int pin, bool value) {
     if (mode[pin] == OUTPUT) {
       if (value) bitSet(register_value, pin); else bitClear(register_value, pin);
       GPIO_SSR74HC595_LATCH_LOW();
-      if (GPIO_SSR74HC595_COUNT >= 32) shiftOut20MHz(GPIO_SSR74HC595_DATA_PIN, GPIO_SSR74HC595_CLOCK_PIN, (register_value>>24) & 0xff);
-      if (GPIO_SSR74HC595_COUNT >= 24) shiftOut20MHz(GPIO_SSR74HC595_DATA_PIN, GPIO_SSR74HC595_CLOCK_PIN, (register_value>>16) & 0xff);
-      if (GPIO_SSR74HC595_COUNT >= 16) shiftOut20MHz(GPIO_SSR74HC595_DATA_PIN, GPIO_SSR74HC595_CLOCK_PIN, (register_value>>8) & 0xff);
-      shiftOut20MHz(GPIO_SSR74HC595_DATA_PIN, GPIO_SSR74HC595_CLOCK_PIN, (register_value) & 0xff);
+      if (GPIO_SSR74HC595_COUNT >= 32) shiftOut20MHz((register_value>>24) & 0xff);
+      if (GPIO_SSR74HC595_COUNT >= 24) shiftOut20MHz((register_value>>16) & 0xff);
+      if (GPIO_SSR74HC595_COUNT >= 16) shiftOut20MHz((register_value>>8) & 0xff);
+      shiftOut20MHz((register_value) & 0xff);
       GPIO_SSR74HC595_LATCH_HIGH();
     }
     sei();
