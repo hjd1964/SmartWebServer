@@ -15,8 +15,8 @@
   // it is ESP32 thread safe (unlike commandBool() etc.) and still reads any response as appropriate.
   #define FOCUS_IN          ":F-#"
   #define FOCUS_OUT         ":F+#"
-  #define FOCUS_LOW         ":FS#"
-  #define FOCUS_HIGH        ":FF#"
+  #define FOCUS_LOW         ":F2#"
+  #define FOCUS_HIGH        ":F4#"
   #define FOCUS_STOP        ":FQ#"
   #define SPIRAL            ":Mp#"     // Spiral search
   #define PARK              ":hP#"     // returns 0 or 1
