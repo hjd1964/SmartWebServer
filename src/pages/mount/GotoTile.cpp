@@ -2,8 +2,8 @@
 // Goto tile
 #include "GotoTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 #define KV_GTO_STATUS 0
 #define KV_GTO_I1 1

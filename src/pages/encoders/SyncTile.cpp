@@ -2,10 +2,10 @@
 // Encoder Sync tile
 #include "SyncTile.h"
 
-#if ENCODERS == ON
-
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
+
+#if ENCODERS == ON
 
 // create the related webpage tile
 void syncTile(String &data)

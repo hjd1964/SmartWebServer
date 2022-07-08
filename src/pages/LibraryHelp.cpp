@@ -1,7 +1,8 @@
 // -----------------------------------------------------------------------------------
 // Libraryhelp
-
 #include "LibraryHelp.h"
+
+#include "Pages.common.h"
 
 void handleLibraryHelp() {
   String data = "";

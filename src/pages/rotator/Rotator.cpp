@@ -1,9 +1,10 @@
 // -----------------------------------------------------------------------------------
 // Rotator
-
 #include "Rotator.h"
+
 #include "../Page.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 void processRotatorGet();
 

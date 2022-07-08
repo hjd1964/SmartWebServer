@@ -2,8 +2,8 @@
 // DeRotator tile
 #include "DeRotatorTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 // create the related webpage tile
 void deRotatorTile(String &data)

@@ -1,9 +1,7 @@
 // -----------------------------------------------------------------------------------
 // Error not found, 404
 
-#include "htmlHeaders.h"
-#include "htmlMessages.h"
-#include "htmlScripts.h"
+#include "Pages.common.h"
 
 void handleNotFound() {
   String message = "<body>";

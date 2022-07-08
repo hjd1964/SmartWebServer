@@ -1,10 +1,11 @@
 // -----------------------------------------------------------------------------------
 // Setup Network
-
 #include "Network.h"
+
 #include "../../lib/ethernet/EthernetManager.h"
 #include "../../lib/wifi/WifiManager.h"
 #include "../Page.h"
+#include "../Pages.common.h"
 
 extern NVS nv;
 

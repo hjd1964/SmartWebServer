@@ -2,8 +2,8 @@
 // Guide tile
 #include "GuideTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 // create the related webpage tile
 void guideTile(String &data)

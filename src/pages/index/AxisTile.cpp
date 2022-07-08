@@ -2,8 +2,8 @@
 // Axis tile
 #include "AxisTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 void sendAxisParams(AxisSettings* a, int axis);
 

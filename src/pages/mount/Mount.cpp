@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------------------
 // Telescope control related functions
-
 #include "Mount.h"
-#include "../../lib/convert/Convert.h"
+
 #include "../KeyValue.h"
 #include "../Page.h"
+#include "../Pages.common.h"
 
 void processMountGet();
 

@@ -2,6 +2,8 @@
 #include <Arduino.h>
 #include "Page.h"
 
+#include "Pages.common.h"
+
 void pageHeader(int selected) {
   char temp[80];
   String data = "";

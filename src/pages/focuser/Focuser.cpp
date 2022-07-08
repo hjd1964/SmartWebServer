@@ -1,9 +1,10 @@
 // -----------------------------------------------------------------------------------
 // Focuser
-
 #include "Focuser.h"
-#include "../Page.h"
+
 #include "../KeyValue.h"
+#include "../Page.h"
+#include "../Pages.common.h"
 
 void processFocuserGet();
 

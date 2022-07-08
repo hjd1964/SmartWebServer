@@ -1,9 +1,9 @@
 // -----------------------------------------------------------------------------------
 // The home page, status information
-
 #include "Index.h"
-#include "../../lib/convert/Convert.h"
+
 #include "../Page.h"
+#include "../Pages.common.h"
 
 void processIndexGet();
 

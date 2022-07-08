@@ -2,8 +2,8 @@
 // Focuser Home tile
 #include "HomeTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 // create the related webpage tile
 void focuserHomeTile(String &data)

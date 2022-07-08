@@ -1,13 +1,6 @@
 #pragma once
 
-#include "../Common.h"
-#include "../locales/Locale.h"
-#include "../libApp/misc/Misc.h"
-#include "../libApp/cmd/Cmd.h"
-#include "../libApp/status/Status.h"
-#include "../libApp/encoders/Encoders.h"
-#include "../lib/ethernet/webServer/WebServer.h"
-#include "../lib/wifi/webServer/WebServer.h"
+#include "Pages.common.h"
 
 const char html_head_begin[] PROGMEM = "<!DOCTYPE HTML>\n"
                                   "<html>\n"

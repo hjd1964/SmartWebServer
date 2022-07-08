@@ -1,8 +1,9 @@
 // -----------------------------------------------------------------------------------
 // Telescope auxiliary feature related functions 
-
 #include "Auxiliary.h"
+
 #include "../Page.h"
+#include "../Pages.common.h"
 
 void processAuxGet();
 

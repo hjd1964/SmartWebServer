@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Pages.common.h"
+
 const char html_bad_comms_message[] PROGMEM =
 "<br /><bigger><font class=\"y\">" L_DOWN_TITLE "</font></bigger><br /><br />"
 L_DOWN_MESSAGE1 L_DOWN_MESSAGE2

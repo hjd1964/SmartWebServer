@@ -1,11 +1,11 @@
 // -----------------------------------------------------------------------------------
 // Encoders
-
 #include "Encoders.h"
+
 #include "../Page.h"
+#include "../Pages.common.h"
 
 #if ENCODERS == ON
-#include "../../lib/convert/Convert.h"
 
 extern NVS nv;
 

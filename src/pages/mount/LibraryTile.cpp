@@ -1,9 +1,9 @@
 // -----------------------------------------------------------------------------------
-// Align tile
+// Library tile
 #include "LibraryTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 int currentCatalog = 0;
 char currentCatName[12] = "";

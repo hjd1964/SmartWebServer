@@ -2,10 +2,10 @@
 // Axis tile
 #include "AxisTile.h"
 
-#if ENCODERS == ON
-
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
+
+#if ENCODERS == ON
 
 // create the related webpage tile
 void encAxisTile(int axis, String &data)

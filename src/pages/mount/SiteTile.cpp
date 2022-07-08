@@ -2,8 +2,8 @@
 // Date/Time/Location tile
 #include "SiteTile.h"
 
-#include "../../lib/convert/Convert.h"
 #include "../KeyValue.h"
+#include "../Pages.common.h"
 
 int get_temp_month;
 int get_temp_day;

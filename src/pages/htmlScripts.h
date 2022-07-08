@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Pages.common.h"
+
 // Javascript for Ajax return
 const char html_script_ajax_get[] PROGMEM =
 "<script>\n"
