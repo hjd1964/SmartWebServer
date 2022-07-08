@@ -54,7 +54,10 @@ void handleRoot()
   www.sendContentAndClear(data);
 
   // page contents
-  ambientTile(data);
+  #if DISPLAY_WEATHER == ON
+    ambientTile(data);
+  #endif
+
   statusTile(data);
 
   int numShown = 0;
@@ -116,7 +119,9 @@ void indexAjax() {
 
   if (status.valid)
   {
-    ambientTileAjax(data);
+    #if DISPLAY_WEATHER == ON
+      ambientTileAjax(data);
+    #endif
     statusTileAjax(data);
     int numAxes = 2;
     if (status.getVersionMajor() >= 10) numAxes = 9;
@@ -139,7 +144,9 @@ void processIndexGet()
     onStep.commandBool(":SXAC,1#");
   }
 
-  ambientTileGet();
+  #if DISPLAY_WEATHER == ON
+    ambientTileGet();
+  #endif
   statusTileGet();
   axisTileGet();
 }

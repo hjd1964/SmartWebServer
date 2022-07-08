@@ -5,6 +5,8 @@
 #include "../KeyValue.h"
 #include "../Pages.common.h"
 
+#if DISPLAY_WEATHER == ON
+
 // create the related webpage tile
 void ambientTile(String &data)
 {
@@ -15,13 +17,11 @@ void ambientTile(String &data)
   data.concat("<br /><hr>");
 
   // Ambient conditions
-  #if DISPLAY_WEATHER == ON
-    sprintf_P(temp, html_indexTPHD, L_AMBIENT_TEMPERATURE ":", 't', state.siteTemperatureStr); data.concat(temp);
-    sprintf_P(temp, html_indexTPHD, L_PRESSURE ":", 'p', state.sitePressureStr); data.concat(temp);
-    sprintf_P(temp, html_indexTPHD, L_HUMIDITY ":", 'h', state.siteHumidityStr); data.concat(temp);
-    sprintf_P(temp, html_indexTPHD, L_DEW_POINT ":", 'd', state.siteDewPointStr); data.concat(temp);
-    www.sendContentAndClear(data);
-  #endif
+  sprintf_P(temp, html_indexTPHD, L_AMBIENT_TEMPERATURE ":", 't', state.siteTemperatureStr); data.concat(temp);
+  sprintf_P(temp, html_indexTPHD, L_PRESSURE ":", 'p', state.sitePressureStr); data.concat(temp);
+  sprintf_P(temp, html_indexTPHD, L_HUMIDITY ":", 'h', state.siteHumidityStr); data.concat(temp);
+  sprintf_P(temp, html_indexTPHD, L_DEW_POINT ":", 'd', state.siteDewPointStr); data.concat(temp);
+  www.sendContentAndClear(data);
 
   data.concat("<hr>");
 
@@ -47,5 +47,6 @@ void ambientTileAjax(String &data)
 extern void ambientTileGet()
 {
   String v;
-
 }
+
+#endif
