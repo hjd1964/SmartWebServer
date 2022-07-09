@@ -43,7 +43,7 @@ bool Status::update(bool all)
     }
   }
 
-  if (!onStep.command(":GU#", result) || result[0] == 0) { mountFound = false; valid = false; return false; } else mountFound = true; Y;
+  if (!onStep.command(":GU#", result) || result[0] == 0) mountFound = false; else mountFound = true; Y;
 
   if (mountFound) {
     tracking = false;
