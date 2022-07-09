@@ -517,14 +517,18 @@
           onStep.commandBlind(STOP_ALL);
           continue;
         }
-        else if (status.atHome && !status.tracking)
-        {
-          onStep.commandBlind(TRACK_ON);
-        }        
         else if (status.parked)
         {
           onStep.commandBlind(UNPARK);
+        }        
+        else if (status.atHome && !status.tracking)
+        {
+          onStep.commandBlind(TRACK_ON);
         }
+        else if (!status.tracking)
+        {
+          onStep.commandBlind(TRACK_ON);
+        }                
         else if (!status.parked)
         {
           onStep.commandBlind(PARK);            
