@@ -88,6 +88,8 @@ void Encoders::init() {
   void Encoders::poll() {
     char *conv_end;
 
+    if (!status.mountFound) return;
+
     char result[80];
     if (onStep.command(":GX42#", result) && strlen(result) > 1) {
       double f = strtod(result, &conv_end);

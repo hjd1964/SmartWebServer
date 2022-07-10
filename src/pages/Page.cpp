@@ -49,9 +49,11 @@ void pageHeader(int selected) {
   }
 
   #if ENCODERS == ON
-    data.concat(FPSTR(html_links_enc_begin));
-    if (selected == PAGE_ENCODERS) data.concat(FPSTR(html_links_selected));
-    data.concat(FPSTR(html_links_enc_end));
+    if (status.mountFound) {
+      data.concat(FPSTR(html_links_enc_begin));
+      if (selected == PAGE_ENCODERS) data.concat(FPSTR(html_links_selected));
+      data.concat(FPSTR(html_links_enc_end));
+    }
   #endif
 
   data.concat(FPSTR(html_links_net_begin));
