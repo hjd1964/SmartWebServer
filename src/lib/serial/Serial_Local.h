@@ -12,6 +12,8 @@ class SerialLocal : public Stream {
     void begin(long baud);
     void end();
 
+    void setTimeout(long timeMs) { UNUSED(timeMs); }
+
     // sends a command for processing
     void transmit(const char *data);
 
@@ -19,6 +21,18 @@ class SerialLocal : public Stream {
     char *receive();
 
     int read(void);
+
+    inline int receiveAvailable() {
+      int i = 0;
+      int x = xmit_index;
+      while (xmit_buffer[xmit_index] != 0) {
+        i++;
+        xmit_index++;
+        xmit_index &= 0b111111;
+      }
+      xmit_index = x;
+      return i;
+    }
 
     inline int available(void) { 
       uint8_t p = recv_head;
