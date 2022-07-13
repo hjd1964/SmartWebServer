@@ -248,9 +248,9 @@ Again:
   www.onNotFound(handleNotFound);
 
   #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
-    VLF("MSG: Starting port 9996 cmd server");
-    persistentCmdSvr3.begin();
     #if OPERATIONAL_MODE != ETHERNET_W5100
+      VLF("MSG: Starting port 9996 cmd server");
+      persistentCmdSvr3.begin();
       VLF("MSG: Starting port 9997 cmd server");
       persistentCmdSvr2.begin();
     #endif
