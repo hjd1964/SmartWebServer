@@ -378,7 +378,7 @@
 #define L_WIPE_RESET "Wipe all settings and Reboot OnStep"
 #define L_RESET "Reboot OnStep"
 #define L_RESET_FWU "Reboot OnStep for firmware upload"
-#define L_RESET_MSG1 "OnStep must be At Home or Parked, otherwise the reset request is ignored."
+#define L_RESET_MSG1 "OnStep must be At Home or Parked, otherwise the reboot request is ignored."
 
 // ----------------------------  SETUP ----------------------------
 
