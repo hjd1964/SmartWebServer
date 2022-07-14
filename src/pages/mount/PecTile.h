@@ -15,7 +15,7 @@ const char html_pec2[] PROGMEM =
 "<div id='pec_sta'>?</div><br class='clear' />";
 
 const char html_pecControls0[] PROGMEM =
-"<div class='b1' style='width: 27em'>"
+"<div class='b1' style='width: 20em'>"
 "<div style='float: left'>" L_PEC_CONTROL ":</div><br />";
 const char html_pecControls1[] PROGMEM =
 "<form method='get' action='/pec.htm'>"
