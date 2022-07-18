@@ -8,7 +8,13 @@
 #endif
 
 // Wifi related
+#ifndef STA_AP_FALLBACK
 #define STA_AP_FALLBACK               true    // activate SoftAP if station fails to connect
+#endif
+
+#ifndef STA_AUTO_RECONNECT
+#define STA_AUTO_RECONNECT            true    // automatically reconnect if connection is dropped
+#endif
 
 // onstep reset control related
 #ifndef RESET_PIN
