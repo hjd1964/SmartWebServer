@@ -38,9 +38,9 @@ const char html_configMountType[] PROGMEM =
   const char html_configAxisSpwr[] PROGMEM =
   " <input style='width: 7em;' value='%ld' type='number' name='a%dspwr' min='%d' max='%ld' step='1'>&nbsp; " L_ADV_SET_SPWR "<br />\n";
   const char html_configAxisSpd[] PROGMEM =
-  " <input style='width: 7em;' value='%s' type='number' name='a%dspd' min='%d' max='%ld' step='any'>&nbsp; " L_ADV_SET_SPD "<br />\n";
+  " <input style='width: 7em;' value='%s' type='number' name='a%dspm' min='%d' max='%ld' step='any'>&nbsp; " L_ADV_SET_SPD "<br />\n";
   const char html_configAxisSpu[] PROGMEM =
-  " <input style='width: 7em;' value='%s' type='number' name='a%dspu' min='0.01' max='10' step='any'>&nbsp; " L_ADV_SET_SPM "<br />\n";
+  " <input style='width: 7em;' value='%s' type='number' name='a%dspm' min='0.01' max='10' step='any'>&nbsp; " L_ADV_SET_SPM "<br />\n";
   const char html_configAxisMicroSteps[] PROGMEM =
   " <input style='width: 7em;' value='%d' type='number' name='a%dustp' min='1' max='256' step='1'>&nbsp; " L_ADV_SET_TRAK_us "<br />\n";
   const char html_configAxisMicroStepsGoto[] PROGMEM =
