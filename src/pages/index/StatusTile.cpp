@@ -134,7 +134,7 @@ void statusTileGet()
     if (ssa.equals("reset"))
     {
       delay(1000);
-      #if RESET_PIN == OFF
+      #if !defined(RESET_PIN) || RESET_PIN == OFF
         onStep.commandBlind(":ERESET#");
       #else
         digitalWrite(RESET_PIN, RESET_PIN_STATE);
@@ -149,7 +149,7 @@ void statusTileGet()
     if (ssa.equals("wipe"))
     {
       delay(1000);
-      #if RESET_PIN == OFF
+      #if !defined(RESET_PIN) || RESET_PIN == OFF
         onStep.commandString(":ENVRESET#");
         delay(5000);
         onStep.commandBlind(":ERESET#");
@@ -172,7 +172,7 @@ void statusTileGet()
         digitalWrite(BOOT0_PIN, HIGH);
         pinMode(BOOT0_PIN, OUTPUT);
 
-        #if RESET_PIN == OFF
+        #if !defined(RESET_PIN) || RESET_PIN == OFF
           onStep.commandBlind(":ERESET#");
         #else
           digitalWrite(RESET_PIN, RESET_PIN_STATE);
