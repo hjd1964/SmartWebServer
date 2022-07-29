@@ -19,7 +19,7 @@ bool axisTile(int axis, String &data)
   if (axis == 2 && !status.rotatorFound) return success;
   if (axis >= 3 && !status.focuserPresent[axis - 3]) return success;
 
-  char axisTitleStr[10] = "";
+  char axisTitleStr[32] = "";
   switch (axis) {
     case 0: sprintf(axisTitleStr, "Axis%d RA/Azm", 1); break;
     case 1: sprintf(axisTitleStr, "Axis%d Dec/Alt", 2); break;

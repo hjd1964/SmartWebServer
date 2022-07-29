@@ -111,7 +111,6 @@ void indexAjaxGet()
 
 void indexAjax() {
   String data = "";
-  char temp[120] = "";
 
   www.setContentLength(CONTENT_LENGTH_UNKNOWN);
   www.sendHeader("Cache-Control", "no-cache");

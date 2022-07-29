@@ -9,8 +9,6 @@
 void focuserBacklashTcfTile(String &data)
 {
   char temp[240] = "";
-  char temp1[32] = "";
-  int axis = state.focuserSelected + 3;
 
   sprintf_P(temp, html_tile_text_beg, "22em", "11em", "Backlash and TCF");
   data.concat(temp);
