@@ -346,22 +346,22 @@ void processNetworkGet() {
     }
   #else
     // Ethernet ip
-    v = www.arg("ethip1"); if (!v.equals(EmptyStr)) temp_ip[0] = v.toInt();
-    v = www.arg("ethip2"); if (!v.equals(EmptyStr)) temp_ip[1] = v.toInt();
-    v = www.arg("ethip3"); if (!v.equals(EmptyStr)) temp_ip[2] = v.toInt();
-    v = www.arg("ethip4"); if (!v.equals(EmptyStr)) temp_ip[3] = v.toInt();
+    v = www.arg("ethip1"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[0] = v.toInt();
+    v = www.arg("ethip2"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[1] = v.toInt();
+    v = www.arg("ethip3"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[2] = v.toInt();
+    v = www.arg("ethip4"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[3] = v.toInt();
 
     // Ethernet SubNet
-    v = www.arg("ethsn1"); if (!v.equals(EmptyStr)) temp_sn[0] = v.toInt();
-    v = www.arg("ethsn2"); if (!v.equals(EmptyStr)) temp_sn[1] = v.toInt();
-    v = www.arg("ethsn3"); if (!v.equals(EmptyStr)) temp_sn[2] = v.toInt();
-    v = www.arg("ethsn4"); if (!v.equals(EmptyStr)) temp_sn[3] = v.toInt();
+    v = www.arg("ethsn1"); if (!v.equals(EmptyStr)) ethernetManager.settings.sn[0] = v.toInt();
+    v = www.arg("ethsn2"); if (!v.equals(EmptyStr)) ethernetManager.settings.sn[1] = v.toInt();
+    v = www.arg("ethsn3"); if (!v.equals(EmptyStr)) ethernetManager.settings.sn[2] = v.toInt();
+    v = www.arg("ethsn4"); if (!v.equals(EmptyStr)) ethernetManager.settings.sn[3] = v.toInt();
 
     // Ethernet Gateway
-    v = www.arg("ethgw1"); if (!v.equals(EmptyStr)) temp_gw[0] = v.toInt();
-    v = www.arg("ethgw2"); if (!v.equals(EmptyStr)) temp_gw[1] = v.toInt();
-    v = www.arg("ethgw3"); if (!v.equals(EmptyStr)) temp_gw[2] = v.toInt();
-    v = www.arg("ethgw4"); if (!v.equals(EmptyStr)) temp_gw[3] = v.toInt();
+    v = www.arg("ethgw1"); if (!v.equals(EmptyStr)) ethernetManager.settings.gw[0] = v.toInt();
+    v = www.arg("ethgw2"); if (!v.equals(EmptyStr)) ethernetManager.settings.gw[1] = v.toInt();
+    v = www.arg("ethgw3"); if (!v.equals(EmptyStr)) ethernetManager.settings.gw[2] = v.toInt();
+    v = www.arg("ethgw4"); if (!v.equals(EmptyStr)) ethernetManager.settings.gw[3] = v.toInt();
 
     if (!v.equals(EmptyStr)) {
       updateNV = true;
