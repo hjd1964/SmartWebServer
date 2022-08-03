@@ -37,10 +37,10 @@
 #define TASKS_SKIP_MISSED
 
 // EEPROM contents
-#define INIT_NV_KEY                  698623879UL
+#define INIT_NV_KEY                  698623872UL
 
 #define NV_TIMEOUT_CMD               5       // 2 bytes
 #define NV_TIMEOUT_WEB               7       // 2 bytes
-#define NV_ETHERNET_SETTINGS_BASE    100     // 88 bytes
-#define NV_WIFI_SETTINGS_BASE        200     // 427 bytes
-#define NV_ENCODER_SETTINGS_BASE     700     // 88 bytes
+#define NV_ETHERNET_SETTINGS_BASE    100     // up to 200 bytes (128)
+#define NV_WIFI_SETTINGS_BASE        300     // up to 500 bytes (451)
+#define NV_ENCODER_SETTINGS_BASE     800     // 88 bytes
