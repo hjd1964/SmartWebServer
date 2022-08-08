@@ -259,7 +259,7 @@
 
 // ------------------------------ PEC ----------------------------
 
-#define L_PEC_STATUS "PEC Status"
+#define L_PEC_STATUS "Status"
 #define L_PEC_CONTROL "PEC Steuerung"
 #define L_PEC_PLAY "Abspielen"
 #define L_STOP "Stop"
