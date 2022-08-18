@@ -314,7 +314,7 @@ void axisTileGet()
         s10 = www.arg("a" + axisStr + "dGoto");
       } else {
         s6 = www.arg("a" + axisStr + "ustpGoto");
-        s7 = www.arg("a" + axisStr + "Ih");;
+        s7 = www.arg("a" + axisStr + "Ih");
         s8 = www.arg("a" + axisStr + "I");
         s9 = www.arg("a" + axisStr + "Is");
         s10 = "";
