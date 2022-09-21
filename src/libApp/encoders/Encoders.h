@@ -4,30 +4,24 @@
 
 #include "../../Common.h"
 
-#if AXIS1_ENC > 0 && AXIS2_ENC > 0
+#if AXIS1_ENCODER > 0 && AXIS2_ENCODER > 0
   #define ENCODERS ON
 #else
   #define ENCODERS OFF
 #endif
 
-// bring in support for the various encoder types
-#include "Enc_AB.h"
-#include "Enc_CwCcw.h"
-#include "Enc_BiSS_C_BC.h"
+#if AXIS1_ENCODER == AS37_H39B_B
+  #define AXIS1_ENCODER_ABSOLUTE
+#endif
+#if AXIS2_ENCODER == AS37_H39B_B
+  #define AXIS2_ENCODER_ABSOLUTE
+#endif
+#if defined(AXIS1_ENCODER_ABSOLUTE) || defined(AXIS2_ENCODER_ABSOLUTE)
+  #define ENC_ABSOLUTE
+#endif
 
 // encoder polling rate in milli-seconds
 #define ENCODER_POLLING_RATE_MS 1500
-
-#if defined(ESP8266) || defined(ESP32)
-  #define GetClockCount ESP.getCycleCount()
-  #define ClockCountToMicros ((uint32_t)ESP.getCpuFreqMHz())
-#elif defined(__MK20DX256__)
-  #define GetClockCount ARM_DWT_CYCCNT
-  #define ClockCountToMicros (F_CPU/1000000L)
-#else
-  #define GetClockCount micros()
-  #define ClockCountToMicros (1L)
-#endif
 
 // ----------------------------------------------------------------------------------------------------------------
 // background process position/rate control for encoders 
@@ -68,8 +62,8 @@ class Encoders {
       #else
         false,
       #endif
-      {0, AXIS1_ENC_DIFF_LIMIT_TO, AXIS1_ENC_TICKS_DEG, AXIS1_ENC_REVERSE},
-      {0, AXIS2_ENC_DIFF_LIMIT_TO, AXIS2_ENC_TICKS_DEG, AXIS2_ENC_REVERSE},
+      {0, AXIS1_ENCODER_DIFF_LIMIT_TO, AXIS1_ENCODER_TICKS_DEG, AXIS1_ENCODER_REVERSE},
+      {0, AXIS2_ENCODER_DIFF_LIMIT_TO, AXIS2_ENCODER_TICKS_DEG, AXIS2_ENCODER_REVERSE},
       {20, 200, 0.0, 1, 0, 10, 100}
     };
 
@@ -78,7 +72,7 @@ class Encoders {
       void syncFromOnStep();
 
       // zero absolute encoders from OnStep's position
-      #ifdef ENC_HAS_ABSOLUTE
+      #ifdef ENC_ABSOLUTE
         void zeroFromOnStep();
       #endif
 
@@ -93,9 +87,9 @@ class Encoders {
       double getOnStepAxis1();
       double getOnStepAxis2();
 
-      int32_t Axis1EncDiffFrom    = AXIS1_ENC_DIFF_LIMIT_FROM;
+      int32_t Axis1EncDiffFrom    = AXIS1_ENCODER_DIFF_LIMIT_FROM;
       int32_t Axis1EncDiffAbs     = 0;
-      int32_t Axis2EncDiffFrom    = AXIS2_ENC_DIFF_LIMIT_FROM;
+      int32_t Axis2EncDiffFrom    = AXIS2_ENCODER_DIFF_LIMIT_FROM;
       int32_t Axis2EncDiffAbs     = 0;
 
     private:

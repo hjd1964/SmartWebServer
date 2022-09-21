@@ -22,7 +22,7 @@ void syncTile(String &data)
   data.concat(FPSTR(html_syncOnStepNow));
   data.concat(FPSTR(html_syncEncodersNow));
 
-  #ifdef ENC_HAS_ABSOLUTE
+  #ifdef ENC_ABSOLUTE
     data.concat(FPSTR(html_zeroEncodersNow));
   #endif
 
@@ -54,7 +54,7 @@ extern void syncTileGet()
   {
     if (v.equals("o2e")) encoders.syncToOnStep();
     if (v.equals("e2o")) encoders.syncFromOnStep();
-    #ifdef ENC_HAS_ABSOLUTE
+    #ifdef ENC_ABSOLUTE
       if (v.equals("zro")) encoders.zeroFromOnStep();
     #endif
     if (v.equals("on")) encoders.settings.autoSync = true;

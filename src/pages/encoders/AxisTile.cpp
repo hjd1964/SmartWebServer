@@ -178,16 +178,16 @@ extern void encAxisTileGet()
   {
     if (v.equals("1"))
     {
-      encoders.settings.axis1.ticksPerDeg = AXIS1_ENC_TICKS_DEG;
-      encoders.settings.axis1.reverse = AXIS1_ENC_REVERSE;
-      encoders.settings.axis1.diffTo = AXIS1_ENC_DIFF_LIMIT_TO;
+      encoders.settings.axis1.ticksPerDeg = AXIS1_ENCODER_TICKS_DEG;
+      encoders.settings.axis1.reverse = AXIS1_ENCODER_REVERSE;
+      encoders.settings.axis1.diffTo = AXIS1_ENCODER_DIFF_LIMIT_TO;
       updateNV = true;
     }
     if (v.equals("2"))
     {
-      encoders.settings.axis2.ticksPerDeg = AXIS2_ENC_TICKS_DEG;
-      encoders.settings.axis2.reverse = AXIS1_ENC_REVERSE;
-      encoders.settings.axis2.diffTo = AXIS2_ENC_DIFF_LIMIT_TO;
+      encoders.settings.axis2.ticksPerDeg = AXIS2_ENCODER_TICKS_DEG;
+      encoders.settings.axis2.reverse = AXIS1_ENCODER_REVERSE;
+      encoders.settings.axis2.diffTo = AXIS2_ENCODER_DIFF_LIMIT_TO;
       updateNV = true;
     }
   }

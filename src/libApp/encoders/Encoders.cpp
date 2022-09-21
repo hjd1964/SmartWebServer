@@ -15,8 +15,43 @@ extern NVS nv;
 #endif
 
 #if ENCODERS == ON
+  // bring in support for the various encoder types
+  #include "../../lib/encoder/as37h39bb/As37h39bb.h"
+  #include "../../lib/encoder/cwCcw/CwCcw.h"
+  #include "../../lib/encoder/pulseDir/PulseDir.h"
+  #include "../../lib/encoder/quadrature/Quadrature.h"
+
   void pollEncoders() { encoders.poll(); }
+
+  #if AXIS1_ENCODER == AB
+    Quadrature encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+  #elif AXIS1_ENCODER == CW_CCW
+    CwCcw encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+  #elif AXIS1_ENCODER == PULSE_DIR
+    PulseDir encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+  #elif AXIS1_ENCODER == PULSE_ONLY
+    PulseOnly encAxis1(AXIS1_ENCODER_A_PIN, &servoControlAxis1.directionHint, 1);
+  #elif AXIS1_ENCODER == AS37_H39B_B
+    As37h39bb encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+  #elif AXIS1_ENCODER == SERIAL_BRIDGE
+    SerialBridge encAxis1(1);
+  #endif
+
+  #if AXIS2_ENCODER == AB
+    Quadrature encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+  #elif AXIS2_ENCODER == CW_CCW
+    CwCcw encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+  #elif AXIS2_ENCODER == PULSE_DIR
+    PulseDir encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+  #elif AXIS2_ENCODER == PULSE_ONLY
+    PulseOnly encAxis2(AXIS2_ENCODER_A_PIN, &servoControlAxis2.directionHint, 2);
+  #elif AXIS2_ENCODER == AS37_H39B_B
+    As37h39bb encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+  #elif AXIS2_ENCODER == SERIAL_BRIDGE
+    SerialBridge encAxis2(2);
+  #endif
 #endif
+
 
 // ----------------------------------------------------------------------------------------------------------------
 // background process position/rate control for encoders 
@@ -35,6 +70,13 @@ void Encoders::init() {
   nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
 
   #if ENCODERS == ON
+    #ifdef AXIS1_ENCODER_ABSOLUTE
+      encAxis1.offset = nv.readL(NV_ENCODER_A1_ZERO);
+    #endif
+    #ifdef AXIS2_ENCODER_ABSOLUTE
+      encAxis2.offset = nv.readL(NV_ENCODER_A2_ZERO);
+    #endif
+
     VF("MSG: Encoders, start polling task (priority 4)... ");
     if (tasks.add(ENCODER_POLLING_RATE_MS, 0, true, 4, pollEncoders, "EncPoll")) { VLF("success"); } else { VLF("FAILED!"); }
   #endif
@@ -44,33 +86,33 @@ void Encoders::init() {
   void Encoders::syncFromOnStep() {
     if (Axis1EncDiffFrom == OFF || fabs(osAxis1 - enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
       if (settings.axis1.reverse == ON)
-        axis1Pos.write(-osAxis1*settings.axis1.ticksPerDeg);
+        encAxis1.write(-osAxis1*settings.axis1.ticksPerDeg);
       else
-        axis1Pos.write(osAxis1*settings.axis1.ticksPerDeg);
+        encAxis1.write(osAxis1*settings.axis1.ticksPerDeg);
     }
     if (Axis2EncDiffFrom == OFF || fabs(osAxis2 - enAxis2) <= (double)(Axis2EncDiffFrom/3600.0)) {
       if (settings.axis2.reverse == ON)
-        axis2Pos.write(-osAxis2*settings.axis2.ticksPerDeg);
+        encAxis2.write(-osAxis2*settings.axis2.ticksPerDeg);
       else
-        axis2Pos.write(osAxis2*settings.axis2.ticksPerDeg);
+        encAxis2.write(osAxis2*settings.axis2.ticksPerDeg);
     }
   }
 
-  #ifdef ENC_HAS_ABSOLUTE
+  #ifdef ENC_ABSOLUTE
     void Encoders::zeroFromOnStep() {
-      #ifdef ENC_HAS_ABSOLUTE_AXIS1
+      #ifdef AXIS1_ENCODER_ABSOLUTE
         if (settings.axis1.reverse == ON)
-          axis1Pos.write(-osAxis1*settings.axis1.ticksPerDeg);
+          encAxis1.write(-osAxis1*settings.axis1.ticksPerDeg);
         else
-          axis1Pos.write(osAxis1*settings.axis1.ticksPerDeg);
-        axis1Pos.saveZero();
+          encAxis1.write(osAxis1*settings.axis1.ticksPerDeg);
+        nv.update(NV_ENCODER_A1_ZERO, encAxis1.offset);
       #endif
-      #ifdef ENC_HAS_ABSOLUTE_AXIS2
+      #ifdef AXIS2_ENCODER_ABSOLUTE
         if (settings.axis2.reverse == ON)
-          axis2Pos.write(-osAxis2*settings.axis2.ticksPerDeg);
+          encAxis2.write(-osAxis2*settings.axis2.ticksPerDeg);
         else
-          axis2Pos.write(osAxis2*settings.axis2.ticksPerDeg);
-        axis2Pos.saveZero();
+          encAxis2.write(osAxis2*settings.axis2.ticksPerDeg);
+        nv.update(NV_ENCODER_A2_ZERO, encAxis2.offset);
       #endif
     }
   #endif
@@ -100,12 +142,12 @@ void Encoders::init() {
       if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) osAxis2 = f;
     }
 
-    long pos = axis1Pos.read();
+    long pos = encAxis1.read();
     if (pos == INT32_MAX) enAxis1Fault = true; else enAxis1Fault = false;
     enAxis1 = (double)pos/settings.axis1.ticksPerDeg;
     if (settings.axis1.reverse == ON) enAxis1 = -enAxis1;
 
-    pos = axis2Pos.read();
+    pos = encAxis2.read();
     if (pos == INT32_MAX) enAxis2Fault = true; else enAxis2Fault = false;
     enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
@@ -125,8 +167,8 @@ void Encoders::init() {
 
   double Encoders::getAxis1() { return enAxis1; }
   double Encoders::getAxis2() { return enAxis2; }
-  bool Encoders::validAxis1() { return !enAxis1Fault; }
-  bool Encoders::validAxis2() { return !enAxis2Fault; }
+  bool   Encoders::validAxis1() { return !enAxis1Fault; }
+  bool   Encoders::validAxis2() { return !enAxis2Fault; }
   double Encoders::getOnStepAxis1() { return osAxis1; }
   double Encoders::getOnStepAxis2() { return osAxis2; }
 #endif

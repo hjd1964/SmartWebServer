@@ -15,7 +15,7 @@ const char html_focPosition[] PROGMEM =
   "<button class='bbh' onpointerdown=\"s('fs',document.getElementById('foc_set').value)\" type='button'>" L_SET_LABEL "</button></span>";
 
 const char html_focStop[] PROGMEM =
-  "<button class='bbh' onpointerdown='\"'s('foc','stop')\" type='button' style='color: White; margin-bottom: 0.5em;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button><br />";
+  "<button class='bbh' onpointerdown=\"s('foc','stop')\" type='button' style='color: White; margin-bottom: 0.5em;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button><br />";
 
 const char html_focuserIn[] PROGMEM =
   "<button class='bbh' onpointerdown=\"s('foc','inf')\" onpointerup=\"s('foc','stop');\" type='button'>" ARROW_DD "</button>"
