@@ -46,7 +46,7 @@
 // The unique (Ethernet) MAC address for your SWS
 #define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE}
 
-// These settings are stored in NV (EEPROM) and will not revert to the defaults once first set from the values below unless
+// These settings are stored in NV (EEPROM) and the SWS will not recognize the settings below except on the first upload unless
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
 #define AP_ENABLED                   true //        true, Wifi Access Point Enabled.                                          Adjust
 #define AP_SSID                  "ONSTEP" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
