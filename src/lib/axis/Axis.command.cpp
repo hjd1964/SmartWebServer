@@ -37,12 +37,12 @@ bool Axis::command(char *reply, char *command, char *parameter, bool *supressFra
             thisAxis.limits.max = thisAxis.limits.max/1000.0F;
           }
           char spm[40]; sprintF(spm, "%1.3f", thisAxis.stepsPerMeasure);
-          char ps1[40]; sprintF(ps1, "%1.1f", thisAxis.param1);
-          char ps2[40]; sprintF(ps2, "%1.1f", thisAxis.param2);
-          char ps3[40]; sprintF(ps3, "%1.1f", thisAxis.param3);
-          char ps4[40]; sprintF(ps4, "%1.1f", thisAxis.param4);
-          char ps5[40]; sprintF(ps5, "%1.1f", thisAxis.param5);
-          char ps6[40]; sprintF(ps6, "%1.1f", thisAxis.param6);
+          char ps1[40]; sprintF(ps1, "%1.3f", thisAxis.param1);
+          char ps2[40]; sprintF(ps2, "%1.3f", thisAxis.param2);
+          char ps3[40]; sprintF(ps3, "%1.3f", thisAxis.param3);
+          char ps4[40]; sprintF(ps4, "%1.3f", thisAxis.param4);
+          char ps5[40]; sprintF(ps5, "%1.3f", thisAxis.param5);
+          char ps6[40]; sprintF(ps6, "%1.3f", thisAxis.param6);
           sprintf(reply,"%s,%d,%d,%d,%s,%s,%s,%s,%s,%s,%c",
             spm,
             (int)thisAxis.reverse,
@@ -69,7 +69,7 @@ bool Axis::command(char *reply, char *command, char *parameter, bool *supressFra
         strcat(reply, status.outputA.shortToGround ? "GA," : ",");
         strcat(reply, status.outputB.shortToGround ? "GB," : ",");
         strcat(reply, status.overTemperature ? "OT," : ",");           // > 150C
-        strcat(reply, status.overTemperaturePreWarning ? "PW," : ","); // > 120C
+        strcat(reply, status.overTemperatureWarning ? "PW," : ","); // > 120C
         strcat(reply, status.fault ? "GF" : "");
       } else { *commandError = CE_0; return true; }
       *numericReply = false;
@@ -95,35 +95,22 @@ bool Axis::command(char *reply, char *command, char *parameter, bool *supressFra
           // :SXA[n],[sssss...]#
           AxisStoredSettings thisAxis = settings;
           if (decodeAxisSettings(&parameter[3], thisAxis)) {
+            // convert axis1, 2 into radians
             if (axisNumber <= 2) {
-              // convert axis1, 2 into radians
               thisAxis.stepsPerMeasure *= RAD_DEG_RATIO;
               thisAxis.limits.min = degToRadF(thisAxis.limits.min);
               thisAxis.limits.max = degToRadF(thisAxis.limits.max);
             } else
+            // convert axis > 3 min/max into microns
             if (axisNumber > 3) {
-              // convert axis > 3 min/max into um
               thisAxis.limits.min = thisAxis.limits.min*1000.0F;
               thisAxis.limits.max = thisAxis.limits.max*1000.0F;
             }
-            #ifdef STEP_DIR_MOTOR_PRESENT
-              // validate settings for step/dir drivers
-              if (motor->driverType == STEP_DIR) {
-                if (validateAxisSettings(axisNumber, thisAxis)) {
-                  nv.updateBytes(NV_AXIS_SETTINGS_BASE + (axisNumber - 1)*AxisStoredSettingsSize, &thisAxis, sizeof(AxisStoredSettings));
-                } else *commandError = CE_PARAM_FORM;
-              }
-            #endif
-            #ifdef SERVO_MOTOR_PRESENT
-              // validate settings for servo drivers
-              if (motor->driverType == SERVO) {
-                if (validateAxisSettings(axisNumber, thisAxis)) {
-                  nv.updateBytes(NV_AXIS_SETTINGS_BASE + (axisNumber - 1)*AxisStoredSettingsSize, &thisAxis, sizeof(AxisSettings));
-                  // make these take effect now
-                  motor->setParameters(thisAxis.param1, thisAxis.param2, thisAxis.param3, thisAxis.param4, thisAxis.param5, thisAxis.param6);
-                } else *commandError = CE_PARAM_FORM;
-              }
-            #endif
+            // save the settings to NV, and update axis immediately if supported
+            if (validateAxisSettings(axisNumber, thisAxis)) {
+              nv.updateBytes(NV_AXIS_SETTINGS_BASE + (axisNumber - 1)*AxisStoredSettingsSize, &thisAxis, sizeof(AxisStoredSettings));
+              if (motor->driverType == SERVO) motor->setParameters(thisAxis.param1, thisAxis.param2, thisAxis.param3, thisAxis.param4, thisAxis.param5, thisAxis.param6);
+            } else *commandError = CE_PARAM_FORM;
           } else *commandError = CE_PARAM_FORM;
         }
       } else *commandError = CE_0;

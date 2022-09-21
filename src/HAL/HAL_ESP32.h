@@ -28,3 +28,6 @@
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation
+
+// MCU reset
+#define HAL_RESET() ESP.restart()

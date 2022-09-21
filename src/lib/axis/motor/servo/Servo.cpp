@@ -22,19 +22,20 @@ IRAM_ATTR void moveServoMotorAxis8() { servoMotorInstance[7]->move(); }
 IRAM_ATTR void moveServoMotorAxis9() { servoMotorInstance[8]->move(); }
 
 // constructor
-ServoMotor::ServoMotor(uint8_t axisNumber, const ServoDriverPins *Pins, const ServoDriverSettings *Settings, Encoder *enc, Feedback *feedback, ServoControl *control, bool useFastHardwareTimers) {
+ServoMotor::ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Encoder *encoder, Feedback *feedback, ServoControl *control, int16_t syncThreshold, bool useFastHardwareTimers) {
   if (axisNumber < 1 || axisNumber > 9) return;
 
   strcpy(axisPrefix, "MSG: Servo_, ");
   axisPrefix[10] = '0' + axisNumber;
   this->axisNumber = axisNumber;
-  this->enc = enc;
+  this->encoder = encoder;
   this->feedback = feedback;
   this->control = control;
+  this->syncThreshold = syncThreshold;
   this->useFastHardwareTimers = useFastHardwareTimers;
   driverType = SERVO;
+  this->driver = Driver;
 
-  this->driver = new ServoDriver(axisNumber, Pins, Settings);
   feedback->getDefaultParameters(&default_param1, &default_param2, &default_param3, &default_param4, &default_param5, &default_param6);
 
   // attach the function pointers to the callbacks
@@ -52,18 +53,18 @@ ServoMotor::ServoMotor(uint8_t axisNumber, const ServoDriverPins *Pins, const Se
   }
 
   // get the feedback control loop ready
-  feedback->init(axisNumber, control);
+  feedback->init(axisNumber, control, driver->getMotorControlRange());
 }
 
 bool ServoMotor::init() {
   if (axisNumber < 1 || axisNumber > 9) return false;
 
   driver->init();
-  power(false);
+  enable(false);
 
-  // start the motor timer
+  // start the motion timer
   V(axisPrefix);
-  VF("start task to move motor... ");
+  VF("start task to track motion... ");
   char timerName[] = "Target_";
   timerName[6] = '0' + axisNumber;
   taskHandle = tasks.add(0, 0, true, 0, callback, timerName);
@@ -93,7 +94,6 @@ void ServoMotor::setReverse(int8_t state) {
 // set driver parameters
 void ServoMotor::setParameters(float param1, float param2, float param3, float param4, float param5, float param6) {
   feedback->setParameters(param1, param2, param3, param4, param5, param6);
-  setSlewing(isSlewing);
 }
 
 // validate driver parameters
@@ -101,9 +101,11 @@ bool ServoMotor::validateParameters(float param1, float param2, float param3, fl
   return feedback->validateParameters(param1, param2, param3, param4, param5, param6);
 }
 
-// sets motor power on/off (if possible)
-void ServoMotor::power(bool state) {
-  driver->power(state);
+// sets motor enable on/off (if possible)
+void ServoMotor::enable(bool state) {
+  if (!state) feedback->reset();
+  driver->enable(state);
+  enabled = state;
 }
 
 // get the associated driver status
@@ -114,8 +116,44 @@ DriverStatus ServoMotor::getDriverStatus() {
 
 // resets motor and target angular position in steps, also zeros backlash and index
 void ServoMotor::resetPositionSteps(long value) {
-  Motor::resetPositionSteps(value);
-  enc->write(motorSteps);
+  if (syncThreshold == OFF) {
+    Motor::resetPositionSteps(value);
+    encoder->write(value);
+  } else {
+    // disregard any home position, the absolute encoders are the final authority
+    Motor::resetPositionSteps(encoder->read());
+    D(axisPrefix);
+    DL("absolute encoder ignored reset position");
+  }
+}
+
+// get instrument coordinate, in steps
+long ServoMotor::getInstrumentCoordinateSteps() {
+  return encoder->read() + indexSteps;
+}
+
+// set instrument coordinate, in steps
+void ServoMotor::setInstrumentCoordinateSteps(long value) {
+  noInterrupts();
+  long i = value - motorSteps;
+  interrupts();
+  if (syncThreshold == OFF || syncThreshold >= i) {
+    indexSteps = i;
+  } else {
+    D(axisPrefix);
+    DL("absolute encoder ignored sync exceeds threshold");
+  }
+}
+
+// distance to target in steps (+/-)
+long ServoMotor::getTargetDistanceSteps() {
+  int32_t position = encoder->read();
+
+  noInterrupts();
+  long distance = targetSteps - position;
+  interrupts();
+
+  return distance;
 }
 
 // set frequency (+/-) in steps per second negative frequencies move reverse in direction (0 stops motion)
@@ -125,8 +163,7 @@ void ServoMotor::setFrequencySteps(float frequency) {
   if (frequency > 0.0F) dir = 1; else if (frequency < 0.0F) { frequency = -frequency; dir = -1; }
 
   // if in backlash override the frequency
-  if (inBacklash)
-    frequency = backlashFrequency;
+  if (inBacklash) frequency = backlashFrequency;
 
   if (frequency != currentFrequency) {
     lastFrequency = frequency;
@@ -164,20 +201,19 @@ void ServoMotor::setFrequencySteps(float frequency) {
 }
 
 float ServoMotor::getFrequencySteps() {
-  if (lastPeriod == 0)
-    return 0;
+  if (lastPeriod == 0) return 0;
   return (16000000.0F / lastPeriod) * absStep;
 }
 
 // set slewing state (hint that we are about to slew or are done slewing)
 void ServoMotor::setSlewing(bool state) {
-  isSlewing = state;
-  feedback->selectAlternateParam(isSlewing);
+  slewing = state;
 }
 
 // updates PID and sets servo motor power/direction
 void ServoMotor::poll() {
-  long position = enc->read();
+  int32_t position = encoder->read();
+
   noInterrupts();
   long target = motorSteps + backlashSteps;
   interrupts();
@@ -186,19 +222,41 @@ void ServoMotor::poll() {
   control->in = position;
   feedback->poll();
 
+  float velocity = control->out;
+  if (!enabled) velocity = 0.0F;
+  float velocityPercent = (velocity/driver->getMotorControlRange()) * 100.0F;
+
+  // for range 0% tracking params to >= 25% for slewing params
+  feedback->variableParameters(fabs(velocityPercent*4.0F));
+
+  // if we're not moving "fast" and the motor is above 70% power something is seriously wrong, so shut it down
+  if (millis() - lastCheckTime > 1000) {
+    if (labs(position - lastPosition) < 10 && abs(velocityPercent) >= 70) {
+      D(axisPrefix);
+      D("stall detected!");
+      D(" control->in = "); D(control->in);
+      D(", control->set = "); D(control->set);
+      D(", control->out = "); D(control->out);
+      D(", velocity % = "); DL(velocityPercent);
+      enable(false);
+    }
+    lastPosition = position;
+    lastCheckTime = millis();
+  }
+
   #if DEBUG != OFF && defined(DEBUG_SERVO) && DEBUG_SERVO != OFF
     if (axisNumber == DEBUG_SERVO) {
       static uint16_t count = 0;
       count++;
-      if (count % 100 == 0) {
+      if (count % 25 == 0) {
         char s[80];
-        sprintf(s, "Servo%d_Delta %6ld, Servo%d_Power %6.3f%%\r\n", (int)axisNumber, target - position, (int)axisNumber, (control->out / ANALOG_WRITE_PWM_RANGE) * 100.0F);
+        sprintf(s, "Servo%d: Delta %6ld, Power %6.3f%%\r\n", (int)axisNumber, (target - position), velocityPercent);
         D(s);
       }
     }
   #endif
 
-  driver->setMotorPower(round(control->out));
+  driver->setMotorVelocity(velocity);
   if (driver->getMotorDirection() == DIR_FORWARD) control->directionHint = 1; else control->directionHint = -1;
 }
 

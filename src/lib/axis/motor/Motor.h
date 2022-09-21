@@ -15,28 +15,28 @@ class Motor {
     // sets up the motor identification
     virtual bool init();
 
-    // set driver reverse state
+    // set motor reverse state
     virtual void setReverse(int8_t state);
 
-    // get driver parameters type code
+    // get motor parameters type code
     virtual char getParameterTypeCode();
 
-    // get driver default parameters
+    // get motor default parameters
     void getDefaultParameters(float *param1, float *param2, float *param3, float *param4, float *param5, float *param6);
 
-    // get driver default parameters
+    // set motor default parameters
     void setDefaultParameters(float param1, float param2, float param3, float param4, float param5, float param6);
 
-    // set driver parameters
+    // set motor parameters
     virtual void setParameters(float param1, float param2, float param3, float param4, float param5, float param6);
 
-    // validate driver parameters
+    // validate motor parameters
     virtual bool validateParameters(float param1, float param2, float param3, float param4, float param5, float param6);
 
-    // sets motor power on/off (if possible)
-    virtual void power(bool value);
+    // sets motor enable on/off (if possible)
+    virtual void enable(bool value);
 
-    // get the associated stepper driver status
+    // get the associated stepper motor driver status
     virtual DriverStatus getDriverStatus();
 
     // resets motor and target angular position in steps, also zeros backlash and index 
@@ -52,7 +52,7 @@ class Motor {
     inline long getIndexPositionSteps() { return indexSteps; }
 
     // get instrument coordinate, in steps
-    long getInstrumentCoordinateSteps();
+    virtual long getInstrumentCoordinateSteps();
 
     // set instrument coordinate, in steps
     virtual void setInstrumentCoordinateSteps(long value);
@@ -81,7 +81,7 @@ class Motor {
     void markOriginCoordinateSteps();
 
     // distance to target in steps (+/-)
-    long getTargetDistanceSteps();
+    virtual long getTargetDistanceSteps();
 
     // distance to origin or target, whichever is closer, in steps
     long getOriginOrTargetDistanceSteps();
