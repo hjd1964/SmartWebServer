@@ -23,7 +23,7 @@
 // SERIAL PORTS --------------------------------------------------------------------------------------------------------------------
 #define SERIAL_BAUD_DEFAULT          9600 //   9600, Common baud rates for this parameter are 9600,19200,57600,115200,etc.    Infreq
                                           //         The OnStep serial port this is wired to must use the same rate above.
-#define SERIAL_BAUD                 57600 //  57600, Or use 19200,57600,115200. For 230400,460800 set all three to the same rate
+#define SERIAL_BAUD                 57600 //  57600, Or use 19200,57600,115200,230400,460800 (not all devices support > 115200)
                                           //         (OnStep and here.)  Automatically uses 19200 if talking to a Mega2560 OnStep.
 #define SERIAL_SWAP                  AUTO //   AUTO, Automatic check both, ON for swapped port or OFF for default port only.  Infreq
                                           //         this option is ignored in ETHERNET modes
@@ -59,18 +59,18 @@
 #define ENC_AUTO_SYNC_DEFAULT          ON //     ON, Automatically sync Encoders to OnStep.                                   Option
 #define ENC_AUTO_SYNC_MEMORY          OFF //    OFF, ON Remember automatic sync setting across power cycles.                  Option
 
-#define AXIS1_ENC                     OFF //    OFF, CWCCW, AB, BC_BISSC. RA/Azm Axis (A/CW/MA) & (B/CCW/SLO.)                Option
 #define AXIS1_ENC_TICKS_DEG      22.22222 // 22.222, n, (ticks/degree.) Encoder ticks per degree.                             Adjust
 #define AXIS1_ENC_REVERSE             OFF //    OFF, ON to reverse the count direction.                                       Adjust
 #define AXIS1_ENC_DIFF_LIMIT_TO       300 //    300, n, (arcsec.) Minimum diff. between encoder/OnStep for sync. to OnStep    Adjust
 #define AXIS1_ENC_DIFF_LIMIT_FROM     OFF //    OFF, n, (arcsec.) Maximum diff. between encoder/OnStep for sync. from OnStep  Adjust
+#define AXIS1_ENCODER                 OFF //    OFF, AB, CW_CCW, PULSE_DIR, AS37_H39B_B. RA/Azm Axis (A/CW/MA) & (B/CCW/SLO.)  Option
                                           //         for absolute encoders, leave off when setting Zero, then enable.
 
-#define AXIS2_ENC                     OFF //    OFF, CWCCW, AB, BC_BISSC. Dec/Alt Axis (A/CW/MA) & (B/CCW/SLO.)               Option
 #define AXIS2_ENC_TICKS_DEG      22.22222 // 22.222, n, (ticks/degree.) Encoder ticks per degree.                             Adjust
 #define AXIS2_ENC_REVERSE             OFF //    OFF, ON to reverse the count direction.                                       Option
 #define AXIS2_ENC_DIFF_LIMIT_TO       300 //    300, n, (arcsec.) Minimum diff. between encoder/OnStep for sync. to OnStep.   Adjust
 #define AXIS2_ENC_DIFF_LIMIT_FROM     OFF //    OFF, n, (arcsec.) Maximum diff. between encoder/OnStep for sync. from OnStep. Adjust
+#define AXIS2_ENCODER                 OFF //    OFF, AB, CW_CCW, PULSE_DIR, AS37_H39B_B. Dec/Alt Axis (A/CW/MA) & (B/CCW/SLO.) Option
                                           //         for absolute encoders, leave off when setting Zero, then enable.
 
 // THAT'S IT FOR USER CONFIGURATION!
