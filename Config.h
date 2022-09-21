@@ -55,22 +55,21 @@
 // ENCODER SUPPORT -----------------------------------------------------------------------------------------------------------------
 // Some of these settings are stored in NV (EEPROM) as the default values when first uploaded.  Later changes below may be
 // ignored unless NV is wiped or you configure to revert to the defaults again at runtime.
-// Broadcom AS37-H39B-B (BC_BISSC) support is an experimental feature
 #define ENC_AUTO_SYNC_DEFAULT          ON //     ON, Automatically sync Encoders to OnStep.                                   Option
 #define ENC_AUTO_SYNC_MEMORY          OFF //    OFF, ON Remember automatic sync setting across power cycles.                  Option
 
-#define AXIS1_ENC_TICKS_DEG      22.22222 // 22.222, n, (ticks/degree.) Encoder ticks per degree.                             Adjust
-#define AXIS1_ENC_REVERSE             OFF //    OFF, ON to reverse the count direction.                                       Adjust
-#define AXIS1_ENC_DIFF_LIMIT_TO       300 //    300, n, (arcsec.) Minimum diff. between encoder/OnStep for sync. to OnStep    Adjust
-#define AXIS1_ENC_DIFF_LIMIT_FROM     OFF //    OFF, n, (arcsec.) Maximum diff. between encoder/OnStep for sync. from OnStep  Adjust
-#define AXIS1_ENCODER                 OFF //    OFF, AB, CW_CCW, PULSE_DIR, AS37_H39B_B. RA/Azm Axis (A/CW/MA) & (B/CCW/SLO.)  Option
+#define AXIS1_ENCODER                 OFF //    OFF, AB, CW_CCW, PULSE_DIR, AS37_H39B_B. RA/Azm Axis (A/MA) & (B/SLO.)        Option
+#define AXIS1_ENCODER_TICKS_DEG  22.22222 // 22.222, n, (ticks/degree.) Encoder ticks per degree.                             Adjust
+#define AXIS1_ENCODER_REVERSE         OFF //    OFF, ON to reverse the count direction.                                       Adjust
+#define AXIS1_ENCODER_DIFF_LIMIT_TO   300 //    300, n, (arcsec.) Minimum diff. between encoder/OnStep for sync. to OnStep    Adjust
+#define AXIS1_ENCODER_DIFF_LIMIT_FROM OFF //    OFF, n, (arcsec.) Maximum diff. between encoder/OnStep for sync. from OnStep  Adjust
                                           //         for absolute encoders, leave off when setting Zero, then enable.
 
-#define AXIS2_ENC_TICKS_DEG      22.22222 // 22.222, n, (ticks/degree.) Encoder ticks per degree.                             Adjust
-#define AXIS2_ENC_REVERSE             OFF //    OFF, ON to reverse the count direction.                                       Option
-#define AXIS2_ENC_DIFF_LIMIT_TO       300 //    300, n, (arcsec.) Minimum diff. between encoder/OnStep for sync. to OnStep.   Adjust
-#define AXIS2_ENC_DIFF_LIMIT_FROM     OFF //    OFF, n, (arcsec.) Maximum diff. between encoder/OnStep for sync. from OnStep. Adjust
-#define AXIS2_ENCODER                 OFF //    OFF, AB, CW_CCW, PULSE_DIR, AS37_H39B_B. Dec/Alt Axis (A/CW/MA) & (B/CCW/SLO.) Option
+#define AXIS2_ENCODER                 OFF //    OFF, AB, CW_CCW, PULSE_DIR, AS37_H39B_B. Dec/Alt Axis (A/MA) & (B/SLO.)       Option
+#define AXIS2_ENCODER_TICKS_DEG  22.22222 // 22.222, n, (ticks/degree.) Encoder ticks per degree.                             Adjust
+#define AXIS2_ENCODER_REVERSE         OFF //    OFF, ON to reverse the count direction.                                       Option
+#define AXIS2_ENCODER_DIFF_LIMIT_TO   300 //    300, n, (arcsec.) Minimum diff. between encoder/OnStep for sync. to OnStep.   Adjust
+#define AXIS2_ENCODER_DIFF_LIMIT_FROM OFF //    OFF, n, (arcsec.) Maximum diff. between encoder/OnStep for sync. from OnStep. Adjust
                                           //         for absolute encoders, leave off when setting Zero, then enable.
 
 // THAT'S IT FOR USER CONFIGURATION!
