@@ -70,6 +70,9 @@ void Encoders::init() {
   nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
 
   #if ENCODERS == ON
+    encAxis1.init();
+    encAxis2.init();
+
     #ifdef AXIS1_ENCODER_ABSOLUTE
       encAxis1.offset = nv.readL(NV_ENCODER_A1_ZERO);
     #endif
