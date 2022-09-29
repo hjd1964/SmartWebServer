@@ -69,7 +69,7 @@ class Encoders {
 
     #if ENCODERS == ON
       // automatically sync the encoders from OnStep's position when at home or parked
-      void syncFromOnStep();
+      void syncFromOnStep(bool force = false);
 
       // zero absolute encoders from OnStep's position
       #ifdef ENC_ABSOLUTE

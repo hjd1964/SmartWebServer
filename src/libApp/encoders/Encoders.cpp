@@ -86,14 +86,14 @@ void Encoders::init() {
 }
 
 #if ENCODERS == ON
-  void Encoders::syncFromOnStep() {
-    if (Axis1EncDiffFrom == OFF || fabs(osAxis1 - enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
+  void Encoders::syncFromOnStep(bool force) {
+    if (Axis1EncDiffFrom == OFF || force || fabs(osAxis1 - enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
       if (settings.axis1.reverse == ON)
         encAxis1.write(-osAxis1*settings.axis1.ticksPerDeg);
       else
         encAxis1.write(osAxis1*settings.axis1.ticksPerDeg);
     }
-    if (Axis2EncDiffFrom == OFF || fabs(osAxis2 - enAxis2) <= (double)(Axis2EncDiffFrom/3600.0)) {
+    if (Axis2EncDiffFrom == OFF || force || fabs(osAxis2 - enAxis2) <= (double)(Axis2EncDiffFrom/3600.0)) {
       if (settings.axis2.reverse == ON)
         encAxis2.write(-osAxis2*settings.axis2.ticksPerDeg);
       else

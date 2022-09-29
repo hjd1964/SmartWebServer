@@ -53,7 +53,7 @@ extern void syncTileGet()
   if (!v.equals(EmptyStr))
   {
     if (v.equals("o2e")) encoders.syncToOnStep();
-    if (v.equals("e2o")) encoders.syncFromOnStep();
+    if (v.equals("e2o")) encoders.syncFromOnStep(true);
     #ifdef ENC_ABSOLUTE
       if (v.equals("zro")) encoders.zeroFromOnStep();
     #endif
