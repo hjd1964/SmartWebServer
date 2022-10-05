@@ -27,6 +27,6 @@
 
 #define ETHERNET_RESET_PIN 9   // pin# for controlling the reset of W5500 so it comes up properly
 
-#define LED_STATUS_PIN     11  // pin 11 is the status led
+#define LED_STATUS_PIN       13  // pin 13 is the status led
 
 #define SD_CARD_CS_PIN     OFF // pin 4 to CS for SD adapter on Arduino Ethernet Shield
