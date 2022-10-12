@@ -1,11 +1,28 @@
 #pragma once
 
 #include "../../Common.h"
+#include "Status.h"
 
 #define leftTri  "&#x25c4;"
 #define rightTri "&#x25ba;"
 #define upTri    "&#x25b2;"
 #define downTri  "&#x25bc;"
+
+typedef struct DriverOutputStatusEx {
+  bool shortToGround;
+  bool openLoad;
+} DriverOutputStatusEx;
+
+typedef struct DriverStatusEx {
+  DriverOutputStatusEx outputA;
+  DriverOutputStatusEx outputB;
+  bool overTemperaturePreWarning;
+  bool overTemperature;
+  bool standstill;
+  bool communicationFailure;
+  bool fault;
+  bool valid;
+} DriverStatusEx;
 
 class State {
   public:
@@ -15,12 +32,27 @@ class State {
     void pollFast();
     void pollGpio();
 
-    void updateController();
-    void updateMount();
-    void updateRotator();
-    void updateFocuser();
-    void updateAuxiliary();
-    void updateEncoders();
+    void updateController(bool now = false);
+    void updateMount(bool now = false);
+    void updateRotator(bool now = false);
+    void updateFocuser(bool now = false);
+
+    bool updateAuxiliary(bool all = false, bool now = false);
+    inline void selectFeature(int f) { featureSelected = f; }
+    inline char* featureName() { return status.feature[featureSelected].name; }
+    inline int featurePurpose() { return status.feature[featureSelected].purpose; }
+    inline int featureValue1() { return status.feature[featureSelected].value1; }
+    inline float featureValue2() { return status.feature[featureSelected].value2; }
+    inline float featureValue3() { return status.feature[featureSelected].value3; }
+    inline float featureValue4() { return status.feature[featureSelected].value4; }
+
+    void updateEncoders(bool now = false);
+
+    unsigned long lastControllerPageLoadTime = 0;
+    unsigned long lastMountPageLoadTime = 0;
+    unsigned long lastAuxPageLoadTime = 0;
+    unsigned long lastFocuserPageLoadTime = 0;
+    unsigned long lastRotatorPageLoadTime = 0;
 
     char dateStr[10] = "?";
     char timeStr[10] = "?";
@@ -63,12 +95,15 @@ class State {
     float slewSpeedCurrent = NAN;
     char slewSpeedStr[16] = "?";
 
+    DriverStatusEx driver[9];
     char driverStatusStr[9][40] = {"?","?","?","?","?","?","?","?","?"};
 
     char controllerTemperatureStr[16] = "?";
     char lastErrorStr[80] = "?";
     char workLoadStr[20] = "?";
     char signalStrengthStr[20] = "?";
+
+    int featureSelected = 0;
 
     int focuserActive = 0;
     int focuserSelected = 0;
@@ -88,6 +123,8 @@ class State {
    // DynamicJsonDocument *doc;
 
   private:
+    void axisStatusUpdate();
+
     char vGpioMode[8] = {
       'X', 'X', 'X', 'X',
       'X', 'X', 'X', 'X'

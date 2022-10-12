@@ -8,8 +8,10 @@
 #include "../../locales/Locale.h"
 #include "../../lib/convert/Convert.h"
 
-void State::updateFocuser()
+void State::updateFocuser(bool now)
 {
+  if (!now && millis() - lastFocuserPageLoadTime > 2000) return;
+
   char temp[80];
 
   // identify active focuser

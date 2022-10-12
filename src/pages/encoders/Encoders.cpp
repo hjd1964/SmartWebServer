@@ -15,6 +15,8 @@ void handleEncoders()
 {
   char temp[400] = "";
 
+  state.updateMount(true);
+
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
@@ -77,6 +79,17 @@ void handleEncoders()
   www.sendContent("");
 }
 
+void encAjaxGet()
+{
+  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  www.sendHeader("Cache-Control", "no-cache");
+  www.send(200, "text/plain", String());
+
+  processEncodersGet();
+
+  www.sendContent("");
+}
+
 void encAjax()
 {
   String data = "";
@@ -89,17 +102,8 @@ void encAjax()
   encAxisTileAjax(data);
   
   www.sendContent("");
-}
 
-void encAjaxGet()
-{
-  www.setContentLength(CONTENT_LENGTH_UNKNOWN);
-  www.sendHeader("Cache-Control", "no-cache");
-  www.send(200, "text/plain", String());
-
-  processEncodersGet();
-
-  www.sendContent("");
+  state.lastMountPageLoadTime = millis();
 }
 
 void processEncodersGet()
@@ -108,5 +112,7 @@ void processEncodersGet()
 
   syncTileGet();
   encAxisTileGet();
+
+  state.lastMountPageLoadTime = millis();
 }
 #endif

@@ -8,11 +8,13 @@
 void processAuxGet();
 
 void handleAux() {
-  SERIAL_ONSTEP.setTimeout(webTimeout);
-  onStep.serialRecvFlush();
-
   char temp[240] = "";
   char temp1[80] = "";
+
+  state.updateAuxiliary(true);
+
+  SERIAL_ONSTEP.setTimeout(webTimeout);
+  onStep.serialRecvFlush();
 
   processAuxGet();
 
@@ -61,14 +63,14 @@ void handleAux() {
     data.concat(FPSTR(html_auxAuxB));
 
     for (int i = 0; i < 8; i++) {
-      status.selectFeature(i);
+      state.selectFeature(i);
 
-      if (status.featurePurpose() != 0 && j > 0) {
+      if (state.featurePurpose() != 0 && j > 0) {
         data.concat(F("<br/><div style='float: left; width: 26em'><hr></div>\n"));
       }
-      if (status.featurePurpose() == SWITCH) {
+      if (state.featurePurpose() == SWITCH) {
         data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
-        data.concat(status.featureName());
+        data.concat(state.featureName());
         data.concat("&bull;");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         sprintf_P(temp, html_auxOnSwitch, i + 1, i + 1); data.concat(temp);
@@ -78,30 +80,30 @@ void handleAux() {
         www.sendContentAndClear(data);
         j++;
       } else
-      if (status.featurePurpose() == ANALOG_OUTPUT) {
+      if (state.featurePurpose() == ANALOG_OUTPUT) {
         data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
-        data.concat(status.featureName());
+        data.concat(state.featureName());
         data.concat("&bull;");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxAnalog));
-        sprintf(temp,"%d' onchange=\"sf('x%dv1',this.value)\">",status.featureValue1(),i+1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv1',this.value)\">",state.featureValue1(),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        sprintf(temp,"<span id='x%dv1'>%d</span>%%", i + 1, (int)lround((status.featureValue1()/255.0)*100.0));
+        sprintf(temp,"<span id='x%dv1'>%d</span>%%", i + 1, (int)lround((state.featureValue1()/255.0)*100.0));
         data.concat(temp);
         data.concat("</div>\n");
         www.sendContentAndClear(data);
         j++;
       } else
-      if (status.featurePurpose() == DEW_HEATER) {
+      if (state.featurePurpose() == DEW_HEATER) {
         data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
-        data.concat(status.featureName());
+        data.concat(state.featureName());
         data.concat("&bull;");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         sprintf_P(temp, html_auxOnSwitch, i + 1, i + 1); data.concat(temp);
         sprintf_P(temp, html_auxOffSwitch, i + 1, i + 1); data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(celsiusToNativeRelative(status.featureValue4()), 3, 1, temp1);
+        dtostrf(celsiusToNativeRelative(state.featureValue4()), 3, 1, temp1);
         sprintf(temp,"&Delta;<span id='x%dv4'>%s</span>&deg;" TEMPERATURE_UNITS_ABV "\n", i + 1, temp1);
         data.concat(temp);
         data.concat("</div>\n");
@@ -110,10 +112,10 @@ void handleAux() {
         data.concat(L_ZERO " (100% " L_POWER ")");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxHeater));
-        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">", (int)lround(celsiusToNativeRelative(status.featureValue2())*10.0F), i + 1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">", (int)lround(celsiusToNativeRelative(state.featureValue2())*10.0F), i + 1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(celsiusToNativeRelative(status.featureValue2()), 3, 1, temp1);
+        dtostrf(celsiusToNativeRelative(state.featureValue2()), 3, 1, temp1);
         sprintf(temp,"<span id='x%dv2'>%s</span>&deg;" TEMPERATURE_UNITS_ABV "\n", i + 1, temp1);
         data.concat(temp);
         data.concat("</div>\n");
@@ -122,10 +124,10 @@ void handleAux() {
         data.concat(L_SPAN " (0% " L_POWER ")");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxHeater));
-        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">", (int)lround(celsiusToNativeRelative(status.featureValue3())*10.0), i + 1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">", (int)lround(celsiusToNativeRelative(state.featureValue3())*10.0), i + 1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(celsiusToNativeRelative(status.featureValue3()), 3, 1, temp1);
+        dtostrf(celsiusToNativeRelative(state.featureValue3()), 3, 1, temp1);
         sprintf(temp,"<span id='x%dv3'>%s</span>&deg;" TEMPERATURE_UNITS_ABV "\n", i + 1, temp1);
         data.concat(temp);
         data.concat("</div>\n");
@@ -133,9 +135,9 @@ void handleAux() {
         www.sendContentAndClear(data);
         j++;
       } else
-      if (status.featurePurpose() == INTERVALOMETER) {
+      if (state.featurePurpose() == INTERVALOMETER) {
         data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>&bull;"));
-        data.concat(status.featureName());
+        data.concat(state.featureName());
         data.concat("&bull;");
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxStartStop1));
@@ -154,10 +156,10 @@ void handleAux() {
         data.concat(L_CAMERA_COUNT);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxCount));
-        sprintf(temp,"%d' onchange=\"sf('x%dv4',this.value)\">",(int)status.featureValue4(),i+1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv4',this.value)\">",(int)state.featureValue4(),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        dtostrf(status.featureValue4(),0,0,temp1);
+        dtostrf(state.featureValue4(),0,0,temp1);
         sprintf(temp,"<span id='x%dv4'>%s</span> x\n",i+1,temp1);
         data.concat(temp);
         data.concat("</div>\n");
@@ -166,11 +168,11 @@ void handleAux() {
         data.concat(L_CAMERA_EXPOSURE);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxExposure));
-        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)timeToByte(status.featureValue2()),i+1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)timeToByte(state.featureValue2()),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         float v; int d;
-        v=status.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
+        v=state.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,temp1);
         sprintf(temp,"<span id='x%dv2'>%s</span> sec\n",i+1,temp1);
         data.concat(temp);
@@ -180,10 +182,10 @@ void handleAux() {
         data.concat(L_CAMERA_DELAY);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxDelay));
-        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)timeToByte(status.featureValue3()),i+1);
+        sprintf(temp,"%d' onchange=\"sf('x%dv3',this.value)\">",(int)timeToByte(state.featureValue3()),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
-        v=status.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
+        v=state.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,temp1);
         sprintf(temp,"<span id='x%dv3'>%s</span> sec\n",i+1,temp1);
         data.concat(temp);
@@ -226,9 +228,9 @@ void auxAjax() {
   // update auxiliary feature values
   if (status.auxiliaryFound) {
     for (int i = 0; i < 8; i++) {
-      status.selectFeature(i);
-      if (status.featurePurpose() == SWITCH) {
-        if (status.featureValue1() != 0) {
+      state.selectFeature(i);
+      if (state.featurePurpose() == SWITCH) {
+        if (state.featureValue1() != 0) {
           sprintf(temp,"sw%d_on|%s\n",i+1,"selected"); data.concat(temp);
           sprintf(temp,"sw%d_off|%s\n",i+1,"unselected"); data.concat(temp);
         } else {
@@ -236,39 +238,41 @@ void auxAjax() {
           sprintf(temp,"sw%d_off|%s\n",i+1,"selected"); data.concat(temp);
         }
       } else
-      if (status.featurePurpose() == ANALOG_OUTPUT) {
-        sprintf(temp,"x%dv1|%d\n",i+1,(int)lround((status.featureValue1()/255.0)*100.0)); data.concat(temp);
+      if (state.featurePurpose() == ANALOG_OUTPUT) {
+        sprintf(temp,"x%dv1|%d\n",i+1,(int)lround((state.featureValue1()/255.0)*100.0)); data.concat(temp);
       } else
-      if (status.featurePurpose() == DEW_HEATER) {
+      if (state.featurePurpose() == DEW_HEATER) {
         char s[40];
-        if (status.featureValue1() != 0) {
+        if (state.featureValue1() != 0) {
           sprintf(temp,"sw%d_on|%s\n",i+1,"selected"); data.concat(temp);
           sprintf(temp,"sw%d_off|%s\n",i+1,"unselected"); data.concat(temp);
         } else {
           sprintf(temp,"sw%d_on|%s\n",i+1,"unselected"); data.concat(temp);
           sprintf(temp,"sw%d_off|%s\n",i+1,"selected"); data.concat(temp);
         }
-        dtostrf(celsiusToNativeRelative(status.featureValue2()),3,1,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
-        dtostrf(celsiusToNativeRelative(status.featureValue3()),3,1,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
-        dtostrf(celsiusToNativeRelative(status.featureValue4()),3,1,s); sprintf(temp,"x%dv4|%s\n",i+1,s); data.concat(temp);
+        dtostrf(celsiusToNativeRelative(state.featureValue2()),3,1,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
+        dtostrf(celsiusToNativeRelative(state.featureValue3()),3,1,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
+        dtostrf(celsiusToNativeRelative(state.featureValue4()),3,1,s); sprintf(temp,"x%dv4|%s\n",i+1,s); data.concat(temp);
       } else
-      if (status.featurePurpose() == INTERVALOMETER) {
+      if (state.featurePurpose() == INTERVALOMETER) {
         char s[40];
         float v; int d;
         
-        v=status.featureValue1();
+        v=state.featureValue1();
         if (fabs(v) < 0.001) sprintf(temp,"x%dv1|-\n",i+1); else sprintf(temp,"x%dv1|%d\n",i+1,(int)v); data.concat(temp);
-        v=status.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
+        v=state.featureValue2(); if (v < 1.0) d=3; else if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,s); sprintf(temp,"x%dv2|%s\n",i+1,s); data.concat(temp);
-        v=status.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
+        v=state.featureValue3(); if (v < 10.0) d=2; else if (v < 30.0) d=1; else d=0;
         dtostrf(v,0,d,s); sprintf(temp,"x%dv3|%s\n",i+1,s); data.concat(temp);
-        sprintf(temp,"x%dv4|%d\n",i+1,(int)status.featureValue4()); data.concat(temp);
+        sprintf(temp,"x%dv4|%d\n",i+1,(int)state.featureValue4()); data.concat(temp);
       }
     }
   }
 
   www.sendContentAndClear(data);
   www.sendContent("");
+
+  state.lastAuxPageLoadTime = millis();
 }
 
 void processAuxGet() {
@@ -278,10 +282,10 @@ void processAuxGet() {
 
   // Auxiliary Feature set Value1 to Value4
   for (char c = '1'; c <= '8'; c++) {
-    status.selectFeature(c - '1');
+    state.selectFeature(c - '1');
     sprintf(temp, "x%cv1", c); v = www.arg(temp);
     if (!v.equals(EmptyStr)) { sprintf(temp, ":SXX%c,V%s#", c, v.c_str()); onStep.commandBool(temp); }
-    if (status.featurePurpose() == DEW_HEATER) {
+    if (state.featurePurpose() == DEW_HEATER) {
       sprintf(temp, "x%cv2", c); v = www.arg(temp);
       if (!v.equals(EmptyStr)) {
         dtostrf(nativeToCelsiusRelative(v.toFloat()/10.0), 0, 1, temp1); sprintf(temp, ":SXX%c,Z%s#", c, temp1); onStep.commandBool(temp);
@@ -291,7 +295,7 @@ void processAuxGet() {
         dtostrf(nativeToCelsiusRelative(v.toFloat()/10.0), 0, 1, temp1); sprintf(temp, ":SXX%c,S%s#", c, temp1); onStep.commandBool(temp);
       }
     } else
-    if (status.featurePurpose() == INTERVALOMETER) {
+    if (state.featurePurpose() == INTERVALOMETER) {
       sprintf(temp, "x%cv2", c); v = www.arg(temp);
       if (!v.equals(EmptyStr)) { dtostrf(byteToTime(v.toInt()), 0, 3, temp1); sprintf(temp, ":SXX%c,E%s#", c, temp1); onStep.commandBool(temp); }
       sprintf(temp, "x%cv3", c); v = www.arg(temp);
@@ -300,4 +304,6 @@ void processAuxGet() {
       if (!v.equals(EmptyStr)) { dtostrf(v.toFloat(), 0, 0, temp1); sprintf(temp, ":SXX%c,C%s#", c, temp1); onStep.commandBool(temp); }
     }
   }
+
+  state.lastAuxPageLoadTime = millis();
 }

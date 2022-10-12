@@ -11,6 +11,8 @@ void handleRoot()
 {
   char temp[240] = "";
 
+  state.updateController(true);
+
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
@@ -129,6 +131,8 @@ void indexAjax() {
 
   www.sendContentAndClear(data);
   www.sendContent("");
+
+  state.lastControllerPageLoadTime = millis();
 }
 
 void processIndexGet()
@@ -148,4 +152,6 @@ void processIndexGet()
   #endif
   statusTileGet();
   axisTileGet();
+
+  state.lastControllerPageLoadTime = millis();
 }

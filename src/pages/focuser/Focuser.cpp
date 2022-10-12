@@ -11,6 +11,8 @@ void processFocuserGet();
 void handleFocuser() {
   char temp[240] = "";
 
+  state.updateFocuser(true);
+
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
@@ -96,6 +98,8 @@ void focuserAjax()
 
   www.sendContentAndClear(data);
   www.sendContent("");
+
+  state.lastFocuserPageLoadTime = millis();
 }
 
 void processFocuserGet()
@@ -104,4 +108,6 @@ void processFocuserGet()
   focuserHomeTileGet();
   focuserSlewingTileGet();
   focuserBacklashTcfTileGet();
+
+  state.lastFocuserPageLoadTime = millis();
 }

@@ -13,6 +13,15 @@ enum Errors {
 
 const char GuideRatesStr[][8] = {"1/4X", "1/2X", "1X", "2X", "4X", "8X", "20X", "48X", "1/2 Max", "Max"};
 
+typedef struct Features {
+    char name[11];
+    int purpose;
+    int value1;
+    float value2;
+    float value3;
+    float value4;
+} features;
+
 #define PierSideNone     0
 #define PierSideEast     1
 #define PierSideWest     2
@@ -23,22 +32,6 @@ const char GuideRatesStr[][8] = {"1/4X", "1/2X", "1X", "2X", "4X", "8X", "20X", 
 #define PierSideFlipEW1  20
 #define PierSideFlipEW2  21
 #define PierSideFlipEW3  22
-
-typedef struct DriverOutputStatus {
-  bool shortToGround;
-  bool openLoad;
-} DriverOutputStatus;
-
-typedef struct DriverStatus {
-  DriverOutputStatus outputA;
-  DriverOutputStatus outputB;
-  bool overTemperaturePreWarning;
-  bool overTemperature;
-  bool standstill;
-  bool communicationFailure;
-  bool fault;
-  bool valid;
-} DriverStatus;
 
 class Status {
   public:
@@ -111,44 +104,20 @@ class Status {
 
     bool rotatorFound = false;
     bool derotatorFound = false;
-
     bool auxiliaryFound = false;
-    inline void selectFeature(int f) { featureSelected = f; }
-    inline char* featureName() { return feature[featureSelected].name; }
-    inline int featurePurpose() { return feature[featureSelected].purpose; }
-    inline int featureValue1() { return feature[featureSelected].value1; }
-    inline float featureValue2() { return feature[featureSelected].value2; }
-    inline float featureValue3() { return feature[featureSelected].value3; }
-    inline float featureValue4() { return feature[featureSelected].value4; }
 
-    DriverStatus driver[9];
+    features feature[8];
 
   private:
     void focuserScan();
     void rotatorScan();
-
-    bool auxiliaryFeatureScan();
-    bool auxiliaryFeatureUpdate(bool all = false);
-
-    void axisStatusUpdate();
+    bool auxiliaryScan();
 
     char id[10] = "";
     char ver[10] = "";
     int  ver_maj = -1;
     int  ver_min = -1;
     char ver_patch = 0;
-
-    // hold state of auxiliary features
-    int featureSelected = 0;
-    typedef struct Features {
-       char name[11];
-       int purpose;
-       int value1;
-       float value2;
-       float value3;
-       float value4;
-    } features;
-    features feature[8];
 
 };
 

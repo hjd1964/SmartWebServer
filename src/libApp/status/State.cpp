@@ -1,7 +1,6 @@
 // scan OnStep state in the background
 #include "State.h"
 
-#include "Status.h"
 #include "../../lib/tasks/OnTask.h"
 #include "../../libApp/cmd/Cmd.h"
 
@@ -36,26 +35,23 @@ void State::poll()
   if (status.mountFound)
   {
     updateMount();
-
     updateEncoders();
   }
-
   if (status.focuserFound) updateFocuser();
-
   if (status.auxiliaryFound) updateAuxiliary();
 }
 
 void State::pollSlow()
 {
   updateController();
+
   status.update(true);
 }
 
 void State::pollFast()
 {
-  char temp[80];
-
-  if (status.focuserFound) {
+  if (status.focuserFound && millis() - lastFocuserPageLoadTime < 2000) {
+    char temp[80];
     if (!onStep.command(":FG#", temp)) strcpy(temp, "?"); else strcat(temp, " microns"); Y;
     strncpy(focuserPositionStr, temp, 20); focuserPositionStr[19] = 0; Y;
   }

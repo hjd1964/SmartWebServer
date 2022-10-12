@@ -116,9 +116,7 @@ bool Status::update(bool all)
 
   focuserScan();
   rotatorScan();
-  auxiliaryFeatureScan();
-  auxiliaryFeatureUpdate();
-  axisStatusUpdate();
+  auxiliaryScan();
 
   valid = true;
   return true;
@@ -159,7 +157,7 @@ void Status::rotatorScan() {
   }
 }
 
-bool Status::auxiliaryFeatureScan() {
+bool Status::auxiliaryScan() {
   static bool scanned = false;
   bool valid;
   char cmd[40], out[40], present[40];
@@ -204,83 +202,6 @@ bool Status::auxiliaryFeatureScan() {
   }
   scanned = true;
   return true;
-}
-
-bool Status::auxiliaryFeatureUpdate(bool all) {
-  bool valid;
-
-  // get feature status
-  for (uint8_t i = 0; i < 8; i++) {
-    char *value1_str = NULL;
-    char *value2_str = NULL;
-    char *value3_str = NULL;
-    char *value4_str = NULL;
-    char cmd[40], out[40];
-
-    if (all || (feature[i].purpose == SWITCH || feature[i].purpose == ANALOG_OUTPUT || feature[i].purpose == DEW_HEATER || feature[i].purpose == INTERVALOMETER)) {
-      sprintf(cmd,":GXX%d#", i + 1);
-      if (!onStep.command(cmd, out) || strlen(out) == 0) valid = false; else valid = true; Y;
-      if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; return false; }
-
-      value2_str = strstr(out,",");
-      if (value2_str) {
-        value2_str[0] = 0;
-        value2_str++;
-        value3_str = strstr(value2_str, ",");
-        if (value3_str) {
-          value3_str[0] = 0;
-          value3_str++;
-          value4_str = strstr(value3_str, ",");
-          if (value4_str) {
-            value4_str[0] = 0;
-            value4_str++;
-          }
-        }
-      }
-      value1_str = out;
-      if (!value1_str) valid = false;
-
-      if (valid) {
-        if (value1_str) feature[i].value1 = atoi(value1_str);
-        if (value2_str) feature[i].value2 = atof(value2_str);
-        if (value3_str) feature[i].value3 = atof(value3_str);
-        if (value4_str) feature[i].value4 = atof(value4_str);
-        
-      }
-    }
-  }
-  return true;
-}
-
-// attempt to get the driver status for all 9 axes, mark the ones that return false so we don't attempt to process again
-void Status::axisStatusUpdate() {
-  static int driverStatusFailedAttempts[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-  int maxAxes = 2;
-  if (status.getVersionMajor() >= 10) maxAxes = 9;
-  for (int axis = 0; axis < maxAxes; axis++) {
-    if (driverStatusFailedAttempts[axis] < 3) {
-      char cmd[40];
-      char reply[40];
-      sprintf(cmd, ":GXU%d#", axis + 1);
-      if (onStep.command(cmd, reply) && reply[0] != '0') {
-        driverStatusFailedAttempts[axis] = 0;
-        driver[axis].valid = true;
-        driver[axis].communicationFailure = strstr(reply, "ST,OA,OB,GA,GB,OT,PW");
-        driver[axis].standstill = strstr(reply, "ST");
-        driver[axis].outputA.openLoad = strstr(reply, "OA");
-        driver[axis].outputB.openLoad = strstr(reply, "OB");
-        driver[axis].outputA.shortToGround = strstr(reply, "GA");
-        driver[axis].outputB.shortToGround = strstr(reply, "GB");
-        driver[axis].overTemperature = strstr(reply, "OT");
-        driver[axis].overTemperaturePreWarning = strstr(reply, "PW");
-        driver[axis].fault = strstr(reply, "GF");
-      } else {
-        driverStatusFailedAttempts[axis]++;
-        driver[axis].valid = false;
-      }
-      Y;
-    }
-  }
 }
 
 bool Status::getLastErrorMessage(char message[]) {

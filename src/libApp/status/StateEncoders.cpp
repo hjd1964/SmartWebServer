@@ -8,11 +8,13 @@
 #include "../../lib/convert/Convert.h"
 #include "../../libApp/encoders/Encoders.h"
 
-void State::updateEncoders()
+void State::updateEncoders(bool now)
 {
-  char temp[80];
-
   #if ENCODERS == ON
+    if (!now && millis() - lastMountPageLoadTime > 2000) return;
+
+    char temp[80];
+
     // RA,Dec OnStep and Encoder positions
     double f;
     f = encoders.getOnStepAxis1();

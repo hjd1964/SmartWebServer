@@ -12,6 +12,8 @@ void handleMount()
 {
   char temp[240] = "";
 
+  state.updateMount(true);
+
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
@@ -130,6 +132,8 @@ void mountAjax()
 
   www.sendContentAndClear(data);
   www.sendContent("");
+
+  state.lastMountPageLoadTime = millis();
 }
 
 void processMountGet()
@@ -143,5 +147,7 @@ void processMountGet()
   trackingTileGet();
   if (status.pecEnabled) pecTileGet();
   limitsTileGet();
+
+  state.lastMountPageLoadTime = millis();
 }
 

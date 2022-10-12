@@ -11,6 +11,8 @@ void processRotatorGet();
 void handleRotator() {
   char temp[240] = "";
 
+  state.updateRotator(true);
+
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 
@@ -96,6 +98,8 @@ void rotatorAjax()
 
   www.sendContentAndClear(data);
   www.sendContent("");
+
+  state.lastRotatorPageLoadTime = millis();
 }
 
 void processRotatorGet()
@@ -104,4 +108,6 @@ void processRotatorGet()
   rotatorSlewingTileGet();
   if (status.derotatorFound) deRotatorTileGet();
   rotatorBacklashTileGet();
+
+  state.lastRotatorPageLoadTime = millis();
 }

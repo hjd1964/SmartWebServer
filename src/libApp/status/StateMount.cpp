@@ -8,10 +8,11 @@
 #include "../../locales/Locale.h"
 #include "../../lib/convert/Convert.h"
 
-void State::updateMount()
+void State::updateMount(bool now)
 {
-  char temp[80];
-  char temp1[80];
+  if (!now && millis() - lastMountPageLoadTime > 2000) return;
+
+  char temp[80], temp1[80];
 
   // UTC Time and Date
   if (!onStep.command(":GX80#", temp)) strcpy(temp, "?");

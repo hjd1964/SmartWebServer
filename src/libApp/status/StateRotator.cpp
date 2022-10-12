@@ -7,8 +7,10 @@
 #include "../../locales/Locale.h"
 #include "../../lib/convert/Convert.h"
 
-void State::updateRotator()
+void State::updateRotator(bool now)
 {
+  if (!now && millis() - lastRotatorPageLoadTime > 2000) return;
+
   char temp[80], temp1[80];
 
   // rotator position
