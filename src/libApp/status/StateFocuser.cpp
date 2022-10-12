@@ -13,7 +13,19 @@ void State::updateFocuser()
   char temp[80];
 
   // identify active focuser
-  if (onStep.command(":FA#", temp)) focuserSelected = atoi(temp); else focuserSelected = 0; Y;
+  if (status.getVersionMajor() >= 10) {
+    if (onStep.command(":FA#", temp)) focuserSelected = atoi(temp); else focuserSelected = 0;
+  } else {
+    if (onStep.command(":Fa#", temp)) {
+      focuserSelected = atoi(temp);
+      switch (focuserSelected) {
+        case 0: focuserSelected = 2; break;
+        case 1: focuserSelected = 1; break;
+        default: focuserSelected = 0; break;
+      }
+    } else focuserSelected = 0;
+  }
+  Y;
 
   if (focuserSelected >= 1 && focuserSelected <= 6) {
 
