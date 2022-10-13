@@ -15,7 +15,7 @@ const char html_rotPosition[] PROGMEM =
   "<button class='bbh' onpointerdown=\"s('rs',document.getElementById('rot_set').value)\" type='button'>" L_SET_LABEL "</button></span>";
 
 const char html_rotStop[] PROGMEM =
-  "<button class='bbh' onpointerdown='\"'s('rot','stop')\" type='button' style='color: White; margin-bottom: 0.5em;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button><br />";
+  "<button class='bbh' onpointerdown=\"s('rot','stop')\" type='button' style='color: White; margin-bottom: 0.5em;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button><br />";
 
 const char html_rotateCcw[] PROGMEM =
   "<button class='bbh' style='height: 2.1em' onpointerdown=\"s('rot','ccwf')\" onpointerup=\"s('rot','stop')\" type='button'>" ARROW_LL "</button>"
