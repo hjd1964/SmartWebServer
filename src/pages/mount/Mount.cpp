@@ -58,6 +58,7 @@ void handleMount()
   data.concat(FPSTR(html_script_ajax_shortcuts));
   data.concat(FPSTR(html_script_ajax_date_time_return));
   data.concat(F("<script>var ajaxPage='mount-ajax.txt';</script>\n"));
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
   www.sendContentAndClear(data);
 

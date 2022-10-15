@@ -54,6 +54,7 @@ void handleFocuser() {
   data.concat(temp);
   data.concat(FPSTR(html_script_ajax_shortcuts));
   data.concat("<script>var ajaxPage='focuser-ajax.txt';</script>\n");
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
   www.sendContentAndClear(data);
 

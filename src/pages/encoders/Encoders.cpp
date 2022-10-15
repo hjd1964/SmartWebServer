@@ -58,10 +58,11 @@ void handleEncoders()
   // scripts
   sprintf_P(temp, html_script_ajax_get, "enc-ajax-get.txt");
   data.concat(temp);
-  www.sendContentAndClear(data);
 
   data.concat("<script>var ajaxPage='enc-ajax.txt';</script>\n");
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
+  www.sendContentAndClear(data);
   data.concat("<script>auto2Rate=2;</script>");
   www.sendContentAndClear(data);
 

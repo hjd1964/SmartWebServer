@@ -54,6 +54,7 @@ void handleAux() {
 
   // active ajax page is: auxAjax();
   data.concat("<script>var ajaxPage='auxiliary-ajax.txt';</script>\n");
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
   www.sendContentAndClear(data);
 

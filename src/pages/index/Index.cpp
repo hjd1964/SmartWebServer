@@ -50,7 +50,9 @@ void handleRoot()
 
   // scripts
   data.concat("<script>var ajaxPage='index.txt';</script>\n");
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
+  www.sendContentAndClear(data);
   sprintf_P(temp, html_script_ajax_get, "index-ajax-get.txt");
   data.concat(temp);
   www.sendContentAndClear(data);
