@@ -45,10 +45,10 @@ Axis::Axis(uint8_t axisNumber, const AxisPins *pins, const AxisSettings *setting
   }
 
   switch (axisMeasure) {
-    case AXIS_MEASURE_UNKNOWN: strcpy(unitsStr, "?");  unitsRadians = false; break;
+    case AXIS_MEASURE_UNKNOWN: strcpy(unitsStr, "?"); unitsRadians = false; break;
     case AXIS_MEASURE_MICRONS: strcpy(unitsStr, "um"); unitsRadians = false; break;
-    case AXIS_MEASURE_DEGREES: strcpy(unitsStr, "°");  unitsRadians = false; break;
-    case AXIS_MEASURE_RADIANS: strcpy(unitsStr, "°");  unitsRadians = true;  break;
+    case AXIS_MEASURE_DEGREES: strcpy(unitsStr, " deg"); unitsRadians = false; break;
+    case AXIS_MEASURE_RADIANS: strcpy(unitsStr, " deg"); unitsRadians = true;  break;
   } 
 }
 
@@ -258,9 +258,14 @@ double Axis::getTargetCoordinate() {
   return wrap(motor->getTargetCoordinateSteps()/settings.stepsPerMeasure);
 }
 
-// check if we're at the target coordinate during an auto slew
+// returns true if at target
 bool Axis::atTarget() {
   return labs(motor->getTargetDistanceSteps()) == 0;
+}
+
+// returns true if within one second of the target at the backlash takeup rate
+bool Axis::nearTarget() {
+  return labs(motor->getTargetDistanceSteps()) < backlashFreq*settings.stepsPerMeasure;
 }
 
 // distance to target in "measures" (degrees, microns, etc.)
@@ -277,7 +282,7 @@ double Axis::getOriginOrTargetDistance() {
 void Axis::setSlewAccelerationRate(float mpsps) {
   if (autoRate == AR_NONE) {
     slewAccelRateFs = mpsps/FRACTIONAL_SEC;
-    if (slewAccelRateFs > backlashFreq/2.0F) slewAccelRateFs = backlashFreq/2.0F;
+    if (slewAccelRateFs > backlashFreq) slewAccelRateFs = backlashFreq;
     slewAccelTime = NAN;
   }
 }
@@ -291,7 +296,7 @@ void Axis::setSlewAccelerationTime(float seconds) {
 void Axis::setSlewAccelerationRateAbort(float mpsps) {
   if (autoRate == AR_NONE) {
     abortAccelRateFs = mpsps/FRACTIONAL_SEC;
-    if (abortAccelRateFs > backlashFreq/2.0F) abortAccelRateFs = backlashFreq/2.0F;
+    if (abortAccelRateFs > backlashFreq) abortAccelRateFs = backlashFreq;
     abortAccelTime = NAN;
   }
 }
@@ -504,7 +509,7 @@ void Axis::poll() {
         V(axisPrefix); VLF("slew stopped");
       } else {
         freq = sqrtf(2.0F*(slewAccelRateFs*FRACTIONAL_SEC)*getOriginOrTargetDistance());
-        if (freq < backlashFreq/2.0F) freq = backlashFreq/2.0F;
+        if (freq < backlashFreq) freq = backlashFreq;
         if (freq > slewFreq) freq = slewFreq;
         if (motor->getTargetDistanceSteps() < 0) freq = -freq;
         rampFreq = freq;

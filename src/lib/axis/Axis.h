@@ -194,6 +194,9 @@ class Axis {
     // returns true if at target
     bool atTarget();
 
+    // returns true if within one second of the target at the backlash takeup rate
+    bool nearTarget();
+
     // set backlash amount in "measures" (radians, microns, etc.)
     void setBacklash(float value);
 
@@ -330,7 +333,7 @@ class Axis {
 
     uint8_t axisNumber = 0;
     char axisPrefix[13] = "MSG: Axis_, ";
-    char unitsStr[3] = "?";
+    char unitsStr[5] = "?";
     bool unitsRadians = false;
 
     bool enabled = false;        // enable/disable logical state (disabled is powered down)
