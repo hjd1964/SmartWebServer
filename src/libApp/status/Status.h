@@ -109,6 +109,7 @@ class Status {
     features feature[8];
 
   private:
+    void mountScan();
     void focuserScan();
     void rotatorScan();
     bool auxiliaryScan();

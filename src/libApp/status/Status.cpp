@@ -43,9 +43,13 @@ bool Status::update(bool all)
     }
   }
 
-  if (!onStep.command(":GU#", result) || result[0] == 0) mountFound = false; else mountFound = true; Y;
+  mountScan();
+  focuserScan();
+  rotatorScan();
+  auxiliaryScan();
 
-  if (mountFound) {
+  if (mountFound && onStep.command(":GU#", result)) {
+    Y;
     tracking = false;
     inGoto = false;
     if (!strstr(result, "N")) inGoto = true; else tracking = !strstr(result, "n");
@@ -114,12 +118,17 @@ bool Status::update(bool all)
     Y;
   }
 
-  focuserScan();
-  rotatorScan();
-  auxiliaryScan();
-
   valid = true;
   return true;
+}
+
+void Status::mountScan() {
+  static bool scanned = false;
+  if (!scanned) {
+    char result[80] = "";
+    if (!onStep.command(":GU#", result) || result[0] == 0) mountFound = false; else mountFound = true; Y;
+    scanned = true;
+  }
 }
 
 void Status::focuserScan() {
