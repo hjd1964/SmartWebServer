@@ -21,7 +21,13 @@ bool State::updateAuxiliary(bool all, bool now) {
     if (all || (status.feature[i].purpose == SWITCH || status.feature[i].purpose == ANALOG_OUTPUT || status.feature[i].purpose == DEW_HEATER || status.feature[i].purpose == INTERVALOMETER)) {
       sprintf(cmd,":GXX%d#", i + 1);
       if (!onStep.command(cmd, out) || strlen(out) == 0) valid = false; else valid = true; Y;
-      if (!valid) { for (uint8_t j = 0; j < 8; j++) status.feature[j].purpose = 0; return false; }
+      if (!valid) {
+        status.feature[i].value1 = 0;
+        status.feature[i].value2 = NAN;
+        status.feature[i].value3 = NAN;
+        status.feature[i].value4 = NAN;
+        return false;
+      }
 
       value2_str = strstr(out,",");
       if (value2_str) {

@@ -11,7 +11,7 @@ void handleAux() {
   char temp[240] = "";
   char temp1[80] = "";
 
-  state.updateAuxiliary(true);
+  state.updateAuxiliary(false, true);
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
