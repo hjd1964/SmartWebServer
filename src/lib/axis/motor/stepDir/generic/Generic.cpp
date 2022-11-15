@@ -85,14 +85,14 @@ void StepDirGeneric::init(float param1, float param2, float param3, float param4
 IRAM_ATTR void StepDirGeneric::modeMicrostepTracking() {
   digitalWriteF(m0Pin, microstepBitCodeM0);
   digitalWriteF(m1Pin, microstepBitCodeM1);
-  digitalWriteF(m2Pin, microstepBitCodeM2);
+  digitalWriteEx(m2Pin, microstepBitCodeM2);
 }
 
 IRAM_ATTR int StepDirGeneric::modeMicrostepSlewing() {
   if (microstepRatio > 1) {
     digitalWriteF(m0Pin, microstepBitCodeGotoM0);
     digitalWriteF(m1Pin, microstepBitCodeGotoM1);
-    digitalWriteF(m2Pin, microstepBitCodeGotoM2);
+    digitalWriteEx(m2Pin, microstepBitCodeGotoM2);
   }
   return microstepRatio;
 }
@@ -100,7 +100,7 @@ IRAM_ATTR int StepDirGeneric::modeMicrostepSlewing() {
 void StepDirGeneric::modeDecayTracking() {
   if (settings.decay == OFF) return;
   int8_t state = getDecayPinState(settings.decay);
-  digitalWriteEx(decayPin, state);
+  if (state != OFF) digitalWriteEx(decayPin, state);
 }
 
 void StepDirGeneric::modeDecaySlewing() {
@@ -125,7 +125,7 @@ int8_t StepDirGeneric::getDecayPinState(int8_t decay) {
 }
 
 bool StepDirGeneric::isDecayOnM2() {
-  if (settings.model == TMC2209S) return true; else return false;
+  if (settings.model == TMC2209S || settings.model == TMC2225S) return true; else return false;
 }
 
 #endif

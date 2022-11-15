@@ -243,9 +243,8 @@ class Axis {
     void setSlewAccelerationTimeAbort(float seconds);
 
     // auto goto to destination target coordinate
-    // \param distance: acceleration distance in measures (to frequency)
     // \param frequency: optional frequency of slew in "measures" (radians, microns, etc.) per second
-    CommandError autoGoto(float distance, float frequency = NAN);
+    CommandError autoGoto(float frequency = NAN);
 
     // auto slew
     // \param direction: direction of motion, DIR_FORWARD or DIR_REVERSE
@@ -290,6 +289,9 @@ class Axis {
 
     // checks for an sense error that would disallow motion in a given direction or DIR_BOTH for any motion
     bool motionErrorSensed(Direction direction);
+
+    // calibrate the motor if required
+    void calibrate() { motor->calibrate(); }
 
     // monitor movement
     void poll();
@@ -374,7 +376,6 @@ class Axis {
     float backlashFreq = 0.0F;
 
     AutoRate autoRate = AR_NONE;       // auto slew mode
-    float slewAccelerationDistance;    // auto slew rate distance in measures to max rate
     float slewAccelRateFs;             // auto slew rate in measures per second per frac-sec
     float abortAccelRateFs;            // abort slew rate in measures per second per frac-sec
     float slewAccelTime = NAN;         // auto slew acceleration time in seconds

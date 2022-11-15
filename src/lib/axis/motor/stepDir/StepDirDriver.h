@@ -27,6 +27,7 @@ typedef struct StepDirDriverSettings {
   int16_t currentHold;
   int16_t currentRun;
   int16_t currentGoto;
+  int8_t  intpol;
   int8_t  decay;
   int8_t  decaySlewing;
   int8_t  status;
@@ -65,7 +66,10 @@ class StepDirDriver {
     inline DriverStatus getStatus() { return status; }
 
     // secondary way to power down not using the enable pin
-    virtual void enable(bool state) { UNUSED(state); }
+    virtual bool enable(bool state) { UNUSED(state); return false; }
+
+    // calibrate the motor driver if required
+    virtual void calibrate() {}
 
     // get the pulse width in nanoseconds, if unknown (-1) returns 2000 nanoseconds
     long getPulseWidth();
@@ -79,6 +83,9 @@ class StepDirDriver {
     StepDirDriverSettings settings;
 
   protected:
+    inline float mAToCs(float mA) { return 32.0F*(((mA/1000.0F)*(rSense+0.02F))/0.325F) - 1.0F; }
+    float rSense = 0.11F;
+
     uint8_t axisNumber;
     DriverStatus status = {false, {false, false}, {false, false}, false, false, false, false};
     #if DEBUG != OFF

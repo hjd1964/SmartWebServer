@@ -132,8 +132,7 @@ bool StepDirMotor::init() {
 
   // init default driver enable pin
   pinModeEx(Pins->enable, OUTPUT);
-  // driver enabled for possible TMC current calibration
-  digitalWriteEx(Pins->enable, Pins->enabledState)
+  digitalWriteEx(Pins->enable, !Pins->enabledState)
 
   // start the motor timer
   V(axisPrefix); VF("start task to move motor... ");
@@ -172,11 +171,14 @@ bool StepDirMotor::validateParameters(float param1, float param2, float param3, 
 
 // sets motor enable on/off (if possible)
 void StepDirMotor::enable(bool state) {
+  V(axisPrefix); VF("driver powered ");
+  if (state) { VF("up"); } else { VF("down"); }
+
   if (Pins->enable != OFF && Pins->enable != SHARED) {
-    V(axisPrefix); VF("driver powered "); if (state) { VF("up"); } else { VF("down"); } VF(" using pin "); VL(Pins->enable);
+    VF(" using pin "); VL(Pins->enable);
     digitalWriteEx(Pins->enable, state ? Pins->enabledState : !Pins->enabledState);
   } else {
-    driver->enable(state);
+    if (driver->enable(state)) { VLF(" using secondary method"); } else { VLF(" skipped no control available"); }
   }
 }
 
@@ -200,13 +202,14 @@ void StepDirMotor::setFrequencySteps(float frequency) {
     }
   #endif
 
+  Y;
   // negative frequency, convert to positive and reverse the direction
   int dir = 0;
   if (frequency > 0.0F) dir = 1; else if (frequency < 0.0F) { frequency = -frequency; dir = -1; }
 
   // if in backlash override the frequency OR change
   // microstep mode and/or swap in fast ISRs as required
-  if (inBacklash) frequency = backlashFrequency; else modeSwitch();
+  if (inBacklash) frequency = backlashFrequency;
 
   if (frequency != currentFrequency || microstepModeControl >= MMC_SLEWING_PAUSE) {
     lastFrequency = frequency;
@@ -255,18 +258,17 @@ void StepDirMotor::setFrequencySteps(float frequency) {
     step = dir;
     interrupts();
   }
+
+  if (!inBacklash) modeSwitch();
 }
 
 // switch microstep modes as needed
 void StepDirMotor::modeSwitch() {
-  Y;
   if (lastFrequency <= backlashFrequency*2.0F) {
     if (microstepModeControl >= MMC_SLEWING) {
       microstepModeControl = MMC_TRACKING_READY;
 
-      if (enableMoveFast(false)) {
-        V(axisPrefix); VF("high speed ISR swapped out at "); V(lastFrequency); VL(" steps/sec.");
-      }
+      enableMoveFast(false);
 
       if (driver->modeSwitchAllowed || driver->modeSwitchFastAllowed) {
         V(axisPrefix); VLF("mode switch tracking set");
@@ -275,20 +277,19 @@ void StepDirMotor::modeSwitch() {
     }
   } else {
     if (microstepModeControl == MMC_TRACKING) {
-      microstepModeControl = MMC_SLEWING_REQUEST;
+      noInterrupts();
+      if (!synchronized || (step == -1 && direction == dirRev) || (step == 1 && direction == dirFwd)) {
+        microstepModeControl = MMC_SLEWING_REQUEST;
+      }
+      interrupts();
       switchStartTimeMs = millis();
     } else
     if (microstepModeControl == MMC_SLEWING_PAUSE) {
-
       if (driver->modeSwitchAllowed || driver->modeSwitchFastAllowed) {
         V(axisPrefix); VLF("mode switch slewing set");
         stepSize = driver->modeMicrostepSlewing();
       }
-
-      if (enableMoveFast(true)) {
-        V(axisPrefix); VF("high speed ISR swapped in at "); V(lastFrequency); VLF(" steps/sec.");
-      }
-
+      enableMoveFast(true);
       microstepModeControl = MMC_SLEWING_READY;
     }
   }
@@ -311,8 +312,17 @@ void StepDirMotor::setSlewing(bool state) {
 // swaps in/out fast unidirectional ISR for slewing 
 bool StepDirMotor::enableMoveFast(const bool fast) {
   if (fast) {
-    if (direction == dirRev) tasks.setCallback(taskHandle, callbackFR); else tasks.setCallback(taskHandle, callbackFF);
-  } else tasks.setCallback(taskHandle, callback);
+    if (direction == dirRev) {
+      tasks.setCallback(taskHandle, callbackFR);
+      V(axisPrefix); VF("high speed Rev ISR swapped in at "); V(lastFrequency); VLF(" steps/sec.");
+    } else {
+      tasks.setCallback(taskHandle, callbackFF);
+      V(axisPrefix); VF("high speed Fwd ISR swapped in at "); V(lastFrequency); VLF(" steps/sec.");
+    }
+  } else {
+    tasks.setCallback(taskHandle, callback);
+    V(axisPrefix); VF("high speed ISR swapped out at "); V(lastFrequency); VL(" steps/sec.");
+  }
   return true;
 }
 
@@ -339,7 +349,7 @@ IRAM_ATTR void StepDirMotor::move(const int16_t stepPin) {
     if (direction > DirNone) return;
   #endif
 
-  if (microstepModeControl == MMC_SLEWING_REQUEST && (motorSteps + backlashSteps) % homeSteps == 0) {
+  if (microstepModeControl == MMC_SLEWING_REQUEST && (motorSteps + backlashSteps) % homeSteps == 0 && direction < DirNone) {
     microstepModeControl = MMC_SLEWING_PAUSE;
     tasks.immediate(monitorHandle);
   }

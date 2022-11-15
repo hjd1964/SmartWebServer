@@ -281,7 +281,7 @@ char* Task::getNameStr() {
 
 #ifdef TASKS_PROFILER_ENABLE
 float Task::getArrivalAvg() {
-  if (hardwareTimer) return 0;
+  if (hardware_timer) return 0;
   if (average_arrival_time_count == 0) return 0;
   float value = -average_arrival_time/average_arrival_time_count;
   average_arrival_time = 0;
@@ -289,25 +289,25 @@ float Task::getArrivalAvg() {
   return value;
 }
 float Task::getArrivalMax() {
-  if (hardwareTimer) return 0;
+  if (hardware_timer) return 0;
   float value = max_arrival_time;
   max_arrival_time = 0;
   return value;
 }
 float Task::getRuntimeTotal() {
-  if (hardwareTimer) { noInterrupts(); total_runtime = _task_total_runtime[hardwareTimer-1]; _task_total_runtime[hardwareTimer-1] = 0; total_runtime_count=_task_total_runtime_count[hardwareTimer-1]; interrupts(); };
+  if (hardware_timer) { noInterrupts(); total_runtime = _task_total_runtime[hardware_timer-1]; _task_total_runtime[hardware_timer-1] = 0; total_runtime_count=_task_total_runtime_count[hardware_timer-1]; interrupts(); };
   float value = total_runtime;
   total_runtime = 0;
   return value;
 }
 long Task::getRuntimeTotalCount() {
-  if (hardwareTimer) { noInterrupts(); total_runtime_count = _task_total_runtime_count[hardwareTimer-1]; _task_total_runtime_count[hardwareTimer-1] = 0; interrupts(); };
+  if (hardware_timer) { noInterrupts(); total_runtime_count = _task_total_runtime_count[hardware_timer-1]; _task_total_runtime_count[hardware_timer-1] = 0; interrupts(); };
   long value = total_runtime_count;
   total_runtime_count = 0;
   return value;
 }
 float Task::getRuntimeMax() {
-  if (hardwareTimer) { noInterrupts(); max_runtime = _task_max_runtime[hardwareTimer-1]; _task_max_runtime[hardwareTimer-1] = 0; interrupts(); };
+  if (hardware_timer) { noInterrupts(); max_runtime = _task_max_runtime[hardware_timer-1]; _task_max_runtime[hardware_timer-1] = 0; interrupts(); };
   float value = max_runtime;
   max_runtime = 0;
   return value;
@@ -321,10 +321,22 @@ void Task::setHardwareTimerPeriod() {
     next_period_units = PU_NONE;
     period_units = PU_SUB_MICROS;
     unsigned long temp = roundPeriod(next_period*(_taskMasterFrequencyRatio/(double)16000000.0L));
+    unsigned long lastPeriod = period;
+
     noInterrupts();
     period = temp;
     interrupts();
     HAL_HWTIMER_PREPARE_PERIOD(hardware_timer, period);
+
+    // if the current period is > 0.1 seconds and the new period < lastPeriod adopt the new rate immediately
+    if (lastPeriod > 1600000UL && period < lastPeriod) {
+      switch (hardware_timer) {
+        case 1: HAL_HWTIMER1_SET_PERIOD(); break;
+        case 2: HAL_HWTIMER2_SET_PERIOD(); break;
+        case 3: HAL_HWTIMER3_SET_PERIOD(); break;
+        case 4: HAL_HWTIMER4_SET_PERIOD(); break;
+      }
+    }
   }
 }
 

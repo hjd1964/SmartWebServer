@@ -36,9 +36,6 @@ void StepDirTmcSPI::init(float param1, float param2, float param3, float param4,
     settings.currentHold = lround(settings.currentRun/2.0F);
   }
 
-  if (settings.decay == OFF) settings.decay = STEALTHCHOP;
-  if (settings.decaySlewing == OFF) settings.decaySlewing = SPREADCYCLE;
-
   VF("MSG: StepDirDriver"); V(axisNumber); VF(", TMC ");
   if (settings.currentRun == OFF) {
     VLF("current control OFF (set by Vref)");
@@ -50,14 +47,7 @@ void StepDirTmcSPI::init(float param1, float param2, float param3, float param4,
 
   // get TMC SPI driver ready
   driver.init(settings.model, Pins->m0, Pins->m1, Pins->m2, Pins->m3, axisNumber);
-
-  // calibrate stealthChop
-  if (settings.decay == STEALTHCHOP || settings.decaySlewing == STEALTHCHOP) {
-    driver.mode(true, STEALTHCHOP, microstepCode, settings.currentRun, settings.currentRun);
-    VF("MSG: StepDirDriver"); V(axisNumber); VL(", TMC standstill automatic current calibration");
-    delay(100);
-  }
-  driver.mode(true, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
+  driver.mode(settings.intpol, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
 
   // automatically set fault status for known drivers
   status.active = settings.status != OFF;
@@ -123,13 +113,13 @@ int StepDirTmcSPI::modeMicrostepSlewing() {
 }
 
 void StepDirTmcSPI::modeDecayTracking() {
-  driver.mode(true, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
+  driver.mode(settings.intpol, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
 }
 
 void StepDirTmcSPI::modeDecaySlewing() {
   int IGOTO = settings.currentGoto;
   if (IGOTO == OFF) IGOTO = settings.currentRun;
-  driver.mode(true, settings.decaySlewing, microstepCode, IGOTO, settings.currentHold);
+  driver.mode(settings.intpol, settings.decaySlewing, microstepCode, IGOTO, settings.currentHold);
 }
 
 void StepDirTmcSPI::updateStatus() {
@@ -173,12 +163,24 @@ void StepDirTmcSPI::updateStatus() {
 }
 
 // secondary way to power down not using the enable pin
-void StepDirTmcSPI::enable(bool state) {
-  VF("MSG: StepDirDriver"); V(axisNumber);
-  VF(", powered "); if (state) { VF("up"); } else { VF("down"); } VLF(" using SPI or UART");
-  int I_run = 0, I_hold = 0;
-  if (state) { I_run = settings.currentRun; I_hold = settings.currentHold; }
-  driver.mode(true, settings.decay, microstepCode, I_run, I_hold);
+bool StepDirTmcSPI::enable(bool state) {
+  if (state) {
+    driver.mode(settings.intpol, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
+  } else {
+    driver.mode(settings.intpol, STEALTHCHOP, microstepCode, settings.currentRun, 0);
+  }
+
+  return true;
+}
+
+// calibrate the motor driver if required
+void StepDirTmcSPI::calibrate() {
+  if (settings.decay == STEALTHCHOP || settings.decaySlewing == STEALTHCHOP) {
+    VF("MSG: StepDirDriver"); V(axisNumber); VL(", TMC standstill automatic current calibration");
+    driver.mode(settings.intpol, STEALTHCHOP, microstepCode, settings.currentRun, settings.currentRun);
+    delay(1000);
+    driver.mode(settings.intpol, settings.decay, microstepCode, settings.currentRun, settings.currentHold);
+  }
 }
 
 #endif
