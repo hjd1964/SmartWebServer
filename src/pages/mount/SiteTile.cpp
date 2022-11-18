@@ -29,7 +29,7 @@ void siteTile(String &data)
   data.concat(temp);
   sprintf_P(temp, html_sidereal, state.lastStr);
   data.concat(temp);
-  sprintf_P(temp, html_site, state.longitudeStr, state.latitudeStr);
+  sprintf_P(temp, html_site, state.latitudeStr, state.longitudeStr);
   data.concat(temp);
   data.concat(FPSTR(html_setDateTime));
   data.concat("<hr>");
@@ -38,6 +38,35 @@ void siteTile(String &data)
   data.concat(temp);
   sprintf_P(temp, html_form_begin, "mount.htm");
   data.concat(temp);
+  www.sendContentAndClear(data);
+
+  // Latitude
+  data.concat(FPSTR(html_latMsg));
+  if (status.getVersionMajor() > 3)
+  {
+    if (!onStep.command(":GtH#", reply))
+      strcpy(reply, "+00*00:00");
+  }
+  else
+  {
+    if (!onStep.command(":Gt#", reply))
+      strcpy(reply, "+00*00");
+  }
+  reply[3] = 0;
+  reply[6] = 0;
+  reply[9] = 0;
+  if (reply[0] == '+') reply[0] = '0';
+  stripNum(reply);
+  sprintf_P(temp, html_ninput_wide, "t1", reply, "-90", "90", "&deg;");
+  data.concat(temp);
+  sprintf_P(temp, html_ninput, "t2", &reply[4], "0", "60", "'");
+  data.concat(temp);
+  if (status.getVersionMajor() > 3)
+  {
+    sprintf_P(temp, html_ninput, "t3", &reply[7], "0", "60", "\"");
+    data.concat(temp);
+  }
+  data.concat("<br />");
   www.sendContentAndClear(data);
 
   // Longitude
@@ -67,36 +96,6 @@ void siteTile(String &data)
   if (status.getVersionMajor() > 3)
   {
     sprintf_P(temp, html_ninput, "g3", &reply[8], "0", "60", "\"");
-    data.concat(temp);
-  }
-  data.concat("<br />");
-  www.sendContentAndClear(data);
-
-  // Latitude
-  data.concat(FPSTR(html_latMsg));
-  if (status.getVersionMajor() > 3)
-  {
-    if (!onStep.command(":GtH#", reply))
-      strcpy(reply, "+00*00:00");
-  }
-  else
-  {
-    if (!onStep.command(":Gt#", reply))
-      strcpy(reply, "+00*00");
-  }
-  reply[3] = 0;
-  reply[6] = 0;
-  reply[9] = 0; // separate parts into strings
-  if (reply[0] == '+')
-    reply[0] = '0'; // remove +
-  stripNum(reply);  // get rid of white space
-  sprintf_P(temp, html_ninput_wide, "t1", reply, "-90", "90", "&deg;");
-  data.concat(temp);
-  sprintf_P(temp, html_ninput, "t2", &reply[4], "0", "60", "'");
-  data.concat(temp);
-  if (status.getVersionMajor() > 3)
-  {
-    sprintf_P(temp, html_ninput, "t3", &reply[7], "0", "60", "\"");
     data.concat(temp);
   }
   data.concat("<br />");

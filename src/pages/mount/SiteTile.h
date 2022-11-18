@@ -19,8 +19,8 @@ const char html_date[] PROGMEM = "<span id='date_ut' class='c'>%s</span>";
 const char html_time[] PROGMEM = "&nbsp;<span id='time_ut' class='c'>%s</span>&nbsp;" L_UT;
 const char html_sidereal[] PROGMEM = "&nbsp;(<span id='time_lst' class='c'>%s</span>&nbsp; " L_LST ")<br />";
 const char html_site[] PROGMEM =
-L_LONG " <span id='site_long' class='c'>%s</span><br />"
-L_LAT " <span id='site_lat' class='c'>%s</span><br /><br />";
+L_LAT " <span id='site_lat' class='c'>%s</span><br />"
+L_LONG " <span id='site_long' class='c'>%s</span><br /><br />";
 const char html_setDateTime[] PROGMEM =
   "<form style='display: inline' method='get' action='/mount.htm'>\n"
   "<div style='text-align: center'>"
