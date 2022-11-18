@@ -21,7 +21,8 @@ void rotatorSlewingTile(String &data)
   data.concat("</span><br /><br />");
 
   data.concat(FPSTR(html_rotPosition));
-  data.concat(FPSTR(html_rotStop));
+  if (status.getVersionMajor() >= 10) data.concat(FPSTR(html_rotStop));
+  data.concat("<br />");
 
   data.concat(FPSTR(html_rotateCcw));
   data.concat(FPSTR(html_rotateCw));
