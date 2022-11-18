@@ -21,7 +21,8 @@ void focuserSlewingTile(String &data)
   data.concat("</span><br /><br />");
 
   data.concat(FPSTR(html_focPosition));
-  data.concat(FPSTR(html_focStop));
+  if (status.getVersionMajor() >= 10) data.concat(FPSTR(html_focStop));
+  data.concat("<br />");
 
   data.concat(FPSTR(html_focuserIn));
   data.concat(FPSTR(html_focuserOut));
