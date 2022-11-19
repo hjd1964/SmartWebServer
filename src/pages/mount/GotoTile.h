@@ -59,20 +59,20 @@ const char html_slewSpeedSelect[] PROGMEM =
   "<button id='gto_rate_f' class='btns_mid' onpointerdown=\"s('goto','f')\"  type='button'>" L_FAST "</button>"
   "<button id='gto_rate_n' class='btns_mid' onpointerdown=\"s('goto','n')\"  type='button'>" L_NORMAL "</button>"
   "<button id='gto_rate_s' class='btns_mid' onpointerdown=\"s('goto','s')\"  type='button'>" L_SLOW "</button>"
-  "<button id='gto_rate_vs' class='btns_left'  onpointerdown=\"s('goto','vs')\" type='button'>" L_VSLOW "</button>"
+  "<button id='gto_rate_vs' class='btns_left' onpointerdown=\"s('goto','vs')\" type='button'>" L_VSLOW "</button>"
   "<br /><br />\n";
 
 const char html_gotoBuzzer[] PROGMEM = 
   L_BUZZER ": <br />"
   "<button id='gto_bzr_on' class='btns_right' onpointerdown=\"s('goto','bzr_on')\"  type='button'>" L_ON "</button>"
-  "<button id='gto_bzr_off' class='btns_left'  onpointerdown=\"s('goto','bzr_off')\" type='button'>" L_OFF "</button>"
+  "<button id='gto_bzr_off' class='btns_left' onpointerdown=\"s('goto','bzr_off')\" type='button'>" L_OFF "</button>"
   "<br /><br />\n";
 
 const char html_gotoMfAuto[] PROGMEM =
   L_MERIDIAN_FLIP_AUTO ":<br />"
   "<button id='gto_mfa_on' class='btns_right' onpointerdown=\"s('goto','af_on')\"  type='button'>" L_ON "</button>"
   "<button id='gto_mfa_off' class='btns_left' onpointerdown=\"s('goto','af_off')\" type='button'>" L_OFF "</button>&nbsp;&nbsp;"
-  "<button name='goto' value='af_now' type='submit'>" L_MERIDIAN_FLIP_NOW "</button>"
+  "<button onpointerdown=\"s('goto','af_now')\" type='button'>" L_MERIDIAN_FLIP_NOW "</button>"
   "<br /><br />\n";
 
 const char html_gotoMfPause[] PROGMEM =
