@@ -1,6 +1,8 @@
 // -----------------------------------------------------------------------------------
-// Mount status from OnStep
+// Status from OnStep
 #pragma once
+
+enum SubsystemDetect {SD_UNKNOWN, SD_FALSE, SD_TRUE};
 
 enum RateCompensation {RC_NONE, RC_REFR_RA, RC_REFR_BOTH, RC_FULL_RA, RC_FULL_BOTH, RC_UNKNOWN};
 
@@ -37,15 +39,13 @@ class Status {
   public:
     bool update(bool all = false);
 
-    inline bool getProduct(char product[]) { if (!valid) return false; else { strcpy(product, id); return true; } }
-    inline bool getVersionStr(char version[]) { if (!valid) return false; else { strcpy(version, ver); return true; } }
+    inline bool getProduct(char product[]) { if (!mountFound) return false; else { strcpy(product, id); return true; } }
+    inline bool getVersionStr(char version[]) { if (!mountFound) return false; else { strcpy(version, ver); return true; } }
     inline int  getVersionMajor() { return ver_maj; }
     inline int  getVersionMinor() { return ver_min; }
     inline char getVersionPatch() { return ver_patch; }
 
     bool getLastErrorMessage(char message[]);
-
-    bool valid = false;
 
     bool atHome = false;
     bool homing = false;
@@ -96,15 +96,18 @@ class Status {
 
     Errors lastError = ERR_NONE;
 
-    bool mountFound = false;
+    bool onStepFound = false;
 
-    bool focuserFound = false;
+    SubsystemDetect mountFound = SD_UNKNOWN;
+
+    SubsystemDetect focuserFound = SD_UNKNOWN;
     int focuserCount = 0;
     bool focuserPresent[6] = {false,false,false,false,false,false};
 
-    bool rotatorFound = false;
+    SubsystemDetect rotatorFound = SD_UNKNOWN;
     bool derotatorFound = false;
-    bool auxiliaryFound = false;
+
+    SubsystemDetect auxiliaryFound = SD_UNKNOWN;
 
     features feature[8];
 

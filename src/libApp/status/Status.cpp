@@ -16,9 +16,23 @@
 bool Status::update(bool all)
 {
   char result[80] = "";
-  if (!valid) {
-    if (!onStep.command(":GVP#", result) || result[0] == 0 || !strstr(result, "On-Step")) { valid = false; return false; } Y;
-    if (!onStep.command(":GVN#", result) || result[0] == 0 ) { valid = false; return false; } Y;
+
+  if (!onStepFound) {
+    mountFound = SD_UNKNOWN;
+    focuserFound = SD_UNKNOWN;
+    rotatorFound = SD_UNKNOWN;
+    auxiliaryFound = SD_UNKNOWN;
+
+    if (!onStep.command(":GVP#", result) || result[0] == 0 || !strstr(result, "On-Step")) {
+      onStepFound = false;
+      return false;
+    } Y;
+
+    if (!onStep.command(":GVN#", result) || result[0] == 0 ) {
+      onStepFound = false;
+      return false;
+    } Y;
+
     strcpy(id, "OnStep");
     strcpy(ver, result);
     if (strlen(result) > 0) {
@@ -38,103 +52,109 @@ bool Status::update(bool all)
       ver_maj = -1;
       ver_min = -1;
       ver_patch = 0;
-      valid = false;
-      return false;
-    }
+      onStepFound = false;
+    } else onStepFound = true;
   }
 
-  mountScan();
-  focuserScan();
-  rotatorScan();
-  auxiliaryScan();
+  if (onStepFound) {
+    mountScan();
+    focuserScan();
+    rotatorScan();
+    auxiliaryScan();
 
-  if (mountFound && onStep.command(":GU#", result)) {
-    Y;
-    tracking = false;
-    inGoto = false;
-    if (!strstr(result, "N")) inGoto = true; else tracking = !strstr(result, "n");
+    if (mountFound == SD_TRUE) {
+      if (onStep.command(":GU#", result)) {
+        Y;
+        tracking = false;
+        inGoto = false;
+        if (!strstr(result, "N")) inGoto = true; else tracking = !strstr(result, "n");
 
-    parked      = strstr(result, "P");
-    if (strstr(result, "p")) parked = false;
-    parking     = strstr(result, "I");
-    parkFail    = strstr(result, "F");
+        parked      = strstr(result, "P");
+        if (strstr(result, "p")) parked = false;
+        parking     = strstr(result, "I");
+        parkFail    = strstr(result, "F");
 
-    pecRecorded = strstr(result, "R");
-    pecIgnore   = strstr(result, "/");
-    pecReadyPlay= strstr(result, ",");
-    pecPlaying  = strstr(result, "~");
-    pecReadyRec = strstr(result, ";");
-    pecRecording= strstr(result, "^");
-    if (!pecRecording && !pecReadyRec && !pecPlaying && !pecReadyPlay && !pecIgnore && !pecRecorded) pecEnabled = false; else pecEnabled = true;
+        pecRecorded = strstr(result, "R");
+        pecIgnore   = strstr(result, "/");
+        pecReadyPlay= strstr(result, ",");
+        pecPlaying  = strstr(result, "~");
+        pecReadyRec = strstr(result, ";");
+        pecRecording= strstr(result, "^");
+        if (!pecRecording && !pecReadyRec && !pecPlaying && !pecReadyPlay && !pecIgnore && !pecRecorded) pecEnabled = false; else pecEnabled = true;
 
-    syncToEncodersOnly = strstr(result, "e");
-    atHome      = strstr(result, "H");
-    homing      = strstr(result, "h");
-    ppsSync     = strstr(result, "S");
-    pulseGuiding= strstr(result, "G");
-    guiding     = strstr(result, "g");
-    if (pulseGuiding) guiding = true;
-    axisFault   = strstr(result, "f");
+        syncToEncodersOnly = strstr(result, "e");
+        atHome      = strstr(result, "H");
+        homing      = strstr(result, "h");
+        ppsSync     = strstr(result, "S");
+        pulseGuiding= strstr(result, "G");
+        guiding     = strstr(result, "g");
+        if (pulseGuiding) guiding = true;
+        axisFault   = strstr(result, "f");
 
-    if (strstr(result, "r")) { if (strstr(result, "s")) rateCompensation = RC_REFR_RA; else rateCompensation = RC_REFR_BOTH; } else
-    if (strstr(result, "t")) { if (strstr(result, "s")) rateCompensation = RC_FULL_RA; else rateCompensation = RC_FULL_BOTH; } else rateCompensation = RC_NONE;
+        if (strstr(result, "r")) { if (strstr(result, "s")) rateCompensation = RC_REFR_RA; else rateCompensation = RC_REFR_BOTH; } else
+        if (strstr(result, "t")) { if (strstr(result, "s")) rateCompensation = RC_FULL_RA; else rateCompensation = RC_FULL_BOTH; } else rateCompensation = RC_NONE;
 
-    waitingHome   = strstr(result, "w");
-    pauseAtHome   = strstr(result, "u");
-    buzzerEnabled = strstr(result, "z");
+        waitingHome   = strstr(result, "w");
+        pauseAtHome   = strstr(result, "u");
+        buzzerEnabled = strstr(result, "z");
 
-    if (strstr(result,"E")) mountType = MT_GEM; else
-    if (strstr(result,"K")) mountType = MT_FORK; else
-    if (strstr(result,"k")) mountType = MT_FORKALT; else
-    if (strstr(result,"A")) mountType = MT_ALTAZM; else mountType = MT_UNKNOWN;
+        if (strstr(result,"E")) mountType = MT_GEM; else
+        if (strstr(result,"K")) mountType = MT_FORK; else
+        if (strstr(result,"k")) mountType = MT_FORKALT; else
+        if (strstr(result,"A")) mountType = MT_ALTAZM; else mountType = MT_UNKNOWN;
 
-    if (mountType == MT_GEM) autoMeridianFlips = strstr(result, "a"); else autoMeridianFlips = false;
+        if (mountType == MT_GEM) autoMeridianFlips = strstr(result, "a"); else autoMeridianFlips = false;
 
-    guideRatePulse = result[strlen(result) - 3] - '0';
-    if (guideRatePulse < 0) guideRatePulse = 0;
-    if (guideRatePulse > 9) guideRatePulse = 9;
-    guideRate = result[strlen(result) - 2] - '0';
-    if (guideRate < 0) guideRate = 0;
-    if (guideRate > 9) guideRate = 9;
+        guideRatePulse = result[strlen(result) - 3] - '0';
+        if (guideRatePulse < 0) guideRatePulse = 0;
+        if (guideRatePulse > 9) guideRatePulse = 9;
+        guideRate = result[strlen(result) - 2] - '0';
+        if (guideRate < 0) guideRate = 0;
+        if (guideRate > 9) guideRate = 9;
 
-    lastError = (Errors)(result[strlen(result) - 1] - '0');
+        lastError = (Errors)(result[strlen(result) - 1] - '0');
 
-    // get meridian status
-    if (!onStep.command(":GX94#", result) || result[0] == 0) { valid = false; return false; } Y;
-    meridianFlips = !strstr(result, "N");
-    pierSide = strtol(&result[0], NULL, 10);
+        // get meridian status
+        if (onStep.command(":GX94#", result) && result[0] != 0) {
+          Y;
+          meridianFlips = !strstr(result, "N");
+          pierSide = strtol(&result[0], NULL, 10);
 
-    // align status
-    if (onStep.command(":A?#", result) && strlen(result) == 3) {
-      if (result[0] >= '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
-      if (result[1] >= '0' && result[1] <= '9') alignThisStar = result[1] - '0';
-      if (result[2] >= '0' && result[2] <= '9') alignLastStar = result[2] - '0';
+          // align status
+          if (onStep.command(":A?#", result) && strlen(result) == 3) {
+            if (result[0] >= '0' && result[0] <= '9') alignMaxStars = result[0] - '0';
+            if (result[1] >= '0' && result[1] <= ':') alignThisStar = result[1] - '0';
+            if (result[2] >= '0' && result[2] <= '9') alignLastStar = result[2] - '0';
+            if (alignThisStar != 0 && alignThisStar <= alignLastStar) aligning = true; else aligning = false;
+          } else {
+            alignMaxStars = 0;
+            alignThisStar = 0;
+            alignLastStar = 0;
+            aligning = false;
+            onStepFound = false;
+          }
+          Y;
+        } else onStepFound = false;
+      } else onStepFound = false;
     } else {
-      alignMaxStars = 0;
-      alignThisStar = 0;
-      alignLastStar = 0;
+      if (!onStep.command(":GVP#", result) || result[0] == 0 || !strstr(result, "On-Step")) onStepFound = false;
+      Y;
     }
-    if (alignThisStar != 0 && alignThisStar <= alignLastStar) aligning = true; else aligning = false;
-    Y;
   }
 
-  valid = true;
-  return true;
+  return onStepFound;
 }
 
 void Status::mountScan() {
-  static bool scanned = false;
-  if (!scanned) {
+  if (mountFound == SD_UNKNOWN) {
     char result[80] = "";
-    if (!onStep.command(":GU#", result) || result[0] == 0) mountFound = false; else mountFound = true; Y;
-    scanned = true;
+    if (!onStep.command(":GU#", result) || result[0] == 0) mountFound = SD_FALSE; else mountFound = SD_TRUE; Y;
   }
 }
 
 void Status::focuserScan() {
-  static bool scanned = false;
-  if (!scanned) {
-    focuserFound = false;
+  if (focuserFound == SD_UNKNOWN) {
+    focuserFound = SD_FALSE;
     focuserCount = 0;
     if (getVersionMajor() >= 10) {
       if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; } Y;
@@ -147,69 +167,64 @@ void Status::focuserScan() {
       if (onStep.commandBool(":FA#")) { focuserPresent[0] = true; focuserCount++; } Y;
       if (onStep.commandBool(":fA#")) { focuserPresent[1] = true; focuserCount++; } Y;
     }
-    if (focuserCount > 0) focuserFound = true;
-    scanned = true;
+    if (focuserCount > 0) focuserFound = SD_TRUE;
   }
 }
 
 void Status::rotatorScan() {
-  static bool scanned = false;
-  if (!scanned) {
+  if (rotatorFound == SD_UNKNOWN) {
     char temp[80];
-    rotatorFound = false;
+    rotatorFound = SD_FALSE;
     derotatorFound = false;
     if (onStep.command(":GX98#", temp)) {
-      if (temp[0] == 'R') { rotatorFound = true; derotatorFound = false; }
-      if (temp[0] == 'D') { rotatorFound = true; derotatorFound = true; }
+      if (temp[0] == 'R') { rotatorFound = SD_TRUE; derotatorFound = false; }
+      if (temp[0] == 'D') { rotatorFound = SD_TRUE; derotatorFound = true; }
     } Y;
-    scanned = true;
   }
 }
 
 bool Status::auxiliaryScan() {
-  static bool scanned = false;
   bool valid;
   char cmd[40], out[40], present[40];
 
-  if (scanned) return true;
-
-  // check which feature #'s are present
-  if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true; Y;
-
-  // try to get the AF presense twice before giving up
-  if (!valid) {
+  if (auxiliaryFound == SD_UNKNOWN) {
+    // check which feature #'s are present
     if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true; Y;
-    if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = false; scanned = true; return false; }
-  }
 
-  // get feature status
-  for (uint8_t i = 0; i < 8; i++) {
-    char *purpose_str = NULL;
+    // try to get the AF presense twice before giving up
+    if (!valid) {
+      if (!onStep.command(":GXY0#", present) || present[0] == 0 || strlen(present) != 8) valid = false; else valid = true; Y;
+      if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = SD_FALSE; return false; }
+    }
 
-    if (present[i] == '0') continue;
+    // get feature status
+    for (uint8_t i = 0; i < 8; i++) {
+      char *purpose_str = NULL;
 
-    sprintf(cmd, ":GXY%d#", i+1);
-    if (!onStep.command(cmd, out) || out[0] == 0) valid = false; Y;
-    if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = false; return false; }
+      if (present[i] == '0') continue;
 
-    if (strlen(out) > 1) {
-      purpose_str = strstr(out,",");
-      if (purpose_str) {
-        purpose_str[0] = 0;
-        purpose_str++;
-      } else valid = false;
-      char *name_str = out; if (!name_str) valid = false;
-      if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = false; return false; }
+      sprintf(cmd, ":GXY%d#", i+1);
+      if (!onStep.command(cmd, out) || out[0] == 0) valid = false; Y;
+      if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = SD_FALSE; return false; }
 
-      if (strlen(name_str) > 10) name_str[11] = 0;
-      strcpy(feature[i].name, name_str);
-      if (purpose_str) feature[i].purpose = atoi(purpose_str);
-      VF("MSG: AuxFeature, found "); V(name_str); V(" purpose "); VL(feature[i].purpose);
+      if (strlen(out) > 1) {
+        purpose_str = strstr(out,",");
+        if (purpose_str) {
+          purpose_str[0] = 0;
+          purpose_str++;
+        } else valid = false;
+        char *name_str = out; if (!name_str) valid = false;
+        if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = SD_FALSE; return false; }
 
-      auxiliaryFound = true;
+        if (strlen(name_str) > 10) name_str[11] = 0;
+        strcpy(feature[i].name, name_str);
+        if (purpose_str) feature[i].purpose = atoi(purpose_str);
+        VF("MSG: AuxFeature, found "); V(name_str); V(" purpose "); VL(feature[i].purpose);
+
+        auxiliaryFound = SD_TRUE;
+      }
     }
   }
-  scanned = true;
   return true;
 }
 

@@ -278,7 +278,7 @@ Again:
     encoders.init();
   #endif
 
-  if (status.valid) {
+  if (status.onStepFound) {
     status.update(false);
     delay(100);
   }

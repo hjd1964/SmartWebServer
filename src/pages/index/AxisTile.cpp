@@ -15,8 +15,8 @@ bool axisTile(int axis, String &data)
   char temp1[80] = "";
   char temp2[80] = "";
 
-  if (axis <= 1 && !status.mountFound) return success;
-  if (axis == 2 && !status.rotatorFound) return success;
+  if (axis <= 1 && status.mountFound != SD_TRUE) return success;
+  if (axis == 2 && status.rotatorFound != SD_TRUE) return success;
   if (axis >= 3 && !status.focuserPresent[axis - 3]) return success;
 
   char axisTitleStr[32] = "";

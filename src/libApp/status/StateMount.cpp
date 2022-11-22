@@ -109,7 +109,7 @@ void State::updateMount(bool now)
   if (status.pierSide == PierSideWest) strcpy(temp, L_WEST); else
   if (status.pierSide == PierSideEast) strcpy(temp, L_EAST); else
   if (status.pierSide == PierSideNone) strcpy(temp, L_NONE); else strcpy(temp, L_UNKNOWN);
-  if (!status.valid) strcpy(temp, "?");
+  if (!status.onStepFound) strcpy(temp, "?");
   strncpyex(pierSideStr, temp, 10);
 
   // Meridian flip
@@ -117,7 +117,7 @@ void State::updateMount(bool now)
     strcpy(temp, "On");
     if (status.autoMeridianFlips) strcat(temp, ", " L_AUTO);
   } else strcpy(temp, "Off");
-  if (!status.valid) strcpy(temp, "?");
+  if (!status.onStepFound) strcpy(temp, "?");
   strncpyex(meridianFlipStr, temp, 10);
 
   // Polar align
@@ -159,7 +159,7 @@ void State::updateMount(bool now)
   if (status.parking) strcpy(temp, L_PARKING); else
   if (status.parkFail) strcpy(temp, L_PARK_FAILED);
   if (status.atHome) strcat(temp, " (" L_AT_HOME ")");
-  if (!status.valid) strcpy(temp, "?");
+  if (!status.onStepFound) strcpy(temp, "?");
   strncpyex(parkStr, temp, 40); Y;
 
   // Tracking
@@ -171,7 +171,7 @@ void State::updateMount(bool now)
     } else strcpy(temp, "?");
     Y;
   } else strcpy(temp, L_INACTIVE);
-  if (!status.valid) strcpy(temp, "?");
+  if (!status.onStepFound) strcpy(temp, "?");
   trackingSidereal = fabs(r - 60.164) < 0.001;
   trackingLunar = fabs(r - 57.900) < 0.001; 
   trackingSolar = fabs(r - 60.000) < 0.001;

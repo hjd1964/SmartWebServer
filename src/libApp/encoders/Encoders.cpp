@@ -133,7 +133,7 @@ void Encoders::init() {
   void Encoders::poll() {
     char *conv_end;
 
-    if (!status.mountFound) return;
+    if (status.mountFound != SD_TRUE) return;
 
     char result[80];
     if (onStep.command(":GX42#", result) && strlen(result) > 1) {
@@ -155,7 +155,7 @@ void Encoders::init() {
     enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
 
-    if (settings.autoSync && status.valid && !enAxis1Fault && !enAxis2Fault) {
+    if (settings.autoSync && status.onStepFound && !enAxis1Fault && !enAxis2Fault) {
       if (status.atHome || status.parked || status.aligning || status.syncToEncodersOnly) {
         syncFromOnStep();
         // re-enable normal operation once we're updated here

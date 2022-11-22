@@ -32,13 +32,13 @@ void State::init()
 
 void State::poll()
 {
-  if (status.mountFound)
+  if (status.mountFound == SD_TRUE)
   {
     updateMount();
     updateEncoders();
   }
-  if (status.focuserFound) updateFocuser();
-  if (status.auxiliaryFound) updateAuxiliary();
+  if (status.focuserFound == SD_TRUE) updateFocuser();
+  if (status.auxiliaryFound == SD_TRUE) updateAuxiliary();
 }
 
 void State::pollSlow()
@@ -50,13 +50,13 @@ void State::pollSlow()
 
 void State::pollFast()
 {
-  if (status.focuserFound && millis() - lastFocuserPageLoadTime < 2000) {
+  if (status.focuserFound == SD_TRUE && millis() - lastFocuserPageLoadTime < 2000) {
     char temp[80];
     if (!onStep.command(":FG#", temp)) strcpy(temp, "?"); else strcat(temp, " microns"); Y;
     strncpy(focuserPositionStr, temp, 20); focuserPositionStr[19] = 0; Y;
   }
 
-  if (status.rotatorFound) updateRotator();
+  if (status.rotatorFound == SD_TRUE) updateRotator();
 }
 
 void State::pollGpio()

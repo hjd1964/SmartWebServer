@@ -14,7 +14,7 @@ void State::updateRotator(bool now)
   char temp[80], temp1[80];
 
   // rotator position
-  if (status.rotatorFound) {
+  if (status.rotatorFound == SD_TRUE) {
     if (onStep.command(":rG#", temp1))
     {
       temp1[4] = 0;

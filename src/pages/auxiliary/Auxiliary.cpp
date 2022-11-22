@@ -39,7 +39,7 @@ void handleAux() {
   data.concat(FPSTR(html_onstep_page_begin));
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid) {
+  if (!status.onStepFound) {
     data.concat(FPSTR(html_bad_comms_message));
     data.concat(FPSTR(html_page_and_body_end));
     www.sendContentAndClear(data);
@@ -60,7 +60,7 @@ void handleAux() {
 
   // Auxiliary Features --------------------------------------
   int j = 0;
-  if (status.auxiliaryFound) {
+  if (status.auxiliaryFound == SD_TRUE) {
     data.concat(FPSTR(html_auxAuxB));
 
     for (int i = 0; i < 8; i++) {
@@ -227,7 +227,7 @@ void auxAjax() {
   www.send(200, "text/plain", String());
 
   // update auxiliary feature values
-  if (status.auxiliaryFound) {
+  if (status.auxiliaryFound == SD_TRUE) {
     for (int i = 0; i < 8; i++) {
       state.selectFeature(i);
       if (state.featurePurpose() == SWITCH) {

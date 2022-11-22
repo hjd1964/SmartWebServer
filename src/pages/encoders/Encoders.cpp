@@ -46,7 +46,7 @@ void handleEncoders()
   data.concat(FPSTR(html_onstep_page_begin));
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid)
+  if (!status.onStepFound)
   {
     data.concat(FPSTR(html_bad_comms_message));
     data.concat(FPSTR(html_page_and_body_end));

@@ -43,7 +43,7 @@ void handleMount()
   data.concat(FPSTR(html_onstep_page_begin));
 
   // OnStep wasn't found, show warning and info.
-  if (!status.valid)
+  if (!status.onStepFound)
   {
     data.concat(FPSTR(html_bad_comms_message));
     data.concat(FPSTR(html_page_and_body_end));
@@ -101,7 +101,7 @@ void mountAjax()
   www.sendHeader("Cache-Control", "no-cache");
   www.send(200, "text/plain", String());
 
-  if (status.valid)
+  if (status.onStepFound)
   {
     siteTileAjax(data);
     homeParkTileAjax(data);

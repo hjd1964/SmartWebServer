@@ -72,7 +72,7 @@ void State::updateController(bool now)
   strcpy(temp, "");
   if (status.lastError != ERR_NONE) strcat(temp, "<font class=\"y\">"); 
   status.getLastErrorMessage(temp1);
-  if (!status.valid) strcat(temp, "?"); else strcat(temp, temp1);
+  if (!status.onStepFound) strcat(temp, "?"); else strcat(temp, temp1);
   if (status.lastError != ERR_NONE) strcat(temp, "</font>"); 
   strncpy(lastErrorStr, temp, 80); lastErrorStr[79] = 0; Y;
 
