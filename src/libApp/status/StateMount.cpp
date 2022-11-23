@@ -177,7 +177,7 @@ void State::updateMount(bool now)
   trackingSolar = fabs(r - 60.000) < 0.001;
   trackingKing  = fabs(r - 60.136) < 0.001;
 
-  if (status.ppsSync) strcpy(temp, "~");
+  if (status.ppsSync) strcat(temp, "~");
 
   if (status.rateCompensation == RC_REFR_RA) strcat(temp, " RC"); else
   if (status.rateCompensation == RC_REFR_BOTH) strcat(temp, " RCD"); else
