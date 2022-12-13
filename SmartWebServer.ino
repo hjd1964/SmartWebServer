@@ -63,7 +63,11 @@ NVS nv;
 #endif
 
 #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
-  CmdServer cmdSvr(9999, 2L*1000L);
+  #if defined(ESP32)
+    CmdServer cmdSvr(9999, 30L*1000L, true);
+  #else
+    CmdServer cmdSvr(9999, 2L*1000L);
+  #endif
 #endif
 
 void systemServices() {
