@@ -20,8 +20,8 @@
 
 #define AXIS1_ENCODER_A_PIN  18  // pin# for Axis1 encoder, for A or CW  or MA/CLK
 #define AXIS1_ENCODER_B_PIN  19  // pin# for Axis1 encoder, for B or CCW or SLO
-#define AXIS2_ENCODER_A_PIN  22  // pin# for Axis1 encoder, for A or CW  or MA/CLK
-#define AXIS2_ENCODER_B_PIN  21  // pin# for Axis1 encoder, for B or CCW or SLO
+#define AXIS2_ENCODER_A_PIN  22  // pin# for Axis2 encoder, for A or CW  or MA/CLK
+#define AXIS2_ENCODER_B_PIN  21  // pin# for Axis2 encoder, for B or CCW or SLO
 
 #if AXIS1_ENCODER > 0 && AXIS2_ENCODER > 0
   #define VGPIO_PIN_0        OFF
