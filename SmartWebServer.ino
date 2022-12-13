@@ -32,7 +32,7 @@
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
 #define FirmwareVersionMinor  "05"
-#define FirmwareVersionPatch  "e"
+#define FirmwareVersionPatch  "f"
 
 // Use Config.h to configure the SWS to your requirements
 
@@ -55,19 +55,15 @@ NVS nv;
 #endif
 
 #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
-  CmdServer persistentCmdSvr1(9996, 30L*1000L, true);
+  CmdServer persistentCmdSvr1(9996, 120L*1000L, true);
   #if OPERATIONAL_MODE != ETHERNET_W5100
-    CmdServer persistentCmdSvr2(9997, 30L*1000L, true);
+    CmdServer persistentCmdSvr2(9997, 120L*1000L, true);
   #endif
-  CmdServer persistentCmdSvr3(9998, 30L*1000L, true);
+  CmdServer persistentCmdSvr3(9998, 120L*1000L, true);
 #endif
 
 #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
-  #if defined(ESP32)
-    CmdServer cmdSvr(9999, 30L*1000L, true);
-  #else
-    CmdServer cmdSvr(9999, 2L*1000L);
-  #endif
+  CmdServer cmdSvr(9999, 2L*1000L);
 #endif
 
 void systemServices() {
