@@ -145,6 +145,7 @@
   #define SIDEREAL_CH "&#9733;"
   #define LUNAR_CH "&#9790;"
   #define SOLAR_CH "&#9737;"
+  #define KING_CH "&#9812;"
 #else
   #define HOME_CH "H"
   #define ARROW_DR "-&gt;"
@@ -163,6 +164,7 @@
   #define SIDEREAL_CH "*"
   #define LUNAR_CH "("
   #define SOLAR_CH "O"
+  #define KING_CH "K"
 #endif
 
 #define BUTTON_N "N"
