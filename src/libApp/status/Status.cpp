@@ -112,7 +112,10 @@ bool Status::update(bool all)
         if (guideRate < 0) guideRate = 0;
         if (guideRate > 9) guideRate = 9;
 
-        lastError = (Errors)(result[strlen(result) - 1] - '0');
+        int e = result[strlen(result) - 1] - '0';
+        if (e < ERR_NONE) lastError = ERR_UNSPECIFIED;
+        if (e > ERR_NV_INIT) lastError = ERR_UNSPECIFIED;
+        lastError = (Errors)(e);
 
         // get meridian status
         if (onStep.command(":GX94#", result) && result[0] != 0) {
