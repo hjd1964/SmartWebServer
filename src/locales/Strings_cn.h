@@ -340,6 +340,7 @@
 #define L_ADV_SET_TITLE "高级"
 #define L_ADV_SET_HEADER_MSG "除非另有说明，否则以下更改将在重新启动 OnStep 后生效:"
 #define L_ADV_MOUNT_TYPE " 选择 1 GEM, 2 EQ Fork, 3 Alt/Azm"
+#define L_ADV_BOOL "0 假或 1 真"
 
 #define L_ADV_SET_SPWR "蠕虫旋转的步骤数（0禁用）"
 #define L_ADV_SET_SPD "每度步数"

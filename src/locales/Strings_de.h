@@ -349,6 +349,7 @@
 #define L_ADV_SET_TITLE "Fortgeschrittene"
 #define L_ADV_SET_HEADER_MSG "sofern nicht anders angegeben, werden die unten aufgeführten Änderungen nach dem Neustart von OnStep wirksam:"
 #define L_ADV_MOUNT_TYPE " wählen 1 GEM, 2 EQ Fork, 3 Alt/Azm"
+#define L_ADV_BOOL "0 falsch oder 1 wahr"
 
 #define L_ADV_SET_SPWR "Schritte pro Schneckendrehung (0 zum Deaktivieren)"
 #define L_ADV_SET_SPD "Schritte pro Grad"
