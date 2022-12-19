@@ -8,8 +8,8 @@
 #if defined(DRIVER_TMC_STEPPER) && defined(STEP_DIR_TMC_UART_PRESENT)
 
 // help with pin names
-#define rx m2
-#define tx m3
+#define rx m3
+#define tx m2
 
 // provide for using hardware serial
 #if SERIAL_TMC == HardSerial
@@ -203,7 +203,6 @@ void StepDirTmcUART::updateStatus() {
   if (settings.status == ON) {
     if ((long)(millis() - timeLastStatusUpdate) > 200) {
 
-      uint32_t status_word;
       TMC2208_n::DRV_STATUS_t status_result;
       if (settings.model == TMC2208) {
         status_result.sr = ((TMC2208Stepper*)driver)->DRV_STATUS();
