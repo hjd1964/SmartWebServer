@@ -6,27 +6,8 @@
     AXIS4_ENCODER == AS37_H39B_B || AXIS5_ENCODER == AS37_H39B_B || AXIS6_ENCODER == AS37_H39B_B || \
     AXIS7_ENCODER == AS37_H39B_B || AXIS8_ENCODER == AS37_H39B_B || AXIS9_ENCODER == AS37_H39B_B
 
-/*
-// BiSS-C 6-bit CRC (x^6 + x^1 + 1) for 0x43 polynomial
-uint8_t crc6(uint64_t data) {
-    int shift;
-    uint8_t index;
-    uint8_t crc = 0x3F;
-
-    for (shift = 41; shift >= 0; shift -= 6) {
-    crc ^= (data >> shift) & 0x3F;
-
-    for (index = 0; index < 6; index++) {
-      crc <<= 1;
-      crc ^= (crc & 0x40) ? 0x43 : 0;
-    }
-  }
-
-  return crc & 0x3F;
-}
-*/
-
-// designed according protocol description found in as38-H39e-b-an100.pdf
+// Designed according protocol description found in as38-H39e-b-an100.pdf and
+// Renishaw application note E201D02_02
 
 // BiSS-C 6-bit CRC table (x^6 + x^1 + 1)
 uint8_t _CRC6[64] = {
