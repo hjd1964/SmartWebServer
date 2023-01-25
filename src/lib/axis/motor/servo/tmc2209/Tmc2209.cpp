@@ -133,9 +133,14 @@ void ServoTmc2209::enable(bool state) {
   if (enablePin == SHARED) {
     VF("MSG: ServoDriver"); V(axisNumber);
     VF(", powered "); if (state) { VF("up"); } else { VF("down"); } VLF(" using UART");
-    int I_run = 0;
-    if (state) { I_run = Settings->current; }
-    driver->rms_current(I_run*0.707F);
+    if (state) {
+      driver->en_spreadCycle(true);
+      driver->irun(Settings->current*0.707F);
+      driver->ihold(Settings->current*0.707F);
+    } else {
+      driver->en_spreadCycle(false);
+      driver->ihold(0);
+    }
   } else {
     if (!enabled) { digitalWriteF(enablePin, !enabledState); } else { digitalWriteF(enablePin, enabledState); }
   }
@@ -170,7 +175,6 @@ void ServoTmc2209::updateStatus() {
   if (statusMode == ON) {
     if ((long)(millis() - timeLastStatusUpdate) > 200) {
 
-      uint32_t status_word;
       TMC2208_n::DRV_STATUS_t status_result;
       status_result.sr = driver->DRV_STATUS();
       status.outputA.shortToGround = status_result.s2ga;
