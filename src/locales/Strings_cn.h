@@ -239,10 +239,10 @@
 // --------------------------- Encoders --------------------------
 
 // general settings
-#define L_ENC_SYNC_TO_ENC "将OnStep同步到编码器"
-#define L_ENC_SYNC_TO_ONS "将编码器同步到OnStep"
-#define L_ENC_ZERO_TO_ONS "将绝对编码器零设置为OnStep"
-#define L_ENC_AUTO_SYNC "将OnStep自动同步到编码器"
+#define L_ENC_SYNC_TO_ENC "同步 OnStep -> 编码器"
+#define L_ENC_SYNC_TO_ONS "同步 OnStep <- 编码器"
+#define L_ENC_ORIGIN_TO_ONS "设置 OnStep -> 编码器原点"
+#define L_ENC_AUTO_SYNC "自动同步 OnStep <- 编码器"
 #define L_ENC_CONF "编码器配置"
 #define L_ENC_SET_TPD "每度数"
 #define L_ENC_SYNC_THLD "同步阈值"

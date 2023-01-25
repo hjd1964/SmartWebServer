@@ -21,14 +21,14 @@ void encAxisTile(int axis, String &data)
     ticksPerDeg = encoders.settings.axis1.ticksPerDeg;
     reverse = encoders.settings.axis1.reverse == ON;
     diffTo = encoders.settings.axis1.diffTo;
-    sprintf_P(temp, html_tile_text_beg, "22em", "13em", "Axis1 RA/Azm");
+    sprintf_P(temp, html_tile_text_beg, "22em", "15em", "Axis1 RA/Azm");
   }
   else if (axis == 1)
   {
     ticksPerDeg = encoders.settings.axis2.ticksPerDeg;
     reverse = encoders.settings.axis2.reverse == ON;
     diffTo = encoders.settings.axis2.diffTo;
-    sprintf_P(temp, html_tile_text_beg, "22em", "13em", "Axis2 Dec/Alt");
+    sprintf_P(temp, html_tile_text_beg, "22em", "15em", "Axis2 Dec/Alt");
   }
   data.concat(temp);
   data.concat("<br /><hr>");
@@ -37,14 +37,14 @@ void encAxisTile(int axis, String &data)
   {
     sprintf_P(temp, html_encoderAngle, 1, state.encAngleAxis1Str);
     data.concat(temp);
-    sprintf_P(temp, html_mountAngle, 1, state.angleAxis1Str);
+    sprintf_P(temp, html_mountAngle, 1, state.angleAxis1Str, 1, state.diffAngleAxis1Str);
     data.concat(temp);
   }
   else if (axis == 1)
   {
     sprintf_P(temp, html_encoderAngle, 2, state.encAngleAxis2Str);
     data.concat(temp);
-    sprintf_P(temp, html_mountAngle, 2, state.angleAxis2Str);
+    sprintf_P(temp, html_mountAngle, 2, state.angleAxis2Str, 2, state.diffAngleAxis2Str);
     data.concat(temp);
   }
 
@@ -86,8 +86,10 @@ void encAxisTile(int axis, String &data)
 // use Ajax key/value pairs to pass related data to the web client in the background
 void encAxisTileAjax(String &data)
 {
+  data.concat(keyValueString("diff_a1", state.diffAngleAxis1Str));
   data.concat(keyValueString("enc_a1", state.encAngleAxis1Str));
   data.concat(keyValueString("raw_a1", state.angleAxis1Str));
+  data.concat(keyValueString("diff_a2", state.diffAngleAxis2Str));
   data.concat(keyValueString("enc_a2", state.encAngleAxis2Str));
   data.concat(keyValueString("raw_a2", state.angleAxis2Str));
   www.sendContentAndClear(data);

@@ -21,7 +21,7 @@ const char html_syncEncodersNow[] PROGMEM =
 #ifdef ENC_ABSOLUTE
   const char html_zeroEncodersNow[] PROGMEM =
     "<br />"
-    "<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('enc','zro')\" type='button'>" L_ENC_ZERO_TO_ONS "</button>"
+    "<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('enc','zro')\" type='button'>" L_ENC_ORIGIN_TO_ONS "</button>"
     "<br />\n";
 #endif
 

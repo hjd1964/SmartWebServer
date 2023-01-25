@@ -31,3 +31,6 @@
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation
+
+// stand-in for delayNanoseconds()
+#define delayNanoseconds(ns) delayMicroseconds(ceilf(ns/1000.0F))

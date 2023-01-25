@@ -1,7 +1,9 @@
 // Platform setup ------------------------------------------------------------------------------------
+// Teensy4.0
+#pragma once
+
 // We define a more generic symbol, in case more Teensy boards based on different lines are supported
 #define __TEENSYDUINO__
-#pragma once
 
 // New symbol for the default I2C port ---------------------------------------------------------------
 #include <Wire.h>

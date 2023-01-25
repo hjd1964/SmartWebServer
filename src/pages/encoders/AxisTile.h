@@ -14,7 +14,7 @@ const char html_encoderAngle[] PROGMEM =
   L_ENCODER ": <span id='enc_a%d' class='c'>%s</span><br />";
 
 const char html_mountAngle[] PROGMEM =
-  "OnStep: <span id='raw_a%d' class='c'>%s</span><br /><br />";
+  "OnStep: <span id='raw_a%d' class='c'>%s</span> (&Delta; <span id='diff_a%d' class='c'>%s</span>)<br /><br />";
 
 const char html_indexDriverStatus[] PROGMEM =
   L_DRIVER " " L_STATUS ": <span id='dvr_stat%d' class='c'>%s</span><br />";

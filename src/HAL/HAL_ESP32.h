@@ -31,3 +31,7 @@
 
 // MCU reset
 #define HAL_RESET() ESP.restart()
+
+// stand-in for delayNanoseconds(), assumes 240MHz clock
+#include "xtensa/core-macros.h"
+#define delayNanoseconds(ns) { unsigned int c = xthal_get_ccount(); do {} while (xthal_get_ccount() - c < ns/4.166F); }

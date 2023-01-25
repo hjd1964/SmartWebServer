@@ -29,3 +29,9 @@
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation
+
+// MCU reset
+#define HAL_RESET() ESP.restart()
+
+// stand-in for delayNanoseconds(), assumes 80MHz clock
+#define delayNanoseconds(ns) { unsigned int c = ESP.getCycleCount(); do {} while (ESP.getCycleCount() - c < ns/12.498F); }

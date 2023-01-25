@@ -238,10 +238,10 @@
 // --------------------------- Encoders --------------------------
 
 // general settings
-#define L_ENC_SYNC_TO_ENC "Sync OnStep to Encoders"
-#define L_ENC_SYNC_TO_ONS "Sync Encoders to OnStep"
-#define L_ENC_ZERO_TO_ONS "Set Absolute Encoder Zero to OnStep"
-#define L_ENC_AUTO_SYNC "Automatically Sync OnStep to Encoders"
+#define L_ENC_SYNC_TO_ENC "Sync OnStep -> Encoders"
+#define L_ENC_SYNC_TO_ONS "Sync OnStep <- Encoders"
+#define L_ENC_ORIGIN_TO_ONS "Set OnStep -> Encoders Origin"
+#define L_ENC_AUTO_SYNC "Automatically Sync OnStep <- Encoders"
 #define L_ENC_CONF "Encoder Configuration"
 #define L_ENC_SET_TPD "Counts per degree"
 #define L_ENC_SYNC_THLD "Auto Sync threshold"

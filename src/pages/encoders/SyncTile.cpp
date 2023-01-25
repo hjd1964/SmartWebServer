@@ -12,7 +12,7 @@ void syncTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "13em", "Sync Control");
+  sprintf_P(temp, html_tile_beg, "22em", "15em", "Sync Control");
   data.concat(temp);
   data.concat("<br /><hr>");
 
@@ -24,6 +24,7 @@ void syncTile(String &data)
 
   #ifdef ENC_ABSOLUTE
     data.concat(FPSTR(html_zeroEncodersNow));
+    www.sendContentAndClear(data);
   #endif
 
   data.concat(FPSTR(html_syncAuto));
@@ -55,7 +56,7 @@ extern void syncTileGet()
     if (v.equals("o2e")) encoders.syncToOnStep();
     if (v.equals("e2o")) encoders.syncFromOnStep(true);
     #ifdef ENC_ABSOLUTE
-      if (v.equals("zro")) encoders.zeroFromOnStep();
+      if (v.equals("zro")) encoders.originFromOnStep();
     #endif
     if (v.equals("on")) encoders.settings.autoSync = true;
     if (v.equals("off")) encoders.settings.autoSync = false;

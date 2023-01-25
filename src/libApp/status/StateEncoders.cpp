@@ -25,11 +25,20 @@ void State::updateEncoders(bool now)
     {
       f = encoders.getAxis1();
       convert.doubleToDms(temp, f, true, true, PM_HIGH);
+      strncpyex(encAngleAxis1Str, temp, 14);
       formatDegreesStr(encAngleAxis1Str);
+
+      f = encoders.getOnStepAxis1() - encoders.getAxis1();
+      convert.doubleToDms(temp, f, true, true, PM_HIGHEST);
+      strncpyex(diffAngleAxis1Str, temp, 18);
+      formatDegreesStr(diffAngleAxis1Str);
     }
     else
+    {
       strcpy(temp, " ** " L_FAULT " ** ");
-    strncpyex(encAngleAxis1Str, temp, 14);
+      strncpyex(encAngleAxis1Str, temp, 14);
+      strncpyex(diffAngleAxis1Str, temp, 18);
+    }
     Y;
 
     f = encoders.getOnStepAxis2();
@@ -40,11 +49,20 @@ void State::updateEncoders(bool now)
     {
       f = encoders.getAxis2();
       convert.doubleToDms(temp, f, true, true, PM_HIGH);
+      strncpyex(encAngleAxis2Str, temp, 14);
       formatDegreesStr(encAngleAxis2Str);
+
+      f = encoders.getOnStepAxis2() - encoders.getAxis2();
+      convert.doubleToDms(temp, f, true, true, PM_HIGHEST);
+      strncpyex(diffAngleAxis2Str, temp, 18);
+      formatDegreesStr(diffAngleAxis2Str);
     }
     else
+    {
       strcpy(temp, " ** " L_FAULT " ** ");
-    strncpyex(encAngleAxis2Str, temp, 14);
+      strncpyex(encAngleAxis2Str, temp, 14);
+      strncpyex(diffAngleAxis2Str, temp, 18);
+    }
     Y;
   #endif
 }

@@ -63,8 +63,6 @@ void handleEncoders()
   www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
   www.sendContentAndClear(data);
-  data.concat("<script>auto2Rate=2;</script>");
-  www.sendContentAndClear(data);
 
   // page contents
   syncTile(data);
