@@ -34,4 +34,4 @@
 
 // stand-in for delayNanoseconds(), assumes 240MHz clock
 #include "xtensa/core-macros.h"
-#define delayNanoseconds(ns) { unsigned int c = xthal_get_ccount(); do {} while (xthal_get_ccount() - c < ns/4.166F); }
+#define delayNanoseconds(ns) { unsigned int c = xthal_get_ccount() + ns/4.166F; do {} while ((int)(xthal_get_ccount() - c) < 0); }

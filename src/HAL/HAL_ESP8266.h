@@ -34,4 +34,4 @@
 #define HAL_RESET() ESP.restart()
 
 // stand-in for delayNanoseconds(), assumes 80MHz clock
-#define delayNanoseconds(ns) { unsigned int c = ESP.getCycleCount(); do {} while (ESP.getCycleCount() - c < ns/12.498F); }
+#define delayNanoseconds(ns) { unsigned int c = ESP.getCycleCount() + ns/4.166F; do {} while ((int)(ESP.getCycleCount() - c) < 0); }
