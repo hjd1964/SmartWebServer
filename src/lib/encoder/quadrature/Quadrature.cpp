@@ -70,6 +70,11 @@ Quadrature::Quadrature(int16_t APin, int16_t BPin, int16_t axis) {
   stateB = digitalRead(BPin);
   lastB = stateB;
 
+  this->APin = APin;
+  this->BPin = APin;
+}
+
+void Quadrature::init() {
   switch (axis) {
     #if AXIS1_ENCODER == AB
       case 1:

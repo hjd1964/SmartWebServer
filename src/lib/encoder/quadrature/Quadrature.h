@@ -17,6 +17,10 @@
 class Quadrature : public Encoder {
   public:
     Quadrature(int16_t APin, int16_t BPin, int16_t axis);
+
+    // get device ready for use
+    void init();
+
     int32_t read();
     void write(int32_t count);
 
@@ -25,6 +29,9 @@ class Quadrature : public Encoder {
 
   private:
     int16_t axis;
+
+    int16_t APin = OFF;
+    int16_t BPin = OFF;
 
     volatile int16_t stateA;
     volatile int16_t stateB;
