@@ -73,7 +73,7 @@ void Encoders::init() {
     #ifdef AXIS1_ENCODER_ABSOLUTE
       encAxis1.init(NV_ENCODER_AS37H39BB_BASE);
     #else
-      encAxis2.init();
+      encAxis1.init();
     #endif
 
     #ifdef AXIS2_ENCODER_ABSOLUTE
