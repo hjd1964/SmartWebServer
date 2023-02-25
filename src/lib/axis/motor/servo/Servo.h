@@ -11,7 +11,6 @@
 #include "../../../encoder/pulseOnly/PulseOnly.h"
 #include "../../../encoder/quadrature/Quadrature.h"
 #include "../../../encoder/serialBridge/SerialBridge.h"
-#include "../../../encoder/swsBridge/SwsBridge.h"
 
 #include "dc/Dc.h"
 #include "tmc2209/Tmc2209.h"
@@ -25,7 +24,7 @@
 class ServoMotor : public Motor {
   public:
     // constructor
-    ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Encoder *encoder, Feedback *feedback, ServoControl *control, int16_t syncThreshold, bool useFastHardwareTimers = true);
+    ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Encoder *encoder, Feedback *feedback, ServoControl *control, long syncThreshold, bool useFastHardwareTimers = true);
 
     // sets up the servo motor
     bool init();
@@ -77,6 +76,9 @@ class ServoMotor : public Motor {
 
     // sets dir as required and moves coord toward target at setFrequencySteps() rate
     void move();
+    
+    // calibrate the motor if required
+    void calibrate() { driver->calibrate(); }
 
     // servo motor driver
     ServoDriver *driver;
@@ -97,12 +99,13 @@ class ServoMotor : public Motor {
     unsigned long lastPeriod = 0;       // last timer period (in sub-micros)
     float acceleration = ANALOG_WRITE_RANGE/5.0F;
     float accelerationFs = (ANALOG_WRITE_RANGE/5.0F)/FRACTIONAL_SEC;
-    int16_t syncThreshold = OFF;        // sync threshold in counts or OFF (for absolute encoders) 
+    long syncThreshold = OFF;           // sync threshold in counts (for absolute encoders) or OFF
 
-    int32_t lastPosition = 0;           // the last encoder position for stall check
+    long lastEncoderCounts = 0;         // the last encoder position for stall check
     unsigned long lastCheckTime = 0;    // time since the last encoder position was checked
+    unsigned long startTime = 0;        // time at start of servo polling
 
-    volatile int  absStep = 1;          // absolute step size (unsigned)
+    volatile int absStep = 1;           // absolute step size (unsigned)
 
     void (*callback)() = NULL;
 
@@ -111,6 +114,8 @@ class ServoMotor : public Motor {
 
     bool useFastHardwareTimers = true;
     bool slewing = false;
+    bool motorStepsInitDone = false;
+    bool homeSet = false;
 };
 
 #endif

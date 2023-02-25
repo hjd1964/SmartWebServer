@@ -24,6 +24,7 @@
 #define STANDARD                    -19
 #define PERSISTENT                  -20
 #define ERRORS_ONLY                 -21
+#define KALMAN                      -22
 #define INVALID                     -127
 
 // driver (step/dir interface, usually for stepper motors)
@@ -81,8 +82,7 @@
 #define PULSE_ONLY                  4      // pulse only encoder
 #define AS37_H39B_B                 5      // Broadcom AS37-H39B-B BISS-C interface encoder
 #define SERIAL_BRIDGE               6      // serial bridge to encoders
-#define SWS_BRIDGE                  7      // uses SWS encoder coordinate pushes
-#define ENC_LAST                    7
+#define ENC_LAST                    6
 
 // servo feedback (must match Encoder library)
 #define SERVO_FEEDBACK_FIRST        1

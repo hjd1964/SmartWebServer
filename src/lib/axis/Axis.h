@@ -104,7 +104,7 @@ enum AxisMeasure: uint8_t {AXIS_MEASURE_UNKNOWN, AXIS_MEASURE_MICRONS, AXIS_MEAS
 class Axis {
   public:
     // constructor
-    Axis(uint8_t axisNumber, const AxisPins *pins, const AxisSettings *settings, const AxisMeasure axisMeasure);
+    Axis(uint8_t axisNumber, const AxisPins *pins, const AxisSettings *settings, const AxisMeasure axisMeasure, float targetTolerance = 0.0F);
 
     // process axis commands
     bool command(char *reply, char *command, char *parameter, bool *supressFrame, bool *numericReply, CommandError *commandError);
@@ -348,6 +348,7 @@ class Axis {
     bool unitsRadians = false;
 
     bool enabled = false;        // enable/disable logical state (disabled is powered down)
+    bool firstEnable = true;     // flag it indicate if this is the first time this axis has been enabled
     bool limitsCheck = true;     // enable/disable numeric position range limits (doesn't apply to limit switches)
 
     uint8_t homeSenseHandle = 0; // home sensor handle
@@ -383,6 +384,8 @@ class Axis {
     float slewFreq = 0.0F;
     float maxFreq = 0.0F;
     float backlashFreq = 0.0F;
+
+    float targetTolerance = 0.0F;
 
     AutoRate autoRate = AR_NONE;       // auto slew mode
     float slewAccelRateFs;             // auto slew rate in measures per second per frac-sec
