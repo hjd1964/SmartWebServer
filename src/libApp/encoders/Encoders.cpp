@@ -105,12 +105,19 @@ void Encoders::init() {
   #endif
 
   void Encoders::syncToOnStep() {
-    char cmd[40];
-    sprintF(cmd, ":SX40,%0.6f#", enAxis1);
-    onStep.commandBool(cmd);
-    sprintF(cmd, ":SX41,%0.6f#", enAxis2);
-    onStep.commandBool(cmd);
-    onStep.commandBool(":SX42,1#");
+    char cmd[60], cmd1[30];
+    if (status.getVersionMajor() >= 10) {
+      sprintF(cmd, ":SX44,%0.6f,", enAxis1);
+      sprintF(cmd1, "%0.6f#", enAxis2); // 28
+      strcat(cmd, cmd1);
+      onStep.commandBool(cmd);
+    } else {
+      sprintF(cmd, ":SX40,%0.6f#", enAxis1); // 17
+      onStep.commandBool(cmd);
+      sprintF(cmd, ":SX41,%0.6f#", enAxis2); // 17
+      onStep.commandBool(cmd);
+      onStep.commandBool(":SX42,1#"); // 8
+    }
   }
 
   // check encoders and auto sync OnStep if diff is too great
