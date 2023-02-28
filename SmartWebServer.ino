@@ -194,10 +194,6 @@ Again:
   cmdTimeout = nv.readUI(NV_TIMEOUT_CMD);
   webTimeout = nv.readUI(NV_TIMEOUT_WEB);
 
-  // read settings from NV or init. as required
-  VLF("MSG: Init Encoders");
-  encoders.init();
-
   // bring network servers up
   #if OPERATIONAL_MODE == WIFI
     VLF("MSG: Init WiFi");
@@ -206,6 +202,10 @@ Again:
     VLF("MSG: Init Ethernet");
     ethernetManager.init();
   #endif
+
+  // ready encoders
+  VLF("MSG: Initialize Encoders");
+  encoders.init();
 
   // init is done, write the NV key if necessary
   if (!nv.hasValidKey()) {
@@ -272,11 +272,6 @@ Again:
 
   // clear the serial channel one last time
   onStep.clearSerialChannel();
-
-  #if ENCODERS == ON
-    VLF("MSG: Starting encoders");
-    encoders.init();
-  #endif
 
   if (status.onStepFound) {
     status.update(false);
