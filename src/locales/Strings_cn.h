@@ -240,9 +240,9 @@
 
 // general settings
 #define L_ENC_SYNC_TO_ENC "同步 OnStep -> 编码器"
-#define L_ENC_SYNC_TO_ONS "同步 OnStep <- 编码器"
+#define L_ENC_SYNC_TO_ONS "同步 编码器 -> OnStep"
 #define L_ENC_ORIGIN_TO_ONS "设置 OnStep -> 编码器原点"
-#define L_ENC_AUTO_SYNC "自动同步 OnStep <- 编码器"
+#define L_ENC_AUTO_SYNC "自动同步 编码器 -> OnStep"
 #define L_ENC_CONF "编码器配置"
 #define L_ENC_SET_TPD "每度数"
 #define L_ENC_SYNC_THLD "同步阈值"

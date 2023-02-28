@@ -248,10 +248,10 @@
 // --------------------------- Encoders --------------------------
 
 // general settings
-#define L_ENC_SYNC_TO_ENC "OnStep synchronisieren -> Encoder"
-#define L_ENC_SYNC_TO_ONS "OnStep <- Encoder synchronisieren"
+#define L_ENC_SYNC_TO_ENC "OnStep -> Encoder synchronisieren"
+#define L_ENC_SYNC_TO_ONS "Encoder -> OnStep synchronisieren"
 #define L_ENC_ORIGIN_TO_ONS "Stellen Sie OnStep -> Encoders Origin ein"
-#define L_ENC_AUTO_SYNC "OnStep <- Encoder automatisch synchronisieren"
+#define L_ENC_AUTO_SYNC "Encoder -> OnStep automatisch synchronisieren"
 #define L_ENC_CONF "Encoder-Konfiguration"
 #define L_ENC_SET_TPD "Zählt pro Grad"
 #define L_ENC_SYNC_THLD "Sync-Schwelle"

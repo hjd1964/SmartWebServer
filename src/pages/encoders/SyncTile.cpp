@@ -22,13 +22,15 @@ void syncTile(String &data)
   data.concat(FPSTR(html_syncOnStepNow));
   data.concat(FPSTR(html_syncEncodersNow));
 
+  data.concat(FPSTR(html_syncAuto));
+  www.sendContentAndClear(data);
+
+  data.concat("<br />");
+
   #ifdef ENC_ABSOLUTE
     data.concat(FPSTR(html_zeroEncodersNow));
     www.sendContentAndClear(data);
   #endif
-
-  data.concat(FPSTR(html_syncAuto));
-  www.sendContentAndClear(data);
 
   data.concat("<hr>");
 
@@ -53,8 +55,8 @@ extern void syncTileGet()
   v = www.arg("enc");
   if (!v.equals(EmptyStr))
   {
-    if (v.equals("o2e")) encoders.syncToOnStep();
-    if (v.equals("e2o")) encoders.syncFromOnStep(true);
+    if (v.equals("o2e")) encoders.syncFromOnStep();
+    if (v.equals("e2o")) encoders.syncToOnStep();
     #ifdef ENC_ABSOLUTE
       if (v.equals("zro")) encoders.originFromOnStep();
     #endif

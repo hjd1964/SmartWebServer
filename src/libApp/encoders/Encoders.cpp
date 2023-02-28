@@ -33,8 +33,6 @@ extern NVS nv;
     PulseOnly encAxis1(AXIS1_ENCODER_A_PIN, &servoControlAxis1.directionHint, 1);
   #elif AXIS1_ENCODER == AS37_H39B_B
     As37h39bb encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
-  #elif AXIS1_ENCODER == SERIAL_BRIDGE
-    SerialBridge encAxis1(1);
   #endif
 
   #if AXIS2_ENCODER == AB
@@ -47,8 +45,6 @@ extern NVS nv;
     PulseOnly encAxis2(AXIS2_ENCODER_A_PIN, &servoControlAxis2.directionHint, 2);
   #elif AXIS2_ENCODER == AS37_H39B_B
     As37h39bb encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
-  #elif AXIS2_ENCODER == SERIAL_BRIDGE
-    SerialBridge encAxis2(2);
   #endif
 #endif
 
@@ -70,16 +66,14 @@ void Encoders::init() {
   nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
 
   #if ENCODERS == ON
-    #ifdef AXIS1_ENCODER_ABSOLUTE
-      encAxis1.init(NV_ENCODER_AS37H39BB_BASE);
-    #else
-      encAxis1.init();
-    #endif
+    encAxis1.init();
+    encAxis2.init();
 
-    #ifdef AXIS2_ENCODER_ABSOLUTE
-      encAxis2.init(NV_ENCODER_AS37H39BB_BASE);
-    #else
-      encAxis2.init();
+    #ifdef ENC_ABSOLUTE
+      encAxis1.setOrigin(settings.axis1.zero);
+      encAxis2.setOrigin(settings.axis2.zero);
+      encAxis1.offset = settings.axis1.offset;
+      encAxis2.offset = settings.axis2.offset;
     #endif
 
     VF("MSG: Encoders, start polling task (priority 4)... ");
@@ -99,8 +93,21 @@ void Encoders::init() {
 
   #ifdef ENC_ABSOLUTE
     void Encoders::originFromOnStep() {
-      encAxis1.setOrigin(settings.axis1.reverse == ON ? -osAxis1*settings.axis1.ticksPerDeg : osAxis1*settings.axis1.ticksPerDeg);
-      encAxis2.setOrigin(settings.axis2.reverse == ON ? -osAxis2*settings.axis2.ticksPerDeg : osAxis2*settings.axis2.ticksPerDeg);
+      encAxis1.origin = 0;
+      encAxis2.origin = 0;
+      encAxis1.offset = 0;
+      encAxis2.offset = 0;
+
+      settings.axis1.zero = (uint32_t)(-encAxis1.read());
+      settings.axis2.zero = (uint32_t)(-encAxis2.read());
+      encAxis1.setOrigin(settings.axis1.zero);
+      encAxis2.setOrigin(settings.axis2.zero);
+
+      syncFromOnStep(true);
+      settings.axis1.offset = encAxis1.offset;
+      settings.axis2.offset = encAxis2.offset;
+
+      nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
     }
   #endif
 

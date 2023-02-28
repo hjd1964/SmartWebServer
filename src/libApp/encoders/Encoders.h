@@ -28,9 +28,10 @@
 // ----------------------------------------------------------------------------------------------------------------
 // background process position/rate control for encoders 
 
-#define EncoderSettingsSize 56
+#define EncoderSettingsSize 72
 typedef struct EncoderAxis {
-  int32_t zero;
+  uint32_t zero;
+  uint32_t offset;
   int32_t diffTo;
   double ticksPerDeg;
   int16_t reverse;
@@ -53,8 +54,8 @@ class Encoders {
       #else
         false,
       #endif
-      {0, AXIS1_ENCODER_DIFF_LIMIT_TO, AXIS1_ENCODER_TICKS_DEG, AXIS1_ENCODER_REVERSE},
-      {0, AXIS2_ENCODER_DIFF_LIMIT_TO, AXIS2_ENCODER_TICKS_DEG, AXIS2_ENCODER_REVERSE}
+      {0, 0, AXIS1_ENCODER_DIFF_LIMIT_TO, AXIS1_ENCODER_TICKS_DEG, AXIS1_ENCODER_REVERSE},
+      {0, 0, AXIS2_ENCODER_DIFF_LIMIT_TO, AXIS2_ENCODER_TICKS_DEG, AXIS2_ENCODER_REVERSE}
     };
 
     #if ENCODERS == ON

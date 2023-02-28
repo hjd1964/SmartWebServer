@@ -14,16 +14,15 @@ const char html_syncOnStepNow[] PROGMEM =
   "<button onpointerdown=\"s('enc','o2e')\" type='button'>" L_ENC_SYNC_TO_ENC "</button>"
   "<br />\n";
 
-const char html_syncEncodersNow[] PROGMEM =
-  "<button onpointerdown=\"s('enc','e2o')\" type='button'>" L_ENC_SYNC_TO_ONS "</button>"
-  "<br />\n";
-
 #ifdef ENC_ABSOLUTE
   const char html_zeroEncodersNow[] PROGMEM =
-    "<br />"
     "<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('enc','zro')\" type='button'>" L_ENC_ORIGIN_TO_ONS "</button>"
     "<br />\n";
 #endif
+
+const char html_syncEncodersNow[] PROGMEM =
+  "<button onpointerdown=\"s('enc','e2o')\" type='button'>" L_ENC_SYNC_TO_ONS "</button>"
+  "<br />\n";
 
 const char html_syncAuto[] PROGMEM = "<br />"
   L_ENC_AUTO_SYNC ": <br />"
