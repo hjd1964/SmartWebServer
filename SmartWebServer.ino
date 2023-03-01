@@ -281,12 +281,12 @@ Again:
   state.init();
 
   VF("MSG: Setup, starting cmd channel polling");
-  VF(" task (rate 10ms priority 2)... ");
-  if (tasks.add(10, 0, true, 2, pollCmdSvr, "cmdPoll")) { VL("success"); } else { VL("FAILED!"); }
+  VF(" task (rate 5ms priority 2)... ");
+  if (tasks.add(5, 0, true, 2, pollCmdSvr, "cmdPoll")) { VL("success"); } else { VL("FAILED!"); }
 
   VF("MSG: Setup, starting web server polling");
-  VF(" task (rate 10ms priority 3)... ");
-  if (tasks.add(10, 0, true, 3, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
+  VF(" task (rate 20ms priority 3)... ");
+  if (tasks.add(20, 0, true, 3, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
 
   // start task manager debug events
   #if DEBUG == PROFILER
