@@ -29,14 +29,17 @@ void focuserSlewingTile(String &data)
 
   data.concat("<hr>");
 
-  sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
-  data.concat(temp);
+  if (status.getVersionMajor() >= 10) {
+    sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
+    data.concat(temp);
 
-  sprintf_P(temp, html_focuserSlewSpeed, state.focuserSlewSpeedStr);
-  data.concat(temp);
-  data.concat(FPSTR(html_focuserGotoSelect));
+    sprintf_P(temp, html_focuserSlewSpeed, state.focuserSlewSpeedStr);
+    data.concat(temp);
+    data.concat(FPSTR(html_focuserGotoSelect));
 
-  data.concat(FPSTR(html_collapsable_end));
+    data.concat(FPSTR(html_collapsable_end));
+  }
+
   data.concat(FPSTR(html_tile_end));
   www.sendContentAndClear(data);
 }
