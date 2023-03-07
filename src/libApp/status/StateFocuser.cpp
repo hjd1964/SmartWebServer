@@ -57,13 +57,34 @@ void State::updateFocuser(bool now)
     } else strcpy(temp, "?");
     strncpyex(focuserTcfCoefStr, temp, 16); Y;
 
+    // Focuser slew speed
+    if (status.getVersionMajor() >= 10)
+    {
+      if (onStep.command(":Fg#", temp))
+      {
+        int s = atoi(temp);
+        if (s != 0) {
+          sprintF(focuserSlewSpeedStr, "%0.2fmm/s", s/1000.0F);
+        } else strcpy(focuserSlewSpeedStr, "?");
+      } else strcpy(focuserSlewSpeedStr, "?");
+    } else strcpy(focuserSlewSpeedStr, "?");
+
     // Focuser status
     if (onStep.command(":FT#", temp))
     {
       focuserSlewing = (bool)strchr(temp, 'M');
+      switch (temp[strlen(temp) - 1] - '0') {
+        case 1: focuserGotoRate = 1; break;
+        case 2: focuserGotoRate = 2; break;
+        case 3: focuserGotoRate = 3; break;
+        case 4: focuserGotoRate = 4; break;
+        case 5: focuserGotoRate = 5; break;
+        default: focuserGotoRate = 0; break;
+      }
     } else {
       focuserSlewing = false;
+      focuserGotoRate = 3;
     }
     Y;
- }
+  }
 }
