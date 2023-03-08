@@ -111,20 +111,19 @@ class State {
     int focuserSelected = 0;
     char focuserPositionStr[20] = "?";
     bool focuserSlewing = false;
-    int focuserGotoRate = 3;
     char focuserTemperatureStr[16] = "?";
     char focuserBacklashStr[16] = "?";
     char focuserDeadbandStr[16] = "?";
     bool focuserTcfEnable = false;
     char focuserTcfCoefStr[16] = "?";
-    int focuserGotoRate = 0;
+    int focuserGotoRate = 3;
     char focuserSlewSpeedStr[16] = "?";
 
     char rotatorPositionStr[20] = "?";
     bool rotatorSlewing = false;
     bool rotatorDerotate = false;
     bool rotatorDerotateReverse = false;
-    int rotatorGotoRate = 0;
+    int rotatorGotoRate = 3;
     char rotateSlewSpeedStr[20] = "?";
 
    // DynamicJsonDocument *doc;
