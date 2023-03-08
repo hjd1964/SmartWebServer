@@ -26,10 +26,10 @@ void State::updateRotator(bool now)
     } else strcpy(temp, "?");
     strncpyex(rotatorPositionStr, temp, 20); Y;
 
-    // rotator slew speed
+    // rotator working slew rate
     if (status.getVersionMajor() >= 10)
     {
-      if (onStep.command(":rg#", temp))
+      if (onStep.command(":rW#", temp))
       {
         double s = atof(temp);
         if (s != 0.0) {
