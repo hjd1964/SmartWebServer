@@ -94,7 +94,9 @@ void handleNetwork() {
       sprintf_P(temp,htmL_NETWORKSSID3B, wifiManager.settings.ap.ssid, "", wifiManager.settings.ap.channel); data.concat(temp);
       www.sendContentAndClear(data);
     
-      uint8_t macap[6] = {0,0,0,0,0,0}; WiFi.softAPmacAddress(macap); temp1[0] = 0;
+      uint8_t macap[6] = {0,0,0,0,0,0};
+      WiFi.softAPmacAddress(macap);
+      temp1[0] = 0;
       for (int i = 0; i < 6; i++) {
         char temp2[200];
         sprintf(temp2, "%s%02x:", temp1, macap[i]);
@@ -110,8 +112,15 @@ void handleNetwork() {
 
       sprintf_P(temp,htmL_NETWORKSSID7, wifiManager.settings.accessPointEnabled ? "checked" : ""); data.concat(temp);
     #else
-      data.concat(FPSTR(htmL_NETWORK_ETH_BEG)); temp1[0] = 0;
-      for (int i = 0; i < 6; i++) { sprintf(temp1, "%s%02x:", temp1, ethernetManager.settings.mac[i]); } temp1[strlen(temp1) - 1] = 0;
+      data.concat(FPSTR(htmL_NETWORK_ETH_BEG));
+
+      temp1[0] = 0;
+      for (int i = 0; i < 6; i++) {
+        char temp2[200];
+        sprintf(temp2, "%s%02x:", temp1, ethernetManager.settings.mac[i]);
+        strcpy(temp1, temp2);
+      }
+      temp1[strlen(temp1) - 1] = 0;
 
       sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data.concat(temp);
       www.sendContentAndClear(data);
