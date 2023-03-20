@@ -453,6 +453,13 @@ void Axis::poll() {
   // make sure we're ready
   if (axisNumber == 0) return;
 
+  // respond to the motor disabling itself
+  if (autoRate != AR_NONE && !motor->enabled) {
+    autoRate = AR_NONE;
+    freq = 0.0F;
+    V(axisPrefix); VLF("motion stopped, motor disabled!");
+  }
+
   // let the user know if the associated senses change state
   #if DEBUG == VERBOSE
     if (sense.changed(homeSenseHandle)) {
@@ -602,7 +609,7 @@ void Axis::setFrequencySlew(float frequency) {
 
 // set frequency in "measures" (degrees, microns, etc.) per second (0 stops motion)
 void Axis::setFrequency(float frequency) {
-  if (powerDownStandstill && frequency == 0.0F) {
+  if (powerDownStandstill && frequency == 0.0F && baseFreq == 0.0F) {
     if (!poweredDown) {
       if (!powerDownOverride || (long)(millis() - powerDownOverrideEnds) > 0) {
         powerDownOverride = false;
