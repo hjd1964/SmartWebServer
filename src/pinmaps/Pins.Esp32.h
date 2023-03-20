@@ -39,7 +39,8 @@
 #define VGPIO_PIN_6          OFF
 #define VGPIO_PIN_7          OFF
 
-#define ETHERNET_RESET_PIN   9   // pin# for controlling the reset of W5500 so it comes up properly
+#define ETHERNET_CS_PIN      27  // pin# for W5500 chip select
+#define ETHERNET_RESET_PIN   26  // pin# for controlling the reset of W5500 so it comes up properly
 
 #ifndef LED_STATUS_PIN      
   #define LED_STATUS_PIN     2   // pin 2 is a guess and is probably wrong
