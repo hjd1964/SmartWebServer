@@ -122,7 +122,7 @@ void setup(void) {
 
   // attempt to connect to OnStep
   int serialSwap = OFF;
-  if (OPERATIONAL_MODE == WIFI) serialSwap = SERIAL_SWAP;
+  serialSwap = SERIAL_SWAP;
   if (serialSwap == AUTO) serialSwap = AUTO_OFF;
 
   long serial_baud = SERIAL_BAUD;
