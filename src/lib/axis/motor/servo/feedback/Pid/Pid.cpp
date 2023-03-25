@@ -27,10 +27,9 @@ void Pid::init(uint8_t axisNumber, ServoControl *control, float controlRange) {
 
   pid = new QuickPID(&control->in, &control->out, &control->set,
                      0, 0, 0,
-                     QuickPID::pMode::pOnError, QuickPID::dMode::dOnError, QuickPID::iAwMode::iAwCondition,
+                     QuickPID::pMode::PID_PMODE, QuickPID::dMode::PID_DMODE, QuickPID::iAwMode::PID_IMODE,
                      QuickPID::Action::direct);
-
-  pid->SetSampleTimeUs(1000);
+  pid->SetSampleTimeUs(PID_SAMPLE_TIME_US);
   pid->SetOutputLimits(-controlRange, controlRange);
   pid->SetMode(QuickPID::Control::automatic);
 }
@@ -53,13 +52,19 @@ void Pid::setControlDirection(int8_t state) {
 
 // select PID param set for slewing
 void Pid::selectTrackingParameters() {
-  if (!trackingSelected) { V(axisPrefix); VL("tracking selected"); }
-  trackingSelected = true;
+  if (!trackingSelected) {
+    pid->SetMode(QuickPID::Control::manual);
+    pid->SetMode(QuickPID::Control::automatic);
+    V(axisPrefix); VL("tracking selected");
+    trackingSelected = true;
+  }
 }
 
 // select PID param set for slewing
 void Pid::selectSlewingParameters() {
   if (trackingSelected) {
+    pid->SetMode(QuickPID::Control::manual);
+    pid->SetMode(QuickPID::Control::automatic);
     V(axisPrefix); VL("slewing selected");
     trackingSelected = false;
     parameterSelect = 100;

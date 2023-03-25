@@ -159,6 +159,7 @@ void Status::focuserScan() {
   if (focuserFound == SD_UNKNOWN) {
     focuserFound = SD_FALSE;
     focuserCount = 0;
+    for (int i = 0; i < 6; i++) focuserPresent[i] = false;
     if (getVersionMajor() >= 10) {
       if (onStep.commandBool(":F1a#")) { focuserPresent[0] = true; focuserCount++; } Y;
       if (onStep.commandBool(":F2a#")) { focuserPresent[1] = true; focuserCount++; } Y;

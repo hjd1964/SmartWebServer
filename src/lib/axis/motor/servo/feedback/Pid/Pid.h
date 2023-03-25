@@ -8,8 +8,21 @@
 
 #include <QuickPID.h>  // https://github.com/Dlloydev/QuickPID or https://github.com/hjd1964/QuickPID (fix compile fail on ESP32)
 
-#ifndef SERVO_SLEWING_TO_TRACKING_TIME
-  #define SERVO_SLEWING_TO_TRACKING_TIME 1000 // time to switch from PID slewing to tracking parameters in ms
+// various options for QuickPID read about them here https://github.com/Dlloydev/QuickPID
+#ifndef PID_SLEWING_TO_TRACKING_TIME_MS
+  #define PID_SLEWING_TO_TRACKING_TIME_MS 1000 // time to switch from PID slewing to tracking parameters in milliseconds
+#endif
+#ifndef PID_SAMPLE_TIME_US
+  #define PID_SAMPLE_TIME_US 10000 // PID sample time in microseconds (defaults to 10 milliseconds)
+#endif
+#ifndef PID_PMODE
+  #define PID_PMODE pOnError // http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/
+#endif
+#ifndef PID_IMODE
+  #define PID_IMODE iAwCondition
+#endif
+#ifndef PID_DMODE
+  #define PID_DMODE dOnMeas
 #endif
 
 class Pid : public Feedback {
@@ -45,7 +58,7 @@ class Pid : public Feedback {
           if (trackingSelected) parameterSelect--;
           if (parameterSelect < 0) parameterSelect = 0;
           variableParameters(parameterSelect);
-          nextSelectIncrementTime = millis() + round(SERVO_SLEWING_TO_TRACKING_TIME/100.0F);
+          nextSelectIncrementTime = millis() + round(PID_SLEWING_TO_TRACKING_TIME_MS/100.0F);
         }
       }
     }
