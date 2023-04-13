@@ -166,6 +166,7 @@
 
 #define L_HINT_CLOCK "设置日期/时间"
 #define L_HINT_CONTINUE_GOTO "继续转到（如果在原位）"
+#define L_HOME_PARK_TITLE "归巢和停车"
 #define L_FIND_HOME "搜索起始位置"
 #define L_RESET_HOME "原始位置（重置）"
 #define L_UNPARK "取消停车"
@@ -280,6 +281,7 @@
 
 #define L_PARK "停车"
 #define L_SET_PARK "设置停车位置"
+#define L_SET_PARK_CURRENT_COORDS "在当前坐标处设置停放位置"
 
 #define L_TRK_FASTER "跟进"
 #define L_TRK_SLOWER "更快"
@@ -331,7 +333,7 @@
 #define L_LIMITS_RANGE_MERIDIAN_W "如果将望远镜放在坐骑西侧，则指向子午线，以+/- 270度为单位"
 
 // location
-#define L_LOCATION_TITLE "站点纬度，经度，UTC偏移"
+#define L_LOCATION_TITLE "时间地点"
 #define L_LOCATION_LONG "经度，以度和分钟为单位。+/-180，W为+"
 #define L_LOCATION_LAT "纬度，以度和分钟为单位。+/-90，N为+"
 #define L_LOCATION_RANGE_UTC_OFFSET "UTC 偏移，以-14到+12小时为单位"

@@ -175,6 +175,7 @@
 
 #define L_HINT_CLOCK "Setze Datum/Zeit"
 #define L_HINT_CONTINUE_GOTO "Setze Goto fort (wenn pausiert bei Homeposition)"
+#define L_HOME_PARK_TITLE "Referenzieren und Parken"
 #define L_FIND_HOME "Suche Homeposition"
 #define L_RESET_HOME "Homeposition (Reset)"
 #define L_UNPARK "Entparken"
@@ -289,6 +290,7 @@
 
 #define L_PARK "Parken"
 #define L_SET_PARK "Setze Parkposition"
+#define L_SET_PARK_CURRENT_COORDS "Parkposition auf aktuelle Koordinaten setzen"
 
 #define L_TRK_FASTER "schneller"
 #define L_TRK_SLOWER "langsamer"
@@ -340,7 +342,7 @@
 #define L_LIMITS_RANGE_MERIDIAN_W "Nach Meridian wenn Teleskop auf Westseite der Montierung, in Grad +/- 270"
 
 // location
-#define L_LOCATION_TITLE "Seite Standort Breite, Länge, UTC-Versatz"
+#define L_LOCATION_TITLE "Zeit und Ort"
 #define L_LOCATION_LONG "L&auml;ngengad, in Grad +/- 180, W is +"
 #define L_LOCATION_LAT "Breitengrad, in Grad +/- 90, N is +"
 #define L_LOCATION_RANGE_UTC_OFFSET "UTC Offset, in Stunden -14 to +12"
