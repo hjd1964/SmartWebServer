@@ -13,7 +13,7 @@
 
 #include "Status.h"
 
-bool Status::update(bool all)
+bool Status::update()
 {
   char result[80] = "";
 

@@ -274,7 +274,7 @@ Again:
   onStep.clearSerialChannel();
 
   if (status.onStepFound) {
-    status.update(false);
+    status.update();
     delay(100);
   }
 

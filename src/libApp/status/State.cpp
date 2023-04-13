@@ -45,7 +45,7 @@ void State::pollSlow()
 {
   updateController();
 
-  status.update(true);
+  status.update();
 }
 
 void State::pollFast()
