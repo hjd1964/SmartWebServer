@@ -64,5 +64,7 @@ void State::updateEncoders(bool now)
       strncpyex(diffAngleAxis2Str, temp, 18);
     }
     Y;
+  #else
+    UNUSED(now);
   #endif
 }
