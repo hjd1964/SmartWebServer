@@ -87,7 +87,7 @@
   static bool movingEast = false;
   static bool triggerPress = false;
   static bool timerReturn = false;
-  static bool timerReturn2 = false;  //flag for increased speed
+//  static bool timerReturn2 = false;  //flag for increased speed
   static bool pressedOnce = false;
   static bool FocusSpd = false; //Focus speed toggle flag
   static bool SpiralInProgess = false; //Spiral search start/stop flag
@@ -96,13 +96,13 @@
   static bool Connected = false;
   static bool doScan = false;
   static bool havedevice = false;
-  static bool ABpressedOnce = false;
+//  static bool ABpressedOnce = false;
   static bool CDpressedOnce = false;
 
-  static BLERemoteCharacteristic* pRemoteCharacteristic;
+//  static BLERemoteCharacteristic* pRemoteCharacteristic;
   static BLEAdvertisedDevice* myDevice;
   static BLEClient *pClient = NULL;
-  static BLERemoteCharacteristic* pBatRemoteCharacteristic;
+//  static BLERemoteCharacteristic* pBatRemoteCharacteristic;
 
   // pointer to a list of characteristics of the active service,
   // sorted by characteristic UUID
@@ -224,6 +224,7 @@
     for (itrbh = pmapbh->begin(); itrbh != pmapbh->end(); itrbh++)
     {
       BLEUUID x = itrbh->second->getUUID();
+      UNUSED(x);
       // the uuid must match the report uuid
       if (ReportCharUUID.equals(itrbh->second->getUUID()))
       {
@@ -648,6 +649,8 @@
                             NULL,                     // Parameter passed as input of the task
                             1,                        // Priority of the task.
                             &HandleCD);               // Task handle.
+
+    UNUSED(xReturned);
 
     BLEDevice::init("");
 
