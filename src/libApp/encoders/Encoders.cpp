@@ -159,7 +159,10 @@ void Encoders::init() {
 
     if (settings.autoSync && status.onStepFound && !enAxis1Fault && !enAxis2Fault) {
       #ifdef ENC_ABSOLUTE
-        if (status.syncToEncodersOnly || (status.aligning && ENC_SYNC_DURING_ALIGN == OFF)) {
+        if ((status.getVersionMajor() < 10 && (status.atHome || status.parked)) ||
+             status.syncToEncodersOnly ||
+            (status.aligning && ENC_SYNC_DURING_ALIGN == OFF))
+        {
           syncFromOnStep();
           if (status.syncToEncodersOnly) onStep.commandBool(":SX43,1#");
         } else
