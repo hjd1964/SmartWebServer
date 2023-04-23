@@ -158,15 +158,25 @@ void Encoders::init() {
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
 
     if (settings.autoSync && status.onStepFound && !enAxis1Fault && !enAxis2Fault) {
-      if (status.atHome || status.parked || status.aligning || status.syncToEncodersOnly) {
-        syncFromOnStep();
-        // re-enable normal operation once we're updated here
-        if (status.syncToEncodersOnly) onStep.commandBool(":SX43,1#");
-      } else
-        if (!status.inGoto && !status.guiding) {
-          if ((fabs(osAxis1 - enAxis1) > (double)(settings.axis1.diffTo/3600.0)) ||
-              (fabs(osAxis2 - enAxis2) > (double)(settings.axis2.diffTo/3600.0))) syncToOnStep();
-      }
+      #ifdef ENC_ABSOLUTE
+        if (status.syncToEncodersOnly || (status.aligning && ENC_SYNC_DURING_ALIGN == OFF)) {
+          syncFromOnStep();
+          if (status.syncToEncodersOnly) onStep.commandBool(":SX43,1#");
+        } else
+          if (!status.inGoto && !status.guiding) {
+            if ((fabs(osAxis1 - enAxis1) > (double)(settings.axis1.diffTo/3600.0)) ||
+                (fabs(osAxis2 - enAxis2) > (double)(settings.axis2.diffTo/3600.0))) syncToOnStep();
+        }
+      #else
+        if (status.atHome || status.parked || status.syncToEncodersOnly || (status.aligning && ENC_SYNC_DURING_ALIGN == OFF)) {
+          syncFromOnStep();
+          if (status.syncToEncodersOnly) onStep.commandBool(":SX43,1#");
+        } else
+          if (!status.inGoto && !status.guiding) {
+            if ((fabs(osAxis1 - enAxis1) > (double)(settings.axis1.diffTo/3600.0)) ||
+                (fabs(osAxis2 - enAxis2) > (double)(settings.axis2.diffTo/3600.0))) syncToOnStep();
+        }
+      #endif
     }
   }
 
