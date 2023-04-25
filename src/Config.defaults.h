@@ -54,8 +54,8 @@
 #ifndef ENC_AUTO_SYNC_MEMORY
 #define ENC_AUTO_SYNC_MEMORY          OFF     // remember automatic sync setting across power cycles
 #endif
-#ifndef ENC_SYNC_DURING_ALIGN
-#define ENC_SYNC_DURING_ALIGN         OFF     // high resolution encoders correct pointing even during an align
+#ifndef ENC_SYNC_DURING_GOTO
+#define ENC_SYNC_DURING_GOTO          OFF     // high resolution encoders correct pointing even during an align
 #endif
 
 #ifndef AXIS1_ENCODER
