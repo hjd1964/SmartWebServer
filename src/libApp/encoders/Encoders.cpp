@@ -162,13 +162,13 @@ void Encoders::init() {
     if (ENC_SYNC_DURING_GOTO == ON && status.getVersionMajor() * 100 + status.getVersionMinor() >= 1015) syncDuringGoto = true;
 
     if (settings.autoSync && status.onStepFound && !enAxis1Fault && !enAxis2Fault) {
-      if ((
+      if (
           #ifdef ENC_ABSOLUTE
-          status.getVersionMajor() * 100 + status.getVersionMinor() < 1015 &&
+            (status.getVersionMajor() * 100 + status.getVersionMinor() < 1015 && (status.atHome || status.parked)) ||
+          #else
+            (status.atHome || status.parked) ||
           #endif
-          (status.atHome || status.parked)) ||
-          status.syncToEncodersOnly ||
-          (!syncDuringGoto && status.aligning))
+          status.syncToEncodersOnly || (!syncDuringGoto && status.aligning))
       {
         syncFromOnStep();
         if (status.syncToEncodersOnly) onStep.commandBool(":SX43,1#");
