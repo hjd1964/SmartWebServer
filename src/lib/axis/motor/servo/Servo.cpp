@@ -167,8 +167,6 @@ bool ServoMotor::validateParameters(float param1, float param2, float param3, fl
 
 // sets motor enable on/off (if possible)
 void ServoMotor::enable(bool state) {
-  if (!state) feedback->reset();
-
   driver->enable(state);
   enabled = state;
 }
@@ -366,7 +364,9 @@ void ServoMotor::poll() {
   if (feedback->useVariableParameters) {
     feedback->variableParameters(fabs(velocityPercent));
   } else {
-    if (!slewing && enabled) feedback->selectTrackingParameters(); else feedback->selectSlewingParameters();
+    if (!slewing && enabled) {
+      if (delta <= syncThreshold) feedback->selectTrackingParameters(); else feedback->selectSlewingParameters();
+    } else feedback->selectSlewingParameters();
   }
 
   if (velocityPercent < -33) wasBelow33 = true;
