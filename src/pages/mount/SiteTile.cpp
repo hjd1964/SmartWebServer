@@ -131,7 +131,6 @@ void siteTileAjax(String &data)
   data.concat(keyValueString("site_long", state.longitudeStr));
   data.concat(keyValueString("site_lat", state.latitudeStr));
   data.concat(keyValueString("call", "update_date_time"));
-//  data.concat("call|update_date_time\n");
   www.sendContentAndClear(data);
 }
 
