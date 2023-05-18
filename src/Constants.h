@@ -39,5 +39,5 @@
 #define NV_ETHERNET_SETTINGS_BASE    100     // up to 150 bytes (128)
 #define NV_WIFI_SETTINGS_BASE        250     // up to 500 bytes (451)
 #define NV_ENCODER_SETTINGS_BASE     750     // up to 75 bytes (72)
-#define NV_ENCODER_AS37H39BB_BASE    825     // up to 75 bytes (8*9 = 72)
+
 
