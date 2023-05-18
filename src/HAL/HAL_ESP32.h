@@ -32,6 +32,11 @@
 // MCU reset
 #define HAL_RESET() ESP.restart()
 
-// stand-in for delayNanoseconds(), assumes 240MHz clock
-#include "xtensa/core-macros.h"
-#define delayNanoseconds(ns) { unsigned int c = xthal_get_ccount() + ns/4.166F; do {} while ((int)(xthal_get_ccount() - c) < 0); }
+#ifdef ARDUINO_ESP32C3_DEV
+  // stand-in for delayNanoseconds(), assumes 80MHz clock
+  #define delayNanoseconds(ns) { unsigned int c = ESP.getCycleCount() + ns/12.5F; do {} while ((int)(ESP.getCycleCount() - c) < 0); }
+#else
+  // stand-in for delayNanoseconds(), assumes 240MHz clock
+  #include "xtensa/core-macros.h"
+  #define delayNanoseconds(ns) { unsigned int c = xthal_get_ccount() + ns/4.166F; do {} while ((int)(xthal_get_ccount() - c) < 0); }
+#endif
