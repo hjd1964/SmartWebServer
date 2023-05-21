@@ -52,6 +52,9 @@ void servoTile(String &data)
   strcpy_P(temp, html_servoGraph);
   data.concat(temp);
 
+  sprintf_P(temp, html_servoZeroEncoders);
+  data.concat(temp);
+
   // servo monitor tile end
   data.concat(FPSTR(html_tile_end));
   www.sendContentAndClear(data);
@@ -93,11 +96,16 @@ void servoTileGet()
 {
   String v;
 
+  // set chart to display the axis requested
   v = www.arg("svax");
   if (!v.equals(EmptyStr)) {
     int axis = v.toInt();
     if (axis >= 0 && axis <= 9) _servo_axis = axis;
   }
+
+  // trigger encoder bridge to set zero
+  v = www.arg("sv");
+  if (v.equals("zro")) { onStep.commandBool(":SEO#"); }
 }
 
 #endif

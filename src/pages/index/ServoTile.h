@@ -12,6 +12,11 @@ extern void servoTile(String &data);
 extern void servoTileAjax(String &data);
 extern void servoTileGet();
 
+const char html_servoZeroEncoders[] PROGMEM =
+  "<br />\n"
+  "<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('sv','zro')\" type='button'>" L_ENC_ORIGIN_TO_ONS "</button>"
+  "<br />\n";
+
 const char html_servoSelect[] PROGMEM = "<button id='svax%d' onpointerdown=\"s('svax','%d')\" type='button' class='bb'>%c</button>";
 
 const char html_servoGraph[] PROGMEM = "<canvas id='servoCanvas' width='420' height='300' style='border:1px solid #000000;'></canvas> \n";
