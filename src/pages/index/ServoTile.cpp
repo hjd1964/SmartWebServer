@@ -52,8 +52,10 @@ void servoTile(String &data)
   strcpy_P(temp, html_servoGraph);
   data.concat(temp);
 
-  sprintf_P(temp, html_servoZeroEncoders);
-  data.concat(temp);
+  #if DISPLAY_SERVO_ORIGIN_CONTROLS == ON
+    sprintf_P(temp, html_servoZeroEncoders);
+    data.concat(temp);
+  #endif
 
   // servo monitor tile end
   data.concat(FPSTR(html_tile_end));
