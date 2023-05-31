@@ -46,7 +46,7 @@ void rotatorSlewingTile(String &data)
 // use Ajax key/value pairs to pass related data to the web client in the background
 void rotatorSlewingTileAjax(String &data)
 {
-  data.concat(keyValueString("rot_sta", state.focuserSlewing ? L_ACTIVE : L_INACTIVE));
+  data.concat(keyValueString("rot_sta", state.rotatorSlewing ? L_ACTIVE : L_INACTIVE));
   data.concat(keyValueString("rotatorpos", state.rotatorPositionStr));
   data.concat(keyValueString("rot_rate", state.rotateSlewSpeedStr));
 
