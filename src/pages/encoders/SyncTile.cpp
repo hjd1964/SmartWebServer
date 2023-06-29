@@ -34,7 +34,7 @@ void syncTile(String &data)
 
   data.concat("<hr>");
 
-  data.concat(html_form_end);
+  data.concat(FPSTR(html_form_end));
 
   data.concat(FPSTR(html_tile_end));
   www.sendContentAndClear(data);
