@@ -106,7 +106,7 @@ void setup(void) {
   delay(2000);
 
   // call gamepad BLE initialization
-  #if BLE_GAMEPAD == ON
+  #if (BLE_GAMEPAD == ON && ESP32)
     VLF("MSG: Init BLE");
     bleInit();
   #endif
@@ -293,7 +293,7 @@ Again:
     tasks.add(142, 0, true, 7, profiler, "Profilr");
   #endif
 
-  #if BLE_GAMEPAD == ON
+  #if (BLE_GAMEPAD == ON && ESP32)
     bleSetup();
   #endif
 
@@ -301,7 +301,7 @@ Again:
 }
 
 void loop(void) {
-  #if BLE_GAMEPAD == ON
+  #if (BLE_GAMEPAD == ON && ESP32)
     bleTimers(); Y;
     bleConnTest(); Y;
   #endif
