@@ -63,7 +63,7 @@ NVS nv;
 #endif
 
 #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
-  CmdServer cmdSvr(9999, 2L*1000L);
+  CmdServer cmdSvr(9999, 1L*1000L);
 #endif
 
 void systemServices() {
