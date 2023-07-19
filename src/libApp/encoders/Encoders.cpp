@@ -16,7 +16,8 @@ extern NVS nv;
 
 #if ENCODERS == ON
   // bring in support for the various encoder types
-  #include "../../lib/encoder/as37h39bb/As37h39bb.h"
+  #include "../../lib/encoder/bissc/As37h39bb.h"
+  #include "../../lib/encoder/bissc/Jtw24.h"
   #include "../../lib/encoder/cwCcw/CwCcw.h"
   #include "../../lib/encoder/pulseDir/PulseDir.h"
   #include "../../lib/encoder/quadrature/Quadrature.h"
@@ -35,6 +36,8 @@ extern NVS nv;
     PulseOnly encAxis1(AXIS1_ENCODER_A_PIN, &servoControlAxis1.directionHint, 1);
   #elif AXIS1_ENCODER == AS37_H39B_B
     As37h39bb encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+  #elif AXIS1_ENCODER == JTW_24BIT
+    Jtw24 encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
   #endif
 
   #if AXIS2_ENCODER == AB
@@ -49,6 +52,8 @@ extern NVS nv;
     PulseOnly encAxis2(AXIS2_ENCODER_A_PIN, &servoControlAxis2.directionHint, 2);
   #elif AXIS2_ENCODER == AS37_H39B_B
     As37h39bb encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+  #elif AXIS2_ENCODER == JTW_24BIT
+    Jtw24 encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
   #endif
 #endif
 
