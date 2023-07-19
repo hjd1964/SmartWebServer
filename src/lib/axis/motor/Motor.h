@@ -117,11 +117,17 @@ class Motor {
     // get the current direction of motion
     Direction getDirection();
 
+    // return the encoder count, if present
+    virtual int32_t getEncoderCount() { return 0; }
+
     // set slewing state (hint that we are about to slew or are done slewing)
     virtual void setSlewing(bool state);
 
     // calibrate the motor if required
-    virtual void calibrate() {}
+    virtual void calibrate(float value) { UNUSED(value); }
+
+    // calibrate the motor driver if required
+    virtual void calibrateDriver() {}
 
     // monitor and respond to motor state as required
     virtual void poll() {}

@@ -67,7 +67,8 @@
 #define SERVO_PE                    100    // SERVO, direction (phase) and pwm (enable) connections
 #define SERVO_EE                    101    // SERVO, dual pwm input (enable/enable) connections
 #define SERVO_TMC2209               102    // TMC2209 stepper driver using VACTUAL velocity control
-#define SERVO_DRIVER_LAST           102
+#define SERVO_TMC5160               103    // TMC5160 stepper driver using VMAX velocity control
+#define SERVO_DRIVER_LAST           103
 
 // odrive driver
 #define ODRIVE_DRIVER_FIRST         200
@@ -82,8 +83,9 @@
 #define PULSE_DIR                   4      // pulse/direction encoder
 #define PULSE_ONLY                  5      // pulse only encoder
 #define AS37_H39B_B                 6      // Broadcom AS37-H39B-B BISS-C interface encoder
-#define SERIAL_BRIDGE               7      // serial bridge to encoders
-#define ENC_LAST                    7
+#define JTW_24BIT                   7      // JTW Trident BISS-C interface 24bit encoder
+#define SERIAL_BRIDGE               8      // serial bridge to encoders
+#define ENC_LAST                    8
 
 // servo feedback (must match Encoder library)
 #define SERVO_FEEDBACK_FIRST        1
