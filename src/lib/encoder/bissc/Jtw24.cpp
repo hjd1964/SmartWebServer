@@ -28,9 +28,6 @@ IRAM_ATTR bool Jtw24::readEnc(uint32_t &position) {
 
   // prepare for a reading
   position = 0;
-  encErr = 0;
-  encWrn = 0;
-  jtw24crc = 0;
 
   // bit delay in nanoseconds
   int rate = lround(500000.0/BISSC_CLOCK_RATE_KHZ);
@@ -83,14 +80,16 @@ IRAM_ATTR bool Jtw24::readEnc(uint32_t &position) {
           delayNanoseconds(rate);
         }
 
+        /*
         // the next 24 bits are the multi-turn count
-        // for (int i = 0; i < 24; i++) {
-        //   digitalWriteF(maPin, LOW);
-        //   if (digitalReadF(sloPin) == HIGH) bitSet(encTurns, 23 - i);
-        //   delayNanoseconds(rate);
-        //   digitalWriteF(maPin, HIGH);
-        //   delayNanoseconds(rate);
-        // }
+        for (int i = 0; i < 24; i++) {
+          digitalWriteF(maPin, LOW);
+          if (digitalReadF(sloPin) == HIGH) bitSet(encTurns, 23 - i);
+          delayNanoseconds(rate);
+          digitalWriteF(maPin, HIGH);
+          delayNanoseconds(rate);
+        }
+        */
 
         // the Err bit
         digitalWriteF(maPin, LOW);
@@ -130,28 +129,30 @@ IRAM_ATTR bool Jtw24::readEnc(uint32_t &position) {
   #endif
 
   // trap errors
-  // int16_t errors = 0;
-  // UNUSED(encWrn);
+  int16_t errors = 0;
+  UNUSED(encWrn);
 
-  // uint64_t encData = (uint64_t)position | ((uint64_t)encTurns << 24);
-  // encData = (encData << 1) | encErr;
-  // encData = (encData << 1) | encWrn;
+  /*
+  uint64_t encData = (uint64_t)position | ((uint64_t)encTurns << 24);
+  encData = (encData << 1) | encErr;
+  encData = (encData << 1) | encWrn;
 
-  // if (crc6(encData) != jtw24crc) {
-  //   bad++;
-  //   VF("WRN: Encoder JTW_24BIT"); V(axis); VF(", Crc invalid (overall "); V(((float)bad/good)*100.0F); V('%'); VLF(")"); errors++;
-  // } else {
-  //   good++;
-  //   if (!foundAck) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Ack bit invalid"); errors++; } else
-  //   if (!foundStart) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Start bit invalid"); errors++; } else
-  //   if (!foundCds) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Cds bit invalid"); errors++; } else
-  //   if (encErr) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Error bit set"); errors++; } else errors = 0;
-  // }
+  if (crc6(encData) != jtw24crc) {
+    bad++;
+    VF("WRN: Encoder JTW_24BIT"); V(axis); VF(", Crc invalid (overall "); V(((float)bad/good)*100.0F); V('%'); VLF(")"); errors++;
+  } else {
+    good++;
+    if (!foundAck) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Ack bit invalid"); errors++; } else
+    if (!foundStart) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Start bit invalid"); errors++; } else
+    if (!foundCds) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Cds bit invalid"); errors++; } else
+    if (encErr) { VF("WRN: Encoder JTW_24BIT"); V(axis); VLF(", Error bit set"); errors++; } else errors = 0;
+  }
+  */
 
-  // if (errors > 0) {
-  //   if (errors <= 2) warn = true; else error = true;
-  //   return false;
-  // }
+  if (errors > 0) {
+    if (errors <= 2) warn = true; else error = true;
+    return false;
+  }
 
   #if BISSC_SINGLE_TURN == ON
     // extend negative to 32 bits
