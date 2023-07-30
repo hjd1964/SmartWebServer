@@ -32,7 +32,7 @@
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
 #define FirmwareVersionMinor  "06"
-#define FirmwareVersionPatch  "g"
+#define FirmwareVersionPatch  "h"
 
 // Use Config.h to configure the SWS to your requirements
 
@@ -44,7 +44,7 @@ NVS nv;
 #include "src/libApp/encoders/Encoders.h"
 #include "src/pages/Pages.h"
 #include "src/libApp/status/Status.h"
-#include "src/Validate.h"
+
 #include "src/lib/ethernet/cmdServer/CmdServer.h"
 #include "src/lib/ethernet/webServer/WebServer.h"
 #include "src/lib/wifi/cmdServer/CmdServer.h"
