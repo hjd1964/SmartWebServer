@@ -86,7 +86,7 @@ void gotoTile(String &data)
   // Goto Preferred Pier Side
   if (status.mountType != MT_ALTAZM)
   {
-    data.concat("<br />");
+    data.concat(F("<br />"));
     data.concat(FPSTR(html_gotoPreferredPierSide));
   }
 

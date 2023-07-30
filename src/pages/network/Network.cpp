@@ -58,7 +58,7 @@ void handleNetwork() {
   }
 
   // page contents
-  data.concat("<div>");
+  data.concat(F("<div>"));
 
   if (restartRequired) {
     restartRequired = false;

@@ -14,7 +14,7 @@ void syncTile(String &data)
 
   sprintf_P(temp, html_tile_beg, "22em", "15em", "Sync Control");
   data.concat(temp);
-  data.concat("<br /><hr>");
+  data.concat(F("<br /><hr>"));
 
   sprintf_P(temp, html_form_begin, "enc.htm");
   data.concat(temp);
@@ -25,14 +25,14 @@ void syncTile(String &data)
   data.concat(FPSTR(html_syncAuto));
   www.sendContentAndClear(data);
 
-  data.concat("<br />");
+  data.concat(F("<br />"));
 
   #ifdef ENC_ABSOLUTE
     data.concat(FPSTR(html_zeroEncodersNow));
     www.sendContentAndClear(data);
   #endif
 
-  data.concat("<hr>");
+  data.concat(F("<hr>"));
 
   data.concat(FPSTR(html_form_end));
 

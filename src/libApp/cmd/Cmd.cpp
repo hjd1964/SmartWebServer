@@ -187,6 +187,7 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
     while ((long)(timeout - millis()) > 0) {
       if (SERIAL_ONSTEP.available()) { response[SERIAL_ONSTEP.readBytes(response, 1)] = 0; break; }
     }
+    if ((long)(timeout - millis()) <= 0) { DF("WRN: cmd "); D(cmd); DLF(" timed out"); }
     #ifdef ESP32
       xSemaphoreGive(xMutex);
     #endif
@@ -204,6 +205,7 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
         response[responsePos] = 0;
       }
     }
+    if ((long)(timeout - millis()) <= 0) { DF("WRN: cmd \""); D(cmd); DLF("\" timed out"); }
     #ifdef ESP32
       xSemaphoreGive(xMutex);
     #endif

@@ -46,7 +46,7 @@ void servoTile(String &data)
       sprintf_P(temp, html_servoSelect, i, i, '0'+ i); data.concat(temp);
     }
   }
-  data.concat("</div>");
+  data.concat(F("</div>"));
 
   // the servo canvas
   strcpy_P(temp, html_servoGraph);
@@ -75,10 +75,10 @@ void servoTileAjax(String &data)
     if (temp1 != NULL) {
       temp1[0] = 0;
       temp1++;
-      data.concat("svoD|"); data.concat(temp); data.concat("\n");
-      data.concat("svoP|"); data.concat(temp1); data.concat("\n");
-    } else { data.concat("svoD|?\n"); data.concat("svoP|?\n"); }
-  } else { data.concat("svoD|?\n"); data.concat("svoP|?\n"); _servo_axis = 0; }
+      data.concat(F("svoD|")); data.concat(temp); data.concat("\n");
+      data.concat(F("svoP|")); data.concat(temp1); data.concat("\n");
+    } else { data.concat(F("svoD|?\n")); data.concat(F("svoP|?\n")); }
+  } else { data.concat(F("svoD|?\n")); data.concat(F("svoP|?\n")); _servo_axis = 0; }
 
   data.concat(keyValueBoolEnabled("svax1", _servo_axis == 0));
   data.concat(keyValueBoolEnabled("svax2", _servo_axis == 0));

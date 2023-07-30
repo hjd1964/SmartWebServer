@@ -59,7 +59,7 @@ void handleEncoders()
   sprintf_P(temp, html_script_ajax_get, "enc-ajax-get.txt");
   data.concat(temp);
 
-  data.concat("<script>var ajaxPage='enc-ajax.txt';</script>\n");
+  data.concat(F("<script>var ajaxPage='enc-ajax.txt';</script>\n"));
   www.sendContentAndClear(data);
   data.concat(FPSTR(html_script_ajax));
   www.sendContentAndClear(data);
@@ -69,7 +69,7 @@ void handleEncoders()
   encAxisTile(0, data);
   encAxisTile(1, data);
 
-  data.concat("<br class=\"clear\" />\n");
+  data.concat(F("<br class=\"clear\" />\n"));
   data.concat(FPSTR(html_page_and_body_end));
 
   data.concat(FPSTR(html_script_collapsible));
