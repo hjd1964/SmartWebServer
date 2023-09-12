@@ -48,17 +48,17 @@
 #define COLOR_CONTROL_DISABLED_BACKGROUND "#733"
 #endif
 
-#ifndef COLOR_COLLAPSABLE
-#define COLOR_COLLAPSABLE "#999"
+#ifndef COLOR_COLLAPSIBLE
+#define COLOR_COLLAPSIBLE "#999"
 #endif
-#ifndef COLOR_COLLAPSABLE_BACKGROUND
-#define COLOR_COLLAPSABLE_BACKGROUND "#500808"
+#ifndef COLOR_COLLAPSIBLE_BACKGROUND
+#define COLOR_COLLAPSIBLE_BACKGROUND "#500808"
 #endif
-#ifndef COLOR_COLLAPSABLE_ACTIVE_BACKGROUND
-#define COLOR_COLLAPSABLE_ACTIVE_BACKGROUND "#661111"
+#ifndef COLOR_COLLAPSIBLE_ACTIVE_BACKGROUND
+#define COLOR_COLLAPSIBLE_ACTIVE_BACKGROUND "#661111"
 #endif
-#ifndef COLOR_COLLAPSABLE_CONTENT_BACKGROUND
-#define COLOR_COLLAPSABLE_CONTENT_BACKGROUND "#301212"
+#ifndef COLOR_COLLAPSIBLE_CONTENT_BACKGROUND
+#define COLOR_COLLAPSIBLE_CONTENT_BACKGROUND "#301212"
 #endif
 
 #ifndef COLOR_SERVO_BACKGROUND_1
@@ -123,8 +123,8 @@ const char html_main_css_control[] PROGMEM =
 ".bb {  font-weight: bold; font-size: 105%; } .bbh {  font-weight: bold; font-size: 100%; height: 2.1em; }";
 
 const char html_main_css_collapse[] PROGMEM =
-".collapsible { background-color: " COLOR_COLLAPSABLE_BACKGROUND "; color: " COLOR_COLLAPSABLE "; cursor: pointer; padding: 7px; width: 80%; border: none; text-align: left; outline: none; font-size: 14px; }"
-".active, .collapsible:hover { background-color: " COLOR_COLLAPSABLE_ACTIVE_BACKGROUND "; } .content { padding: 2px 18px; display: none; overflow: hidden; background-color: " COLOR_COLLAPSABLE_CONTENT_BACKGROUND "; }";
+".collapsible { background-color: " COLOR_COLLAPSIBLE_BACKGROUND "; color: " COLOR_COLLAPSIBLE "; cursor: pointer; padding: 7px; width: 80%; border: none; text-align: left; outline: none; font-size: 14px; }"
+".active, .collapsible:hover { background-color: " COLOR_COLLAPSIBLE_ACTIVE_BACKGROUND "; } .content { padding: 2px 18px; display: none; overflow: hidden; background-color: " COLOR_COLLAPSIBLE_CONTENT_BACKGROUND "; }";
 
 const char html_main_css_end[] PROGMEM = 
 "</STYLE>";
