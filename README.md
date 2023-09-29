@@ -9,5 +9,5 @@ There is also support for using the "ACGAM R1 Bluetooth 4.0 Wireless Gamepad" ov
 https://onstep.groups.io/g/main/wiki/26762
 
 # Flashing The Smart Web Server
-The exact flashing procedure depends on which device you will be using.  You can find instructions for setting up the SWS in the its Wiki here:
+The exact flashing procedure depends on which device you will be using.  You can find instructions for setting up the SWS in its Wiki here:
 https://onstep.groups.io/g/main/wiki/26881
