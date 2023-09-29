@@ -8,5 +8,5 @@ Support for encoders where it integrates tightly with OnStep; or if not using En
 Access to a (specific) gamepad over Bluetooth LE.
 
 # Flashing The Smart Web Server
-The exact flashing procedure depends on which device you will be using.  You can find instructions for setting up the SWS in the SWS Wiki here:
+The exact flashing procedure depends on which device you will be using.  You can find instructions for setting up the SWS in the its Wiki here:
 https://onstep.groups.io/g/main/wiki/26881
