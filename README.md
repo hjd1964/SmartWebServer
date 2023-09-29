@@ -11,3 +11,11 @@ https://onstep.groups.io/g/main/wiki/26762
 # Flashing The Smart Web Server
 The exact flashing procedure depends on which device you will be using.  You can find instructions for setting up the SWS in its Wiki here:
 https://onstep.groups.io/g/main/wiki/26881
+
+# License
+The Smart Web Server is open source free software, licensed under the GPL.
+
+See [LICENSE.txt](./LICENSE.txt) file.
+
+# Primary Author
+[Howard Dutton](http://www.stellarjourney.com)
