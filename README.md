@@ -5,7 +5,8 @@ The SWS is known to work from personal computers (using a web browser, ASCOM, or
 
 # Optionally, the SWS can also provide:
 Support for encoders where it integrates tightly with OnStep; or if not using Encoders, OnStepX can use those four connections (pins) as general purpose I/O.
-Access to a (specific) gamepad over Bluetooth LE.
+There is also support for using the "ACGAM R1 Bluetooth 4.0 Wireless Gamepad" over Bluetooth LE which you can read about here:
+https://onstep.groups.io/g/main/wiki/26762
 
 # Flashing The Smart Web Server
 The exact flashing procedure depends on which device you will be using.  You can find instructions for setting up the SWS in the its Wiki here:
