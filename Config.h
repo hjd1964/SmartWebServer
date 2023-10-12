@@ -39,7 +39,6 @@
 #define DISPLAY_SERVO_MONITOR         OFF //    OFF, ON to display the servo monitor for OnStepX servos (any axis.)           Option
 #define DISPLAY_SERVO_ORIGIN_CONTROLS OFF //    OFF, ON to display control to set the absolute encoder origin for servos.     Option
 #define DISPLAY_RESET_CONTROLS        OFF //    OFF, ON allows reset if supported, FWU for STM32 firmware upload pin HIGH.    Option
-#define DISPLAY_SPECIAL_CHARS          ON //     ON, For standard ASCII special symbols (compatibility.)                      Infreq
 #define DISPLAY_ADVANCED_CHARS         ON //     ON, For standard "RA/Dec" instead of symbols.                                Infreq
 #define DISPLAY_HIGH_PRECISION_COORDS OFF //    OFF, ON for high precision coordinate display on status page.                 Infreq
 
