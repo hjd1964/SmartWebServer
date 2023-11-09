@@ -100,6 +100,10 @@ void setup(void) {
   if (DEBUG == ON || DEBUG == VERBOSE || DEBUG == PROFILER) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
   delay(2000);
 
+  #ifdef PIN_INIT
+    PIN_INIT();
+  #endif
+
   VF("MSG: SmartWebServer "); VL(firmwareVersion.str);
   VF("MSG: MCU = "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
