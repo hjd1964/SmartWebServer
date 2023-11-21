@@ -19,7 +19,6 @@
 //      Parameter Name              Value   Default  Notes                                                                      Hint
 // OPERATIONAL MODE ----------------------------------------------------------------------------------------------------------------
 #define OPERATIONAL_MODE             WIFI //   WIFI, Or use ETHERNET_W5100 or ETHERNET_W5500                                 <-Req'd
-#define MDNS_NAME                "onstep" //   "onstep", mDNS device name                                                           Adjust
 
 // SERIAL PORTS --------------------------------------------------------------------------------------------------------------------
 #define SERIAL_BAUD_DEFAULT          9600 //   9600, Common baud rates for this parameter are 9600,19200,57600,115200,etc.    Infreq
