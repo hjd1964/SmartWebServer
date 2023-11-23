@@ -8,6 +8,10 @@
 #endif
 
 // Wifi related
+#if OPERATIONAL_MODE == WIFI
+#define MDNS_SERVER                  ON
+#endif
+
 #ifndef MDNS_NAME
 #define MDNS_NAME                    "onstep" // mDNS device name
 #endif
