@@ -106,8 +106,6 @@ class Motor {
 
     // set synchronized state (automatic movement of target at setFrequencySteps() rate)
     virtual inline void setSynchronized(bool state) {
-      V("MSG: setSynchronized(), Sync = "); V(sync); V(" set to "); VL(state);
-      V("MSG: setSynchronized(), targetSteps = "); V(targetSteps); V(" set to "); VL(motorSteps);
       if (state) {
         noInterrupts();
         sync = state;
