@@ -137,14 +137,14 @@ void gotoTileAjax(String &data)
 
   if (!isnan(state.slewSpeedNominal) && !isnan(state.slewSpeedCurrent))
   {
-    double rateRatio = state.slewSpeedNominal / state.slewSpeedCurrent;
+    float rateRatio = state.slewSpeedNominal / state.slewSpeedCurrent;
     char rate_key[5][12] = {"gto_rate_vf", "gto_rate_f", "gto_rate_n", "gto_rate_s", "gto_rate_vs"};
     bool rate_en[5] = {false, false, false, false, false};
 
-    if (rateRatio > 1.75) { rate_en[0] = true; }
-    else if (rateRatio > 1.25) { rate_en[1] = true; }
-    else if (rateRatio > 0.875) { rate_en[2] = true; }
-    else if (rateRatio > 0.625) { rate_en[3] = true; }
+    if (rateRatio > 1.75F) { rate_en[0] = true; }
+    else if (rateRatio > 1.25F) { rate_en[1] = true; }
+    else if (rateRatio > 0.875F) { rate_en[2] = true; }
+    else if (rateRatio > 0.625F) { rate_en[3] = true; }
     else rate_en[4] = true;
     for (int i = 0; i < 5; i++) {
       String s = keyValueBoolSelected(rate_key[i], rate_en[i]);
