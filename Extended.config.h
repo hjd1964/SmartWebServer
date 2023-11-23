@@ -31,6 +31,7 @@
 // PASSWORD ------------------------------------------------------------------------------------------------------------------------
 #define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Adjust
                                           //              password for runtime access to network settings.
+#define MDNS_NAME                "onstep" //   "onstep",  mDNS device name                                                           Adjust
 
 // BLE GAMEPAD SETTINGS (ESP32 ONLY) ------------------------------------------------ see https://onstep.groups.io/g/main/wiki/26762
 #define BLE_GAMEPAD                   OFF //         OFF, ON to allow BLE gamepad connection for ESP32 only.                  Option
