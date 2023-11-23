@@ -9,7 +9,9 @@
 
 // Wifi related
 #if OPERATIONAL_MODE == WIFI
+#ifndef MDNS_SERVER
 #define MDNS_SERVER                  ON
+#endif
 #endif
 
 #ifndef MDNS_NAME
