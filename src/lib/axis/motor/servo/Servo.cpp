@@ -8,6 +8,8 @@
 #include "../../../tasks/OnTask.h"
 #include "../Motor.h"
 
+extern volatile long _calibrateStepPosition;
+
 ServoMotor *servoMotorInstance[9];
 IRAM_ATTR void moveServoMotorAxis1() { servoMotorInstance[0]->move(); }
 IRAM_ATTR void moveServoMotorAxis2() { servoMotorInstance[1]->move(); }
@@ -67,6 +69,10 @@ bool ServoMotor::init() {
 
   driver->init();
   enable(false);
+
+  #ifdef ABSOLUTE_ENCODER_CALIBRATION
+    calibrationRead("/encoder.dat");
+  #endif
 
   // start the motion timer
   V(axisPrefix);
@@ -168,6 +174,15 @@ long ServoMotor::getTargetDistanceSteps() {
 
 // set frequency (+/-) in steps per second negative frequencies move reverse in direction (0 stops motion)
 void ServoMotor::setFrequencySteps(float frequency) {
+
+  // automatically write calibration data if tracking is stopped
+  #ifdef ABSOLUTE_ENCODER_CALIBRATION
+    if (calibrateMode == CM_RECORDING && frequency == 0.0F) {
+      calibrate(0);
+      enable(false);
+    }
+  #endif
+
   // negative frequency, convert to positive and reverse the direction
   int dir = 0;
   if (frequency > 0.0F) dir = 1; else if (frequency < 0.0F) { frequency = -frequency; dir = -1; }
@@ -231,7 +246,7 @@ void ServoMotor::poll() {
 
   long encoderCountsOrig = encoderCounts;
 
-  // for absolute encoders initalize the motor position at startup
+  // for absolute encoders initialize the motor position at startup
   if (syncThreshold != OFF) {
     if (!motorStepsInitDone && encoder->ready && homeSet) {
       noInterrupts();
@@ -258,6 +273,33 @@ void ServoMotor::poll() {
   float velocity = velocityEstimate + control->out;
   if (!enabled) velocity = 0.0F;
 
+  #ifdef ABSOLUTE_ENCODER_CALIBRATION
+    if (axisNumber == 1) {
+
+      if (velocityOverride != 0.0F) velocity = velocityOverride;
+      if (calibrateMode == CM_RECORDING) {
+        motorCounts = _calibrateStepPosition/((AXIS1_SERVO_TRACKING_VELOCITY)/(AXIS1_STEPS_PER_DEGREE/240.0));
+        calibrateRecord(velocity, motorCounts, encoderCounts);
+      }
+/*
+      static uint32_t t_zero = 0;
+      static int last_t_now = 0;
+      static float lastVelocityOverride = 0.0F;
+      if (lastVelocityOverride != velocityOverride) t_zero = millis();
+      lastVelocityOverride = velocityOverride;
+      int t_now = (millis() - t_zero)/1000;
+      if (t_now != last_t_now) {
+        char s[800];
+        sprintf(s, "m=%08ld, e=%08ld, c=%08ld", motorSteps, encoderCounts, motorCounts);
+
+//        sprintf(s, "tNow=%4.0f, delta=%+5.1f\", count=%+08d, index=%06d, correction=%+04d", (float)t_now, (motorCounts - encoderCounts)/(AXIS1_STEPS_PER_DEGREE/3600.0F),encoder->count, encoderIndex(), (int)encoderCorrection);
+        DL(s);
+        last_t_now = t_now;
+      }
+*/
+    }
+  #endif
+
   delta = motorCounts - encoderCounts;
   velocityPercent = (driver->setMotorVelocity(velocity)/driver->getMotorControlRange()) * 100.0F;
   if (driver->getMotorDirection() == DIR_FORWARD) control->directionHint = 1; else control->directionHint = -1;
@@ -272,6 +314,9 @@ void ServoMotor::poll() {
       feedback->selectSlewingParameters();
     } 
   }
+
+  // if the driver has shutdown itself we should also shutdown
+  if (driver->getStatus().fault && enabled) enable(false);
 
   if (velocityPercent < -33) wasBelow33 = true;
   if (velocityPercent > 33) wasAbove33 = true;
@@ -341,7 +386,7 @@ void ServoMotor::poll() {
 IRAM_ATTR void ServoMotor::move() {
 
   #if SERVO_SLEW_DIRECT == ON
-    if (synchronized && !inBacklash) targetSteps += step;
+    if (sync && !inBacklash) targetSteps += step;
 
     if (motorSteps > targetSteps) {
       motorSteps = targetSteps;
@@ -352,7 +397,7 @@ IRAM_ATTR void ServoMotor::move() {
     }
 
   #else
-    if (synchronized && !inBacklash) targetSteps += step;
+    if (sync && !inBacklash) targetSteps += step;
 
     if (motorSteps > targetSteps) {
       if (backlashSteps > 0) {
@@ -380,9 +425,26 @@ IRAM_ATTR void ServoMotor::move() {
 int32_t ServoMotor::encoderRead() {
   int32_t encoderCounts = encoder->read();
 
+  #ifdef ABSOLUTE_ENCODER_CALIBRATION
+    if (axisNumber == 1) {
+      if (calibrateMode != CM_RECORDING) {
+        if (encoderCorrectionBuffer != NULL) encoderCorrection = ecbn(encoderCorrectionBuffer[encoderIndex()]); else encoderCorrection = 0;
+        encoderCounts += encoderCorrection;
+      }
+    }
+  #endif
 
   if (encoderReverse) encoderCounts = -encoderCounts;
   return encoderCounts;
 }
+
+#ifdef ABSOLUTE_ENCODER_CALIBRATION
+  int32_t ServoMotor::encoderIndex() {
+    int32_t index = (encoder->count/ENCODER_ECM_BUFFER_RESOLUTION + ENCODER_ECM_BUFFER_SIZE/2);
+    if (index < 0) index = 0;
+    if (index > ENCODER_ECM_BUFFER_SIZE - 1) index = ENCODER_ECM_BUFFER_SIZE - 1;
+    return index;
+  }
+#endif
 
 #endif
