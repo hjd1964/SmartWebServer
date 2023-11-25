@@ -66,6 +66,9 @@ void State::pollGpio()
 
   if (!onStep.command(":GXGO#", result) || strlen(result) != 8) return;
   for (int i = 0; i < 8; i++) {
+    if (result[i] >= (char)128) {
+      if (vGpioPin[i] != OFF) analogWrite(vGpioPin[i], (result[i] - 128)*ANALOG_WRITE_RANGE/127);
+    } else
     if (result[i] == '1') {
       if (vGpioPin[i] != OFF) digitalWrite(vGpioPin[i], HIGH);
     } else
