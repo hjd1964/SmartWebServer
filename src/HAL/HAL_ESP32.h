@@ -35,7 +35,10 @@
 
 //--------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT() { analogWriteResolution(ANALOG_WRITE_PWM_BITS); }
+#define HAL_INIT() { \
+  analogWriteFrequency(10000); \
+  analogWriteResolution(ANALOG_WRITE_PWM_BITS); \
+}
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation
