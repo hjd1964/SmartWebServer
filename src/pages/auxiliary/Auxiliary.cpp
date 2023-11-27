@@ -157,7 +157,7 @@ void handleAux() {
         data.concat(L_CAMERA_COUNT);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxCount));
-        sprintf(temp,"%d' onchange=\"sf('x%dv4',this.value)\">",(int)state.featureValue4(),i+1);
+        sprintf(temp,"%d' onchange=\"sz('x%dv4',this.value)\">",(int)state.featureValue4(),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(state.featureValue4(),0,0,temp1);
@@ -169,7 +169,7 @@ void handleAux() {
         data.concat(L_CAMERA_EXPOSURE);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxExposure));
-        sprintf(temp,"%d' onchange=\"sf('x%dv2',this.value)\">",(int)timeToByte(state.featureValue2()),i+1);
+        sprintf(temp,"%d' onchange=\"sz('x%dv2',this.value)\">",(int)timeToByte(state.featureValue2()),i+1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         float v; int d;

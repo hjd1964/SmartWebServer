@@ -16,7 +16,7 @@ const char html_script_ajax_shortcuts[] PROGMEM =
 "function g(v1){s('dr',v1);}"
 "function gf(v1){s('dr',v1);autoFastRun();}"
 "function sf(key,v1){s(key,v1);autoFastRun();}"
-"var lzh=0; function sz(key,v1){clearTimeout(lzh);lzh=setTimeout(s(key,v1)," STR(AJAX_PAGE_LAZY_GET_MS) ");}\n"
+"let lzh; function sz(key,v1){clearTimeout(lzh);lzh=setTimeout(s," STR(AJAX_PAGE_LAZY_GET_MS) ",key,v1);}\n"
 "</script>\n";
 
 // Javascript for Date/Time return
