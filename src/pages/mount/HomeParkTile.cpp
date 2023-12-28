@@ -36,6 +36,10 @@ void homeParkTile(String &data)
 
   // home options when home sense is available
   if (status.getVersionMajor()*1000 + status.getVersionMinor() >= 1020) {
+    data.concat(F("<br />" L_HOME_AUTO "<br />"));
+    data.concat(html_homeAuto);
+    www.sendContentAndClear(data);
+
     if (onStep.command(":h?#", reply)) {
       status.hasHomeSense = false;
       long homeAutomatic = false;
@@ -47,10 +51,6 @@ void homeParkTile(String &data)
       data.concat(temp);
 
       if (status.hasHomeSense) {
-        data.concat(F("<br />" L_HOME_AUTO "<br />"));
-        data.concat(html_homeAuto);
-        www.sendContentAndClear(data);
-
         data.concat(F("<br />" L_HOME_OFFSET "<br />"));
         sprintf_P(temp, html_homeOffsetAxis1, homeOffsetAxis1);
         data.concat(temp);
