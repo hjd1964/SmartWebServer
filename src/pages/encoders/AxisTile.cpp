@@ -73,7 +73,7 @@ void encAxisTile(int axis, String &data)
   data.concat(temp);
   www.sendContentAndClear(data);
 
-  data.concat(html_encUpload);
+  data.concat(FPSTR(html_encUpload));
   sprintf_P(temp, html_encAxisRevert, axis + 1);
   data.concat(temp);
 
