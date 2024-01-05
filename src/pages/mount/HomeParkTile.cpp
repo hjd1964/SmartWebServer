@@ -35,9 +35,9 @@ void homeParkTile(String &data)
   www.sendContentAndClear(data);
 
   // home options when home sense is available
-  if (status.getVersionMajor()*1000 + status.getVersionMinor() >= 1020) {
+  if (status.getVersionMajor()*100 + status.getVersionMinor() >= 1020) {
     data.concat(F("<br />" L_HOME_AUTO "<br />"));
-    data.concat(html_homeAuto);
+    data.concat(FPSTR(html_homeAuto));
     www.sendContentAndClear(data);
 
     if (onStep.command(":h?#", reply)) {
@@ -45,20 +45,20 @@ void homeParkTile(String &data)
       long homeAutomatic = false;
       long homeOffsetAxis1 = 0;
       long homeOffsetAxis2 = 0;
-      sscanf(reply, "%ld,%ld,%ld", &status.hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2);
-
-      sprintf_P(temp, html_form_begin, "mount.htm");
-      data.concat(temp);
-
-      if (status.hasHomeSense) {
-        data.concat(F("<br />" L_HOME_OFFSET "<br />"));
-        sprintf_P(temp, html_homeOffsetAxis1, homeOffsetAxis1);
+      if (sscanf(reply, "%d,%ld,%ld", &status.hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2) == 3) {
+        sprintf_P(temp, html_form_begin, "mount.htm");
         data.concat(temp);
-        sprintf_P(temp, html_homeOffsetAxis2, homeOffsetAxis2);
-        data.concat(temp);
-        data.concat(F("<button type='submit'>" L_UPLOAD "</button><br />\n"));
-        data.concat(FPSTR(html_form_end));
-        www.sendContentAndClear(data);
+
+        if (status.hasHomeSense) {
+          data.concat(F("<br />" L_HOME_OFFSET "<br />"));
+          sprintf_P(temp, html_homeOffsetAxis1, homeOffsetAxis1);
+          data.concat(temp);
+          sprintf_P(temp, html_homeOffsetAxis2, homeOffsetAxis2);
+          data.concat(temp);
+          data.concat(F("<button type='submit'>" L_UPLOAD "</button><br />\n"));
+          data.concat(FPSTR(html_form_end));
+          www.sendContentAndClear(data);
+        }
       }
     }
   }
@@ -82,9 +82,7 @@ void homeParkTileAjax(String &data)
     data.concat(keyValueBoolEnabled("unpark", false));
   }
 
-  if (status.hasHomeSense) {
-    data.concat(keyValueToggleBoolSelected("auto_on", "auto_off", status.autoHome));
-  }
+  data.concat(keyValueToggleBoolSelected("auto_on", "auto_off", status.autoHome));
     
   www.sendContentAndClear(data);
 }
@@ -120,14 +118,14 @@ void homeParkTileGet()
   }
 
   // home options when home sense is available
-  if (status.hasHomeSense) {
-    v = www.arg("ha");
-    if (!v.equals(EmptyStr))
-    {
-      if (v.equals("0")) onStep.commandBlind(":hA0#"); // turn auto home off
-      if (v.equals("1")) onStep.commandBlind(":hA1#"); // turn auto home on
-    }
+  v = www.arg("ha");
+  if (!v.equals(EmptyStr))
+  {
+    if (v.equals("0")) onStep.commandBlind(":hA0#"); // turn auto home off
+    if (v.equals("1")) onStep.commandBlind(":hA1#"); // turn auto home on
+  }
 
+  if (status.hasHomeSense) {
     v = www.arg("hc1");
     if (!v.equals(EmptyStr))
     {
