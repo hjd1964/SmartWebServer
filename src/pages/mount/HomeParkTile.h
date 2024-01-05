@@ -31,6 +31,6 @@ const char html_homeAuto[] PROGMEM =
 
 // Home offset
 const char html_homeOffsetAxis1[] PROGMEM =
-  "<input style='width:6em;' value='%d' type='number' name='hc1' min='-162000' max='162000'>&nbsp;" L_HOME_OFFSET_RANGE_AXIS1 "<br />\n";
+  "<input style='width:6em;' value='%ld' type='number' name='hc1' min='-162000' max='162000'>&nbsp;" L_HOME_OFFSET_RANGE_AXIS1 "<br />\n";
 const char html_homeOffsetAxis2[] PROGMEM =
-  "<input style='width:6em;' value='%d' type='number' name='hc2' min='-162000' max='162000'>&nbsp;" L_HOME_OFFSET_RANGE_AXIS2 "<br /><br />\n";
+  "<input style='width:6em;' value='%ld' type='number' name='hc2' min='-162000' max='162000'>&nbsp;" L_HOME_OFFSET_RANGE_AXIS2 "<br /><br />\n";
