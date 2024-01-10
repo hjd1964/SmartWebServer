@@ -44,6 +44,7 @@
 #define L_ACTIVE "Active"
 #define L_INACTIVE "Inactive"
 #define L_BEST "Best"
+#define L_ALTERNATE "Alternate"
 
 // ---------------------------- Index ----------------------------
 // date/time
@@ -302,6 +303,11 @@
 #define L_MERIDIAN_FLIP_NOW "Now"
 #define L_MERIDIAN_FLIP_PAUSE "Meridian Flip, Pause at Home"
 #define L_MERIDIAN_FLIP_PPS "Meridian Flip, Preferred Pier Side"
+
+#define L_ORIENTATION_AUTO "Orientation Change"
+#define L_ORIENTATION_CHANGE_NOW L_MERIDIAN_FLIP_NOW
+#define L_ORIENTATION_CHANGE_PAUSE "Flip, Pause at Home"
+#define L_ORIENTATION_CHANGE_PPS "Flip, Preferred Orientation"
 
 // ------------------------ Configuration ------------------------
 

@@ -44,6 +44,7 @@
 #define L_ACTIVE "Activado"
 #define L_INACTIVE "Desactivado"
 #define L_BEST "El mejor"
+#define L_ALTERNATE "Alterna"
 
 // ---------------------------- Index ----------------------------
 // date/time
@@ -302,6 +303,11 @@
 #define L_MERIDIAN_FLIP_NOW "Ahora"
 #define L_MERIDIAN_FLIP_PAUSE "Volteo de Meridiano, Pausa en Posicion de Inicio"
 #define L_MERIDIAN_FLIP_PPS "Volteo de Meridiano, lado del muelle preferido"
+
+#define L_ORIENTATION_AUTO "Cambio de orientación"
+#define L_ORIENTATION_CHANGE_NOW L_MERIDIAN_FLIP_NOW
+#define L_ORIENTATION_CHANGE_PAUSE "Voltear, pausar en casa"
+#define L_ORIENTATION_CHANGE_PPS "Voltear, orientación preferida"
 
 // ------------------------ Configuration ------------------------
 

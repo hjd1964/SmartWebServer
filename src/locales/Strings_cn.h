@@ -44,6 +44,7 @@
 #define L_ACTIVE "积极的"
 #define L_INACTIVE "不活跃"
 #define L_BEST "最好的"
+#define L_ALTERNATE "备用"
 
 // ---------------------------- Index ----------------------------
 // date/time
@@ -303,6 +304,11 @@
 #define L_MERIDIAN_FLIP_NOW "目前"
 #define L_MERIDIAN_FLIP_PAUSE "子午线翻转期间在原始位置暂停"
 #define L_MERIDIAN_FLIP_PPS "经络翻转, 首选码头侧"
+
+#define L_ORIENTATION_AUTO "方向改变"
+#define L_ORIENTATION_CHANGE_NOW L_MERIDIAN_FLIP_NOW
+#define L_ORIENTATION_CHANGE_PAUSE "翻转，在家暂停"
+#define L_ORIENTATION_CHANGE_PPS "翻转，首选方向"
 
 // ------------------------ Configuration ------------------------
 
