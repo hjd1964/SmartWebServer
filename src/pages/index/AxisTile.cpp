@@ -69,11 +69,11 @@ bool axisTile(int axis, String &data)
               www.sendContentAndClear(data);
             #endif
 
-            sprintf_P(temp, html_configAxisMin, (int)a.min, 1, -360, -90, "&deg;,");
+            sprintf_P(temp, html_configAxisMin, (int)a.min, 1, -360, 0, "&deg;,");
             data.concat(temp);
             www.sendContentAndClear(data);
 
-            sprintf_P(temp, html_configAxisMax, (int)a.max, 1, 90, 360, "&deg;,");
+            sprintf_P(temp, html_configAxisMax, (int)a.max, 1, 0, 360, "&deg;,");
             data.concat(temp);
             www.sendContentAndClear(data);
 
