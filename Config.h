@@ -30,27 +30,17 @@
 
 // STATUS LED ----------------------------------------------------------------------------------------------------------------------
 #define LED_STATUS                     ON //     ON, Enable LED flashes while connecting then steady once connected.          Infreq
+#define LED_STATUS_ON_STATE          HIGH
 
 // DISPLAY -------------------------------------------------------------------------------------------------------------------------
+#define DISPLAY_LANGUAGE             L_en //   L_en, English. Or L_ce, L_de, L_en, L_us, L_es two letter country code.        Adjust
 #define DISPLAY_WEATHER               OFF //    OFF, ON ambient conditions in locale default units.                           Option
 #define DISPLAY_INTERNAL_TEMPERATURE  OFF //    OFF, ON internal MCU temp. in locale default units.                           Option
-#define DISPLAY_LANGUAGE             L_en //   L_en, English. Or L_ce, L_de, L_en, L_us, L_es two letter country code.        Adjust
 #define DISPLAY_WIFI_SIGNAL_STRENGTH   ON //     ON, Wireless signal strength reported via web interface. OFF otherwise.      Option
+#define DISPLAY_RESET_CONTROLS        OFF //    OFF, ON allows reset if supported, FWU for STM32 firmware upload pin HIGH.    Option
+
 #define DISPLAY_SERVO_MONITOR         OFF //    OFF, ON to display the servo monitor for OnStepX servos (any axis.)           Option
 #define DISPLAY_SERVO_ORIGIN_CONTROLS OFF //    OFF, ON to display control to set the absolute encoder origin for servos.     Option
-#define DISPLAY_RESET_CONTROLS        OFF //    OFF, ON allows reset if supported, FWU for STM32 firmware upload pin HIGH.    Option
-#define DISPLAY_HIGH_PRECISION_COORDS OFF //    OFF, ON for high precision coordinate display on status page.                 Infreq
-#define DISPLAY_SPECIAL_CHARS          ON //     ON, For standard ASCII special symbols (compatibility.)                      Infreq
-
-// DRIVE CONFIGURATION -------------------------------------------------------------------------------------------------------------
-#define DRIVE_CONFIGURATION            ON //    ON, to display/modify mount, rotator, focuser settings                        Option
-#define DRIVE_MAIN_AXES_MICROSTEPS     ON //    ON, to display Axis1/2 Microsteps if available.                               Option
-#define DRIVE_MAIN_AXES_CURRENT        ON //    ON, to display Axis1/2 IRUN if available.                                     Option
-#define DRIVE_MAIN_AXES_REVERSE        ON //    ON, to display Axis1/2 Reverse if available.                                  Option
-
-// COMMAND SERVER CHANNELS ---------------------------------------------------------------------------------------------------------
-#define COMMAND_SERVER               BOTH //   BOTH, for STANDARD (port 9999) and PERSISTENT (ports 9996 to 9998)
-                                          //         or disable with OFF
 
 // ENCODER SUPPORT -----------------------------------------------------------------------------------------------------------------
 // Some of these settings are stored in NV (EEPROM) as the default values when first uploaded.  Later changes below may be

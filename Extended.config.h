@@ -25,9 +25,6 @@
                                           //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
                                           //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
 
-// STATUS LED ----------------------------------------------------------------------------------------------------------------------
-#define LED_STATUS_ON_STATE           LOW //         LOW, Use HIGH so indicator stays on when connected if needed.            Option
-
 // PASSWORD ------------------------------------------------------------------------------------------------------------------------
 #define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Adjust
                                           //              password for runtime access to network settings.
