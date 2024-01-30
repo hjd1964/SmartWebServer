@@ -9,7 +9,7 @@
 
   // Direction button swaps
   #define NS_SWAP              OFF      // ON reverses direction buttons from OnStep standard
-  #define EW_SWAP               ON      // East/West swap //drew
+  #define EW_SWAP              OFF      // East/West swap
 
   #define LED_ENABLE            ON      // LED on/off behavior, OFF disables LED BLE connected/disconnected
                                         // indication. ON = LED off when connected, on when disconnected
