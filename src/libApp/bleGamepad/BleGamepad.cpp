@@ -65,7 +65,7 @@
     #define MTIMEOUT            1000     // M button "double click" time window
     #define SCANTIMER          15000     // Number of ms before rescanning
     #define FOCUSTIMER          5000     // Focus speedup timer
-    #define LONGTIMER           1000     // Long push timer 
+    #define LONGTIMER            500     // Long push timer 
 
     //====== GamePad Definitions ======
     enum
