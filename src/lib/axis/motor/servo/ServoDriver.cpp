@@ -6,16 +6,19 @@
 #ifdef SERVO_MOTOR_PRESENT
 
 // the various servo driver models
-#define SERVO_DRIVER_MODEL_COUNT 3
+#define SERVO_DRIVER_MODEL_COUNT (SERVO_DRIVER_LAST - SERVO_DRIVER_FIRST + 1)
 
 #include "../Motor.h"
 
 #if DEBUG != OFF
   const char* SERVO_DRIVER_NAME[SERVO_DRIVER_MODEL_COUNT] =
   {
-    "SERVO_PE",     // Phase (Direction)/Enable
-    "SERVO_EE",     // Enable/Enable
-    "SERVO_TMC2209" // Stepper
+    "SERVO_PE",         // Phase (Direction)/Enable
+    "SERVO_EE",         // Enable/Enable
+    "SERVO_TMC2130_DC", // TMC2130 w/ DC motor
+    "SERVO_TMC5160_DC", // TMC5160 w/ DC motor
+    "SERVO_TMC2209",    // TMC2209 w/ stepper motor
+    "SERVO_TMC5160"     // TMC5160 w/ stepper motor
   };
 #endif
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../../Common.h"
+#include "../sense/Sense.h"
 
 #ifdef MOTOR_PRESENT
 
@@ -25,7 +26,7 @@
 #endif
 #define FRACTIONAL_SEC_US           (lround(1000000.0F/FRACTIONAL_SEC))
 
-// time limit in seconds for slew home refine phases
+// time limit in seconds for slew home phases
 #ifndef SLEW_HOME_REFINE_TIME_LIMIT
 #define SLEW_HOME_REFINE_TIME_LIMIT 120
 #endif
@@ -225,6 +226,7 @@ class Axis {
       } else {
         motor->setReverse(settings.reverse);
       }
+      sense.reverse(homeSenseHandle, reverse);
     }
 
     // set base movement frequency in "measures" (radians, microns, etc.) per second

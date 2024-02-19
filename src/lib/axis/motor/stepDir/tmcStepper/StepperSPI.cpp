@@ -155,7 +155,7 @@ void StepDirTmcSPI::modeDecaySlewing() {
 void StepDirTmcSPI::updateStatus() {
   if (settings.status == ON) {
     if ((long)(millis() - timeLastStatusUpdate) > 200) {
-      uint32_t status_word;
+
       TMC2130_n::DRV_STATUS_t status_result;
       if (settings.model == TMC2130) { status_result.sr = ((TMC2130Stepper*)driver)->DRV_STATUS(); } else
       if (settings.model == TMC5160) { status_result.sr = ((TMC5160Stepper*)driver)->DRV_STATUS(); } else
@@ -199,7 +199,6 @@ void StepDirTmcSPI::calibrateDriver() {
     VF("MSG: StepDirDriver"); V(axisNumber); VL(", TMC standstill automatic current calibration");
     driver->rms_current(settings.currentRun*0.7071F, 1.0F);
     if (settings.model == TMC2130) {
-      ((TMC2130Stepper*)driver)->pwm_autograd(DRIVER_TMC_STEPPER_AUTOGRAD);
       ((TMC2130Stepper*)driver)->pwm_autoscale(true);
       ((TMC2130Stepper*)driver)->en_pwm_mode(true);
     } else

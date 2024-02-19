@@ -20,13 +20,14 @@ IRAM_ATTR void moveServoMotorAxis8() { servoMotorInstance[7]->move(); }
 IRAM_ATTR void moveServoMotorAxis9() { servoMotorInstance[8]->move(); }
 
 // constructor
-ServoMotor::ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Encoder *encoder, uint32_t encoderOrigin, bool encoderReverse, Feedback *feedback, ServoControl *control, long syncThreshold, bool useFastHardwareTimers) {
+ServoMotor::ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Filter *filter, Encoder *encoder, uint32_t encoderOrigin, bool encoderReverse, Feedback *feedback, ServoControl *control, long syncThreshold, bool useFastHardwareTimers) {
   if (axisNumber < 1 || axisNumber > 9) return;
 
   driverType = SERVO;
   strcpy(axisPrefix, "MSG: Servo_, ");
   axisPrefix[10] = '0' + axisNumber;
   this->axisNumber = axisNumber;
+  this->filter = filter;
   this->encoder = encoder;
   this->feedback = feedback;
   this->control = control;
@@ -67,6 +68,8 @@ bool ServoMotor::init() {
 
   driver->init();
   enable(false);
+
+  trackingFrequency = (AXIS1_STEPS_PER_DEGREE/240.0F)*SIDEREAL_RATIO_F;
 
   // start the motion timer
   V(axisPrefix);
@@ -168,6 +171,7 @@ long ServoMotor::getTargetDistanceSteps() {
 
 // set frequency (+/-) in steps per second negative frequencies move reverse in direction (0 stops motion)
 void ServoMotor::setFrequencySteps(float frequency) {
+
   // negative frequency, convert to positive and reverse the direction
   int dir = 0;
   if (frequency > 0.0F) dir = 1; else if (frequency < 0.0F) { frequency = -frequency; dir = -1; }
@@ -249,7 +253,11 @@ void ServoMotor::poll() {
   motorCounts = motorSteps;
   interrupts();
 
-  encoderCounts = encoderApplyFilter(encoderCounts - motorCounts) + motorCounts;
+  long unfilteredEncoderCounts = encoderCounts;
+  UNUSED(unfilteredEncoderCounts);
+  bool isTracking = (abs(currentFrequency - trackingFrequency) < trackingFrequency/10.0F);
+
+  encoderCounts = filter->update(encoderCounts, motorCounts, isTracking);
 
   control->set = motorCounts;
   control->in = encoderCounts;
@@ -257,6 +265,14 @@ void ServoMotor::poll() {
 
   float velocity = velocityEstimate + control->out;
   if (!enabled) velocity = 0.0F;
+
+  // for virtual encoders set the velocity and direction
+  if (encoder->isVirtual) {
+    encoder->setVelocity(abs(velocity));
+    volatile int8_t dir = -1;
+    if (velocity < 0.0F) dir = 1;
+    encoder->setDirection(&dir);
+  }
 
   delta = motorCounts - encoderCounts;
   velocityPercent = (driver->setMotorVelocity(velocity)/driver->getMotorControlRange()) * 100.0F;
@@ -322,14 +338,9 @@ void ServoMotor::poll() {
         float spas = 0;
         if (axisNumber == 1) spas = AXIS1_STEPS_PER_DEGREE/3600.0F; else if (axisNumber == 2) spas = AXIS2_STEPS_PER_DEGREE/3600.0F;
 
-        #if AXIS1_SERVO_FLTR == OFF
-//        sprintf(s, "Servo%d_Delta: %6ld, Motor %6ld, Encoder %6ld, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts), motorCounts, (long)encoderCounts, (int)axisNumber, velocityPercent);
-//        sprintf(s, "Servo%d: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
-          sprintf(s, "Servo%d: DeltaAS: %0.2f, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (int)axisNumber, velocityPercent);
-        #else
-//        sprintf(s, "Servo%d: Motor %6ld, Encoder %6ld, Encoder2 %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts, (long)encoderCountsOrig);
-          sprintf(s, "Servo%d: DeltaAS: %0.2f, Delta2AS: %0.2f, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (motorCounts - encoderCountsOrig)/spas, (int)axisNumber, velocityPercent);
-        #endif
+//      sprintf(s, "Servo%d_Delta: %6ld, Motor %6ld, Encoder %6ld, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts), motorCounts, (long)encoderCounts, (int)axisNumber, velocityPercent);
+//      sprintf(s, "Servo%d: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
+      sprintf(s, "Servo%d: DeltaASf: %0.2f, DeltaAS: %0.2f, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (motorCounts - unfilteredEncoderCounts)/spas, (int)axisNumber, velocityPercent);
 
         D(s);
         UNUSED(spas);
@@ -382,6 +393,7 @@ IRAM_ATTR void ServoMotor::move() {
 
 int32_t ServoMotor::encoderRead() {
   int32_t encoderCounts = encoder->read();
+
   if (encoderReverse) encoderCounts = -encoderCounts;
   return encoderCounts;
 }

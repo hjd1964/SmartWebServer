@@ -7,16 +7,24 @@
 
 #include "../../../encoder/bissc/As37h39bb.h"
 #include "../../../encoder/bissc/Jtw24.h"
+#include "../../../encoder/bissc/Jtw26.h"
 #include "../../../encoder/cwCcw/CwCcw.h"
 #include "../../../encoder/pulseDir/PulseDir.h"
 #include "../../../encoder/pulseOnly/PulseOnly.h"
+#include "../../../encoder/virtualEnc/VirtualEnc.h"
 #include "../../../encoder/quadrature/Quadrature.h"
 #include "../../../encoder/quadratureEsp32/QuadratureEsp32.h"
 #include "../../../encoder/serialBridge/SerialBridge.h"
 
+#include "filters/Kalman.h"
+#include "filters/Learning.h"
+#include "filters/Rolling.h"
+#include "filters/Windowing.h"
+
 #include "dc/Dc.h"
 #include "tmc2209/Tmc2209.h"
 #include "tmc5160/Tmc5160.h"
+#include "dcTmcSPI/DcTmcSPI.h"
 
 #include "feedback/Pid/Pid.h"
 
@@ -31,7 +39,7 @@
 class ServoMotor : public Motor {
   public:
     // constructor
-    ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Encoder *encoder, uint32_t encoderOrigin, bool encoderReverse, Feedback *feedback, ServoControl *control, long syncThreshold, bool useFastHardwareTimers = true);
+    ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Filter *filter, Encoder *encoder, uint32_t encoderOrigin, bool encoderReverse, Feedback *feedback, ServoControl *control, long syncThreshold, bool useFastHardwareTimers = true);
 
     // sets up the servo motor
     bool init();
@@ -109,10 +117,11 @@ class ServoMotor : public Motor {
     long delta = 0;
 
   private:
+
+    Filter *filter;
+
     float velocityEstimate = 0.0F;
     float velocityOverride = 0.0F;
-
-    long encoderApplyFilter(long encoderCounts);
 
     uint8_t servoMonitorHandle = 0;
     uint8_t taskHandle = 0;
@@ -121,6 +130,7 @@ class ServoMotor : public Motor {
     int  stepSize = 1;                  // step size
     volatile int  homeSteps = 1;        // step count for microstep sequence between home positions (driver indexer)
     volatile bool takeStep = false;     // should we take a step
+    float trackingFrequency = 0;        // help figure out if equatorial mount is tracking
 
     float currentFrequency = 0.0F;      // last frequency set 
     float lastFrequency = 0.0F;         // last frequency requested
