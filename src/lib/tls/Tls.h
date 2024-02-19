@@ -13,6 +13,9 @@ class TimeLocationSource {
     // initialize (also enables the RTC PPS if available)
     virtual bool init();
 
+    // restart the device
+    virtual void restart() {}
+
      // true if date/time ready
     inline bool isReady() { return ready; }
 

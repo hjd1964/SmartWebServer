@@ -16,7 +16,7 @@
   EthernetUDP Udp;
 #endif
 
-#include "../tasks/OnTask.h"
+#include "../../tasks/OnTask.h"
 
 IPAddress timeServer = IPAddress TIME_IP_ADDR;
 
@@ -66,8 +66,9 @@ void TlsNTP::set(int year, int month, int day, int hour, int minute, int second)
   #endif
 }
 
-void TlsNTP::get(JulianDate &ut1) {
-  if (!ready) return;
+bool TlsNTP::get(JulianDate &ut1) {
+  if (!ready) return false;
+
   if (year() >= 0 && year() <= 3000 && month() >= 1 && month() <= 12 && day() >= 1 && day() <= 31 &&
       hour() <= 23 && minute() <= 59 && second() <= 59) {
     GregorianDate greg; greg.year = year(); greg.month = month(); greg.day = day();
