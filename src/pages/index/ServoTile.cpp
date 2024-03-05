@@ -76,23 +76,26 @@ void servoTileAjax(String &data)
 
     // make sure we have steps per measure for this axis
     if (_stepsPerMeasure[_servo_axis - 1] < 0) {
+      _stepsPerMeasure[_servo_axis - 1] = 0.0;
       AxisSettings a;
       char result[120];
       sprintf(command, ":GXA%d#", _servo_axis);
       if (!onStep.command(command, result)) strcpy(result, "0");
-      if (decodeAxisSettings(result, &a)) { _stepsPerMeasure[_servo_axis - 1] = a.stepsPerMeasure; }
+      if (decodeAxisSettings(result, &a)) {
+        _stepsPerMeasure[_servo_axis - 1] = a.stepsPerMeasure;
+      }
     }
 
-    char *temp1 = strchr(temp,',');
+    char *temp1 = strchr(temp, ',');
     if (temp1 != NULL) {
       temp1[0] = 0;
       temp1++;
 
       data.concat(F("svoP|")); data.concat(temp1); data.concat("\n");
 
-      // convert to 1/10 arc-second units
+      // convert to 1/10 arc-second units (if possible)
       long delta;
-      if (_servo_axis >= 1 && _servo_axis <= 3) {
+      if (_stepsPerMeasure[_servo_axis - 1] != 0.0 && _servo_axis >= 1 && _servo_axis <= 3) {
         delta = round((atoi(temp)/_stepsPerMeasure[_servo_axis - 1])*3600.0*10.0);
         data.concat(F("units|asec\n"));
         sprintF(temp,"%1.1f", delta/10.0);
@@ -134,6 +137,14 @@ void servoTileGet()
   // trigger encoder bridge to set zero
   v = www.arg("sv");
   if (v.equals("zro")) { onStep.commandBool(":SEO#"); }
+
+  // intercept advanced configuration toggle on and trigger spm reload
+  String ssa = www.arg("advanced");
+  if (ssa.equals("enable"))
+  {
+    for (int i = 0; i < 9; i++) _stepsPerMeasure[i] = -1;
+  }
+
 }
 
 #endif
