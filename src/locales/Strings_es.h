@@ -382,6 +382,7 @@
 #define L_ADV_DISABLE "Desactivar Configuración Avanzada (Valores por defecto al reiniciar)"
 #define L_ADV_SET_AXIS_NO_EDIT "Deshabilitar la edición del eje."
 #define L_ADV_SET_NO_EDIT "La edición de todos los ejes está deshabilitada en este momento. Tal vez esta función no esté habilitada (por lo que los valores predeterminados de configuración relacionados están activos) o necesite reiniciar OnStep."
+#define L_ADV_SET_FOOTER_MSG0 "La mayoría de los cambios en la configuración de los ejes requieren un reinicio para que surtan efecto."
 #define L_ADV_SET_FOOTER_MSG1 "Después de presionar [Cargar], tome nota de los cambios anteriores, ya que la carga puede haber sido rechazada debido a un parámetro no válido."
 #define L_ADV_SET_FOOTER_MSG2 "Cuando elige [Revertir], ese grupo deja de estar disponible para editar hasta que reinicia OnStep."
 #define L_ADV_SET_FOOTER_MSG3 "Si IRUN se establece en un valor diferente al predeterminado de Config.h, IHOLD se establece en(HALF.)"

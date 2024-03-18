@@ -382,6 +382,7 @@
 #define L_ADV_DISABLE "Disable Advanced Configuration (all defaults on reboot)"
 #define L_ADV_SET_AXIS_NO_EDIT "Editing of this axis has been disabled."
 #define L_ADV_SET_NO_EDIT "Editing of all axes is disabled at the moment.  Perhaps this feature is not enabled (so the related configuration defaults are active) or you need to reboot OnStep."
+#define L_ADV_SET_FOOTER_MSG0 "Most axis setting changes require a reboot to take effect."
 #define L_ADV_SET_FOOTER_MSG1 "After pressing [Upload] take note of changes above since the upload may have been rejected due to an invalid parameter."
 #define L_ADV_SET_FOOTER_MSG2 "When you choose to [Revert] that group becomes unavailable for editing until you reboot OnStep."
 #define L_ADV_SET_FOOTER_MSG3 "If IRUN is set to other than the Config.h default, IHOLD is set to 50% (HALF.)"
