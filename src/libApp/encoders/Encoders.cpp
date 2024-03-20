@@ -18,9 +18,11 @@ extern NVS nv;
   // bring in support for the various encoder types
   #include "../../lib/encoder/bissc/As37h39bb.h"
   #include "../../lib/encoder/bissc/Jtw24.h"
+  #include "../../lib/encoder/bissc/Jtw26.h"
   #include "../../lib/encoder/cwCcw/CwCcw.h"
   #include "../../lib/encoder/pulseDir/PulseDir.h"
   #include "../../lib/encoder/quadrature/Quadrature.h"
+  #include "../../lib/encoder/quadratureEsp32/QuadratureEsp32.h"
 
   void pollEncoders() { encoders.poll(); }
 
