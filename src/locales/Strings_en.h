@@ -87,6 +87,7 @@
 #define L_AT_HOME "At Home"
 #define L_SLEWING "Slewing"
 #define L_PPS_SYNC "PPS Sync"
+#define L_HOME_REV "Reverse"
 #define L_HOME_OFFSET "Offset from home sense position:"
 #define L_HOME_OFFSET_RANGE_AXIS1 "Axis1, +/-162000 arc-sec"
 #define L_HOME_OFFSET_RANGE_AXIS2 "Axis2, +/-162000 arc-sec"

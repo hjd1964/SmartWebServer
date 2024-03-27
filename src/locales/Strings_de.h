@@ -96,6 +96,7 @@
 #define L_AT_HOME "Bei Homeposition"
 #define L_SLEWING "Schwenke"
 #define L_PPS_SYNC "PPS Sync"
+#define L_HOME_REV "Umkehren"
 #define L_HOME_OFFSET "Versatz zur Home-Sense-Position:"
 #define L_HOME_OFFSET_RANGE_AXIS1 "Axis1, +/-162000 arc-sec"
 #define L_HOME_OFFSET_RANGE_AXIS2 "Axis2, +/-162000 arc-sec"

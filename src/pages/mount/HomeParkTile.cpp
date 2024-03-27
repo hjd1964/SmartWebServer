@@ -42,6 +42,7 @@ void homeParkTile(String &data)
 
     if (onStep.command(":h?#", reply)) {
       status.hasHomeSense = false;
+      long homeAutomatic = false;
       long homeOffsetAxis1 = 0;
       long homeOffsetAxis2 = 0;
       if (sscanf(reply, "%d,%ld,%ld", &status.hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2) == 3) {
@@ -49,6 +50,11 @@ void homeParkTile(String &data)
         data.concat(temp);
 
         if (status.hasHomeSense) {
+          #ifdef HOME_SWITCH_DIRECTION_CONTROL
+            data.concat(F("<br />" L_HOME_REV "<br />"));
+            data.concat(html_homeReverse);
+          #endif
+
           data.concat(F("<br />" L_HOME_OFFSET "<br />"));
           sprintf_P(temp, html_homeOffsetAxis1, homeOffsetAxis1);
           data.concat(temp);
@@ -116,7 +122,6 @@ void homeParkTileGet()
     if (v.equals("pu")) onStep.commandBool(":hR#"); // un-park
   }
 
-  // home options when home sense is available
   v = www.arg("ha");
   if (!v.equals(EmptyStr))
   {
@@ -124,6 +129,7 @@ void homeParkTileGet()
     if (v.equals("1")) onStep.commandBlind(":hA1#"); // turn auto home on
   }
 
+  // home options when home sense is available
   if (status.hasHomeSense) {
     v = www.arg("hc1");
     if (!v.equals(EmptyStr))
@@ -144,6 +150,15 @@ void homeParkTileGet()
         onStep.commandBlind(temp);
       }
     }
+
+    #ifdef HOME_SWITCH_DIRECTION_CONTROL
+      v = www.arg("hr");
+      if (!v.equals(EmptyStr))
+      {
+        if (v.equals("1")) onStep.commandBlind(":hC1,R#");
+        if (v.equals("2")) onStep.commandBlind(":hC2,R#");
+      }
+    #endif
   }
 
 }
