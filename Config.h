@@ -12,9 +12,10 @@
 // ADJUST THE FOLLOWING TO CONFIGURE YOUR ADD-ON'S FEATURES ------------------------------------------------------------------------
 // <-Req'd = always must set, <-Often = usually must set, Option = optional, Adjust = adjust as req'd, Infreq = infrequently changed
 
-// For Wifi successful startup an AP will appear with an SSID of "ONSTEP", after connecting: the web-site is at "192.168.0.1" and
-// the cmd channel is at "192.168.0.1:9999". If locked out selecting "Erase Flash: All Flash Contents" from the Arduino Tools menu 
-// before uploading/flashing again can help restore access to the ESP8266.
+// For Wifi successful startup an AP will appear with an default SSID of "ONSTEP" and default password of "password".
+// After connecting the web-site is at "192.168.0.1" and the cmd channels are at "192.168.0.1:9996 to 9999".
+// If locked out selecting "Erase Flash: All Flash Contents" from the Arduino IDE Tools menu before uploading/flashing again
+// can help restore access to the ESP8266 or ESP32; or see Extended.config.h to wipe NV.
 
 //      Parameter Name              Value   Default  Notes                                                                      Hint
 // OPERATIONAL MODE ----------------------------------------------------------------------------------------------------------------
