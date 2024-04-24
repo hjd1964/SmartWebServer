@@ -26,6 +26,9 @@ ServoMotor::ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Filter *filter, 
   driverType = SERVO;
   strcpy(axisPrefix, "MSG: Servo_, ");
   axisPrefix[10] = '0' + axisNumber;
+  strcpy(axisPrefixWarn, "WRN: Servo_, ");
+  axisPrefixWarn[10] = '0' + axisNumber;
+
   this->axisNumber = axisNumber;
   this->filter = filter;
   this->encoder = encoder;
@@ -204,7 +207,11 @@ void ServoMotor::setFrequencySteps(float frequency) {
     }
 
     currentFrequency = frequency;
-    velocityEstimate = -driver->getVelocityEstimate(currentFrequency*dir);
+    if (encoderReverse) {
+      velocityEstimate = driver->getVelocityEstimate(currentFrequency*dir);
+    } else {
+      velocityEstimate = -driver->getVelocityEstimate(currentFrequency*dir);
+    }
 
     // change the motor rate/direction
     noInterrupts();
@@ -290,7 +297,11 @@ void ServoMotor::poll() {
   }
 
   // if the driver has shutdown itself we should also shutdown
-  if (driver->getStatus().fault && enabled) enable(false);
+  if (driver->getStatus().fault && enabled) {
+    D(axisPrefixWarn);
+    DL("fault detected, shutting down axis!");
+    enable(false);
+  }
 
   if (velocityPercent < -33) wasBelow33 = true;
   if (velocityPercent > 33) wasAbove33 = true;
@@ -300,7 +311,7 @@ void ServoMotor::poll() {
     #ifndef SERVO_SAFETY_DISABLE
       // if above 33% power and we're not moving something is seriously wrong, so shut it down
       if (labs(encoderCounts - lastEncoderCounts) < 10 && abs(velocityPercent) >= 33) {
-        D(axisPrefix);
+        D(axisPrefixWarn);
         D("stall detected!"); D(" control->in = "); D(control->in); D(", control->set = "); D(control->set);
         D(", control->out = "); D(control->out); D(", velocity % = "); DL(velocityPercent);
         enable(false);
@@ -308,7 +319,7 @@ void ServoMotor::poll() {
 
       // if above 90% power and we're moving away from the target something is seriously wrong, so shut it down
       if (labs(encoderCounts - lastEncoderCounts) > lastTargetDistance && abs(velocityPercent) >= 90) {
-        D(axisPrefix);
+        D(axisPrefixWarn);
         DL("runaway detected, > 90% power while moving away from the target!");
         enable(false);
       }
@@ -316,7 +327,7 @@ void ServoMotor::poll() {
 
       // if we were below -33% and above 33% power in a one second period something is seriously wrong, so shut it down
       if (wasBelow33 && wasAbove33) {
-        D(axisPrefix);
+        D(axisPrefixWarn);
         DL("oscillation detected, below -33% and above 33% power in a 2 second period!");
         enable(false);
       }
@@ -339,8 +350,8 @@ void ServoMotor::poll() {
         if (axisNumber == 1) spas = AXIS1_STEPS_PER_DEGREE/3600.0F; else if (axisNumber == 2) spas = AXIS2_STEPS_PER_DEGREE/3600.0F;
 
 //      sprintf(s, "Servo%d_Delta: %6ld, Motor %6ld, Encoder %6ld, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts), motorCounts, (long)encoderCounts, (int)axisNumber, velocityPercent);
-//      sprintf(s, "Servo%d: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
-      sprintf(s, "Servo%d: DeltaASf: %0.2f, DeltaAS: %0.2f, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (motorCounts - unfilteredEncoderCounts)/spas, (int)axisNumber, velocityPercent);
+      sprintf(s, "Servo%d: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
+//      sprintf(s, "Servo%d: DeltaASf: %0.2f, DeltaAS: %0.2f, Servo%d_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (motorCounts - unfilteredEncoderCounts)/spas, (int)axisNumber, velocityPercent);
 
         D(s);
         UNUSED(spas);
