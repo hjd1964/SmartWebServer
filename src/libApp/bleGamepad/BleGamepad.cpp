@@ -651,6 +651,8 @@
         vTaskSuspend(NULL); // give up the CPU, wait for new data
         
         // We just woke up, new data is available
+        if (M_SINGLE_CLICK == ON) pressedOnce = true;
+        
         if (!pressedOnce) // First press, start double click timer
         {
           pressedOnce = true;
