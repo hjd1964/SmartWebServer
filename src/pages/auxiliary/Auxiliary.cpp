@@ -35,6 +35,7 @@ void handleAux() {
 
   // show this page
   data.concat(FPSTR(html_body_begin));
+  www.sendContentAndClear(data);
   pageHeader(PAGE_AUXILIARY);
   data.concat(FPSTR(html_onstep_page_begin));
 
