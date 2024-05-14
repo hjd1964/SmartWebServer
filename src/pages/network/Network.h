@@ -63,6 +63,9 @@ const char htmL_NET_SN[] PROGMEM =
   L_NETWORK_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s> (Note: auto-enabled if Station Mode fails to connect)<br/>"
   "<button type='submit'>" L_UPLOAD "</button></form><br />\n";
 #else
+  const char htmL_NETWORK_ETH_DHCP[] PROGMEM =
+  L_NETWORK_EN_DHCP ": <input type='checkbox' name='ethdhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>";
+
   const char htmL_NETWORK_ETH_BEG[] PROGMEM =
   "<br/><b>Ethernet:</b><br/>"
   "<form method='post' action='/net.htm'><br />\n";

@@ -123,11 +123,15 @@ void handleNetwork() {
       }
       temp1[strlen(temp1) - 1] = 0;
 
-      sprintf_P(temp,htmL_NET_MAC,"eth", temp1); data.concat(temp);
+      sprintf_P(temp, htmL_NET_MAC,"eth", temp1); data.concat(temp);
       www.sendContentAndClear(data);
-      sprintf_P(temp,htmL_NET_IP, "eth", (int)ethernetManager.settings.ip[0], "eth", (int)ethernetManager.settings.ip[1], "eth", (int)ethernetManager.settings.ip[2], "eth", (int)ethernetManager.settings.ip[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_GW, "eth", (int)ethernetManager.settings.gw[0], "eth", (int)ethernetManager.settings.gw[1], "eth", (int)ethernetManager.settings.gw[2], "eth", (int)ethernetManager.settings.gw[3]); data.concat(temp);
-      sprintf_P(temp,htmL_NET_SN, "eth", (int)ethernetManager.settings.sn[0], "eth", (int)ethernetManager.settings.sn[1], "eth", (int)ethernetManager.settings.sn[2], "eth", (int)ethernetManager.settings.sn[3]); data.concat(temp);
+
+      sprintf_P(temp, htmL_NET_IP, "eth", (int)ethernetManager.settings.ip[0], "eth", (int)ethernetManager.settings.ip[1], "eth", (int)ethernetManager.settings.ip[2], "eth", (int)ethernetManager.settings.ip[3]); data.concat(temp);
+      sprintf_P(temp, htmL_NET_GW, "eth", (int)ethernetManager.settings.gw[0], "eth", (int)ethernetManager.settings.gw[1], "eth", (int)ethernetManager.settings.gw[2], "eth", (int)ethernetManager.settings.gw[3]); data.concat(temp);
+      sprintf_P(temp, htmL_NET_SN, "eth", (int)ethernetManager.settings.sn[0], "eth", (int)ethernetManager.settings.sn[1], "eth", (int)ethernetManager.settings.sn[2], "eth", (int)ethernetManager.settings.sn[3]); data.concat(temp);
+      www.sendContentAndClear(data);
+
+      sprintf_P(temp, htmL_NETWORK_ETH_DHCP, ethernetManager.settings.dhcpEnabled ? "checked" : ""); data.concat(temp);
 
       data.concat(FPSTR(htmL_NETWORK_ETH_END));
       www.sendContentAndClear(data);
@@ -356,7 +360,14 @@ void processNetworkGet() {
     }
   #else
     // Ethernet ip
-    v = www.arg("ethip1"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[0] = v.toInt();
+    v = www.arg("ethip1");
+    if (!v.equals(EmptyStr)) {
+      ethernetManager.settings.ip[0] = v.toInt();
+      ethernetManager.settings.dhcpEnabled = false;
+    }
+    // Ethernet dhcp enabled
+    v = www.arg("ethdhcp"); if (!v.equals(EmptyStr)) ethernetManager.settings.dhcpEnabled = v.toInt();
+
     v = www.arg("ethip2"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[1] = v.toInt();
     v = www.arg("ethip3"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[2] = v.toInt();
     v = www.arg("ethip4"); if (!v.equals(EmptyStr)) ethernetManager.settings.ip[3] = v.toInt();
