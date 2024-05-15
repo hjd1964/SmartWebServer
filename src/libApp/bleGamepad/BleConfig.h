@@ -28,6 +28,8 @@
 
   #define MODE_D               OFF      // OFF, uses Mode B, ON use Mode D for GamePad if it supports it.   
                                         // V2.0 code for backward compatabilty.
-                                                                                
+  
+  #define M_SINGLE_CLICK       OFF      // OFF, ON, M button will activate on a single click as in  
+                                        // V2.0 code, for backward compatabilty.                                                                                    
 
   //***********************************************************************************************************
