@@ -40,8 +40,9 @@
 #define DISPLAY_WIFI_SIGNAL_STRENGTH   ON //     ON, Wireless signal strength reported via web interface. OFF otherwise.      Option
 #define DISPLAY_RESET_CONTROLS        OFF //    OFF, ON allows reset if supported, FWU for STM32 firmware upload pin HIGH.    Option
 
-#define DISPLAY_SERVO_MONITOR         OFF //    OFF, ON to display the servo monitor for OnStepX servos (any axis.)           Option
+#define DISPLAY_SERVO_MONITOR         OFF //    OFF, ON to display the servo monitor for OnStepX (any axis.)                  Option
 #define DISPLAY_SERVO_ORIGIN_CONTROLS OFF //    OFF, ON to display control to set the absolute encoder origin for servos.     Option
+#define DISPLAY_SERVO_CALIBRATION     OFF //    OFF, ON to display the servo calibration controls for OnStepX (any axis.)     Option
 
 // ENCODER SUPPORT -----------------------------------------------------------------------------------------------------------------
 // Some of these settings are stored in NV (EEPROM) as the default values when first uploaded.  Later changes below may be
