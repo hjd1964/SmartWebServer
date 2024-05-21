@@ -77,6 +77,13 @@ void handleRoot()
 
   #if DISPLAY_SERVO_MONITOR == ON
     servoTile(data);
+  #endif
+
+  #if DISPLAY_SERVO_CALIBRATION == ON
+    servoCalibrateTile(data);
+  #endif
+
+  #if DISPLAY_SERVO_MONITOR == ON || DISPLAY_SERVO_CALIBRATION == ON
     data.concat(F("<br class=\"clear\" />\n"));
   #endif
 
@@ -138,6 +145,9 @@ void indexAjax() {
     #if DISPLAY_SERVO_MONITOR == ON
       servoTileAjax(data);
     #endif
+    #if DISPLAY_SERVO_CALIBRATION == ON
+      servoCalibrateTileAjax(data);
+    #endif
   }
 
   www.sendContentAndClear(data);
@@ -165,6 +175,9 @@ void processIndexGet()
   axisTileGet();
   #if DISPLAY_SERVO_MONITOR == ON
     servoTileGet();
+  #endif
+  #if DISPLAY_SERVO_CALIBRATION == ON
+    servoCalibrateTileGet();
   #endif
 
   state.lastControllerPageLoadTime = millis();
