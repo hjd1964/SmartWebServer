@@ -53,7 +53,13 @@ bool Status::update()
       ver_min = -1;
       ver_patch = 0;
       onStepFound = false;
-    } else onStepFound = true;
+      strcpy(configName, "");
+    } else {
+      onStepFound = true;
+      if (onStep.command(":GVC#", result)) {
+        strncpy(configName, result, 40);
+      }
+    }
   }
 
   if (onStepFound) {
