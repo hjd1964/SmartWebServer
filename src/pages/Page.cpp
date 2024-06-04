@@ -10,11 +10,7 @@ void pageHeader(int selected) {
 
   data.concat(FPSTR(html_onstep_header_begin));
   
-  data.concat(F("OnStep"));
-  if (strlen(status.configName) > 0) {
-    data.concat(F(" "));
-    data.concat(status.configName);
-  }
+  if (strlen(status.configName) > 0) data.concat(status.configName); else data.concat(F("OnStep"));
   data.concat(FPSTR(html_onstep_header_title));
   data.concat(firmwareVersion.str);
   data.concat(F(" (OnStep"));
