@@ -134,7 +134,7 @@ void homeParkTileGet()
     v = www.arg("hc1");
     if (!v.equals(EmptyStr))
     {
-      if (v.toInt() >= -162000 && v.toInt() <= 162000)
+      if (v.toInt() >= -324000 && v.toInt() <= 324000)
       {
         sprintf(temp, ":hC1,%ld#", v.toInt());
         onStep.commandBlind(temp);
@@ -144,7 +144,7 @@ void homeParkTileGet()
     v = www.arg("hc2");
     if (!v.equals(EmptyStr))
     {
-      if (v.toInt() >= -162000 && v.toInt() <= 162000)
+      if (v.toInt() >= -324000 && v.toInt() <= 324000)
       {
         sprintf(temp, ":hC2,%ld#", v.toInt());
         onStep.commandBlind(temp);

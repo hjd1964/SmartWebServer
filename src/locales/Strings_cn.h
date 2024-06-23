@@ -89,8 +89,8 @@
 #define L_PPS_SYNC "同步卫星信号"
 #define L_HOME_REV "撤销"
 #define L_HOME_OFFSET "与起始位置的偏移:"
-#define L_HOME_OFFSET_RANGE_AXIS1 "Axis1, +/-162000 arc-sec"
-#define L_HOME_OFFSET_RANGE_AXIS2 "Axis2, +/-162000 arc-sec"
+#define L_HOME_OFFSET_RANGE_AXIS1 "Axis1, +/-324000 arc-sec"
+#define L_HOME_OFFSET_RANGE_AXIS2 "Axis2, +/-324000 arc-sec"
 #define L_HOME_AUTO "启动时自动归位:"
 
 // tracking
