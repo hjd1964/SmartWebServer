@@ -89,8 +89,8 @@
 #define L_PPS_SYNC "Sincronizar PPS"
 #define L_HOME_REV "Inverso"
 #define L_HOME_OFFSET "Desplazamiento desde la posición de detección inicial:"
-#define L_HOME_OFFSET_RANGE_AXIS1 "Axis1, +/-324000 arc-sec"
-#define L_HOME_OFFSET_RANGE_AXIS2 "Axis2, +/-324000 arc-sec"
+#define L_HOME_OFFSET_RANGE_AXIS1 "Axis1, +/-" STR(HOME_OFFSET_RANGE_AXIS1) " arc-sec"
+#define L_HOME_OFFSET_RANGE_AXIS2 "Axis2, +/-" STR(HOME_OFFSET_RANGE_AXIS2) " arc-sec"
 #define L_HOME_AUTO "Inicio automáticamente al inicio:"
 
 // tracking

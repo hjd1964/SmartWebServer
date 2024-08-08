@@ -86,6 +86,14 @@
 #define STATE_GPIO_POLLING_RATE_MS    100     // time between updates of OnStep GPIO pin state
 #endif
 
+// home offset
+#ifndef HOME_OFFSET_RANGE_AXIS1
+#define HOME_OFFSET_RANGE_AXIS1      7200     // allow adjusting home offset up to +/- 2 degrees
+#endif
+#ifndef HOME_OFFSET_RANGE_AXIS2
+#define HOME_OFFSET_RANGE_AXIS2      7200     // allow adjusting home offset up to +/- 2 degrees
+#endif
+
 // encoders
 #ifndef ENC_AUTO_SYNC_DEFAULT
 #define ENC_AUTO_SYNC_DEFAULT         ON      // automatically sync Encoders to OnStep
