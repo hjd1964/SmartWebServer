@@ -146,10 +146,8 @@ IRAM_ATTR bool Jtw26::readEnc(uint32_t &position) {
     position += origin;
   #endif
 
-  #if BISSC_SINGLE_TURN == ON
-    if ((int32_t)position > 67108864) position -= 67108864;
-    if ((int32_t)position < 0) position += 67108864;
-  #endif
+  if ((int32_t)position > 67108864) position -= 67108864;
+  if ((int32_t)position < 0) position += 67108864;
 
   position -= 33554432;
 

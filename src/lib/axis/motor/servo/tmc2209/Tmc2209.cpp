@@ -173,10 +173,7 @@ void ServoTmc2209::enable(bool state) {
 
 // set motor velocity (in microsteps/s)
 float ServoTmc2209::setMotorVelocity(float velocity) {
-  if (sdMode) {
-    driver->VACTUAL(0);
-    return velocity;
-  }
+  if (sdMode) return velocity;
 
   if (!enabled) velocity = 0.0F;
   if (velocity > velocityMax) velocity = velocityMax; else
