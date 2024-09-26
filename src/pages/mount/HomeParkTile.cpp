@@ -42,7 +42,6 @@ void homeParkTile(String &data)
 
     if (onStep.command(":h?#", reply)) {
       status.hasHomeSense = false;
-      long homeAutomatic = false;
       long homeOffsetAxis1 = 0;
       long homeOffsetAxis2 = 0;
       if (sscanf(reply, "%d,%ld,%ld", &status.hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2) == 3) {

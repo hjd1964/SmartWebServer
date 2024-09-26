@@ -35,10 +35,11 @@
 
 //--------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-#define HAL_INIT() { \
-  analogWriteFrequency(10000); \
-  analogWriteResolution(ANALOG_WRITE_PWM_BITS); \
-}
+#if ESP_ARDUINO_VERSION >= 0x30000
+  #define HAL_INIT()
+#else
+  #define HAL_INIT() { analogWriteFrequency(10000); analogWriteResolution(ANALOG_WRITE_PWM_BITS); }
+#endif
 
 //-----------------------------------------------------------------------------------------------------
 // Misc. includes and defines to support this processor's operation
