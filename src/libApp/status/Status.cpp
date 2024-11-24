@@ -117,7 +117,7 @@ bool Status::update()
         if (guideRatePulse > 9) guideRatePulse = 9;
         guideRate = result[strlen(result) - 2] - '0';
         if (guideRate < 0) guideRate = 0;
-        if (guideRate > 10) guideRate = 10;
+        if (guideRate > 9) guideRate = 9;
 
         int e = result[strlen(result) - 1] - '0';
         if (e < ERR_NONE) lastError = ERR_UNSPECIFIED;
