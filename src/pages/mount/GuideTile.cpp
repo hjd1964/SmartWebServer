@@ -49,9 +49,9 @@ void guideTileAjax(String &data)
 
   data.concat(keyValueString("guide_rate", GuideRatesStr[status.guideRate]));
 
-  data.concat(keyValueBoolSelected("guide_r0", status.guideRatePulse == 0 || status.guideRate == 0));
-  data.concat(keyValueBoolSelected("guide_r1", status.guideRatePulse == 1 || status.guideRate == 1));
-  data.concat(keyValueBoolSelected("guide_r2", status.guideRatePulse == 2 || status.guideRate == 2));
+  data.concat(keyValueBoolSelected("guide_r0", status.guideRate != 10 && (status.guideRatePulse == 0 || status.guideRate == 0)));
+  data.concat(keyValueBoolSelected("guide_r1", status.guideRate != 10 && (status.guideRatePulse == 1 || status.guideRate == 1)));
+  data.concat(keyValueBoolSelected("guide_r2", status.guideRate != 10 && (status.guideRatePulse == 2 || status.guideRate == 2)));
   data.concat(keyValueBoolSelected("guide_r3", status.guideRate == 3));
   data.concat(keyValueBoolSelected("guide_r4", status.guideRate == 4));
   data.concat(keyValueBoolSelected("guide_r5", status.guideRate == 5));
@@ -59,6 +59,7 @@ void guideTileAjax(String &data)
   data.concat(keyValueBoolSelected("guide_r7", status.guideRate == 7));
   data.concat(keyValueBoolSelected("guide_r8", status.guideRate == 8));
   data.concat(keyValueBoolSelected("guide_r9", status.guideRate == 9));
+  data.concat(keyValueBoolSelected("guide_rC", status.guideRate == 10));
 
   www.sendContentAndClear(data);
 }

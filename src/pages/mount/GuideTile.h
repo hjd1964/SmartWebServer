@@ -29,4 +29,5 @@ const char html_guideRates[] PROGMEM =
 "<button id='guide_r6' class='btns_mid' onpointerdown=\"g('R6')\" type='button'>20x</button>"
 "<button id='guide_r7' class='btns_mid' onpointerdown=\"g('R7')\" type='button'>48x</button>"
 "<button id='guide_r8' class='btns_mid' onpointerdown=\"g('R8')\" type='button'>VF</button>"
-"<button id='guide_r9' class='btns_left' onpointerdown=\"g('R9')\" type='button'>VVF</button><br />";
+"<button id='guide_r9' class='btns_mid' onpointerdown=\"g('R9')\" type='button'>VVF</button>"
+"<button id='guide_rC' class='btns_left' type='button' disabled>C</button><br />";
