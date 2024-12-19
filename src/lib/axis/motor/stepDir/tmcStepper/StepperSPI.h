@@ -16,6 +16,22 @@
   #define DRIVER_TMC_STEPPER_AUTOGRAD false
 #endif
 
+#ifndef TMC2130_RSENSE
+  #define TMC2130_RSENSE 0.11F
+#endif
+
+#ifndef TMC2660_RSENSE
+  #define TMC2660_RSENSE 0.075F
+#endif
+
+#ifndef TMC5160_RSENSE
+  #define TMC5160_RSENSE 0.075F
+#endif
+
+#ifndef TMC5161_RSENSE
+  #define TMC5161_RSENSE 0.075F
+#endif
+
 class StepDirTmcSPI : public StepDirDriver {
   public:
     // constructor
@@ -51,7 +67,7 @@ class StepDirTmcSPI : public StepDirDriver {
     // calibrate the motor driver if required
     void calibrateDriver();
 
-    TMCStepper *driver;
+    void *driver;
 
   private:
     // checks if decay pin should be HIGH/LOW for a given decay setting
@@ -63,6 +79,7 @@ class StepDirTmcSPI : public StepDirDriver {
     // set peak current and hold current multiplier
     inline void current(float mA, float mult) {
       if (settings.model == TMC2130) { ((TMC2130Stepper*)driver)->rms_current(mA*0.7071F, mult); } else
+      if (settings.model == TMC2660) { ((TMC2660Stepper*)driver)->rms_current(mA*0.7071F); } else
       if (settings.model == TMC5160) { ((TMC5160Stepper*)driver)->rms_current(mA*0.7071F, mult); } else
       if (settings.model == TMC5161) { ((TMC5161Stepper*)driver)->rms_current(mA*0.7071F, mult); }
     }

@@ -51,7 +51,7 @@ class Status {
 
     bool atHome = false;
     bool homing = false;
-    int hasHomeSense = false;
+    bool hasHomeSense = false;
     bool autoHome = false;
     bool waitingHome = false;
     bool pauseAtHome = false;

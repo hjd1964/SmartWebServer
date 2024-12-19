@@ -42,9 +42,11 @@ void homeParkTile(String &data)
 
     if (onStep.command(":h?#", reply)) {
       status.hasHomeSense = false;
+      int hasHomeSense = 0;
       long homeOffsetAxis1 = 0;
       long homeOffsetAxis2 = 0;
-      if (sscanf(reply, "%d,%ld,%ld", &status.hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2) == 3) {
+      if (sscanf(reply, "%d,%ld,%ld", &hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2) == 3) {
+        status.hasHomeSense = (bool)hasHomeSense;
         sprintf_P(temp, html_form_begin, "mount.htm");
         data.concat(temp);
 

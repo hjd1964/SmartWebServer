@@ -45,8 +45,7 @@ ServoMotor::ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Filter *filter, 
 
   this->driver = Driver;
 
-  encoder->init();
-  encoder->setOrigin(encoderOrigin);
+  this->encoderOrigin = encoderOrigin;
   this->encoderReverse = encoderReverse;
   this->encoderReverseDefault = encoderReverse;
 
@@ -73,6 +72,10 @@ ServoMotor::ServoMotor(uint8_t axisNumber, ServoDriver *Driver, Filter *filter, 
 bool ServoMotor::init() {
   if (axisNumber < 1 || axisNumber > 9) return false;
 
+  encoder->init();
+  encoder->setOrigin(encoderOrigin);
+  if (!encoder->ready) return false;
+
   driver->init();
   enable(false);
 
@@ -94,7 +97,7 @@ bool ServoMotor::init() {
       if (!tasks.requestHardwareTimer(taskHandle, 0)) {
         VF(" (no hardware timer!)");
       } else {
-        maxFrequency = 1000000.0F/HAL_MAXRATE_LOWER_LIMIT;
+        maxFrequency = (1000000.0F/HAL_MAXRATE_LOWER_LIMIT)/2.0F;
       };
     }
     VLF("");
@@ -125,14 +128,17 @@ bool ServoMotor::validateParameters(float param1, float param2, float param3, fl
 // sets motor enable on/off (if possible)
 void ServoMotor::enable(bool state) {
   driver->enable(state);
-  if (state == false) feedback->reset();
+  if (state == false) feedback->reset(); else safetyShutdown = false;
   enabled = state;
 }
 
 // get the associated driver status
 DriverStatus ServoMotor::getDriverStatus() {
   driver->updateStatus();
-  return driver->getStatus();
+  DriverStatus driverStatus = driver->getStatus();
+  if (encoder->errorThresholdExceeded()) driverStatus.fault = true;
+  if (safetyShutdown) driverStatus.fault = true;
+  return driverStatus;
 }
 
 // resets motor and target angular position in steps, also zeros backlash and index
@@ -265,7 +271,7 @@ void ServoMotor::poll() {
 
   // for absolute encoders initialize the motor position at startup
   if (syncThreshold != OFF) {
-    if (!motorStepsInitDone && encoder->ready && homeSet) {
+    if (!motorStepsInitDone && homeSet) {
       noInterrupts();
       motorSteps = encoderCounts;
       targetSteps = encoderCounts;
@@ -327,13 +333,6 @@ void ServoMotor::poll() {
     feedback->variableParameters(fabs(velocityPercent));
   }
 
-  // if the driver has shutdown itself we should also shutdown
-  if (driver->getStatus().fault && enabled) {
-    D(axisPrefixWarn);
-    DL("fault detected, shutting down axis!");
-    enable(false);
-  }
-
   if (velocityPercent < -33) wasBelow33 = true;
   if (velocityPercent > 33) wasAbove33 = true;
 
@@ -346,6 +345,7 @@ void ServoMotor::poll() {
         D("stall detected!"); D(" control->in = "); D(control->in); D(", control->set = "); D(control->set);
         D(", control->out = "); D(control->out); D(", velocity % = "); DL(velocityPercent);
         enable(false);
+        safetyShutdown = true;
       }
 
       // if above 90% power and we're moving away from the target something is seriously wrong, so shut it down
@@ -353,6 +353,7 @@ void ServoMotor::poll() {
         D(axisPrefixWarn);
         DL("runaway detected, > 90% power while moving away from the target!");
         enable(false);
+        safetyShutdown = true;
       }
       lastTargetDistance = labs(encoderCounts - lastEncoderCounts);
 
@@ -361,6 +362,7 @@ void ServoMotor::poll() {
         D(axisPrefixWarn);
         DL("oscillation detected, below -33% and above 33% power in a 2 second period!");
         enable(false);
+        safetyShutdown = true;
       }
     #endif
 

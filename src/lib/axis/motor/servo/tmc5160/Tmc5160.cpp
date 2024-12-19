@@ -6,6 +6,7 @@
 #ifdef SERVO_TMC5160_PRESENT
 
 #include "../../../../tasks/OnTask.h"
+#include "../../../../gpioEx/GpioEx.h"
 
 // help with pin names
 #define mosi m0
@@ -52,7 +53,8 @@ void ServoTmc5160::init() {
   VF("MSG: ServoDriver"); V(axisNumber); VF(", Vmax="); V(Settings->velocityMax); VF(" steps/s, Acceleration="); V(Settings->acceleration); VLF(" %/s/s");
   VF("MSG: ServoDriver"); V(axisNumber); VF(", AccelerationFS="); V(accelerationFs); VLF(" steps/s/fs");
 
-  driver = new TMC5160Stepper(Pins->cs, Pins->mosi, Pins->miso, Pins->sck);
+  rSense = TMC5160_RSENSE;
+  driver = new TMC5160Stepper(Pins->cs, rSense, Pins->mosi, Pins->miso, Pins->sck);
   driver->begin();
   driver->intpol(true);
 
