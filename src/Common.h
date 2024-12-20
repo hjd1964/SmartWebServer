@@ -7,8 +7,8 @@
 #include <Arduino.h>
 
 #include "lib/debug/Debug.h"
-#include "lib/Constants.h"
 #include "lib/Macros.h"
+#include "lib/Constants.h"
 
 #include "Constants.h"
 #include "../Config.h"
