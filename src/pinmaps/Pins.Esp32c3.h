@@ -3,6 +3,9 @@
 #pragma once
 
 // default serial port pins and no swapped port pins
+#ifndef SERIAL_ONSTEP
+  #define SERIAL_ONSTEP Serial1
+#endif
 #ifndef SERIAL_RX
   #define SERIAL_RX          20
 #endif

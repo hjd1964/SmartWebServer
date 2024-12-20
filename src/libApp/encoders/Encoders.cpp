@@ -2,19 +2,21 @@
 // Handle encoders, both CW/CCW and Quadrature A/B types are supported
 
 #include "Encoders.h"
-extern NVS nv;
 
-#include "../status/Status.h"
-#include "../cmd/Cmd.h"
 #include "../../lib/tasks/OnTask.h"
-#include "../../lib/convert/Convert.h"
-#include "../misc/Misc.h"
-
-#if defined(ESP8266) || defined(ESP32)
-  #include <Esp.h>
-#endif
+#include "../../lib/nv/Nv.h"
 
 #if ENCODERS == ON
+  #include "../../lib/convert/Convert.h"
+
+  #include "../status/Status.h"
+  #include "../cmd/Cmd.h"
+  #include "../misc/Misc.h"
+
+  #if defined(ESP8266) || defined(ESP32)
+    #include <Esp.h>
+  #endif
+
   // bring in support for the various encoder types
   #include "../../lib/encoder/quadrature/Quadrature.h"
   #include "../../lib/encoder/quadratureEsp32/QuadratureEsp32.h"

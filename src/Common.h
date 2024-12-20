@@ -5,7 +5,23 @@
 #define WEB_SERVER ON
 
 #include <Arduino.h>
-//#include <ArduinoJson.h>
+
+#include "lib/debug/Debug.h"
+#include "lib/Constants.h"
+#include "lib/Macros.h"
+
+#include "Constants.h"
+#include "../Config.h"
+#include "Config.defaults.h"
+#include "HAL/HAL.h"
+
+#include "pinmaps/Models.h"
+
+#include "libApp/status/Version.h"
+#include "libApp/status/State.h"
+
+/*
+#include <Arduino.h>
 #include "libApp/status/Version.h"
 #include "libApp/status/State.h"
 #include "Constants.h"
@@ -16,5 +32,4 @@
 #include "lib/Macros.h"
 #include "pinmaps/Models.h"
 #include "lib/debug/Debug.h"
-#include "lib/nv/NV.h"
-extern NVS nv;
+*/

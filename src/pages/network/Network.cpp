@@ -2,12 +2,12 @@
 // Setup Network
 #include "Network.h"
 
+#include "../../lib/nv/Nv.h"
 #include "../../lib/ethernet/EthernetManager.h"
 #include "../../lib/wifi/WifiManager.h"
+
 #include "../Page.h"
 #include "../Pages.common.h"
-
-extern NVS nv;
 
 extern int webTimeout;
 extern int cmdTimeout;

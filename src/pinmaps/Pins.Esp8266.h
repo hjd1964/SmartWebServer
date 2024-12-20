@@ -2,6 +2,11 @@
 // Pin map for ESP8266
 #pragma once
 
+// Standard WeMos D1 R32 serial port
+#ifndef SERIAL_ONSTEP
+  #define SERIAL_ONSTEP Serial
+#endif
+
 #ifndef LED_STATUS_PIN
   #define LED_STATUS_PIN     2   // pin GPIO2 is the status led
 #endif

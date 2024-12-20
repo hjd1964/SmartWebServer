@@ -3,6 +3,9 @@
 #pragma once
 
 // locate WeMos D1 R32 serial port pins to match WeMos D1 Mini main and swapped port pins
+#ifndef SERIAL_ONSTEP
+  #define SERIAL_ONSTEP Serial1
+#endif
 #ifndef SERIAL_RX
   #define SERIAL_RX          1
 #endif
