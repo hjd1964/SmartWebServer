@@ -10,7 +10,7 @@
 #include <ESP32CAN.h> // https://github.com/miwagner/ESP32-Arduino-CAN
 #include <CAN_config.h>
 
-IRAM_ATTR void canWrapper() { canPlus.poll(); }
+IRAM_ATTR void canEsp32Monitor() { canPlus.poll(); }
 
 CAN_device_t CAN_cfg;
 
@@ -29,8 +29,8 @@ void CanPlusESP32::init() {
   #else
     CAN_cfg.speed = CAN_SPEED_500KBPS;
   #endif
-  CAN_cfg.tx_pin_id = (gpio_num_t)CAN_TX;
-  CAN_cfg.rx_pin_id = (gpio_num_t)CAN_RX;
+  CAN_cfg.tx_pin_id = (gpio_num_t)CAN_TX_PIN;
+  CAN_cfg.rx_pin_id = (gpio_num_t)CAN_RX_PIN;
 
   VF("MSG: CanPlus, CAN_ESP32 Start... ");
   CAN_cfg.rx_queue = xQueueCreate(10, sizeof(CAN_frame_t));
@@ -40,8 +40,8 @@ void CanPlusESP32::init() {
   if (ready) {
     VLF("success");
     
-    VF("MSG: CanPlus, start callback monitor task (rate "); V(CAN_RECV_RATE_MS); VF(" priority 3)... ");
-    if (tasks.add(CAN_RECV_RATE_MS, 0, true, 3, canWrapper, "CanRecv")) { VLF("success"); } else { VLF("FAILED!"); }
+    VF("MSG: CanPlus, start callback monitor task (rate "); V(CAN_RECV_RATE_MS); VF("ms priority 3)... ");
+    if (tasks.add(CAN_RECV_RATE_MS, 0, true, 3, canEsp32Monitor, "SysCanE")) { VLF("success"); } else { VLF("FAILED!"); }
   } else {
     VLF("FAILED!");
   }

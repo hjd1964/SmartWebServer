@@ -7,7 +7,7 @@
 #include "cwCcw/CwCcw.h"
 #include "pulseDir/PulseDir.h"
 #include "pulseOnly/PulseOnly.h"
-#include "virtualEnc/VirtualEnc.h"
 #include "quadrature/Quadrature.h"
 #include "quadratureEsp32/QuadratureEsp32.h"
 #include "serialBridge/SerialBridge.h"
+#include "virtualEnc/VirtualEnc.h"

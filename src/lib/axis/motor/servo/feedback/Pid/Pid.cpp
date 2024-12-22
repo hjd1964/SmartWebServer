@@ -15,7 +15,7 @@ Pid::Pid(const float P, const float I, const float D, const float P_goto, const 
 void Pid::init(uint8_t axisNumber, ServoControl *control, float controlRange) {
   Feedback::init(axisNumber, control);
 
-  axisPrefix[8] = '0' + axisNumber;
+  axisPrefix[9] = '0' + axisNumber;
 
   p = param1;
   i = param2;
@@ -42,8 +42,17 @@ void Pid::reset() {
   control->set = 0;
   control->out = 0;
   pid->SetMode(QuickPID::Control::automatic);
-  trackingSelected = true;
-  selectSlewingParameters();
+  pid->SetMode(QuickPID::Control::manual);
+  pid->SetMode(QuickPID::Control::automatic);
+  trackingSelected = false;
+  parameterSelectPercent = 100;
+  p = param4;
+  i = param5;
+  d = param6;
+  pid->SetTunings(p, i, d);
+  lastP = p;
+  lastI = i;
+  lastD = d;
 }
 
 void Pid::setControlDirection(int8_t state) {
