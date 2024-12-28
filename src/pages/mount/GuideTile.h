@@ -11,12 +11,13 @@ extern void guideTileAjax(String &data);
 extern void guideTileGet();
 
 const char html_guidePad[] PROGMEM =
-"<button class='gb' onpointerdown=\"g('n1')\" onpointerup=\"g('n0')\" type='button'>" BUTTON_N "</button><br />"
-"<button class='gb' onpointerdown=\"g('e1')\" onpointerup=\"g('e0')\" type='button'>" BUTTON_E "</button>"
-"<button class='gb' onpointerdown=\"g('sy')\" title='Sync' type='button'>" BUTTON_SYNC "</button>"
-"<button class='gb' onpointerdown=\"g('w1')\" onpointerup=\"g('w0')\" type='button'>" BUTTON_W "</button><br />"
-"<button class='gb' onpointerdown=\"g('s1')\" onpointerup=\"g('s0')\" type='button'>" BUTTON_S "</button><br />";
-
+"<div style=\"display: grid;grid-template-rows: repeat(3, 50px);grid-template-columns: repeat(3, 60px);justify-content: center;align-items: center;gap: 10px;\">"
+"<button class='gb' onpointerdown=\"g('n1')\" onpointerup=\"g('n0')\" type='button' style=\"grid-row: 1;grid-column: 2;\">" BUTTON_N "</button><br />"
+"<button class='gb' onpointerdown=\"g('e1')\" onpointerup=\"g('e0')\" type='button' style=\"grid-row: 2;grid-column: 1;\">" BUTTON_E "</button>"
+"<button class='gb' onpointerdown=\"g('sy')\" title='Sync' type='button' style=\"grid-row: 2;grid-column: 2;\">" BUTTON_SYNC "</button>"
+"<button class='gb' onpointerdown=\"g('w1')\" onpointerup=\"g('w0')\" type='button' style=\"grid-row: 2;grid-column: 3;\">" BUTTON_W "</button><br />"
+"<button class='gb' onpointerdown=\"g('s1')\" onpointerup=\"g('s0')\" type='button' style=\"grid-row: 3;grid-column: 2;\">" BUTTON_S "</button><br />"
+"</div>";
 const char html_guidePulseRates[] PROGMEM =
 "<button id='guide_r0' class='btns_right' onpointerdown=\"g('R0')\" type='button'>0.25</button>"
 "<button id='guide_r1' class='btns_mid' onpointerdown=\"g('R1')\" type='button'>0.5</button>"
