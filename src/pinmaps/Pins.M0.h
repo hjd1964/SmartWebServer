@@ -2,6 +2,10 @@
 // Pin map for Arduino M0
 #pragma once
 
+#ifndef SERIAL_ONSTEP
+  #define SERIAL_ONSTEP Serial1
+#endif
+
 #ifndef LED_STATUS_PIN
   #define LED_STATUS_PIN     13  // pin 13 is probably the status led, a guess
 #endif

@@ -2,6 +2,10 @@
 // Pin map for Teensy 3.0, 3.1, 3.2, 3.5, 3.6, 4.0
 #pragma once
 
+#ifndef SERIAL_ONSTEP
+  #define SERIAL_ONSTEP Serial1
+#endif
+
 #define BOOT0_PIN            4   // pin 4, to Boot0 of STM32 etc.
 
 #define AXIS1_ENCODER_A_PIN  5   // pin# for Axis1 encoder, for A or CW
