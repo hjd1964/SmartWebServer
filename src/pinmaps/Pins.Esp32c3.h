@@ -2,7 +2,7 @@
 // Pin map for ESP32C3 LilyGO T-01C3 (experimental)
 #pragma once
 
-// default serial port pins and no swapped port pins
+// locate ESP32-C3 serial port pins
 #ifndef SERIAL_ONSTEP
   #define SERIAL_ONSTEP Serial1
 #endif

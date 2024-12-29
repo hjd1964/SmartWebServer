@@ -2,7 +2,7 @@
 // Pin map for ESP32S2
 #pragma once
 
-// locate WeMos D1 R32 serial port pins to match WeMos D1 Mini main and swapped port pins
+// locate ESP32-S2 serial port pins
 #ifndef SERIAL_ONSTEP
   #define SERIAL_ONSTEP Serial1
 #endif

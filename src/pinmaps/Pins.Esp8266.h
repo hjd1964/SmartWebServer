@@ -2,7 +2,7 @@
 // Pin map for ESP8266
 #pragma once
 
-// Standard WeMos D1 R32 serial port
+// Standard WeMos D1 Mini serial port
 #ifndef SERIAL_ONSTEP
   #define SERIAL_ONSTEP Serial
 #endif
