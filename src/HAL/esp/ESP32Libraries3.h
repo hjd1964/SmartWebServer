@@ -61,7 +61,11 @@
   #define SERIAL_BT bluetoothSerial
 #endif
 #if SERIAL_BT_MODE == SLAVE
-  #define SERIAL_BT_BEGIN() SERIAL_BT.begin(SERIAL_BT_NAME)
+  #ifdef SERIAL_BT_PASSKEY
+    #define SERIAL_BT_BEGIN() if (strlen(SERIAL_BT_PASSKEY) != 0) SERIAL_BT.setPin(SERIAL_BT_PASSKEY); SERIAL_BT.begin(SERIAL_BT_NAME)
+  #else
+    #define SERIAL_BT_BEGIN() SERIAL_BT.begin(SERIAL_BT_NAME)
+  #endif
 #else
   #define SERIAL_BT_BEGIN()
 #endif
