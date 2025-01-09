@@ -2,14 +2,12 @@
 // Configuration defaults
 #pragma once
 
-// host name for this microcontroller
+// host name for this microcontroller, by default used for the following if enabled/supported:
+// AP_SSID                the name WiFi SSID clients see when the ESP32 WiFi Soft Access Point is enabled
+// MDNS_NAME              the name mDNS (Multicast DNS) clients see for IP address resolution
+// SERIAL_BT_NAME         the name Bluetooth Servers see when the ESP32 Bluetooth client is enabled
 #ifndef HOST_NAME
 #define HOST_NAME                      "OnStep-SWS"
-#endif
-
-// settings identification
-#ifndef CONFIG_NAME
-#define CONFIG_NAME                    HOST_NAME
 #endif
 
 // use the HAL specified default NV driver
@@ -43,19 +41,20 @@
 #define DRIVE_MAIN_AXES_REVERSE        ON        // to display Axis1/2 Reverse if available
 #endif
 
-// command server channels
-#define COMMAND_SERVER                 BOTH      // BOTH, for STANDARD (port 9999) and PERSISTENT (ports 9996 to 9998)
-                                                 // or disable with OFF
-// wifi related
-#if OPERATIONAL_MODE == WIFI
+// enable and customize WiFi/Ethernet functionality
+// for other default IP settings see the file:
+// src/lib/wifi/WifiManager.defaults.h
+
 #ifndef MDNS_SERVER
 #define MDNS_SERVER                    ON
 #endif
-#endif
 
 #ifndef MDNS_NAME
-#define MDNS_NAME                      HOST_NAME // mDNS device name
+#define MDNS_NAME                      HOST_NAME
 #endif
+
+#define COMMAND_SERVER                 BOTH      // BOTH, for STANDARD (port 9999) and PERSISTENT (ports 9996 to 9998)
+                                                 // or disable with OFF
 
 #ifndef STA_AP_FALLBACK
 #define STA_AP_FALLBACK                true      // activate SoftAP if station fails to connect

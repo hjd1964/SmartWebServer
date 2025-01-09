@@ -17,6 +17,9 @@
 // If locked out selecting "Erase Flash: All Flash Contents" from the Arduino IDE Tools menu before uploading/flashing again
 // can help restore access to the ESP8266 or ESP32; or see Extended.config.h to wipe NV.
 
+// For Ethernet you will probably need to change network settings in Extended.config.h to match your LAN.  Note that mDNS is active
+// by default so enabling DHCP and using "onstepsws.local" (instead of the perhaps unknown IP address) should work in many cases.
+
 //      Parameter Name              Value   Default  Notes                                                                      Hint
 // OPERATIONAL MODE ----------------------------------------------------------------------------------------------------------------
 #define OPERATIONAL_MODE             WIFI //   WIFI, Or use ETHERNET_W5100 or ETHERNET_W5500                                 <-Req'd

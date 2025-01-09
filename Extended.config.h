@@ -39,7 +39,7 @@
 
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
 
-#define MDNS_NAME                "onstep" //   "onstep",  mDNS device name.                                                   Adjust
+#define MDNS_NAME             "onstepsws" // "onstepsws", mDNS device name.                                                   Adjust
 
 // The unique (Ethernet) MAC address for your SWS
 #define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE}
@@ -47,7 +47,7 @@
 // These settings are stored in NV (EEPROM) and the SWS will not recognize the settings below except on the first upload unless
 // NV is wiped, these settings (where applicable) can be changed at runtime however.
 #define AP_ENABLED                   true //        true, Wifi Access Point Enabled.                                          Adjust
-#define AP_SSID                  "ONSTEP" //    "ONSTEP", Wifi Access Point SSID.                                             Adjust
+#define AP_SSID                  "OnStep" //    "OnStep", Wifi Access Point SSID.                                             Adjust
 #define AP_PASSWORD            "password" //  "password", Wifi Access Point password.                                         Adjust
 #define AP_CHANNEL                      7 //           7, Wifi Access Point channel.                                          Adjust
 #define AP_IP_ADDR          {192,168,0,1} // ..,168,0,1}, Wifi Access Point IP Address.                                       Adjust
