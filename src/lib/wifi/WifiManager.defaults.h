@@ -46,10 +46,6 @@
 // -------------------------------------------------------------------------------------------------
 // wifi manager settings
 
-#ifndef HOST_NAME
-#define NOST_NAME               "Unknown"
-#endif
-
 #ifndef PASSWORD_DEFAULT
 #define PASSWORD_DEFAULT       "password" // default pwd for wifi settings
 #endif

@@ -4,7 +4,7 @@
 // general ip settings
 
 #ifndef HOST_NAME
-#define HOST_NAME                   "Unknown"
+#define HOST_NAME                  "Unknown"
 #endif
 
 // first, you must have an Wifi or Ethernet device:  OFF or WIFI, ETHERNET_W5100, ETHERNET_W5500
