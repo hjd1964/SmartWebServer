@@ -54,8 +54,9 @@
 #define MDNS_NAME                      HOST_NAME
 #endif
 
+#ifndef COMMAND_SERVER
 #define COMMAND_SERVER                 BOTH      // BOTH, for STANDARD (port 9999) and PERSISTENT (ports 9996 to 9998)
-                                                 // or disable with OFF
+#endif                                           // or disable with OFF
 
 #ifndef STA_AP_FALLBACK
 #define STA_AP_FALLBACK                true      // activate SoftAP if station fails to connect
