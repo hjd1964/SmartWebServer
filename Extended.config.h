@@ -25,27 +25,13 @@
                                           //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
                                           //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
 
-// PASSWORD ------------------------------------------------------------------------------------------------------------------------
-#define PASSWORD_DEFAULT       "password" //  "password", Adjust as required, this can be changed at runtime also.            Adjust
-                                          //              password for runtime access to network settings.
-
-// BLE GAMEPAD SETTINGS (ESP32 ONLY) ------------------------------------------------ see https://onstep.groups.io/g/main/wiki/26762
-#define BLE_GAMEPAD                   OFF //         OFF, ON to allow BLE gamepad connection for ESP32 only.                  Option
-#define BLE_GP_ADDR   "ff:ff:de:09:f5:cf" // ...f:ff:ff", GamePad MAC address #1                                              Adjust
-                                          //              GamePad device address must match exactly else it will not connect!
-                                          //              Replace address with yours, in lower case, with colons as shown.
-#define BLE_GP_ADDR1  "ff:ff:ff:ff:ff:ff" // ...f:ff:ff", GamePad MAC address #2                                              Adjust
-                                          //              Two GamePads are allowed, operating in a "handoff" mode, one at time.
-
 // IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
 
-#define MDNS_NAME             "onstepsws" // "onstepsws", mDNS device name.                                                   Adjust
+//        ***    These settings are stored in NV (EEPROM) and the SWS will not recognize setting changes below        ***
+//        ***    except on the first upload or when NV is wiped, these settings can be changed at runtime however.    ***
 
-// The unique (Ethernet) MAC address for your SWS
-#define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE}
+#define PASSWORD_DEFAULT       "password" //  "password", For access to these settings, this can be changed at runtime also.  Adjust
 
-// These settings are stored in NV (EEPROM) and the SWS will not recognize the settings below except on the first upload unless
-// NV is wiped, these settings (where applicable) can be changed at runtime however.
 #define AP_ENABLED                   true //        true, Wifi Access Point Enabled.                                          Adjust
 #define AP_SSID                  "OnStep" //    "OnStep", Wifi Access Point SSID.                                             Adjust
 #define AP_PASSWORD            "password" //  "password", Wifi Access Point password.                                         Adjust
@@ -55,15 +41,10 @@
 #define AP_SN_MASK        {255,255,255,0} // ..55,255,0}, Wifi Access Point SUBNET Mask.                                      Adjust
 
 #define STA_ENABLED                 false //       false, Wifi Station Enabled.                                               Adjust
-#define STA_SSID                   "Home" //      "Home", Wifi Station SSID to connnect to.                                   Adjust
 #define STA_PASSWORD           "password" //  "password", Wifi Station mode password.                                         Adjust
-#define STA_DHCP_ENABLED            false //       false, Wifi Station/Ethernet DHCP Enabled.                                 Adjust
-#define STA_IP_ADDR        {192,168,1,55} // ..168,1,55}, Wifi Station/Ethernet IP Address.                                   Adjust
-#define STA_GW_ADDR         {192,168,1,1} // ..,168,1,1}, Wifi Station/Ethernet GATEWAY Address.                              Adjust
+#define STA_DHCP_ENABLED             true //        true, Wifi Station/Ethernet DHCP Enabled.                                 Adjust
+#define STA_IP_ADDR         {192,168,0,1} //  ..168,0.1}, Wifi Station/Ethernet IP Address.                                   Adjust
+#define STA_GW_ADDR         {192,168,1,1} // ..,168,0,1}, Wifi Station/Ethernet GATEWAY Address.                              Adjust
 #define STA_SN_MASK       {255,255,255,0} // ..55,255,0}, Wifi Station/Ethernet SUBNET Mask.                                  Adjust
 
-// ONSTEP RESET CONTROL ------------------------------------------------------------------------------------------------------------
-#define RESET_PIN                     OFF //         OFF, Specify a pin# used to reset OnStep.                                Infreq
-#define RESET_PIN_STATE               LOW //         OFF, Specify state of RESET_PIN pin otherwise OPEN when inactive.        Infreq
-                                          //             
-                                          
+#define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE} // ..E,0xEE}, A unique MAC address for this Ethernet SWS.                         Adjust
