@@ -47,4 +47,4 @@
 #define STA_GW_ADDR         {192,168,1,1} // ..,168,0,1}, Wifi Station/Ethernet GATEWAY Address.                              Adjust
 #define STA_SN_MASK       {255,255,255,0} // ..55,255,0}, Wifi Station/Ethernet SUBNET Mask.                                  Adjust
 
-#define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE} // ..E,0xEE}, A unique MAC address for this Ethernet SWS.                         Adjust
+#define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE} // ..E,0xEE}, Ethernet unique MAC address.                                        Adjust
