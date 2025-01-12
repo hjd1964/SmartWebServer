@@ -6,7 +6,7 @@
 #include "../../libApp/cmd/Cmd.h"
 #include "../../libApp/misc/Misc.h"
 #include "../../locales/Locale.h"
-#if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
+#if OPERATIONAL_MODE == WIFI
   #include "../../lib/wifi/WifiManager.h"
 #endif
 
@@ -84,7 +84,7 @@ void State::updateController(bool now)
   }
 
   // wifi signal strength
-  #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
+  #if OPERATIONAL_MODE == WIFI
     long signal_strength_dbm = WiFi.RSSI();
     long signal_strength_qty = 2*(signal_strength_dbm + 100);
     if (signal_strength_qty > 100) signal_strength_qty = 100; 

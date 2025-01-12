@@ -30,7 +30,7 @@ void statusTile(String &data)
     data.concat(temp);
   #endif
 
-  #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
+  #if OPERATIONAL_MODE == WIFI
     sprintf_P(temp, html_indexSignalStrength, state.signalStrengthStr);
     data.concat(temp);
   #endif
@@ -115,7 +115,7 @@ void statusTileAjax(String &data)
     data.concat("\n");
   }
 
-  #if OPERATIONAL_MODE == WIFI && DISPLAY_WIFI_SIGNAL_STRENGTH == ON
+  #if OPERATIONAL_MODE == WIFI
     data.concat(F("signal|"));
     data.concat(state.signalStrengthStr);
     data.concat("\n");

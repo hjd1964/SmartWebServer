@@ -18,7 +18,7 @@ const char html_indexWorkload[] PROGMEM = L_WORKLOAD ": <span id='work_load' cla
   const char html_indexTemp[] PROGMEM = "%s <span id='tphd_%c' class='c'>%s</span><br />";
 #endif
 
-#if DISPLAY_WIFI_SIGNAL_STRENGTH == ON
+#if OPERATIONAL_MODE == WIFI
   const char html_indexSignalStrength[] PROGMEM = L_WIRELESS_SIGNAL_STRENGTH ": <span id='signal' class='c'>%s</span><br />\n";
 #endif
 
