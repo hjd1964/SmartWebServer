@@ -25,7 +25,7 @@
                                           //              ***     LEAVING THIS OPTION ENABLED CAN CAUSE EXCESSIVE NV          ***
                                           //              ***     WEAR AND DAMAGE THE MICROCONTROLLER NV SUBSYSTEM !!!        ***
 
-// IP ADDRESS SETTINGS -------------------------------------------------------------------------------------------------------------
+// NETWORK SETTINGS ----------------------------------------------------------------------------------------------------------------
 
 //        ***    These settings are stored in NV (EEPROM) and the SWS will not recognize setting changes below        ***
 //        ***    except on the first upload or when NV is wiped, these settings can be changed at runtime however.    ***
@@ -43,7 +43,7 @@
 #define STA_PASSWORD           "password" //  "password", Wifi Station mode password.                                         Adjust
 #define STA_DHCP_ENABLED             true //        true, Wifi Station/Ethernet DHCP Enabled.                                 Adjust
 #define STA_IP_ADDR         {192,168,0,1} //  ..168,0.1}, Wifi Station/Ethernet IP Address.                                   Adjust
-#define STA_GW_ADDR         {192,168,1,1} // ..,168,0,1}, Wifi Station/Ethernet GATEWAY Address.                              Adjust
+#define STA_GW_ADDR         {192,168,0,1} // ..,168,0,1}, Wifi Station/Ethernet GATEWAY Address.                              Adjust
 #define STA_SN_MASK       {255,255,255,0} // ..55,255,0}, Wifi Station/Ethernet SUBNET Mask.                                  Adjust
 
 #define MAC {0xDE,0xAD,0xBE,0xEF,0xFE,0xEE} // ..E,0xEE}, Ethernet unique MAC address.                                        Adjust
