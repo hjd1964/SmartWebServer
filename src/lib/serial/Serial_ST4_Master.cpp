@@ -139,9 +139,12 @@ bool SerialST4Master::trans(char *data_in) {
 }
 
 void SerialST4Master::begin() {
-  xmit_head = 0; xmit_tail = 0; xmit_buffer[0] = 0;
-  recv_head = 0; recv_tail = 0; recv_buffer[0] = 0;
-  lastMicros = micros();
+  xmit_head = 0;
+  xmit_tail = 0;
+  xmit_buffer[0] = 0;
+  recv_head = 0;
+  recv_tail = 0;
+  recv_buffer[0] = 0;
 }
 
 void SerialST4Master::begin(long baud) {
@@ -150,8 +153,12 @@ void SerialST4Master::begin(long baud) {
 }
 
 void SerialST4Master::end() {
-  xmit_head = 0; xmit_tail = 0; xmit_buffer[0] = 0;
-  recv_head = 0; recv_tail = 0; recv_buffer[0] = 0;
+  xmit_head = 0;
+  xmit_tail = 0;
+  xmit_buffer[0] = 0;
+  recv_head = 0;
+  recv_tail = 0;
+  recv_buffer[0] = 0;
 }
 
 size_t SerialST4Master::write(uint8_t data) {
@@ -159,7 +166,6 @@ size_t SerialST4Master::write(uint8_t data) {
   uint8_t xh = xmit_head;
   xh--;
   while (xmit_tail == xh) {
-  //  poll();
     Y; // yield from the command channel at priority level 5 (lets poll() run)
     if ((millis() - t_start) > timeout) return 0;
   }
