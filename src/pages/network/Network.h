@@ -41,8 +41,8 @@ const char htmL_NET_SN[] PROGMEM =
   const char htmL_NETWORKSSID1[] PROGMEM =
   "<br/><b>" L_NETWORK_STA_TITLE ":</b><br/>"
   "<form method='post' action='/net.htm'>"
-  "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='31'>&nbsp;&nbsp;&nbsp;"
-  L_NETWORK_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='31'> (" L_NETWORK_PWD_MSG ")<br/>";
+  "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
+  L_NETWORK_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='63'> (" L_NETWORK_PWD_MSG ")<br/>";
 
   const char htmL_NETWORKSSID2[] PROGMEM =
   L_NETWORK_EN_DHCP ": <input type='checkbox' name='stadhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>"
