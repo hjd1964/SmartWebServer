@@ -1,20 +1,20 @@
-// JTW 24 BIT BISS-C encoders
+// Lika ASC85 25 BIT BISS-C encoder
 #pragma once
 
 #include "Bissc.h"
 
-#ifdef HAS_JTW_24BIT
+#ifdef HAS_LIKA_ASC85
 
-  class Jtw24 : public Bissc {
+  class LikaAsc85 : public Bissc {
     public:
       // initialize BiSS-C encoder
-      Jtw24(int16_t maPin, int16_t sloPin, int16_t axis);
+      LikaAsc85(int16_t maPin, int16_t sloPin, int16_t axis);
 
     private:
       // read encoder position
       bool readEnc(uint32_t &position);
 
-      // BiSS-C 6-bit CRC of 26 bit data (24 position + 2 err/wrn)
+      // BiSS-C 6-bit CRC of 27 bit data (25 position + 2 err/wrn)
       uint8_t crc6(uint64_t data);
 
       // BiSS-C 6-bit CRC table (x^6 + x^1 + 1)
