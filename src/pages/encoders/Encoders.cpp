@@ -7,8 +7,6 @@
 
 #if ENCODERS == ON
 
-extern NVS nv;
-
 void processEncodersGet();
 
 void handleEncoders()

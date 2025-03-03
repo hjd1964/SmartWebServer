@@ -2,6 +2,8 @@
 // Encoder Sync tile
 #include "SyncTile.h"
 
+#include "../../lib/nv/Nv.h"
+
 #include "../KeyValue.h"
 #include "../Pages.common.h"
 

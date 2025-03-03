@@ -2,6 +2,8 @@
 // Axis tile
 #include "AxisTile.h"
 
+#include "../../lib/nv/Nv.h"
+
 #include "../KeyValue.h"
 #include "../Pages.common.h"
 
