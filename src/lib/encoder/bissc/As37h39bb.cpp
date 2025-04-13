@@ -135,7 +135,7 @@ IRAM_ATTR bool As37h39bb::readEnc(uint32_t &position) {
 
   if (crc6(encData) != as37Crc) {
     bad++;
-    DF("WRN: Encoder AS37_H39B_B"); D(axis); DF(", Crc invalid (overall "); D(((float)bad/good)*100.0F); D("%"); VLF(")"); errors++;
+    DF("WRN: Encoder AS37_H39B_B"); D(axis); DF(", Crc invalid (overall "); D(((float)bad/good)*100.0F); D("%"); DLF(")"); errors++;
   } else {
     good++;
     if (!foundAck) { DF("WRN: Encoder AS37_H39B_B"); D(axis); DLF(", Ack bit invalid"); errors++; } else
