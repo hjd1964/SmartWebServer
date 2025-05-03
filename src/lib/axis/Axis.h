@@ -400,7 +400,7 @@ class Axis {
     bool lastErrorResult = false;
 
     uint8_t axisNumber = 0;
-    char axisPrefix[13] = "MSG: Axis_, ";
+    char axisPrefix[9] = " Axis_, ";
 
     char unitsStr[5] = "?";
     bool unitsRadians = false;
@@ -411,6 +411,12 @@ class Axis {
     uint8_t homeSenseHandle = 0;         // home sensor handle
     uint8_t minSenseHandle = 0;          // min sensor handle
     uint8_t maxSenseHandle = 0;          // max sensor handle
+
+    #if DEBUG == VERBOSE
+      bool lastSenseMin = false;
+      bool lastSenseMax = false;
+      bool lastSenseHome = false;
+    #endif
 
     uint16_t backlashStepsStore;
     volatile uint16_t backlashSteps = 0;

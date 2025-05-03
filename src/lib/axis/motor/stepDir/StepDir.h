@@ -41,30 +41,23 @@ class StepDirMotor : public Motor {
     // sets up the driver step/dir/enable pins
     bool init();
 
-    // set driver default reverse state
-    void setReverse(int8_t state);
-
     // get driver type code
     inline char getParameterTypeCode() { return driver->getParameterTypeCode(); }
 
-    // sets driver parameters: microsteps, microsteps goto, hold current, run current, goto current, unused
-    void setParameters(float param1, float param2, float param3, float param4, float param5, float param6);
+    // sets motor parameters: microsteps, microsteps goto, hold current, run current, goto current, unused
+    bool setParameters(float param1, float param2, float param3, float param4, float param5, float param6);
 
-    // validate driver parameters
+    // validate motor parameters
     bool validateParameters(float param1, float param2, float param3, float param4, float param5, float param6);
+
+    // set motor default reverse state
+    void setReverse(int8_t state);
 
     // sets motor enable on/off (if possible)
     void enable(bool value);
 
-    // calibrate stealthChop then return to tracking mode
-    void calibrateDriver() {
-      digitalWriteEx(Pins->enable, Pins->enabledState);
-      driver->calibrateDriver();
-      digitalWriteEx(Pins->enable, !Pins->enabledState);
-    }
-
     // get the associated stepper driver status
-    DriverStatus getDriverStatus();
+    DriverStatus getDriverStatus() { if (ready) { driver->updateStatus(); return driver->getStatus(); } else return errorStatus; }
 
     // get movement frequency in steps per second
     float getFrequencySteps();
@@ -75,15 +68,17 @@ class StepDirMotor : public Motor {
     // get tracking mode steps per slewing mode step
     inline int getStepsPerStepSlewing() { return driver->getMicrostepRatio(); }
 
-    // switch microstep modes as needed
-    void modeSwitch();
-
-    // swaps in/out fast unidirectional ISR for slewing 
-    bool enableMoveFast(const bool state);
-
     // set slewing state (hint that we are about to slew or are done slewing)
     void setSlewing(bool state);
 
+    // calibrate stealthChop then return to tracking mode
+    void calibrateDriver() {
+      if (!ready) return;
+      digitalWriteEx(Pins->enable, Pins->enabledState);
+      driver->calibrateDriver();
+      digitalWriteEx(Pins->enable, !Pins->enabledState);
+    }
+  
     #if defined(GPIO_DIRECTION_PINS)
       // monitor and respond to motor state as required
       void poll() { updateMotorDirection(); }
@@ -108,6 +103,12 @@ class StepDirMotor : public Motor {
     const StepDirPins *Pins;
 
   private:
+    // switch microstep modes as needed
+    void modeSwitch();
+
+    // swaps in/out fast unidirectional ISR for slewing 
+    bool enableMoveFast(const bool state);
+
     uint8_t taskHandle = 0;
 
     #ifdef DRIVER_STEP_DEFAULTS

@@ -31,7 +31,7 @@ class ServoKTech : public ServoDriver {
     ServoKTech(uint8_t axisNumber, const ServoKTechSettings *KTechSettings);
 
     // decodes driver model and sets up the pin modes
-    void init();
+    bool init();
 
     // enable or disable the driver using the enable pin or other method
     void enable(bool state);
@@ -39,18 +39,18 @@ class ServoKTech : public ServoDriver {
     // power level to the motor
     float setMotorVelocity(float power);
 
-    // update the associated driver status
-    void updateStatus();
-
     // request driver status from CAN
     void requestStatus();
 
-    // update the associated driver status from CAN
-    void updateStatusCallback(uint8_t data[8]);
+    // read the associated driver status from CAN
+    void requestStatusCallback(uint8_t data[8]);
 
     const ServoKTechSettings *Settings;
 
   private:
+    // read status info. from driver
+    void readStatus();
+
     int canID;
     unsigned long lastVelocityUpdateTime = 0;
     unsigned long lastStatusUpdateTime = 0;

@@ -40,18 +40,18 @@ class KTechMotor : public Motor {
     // sets up the ktech motor
     bool init();
 
+    // get motor type code
+    inline char getParameterTypeCode() { return 'O'; }  // codes used so far are S(tep/dir), T(mc), P(id), and O(Drive)
+
+    // set motor parameters
+    bool setParameters(float param1, float param2, float param3, float param4, float param5, float param6);
+
+    // validate motor parameters
+    bool validateParameters(float param1, float param2, float param3, float param4, float param5, float param6);
+
     // low level reversal of axis directions
     // \param state: OFF normal or ON to reverse
     void setReverse(int8_t state);
-
-    // get driver type code
-    inline char getParameterTypeCode() { return 'O'; }  // codes used so far are S(tep/dir), T(mc), P(id), and O(Drive)
-
-    // set driver parameters
-    void setParameters(float param1, float param2, float param3, float param4, float param5, float param6);
-
-    // validate driver parameters
-    bool validateParameters(float param1, float param2, float param3, float param4, float param5, float param6);
 
     // sets motor enable on/off (if possible)
     void enable(bool value);
@@ -60,7 +60,7 @@ class KTechMotor : public Motor {
     void setInstrumentCoordinateSteps(long value);
 
     // get the associated driver status
-    DriverStatus getDriverStatus() { updateStatus(); return status; }
+    DriverStatus getDriverStatus() { if (ready) driver->updateStatus(); else status = errorStatus; return status; }
 
     // resets motor and target angular position in steps, also zeros backlash and index 
     void resetPositionSteps(long value);
@@ -87,7 +87,7 @@ class KTechMotor : public Motor {
     void updateStatus();
 
     // update the associated driver status from CAN
-    void updateStatusCallback(uint8_t data[8]);
+    void requestStatusCallback(uint8_t data[8]);
 
   private:
     int canID;

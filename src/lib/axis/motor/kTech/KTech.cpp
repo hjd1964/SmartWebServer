@@ -19,15 +19,15 @@ IRAM_ATTR void moveKTechMotorAxis7() { ktechMotorInstance[6]->move(); }
 IRAM_ATTR void moveKTechMotorAxis8() { ktechMotorInstance[7]->move(); }
 IRAM_ATTR void moveKTechMotorAxis9() { ktechMotorInstance[8]->move(); }
 
-void statusKTechMotorAxis1(uint8_t data[8]) { ktechMotorInstance[0]->updateStatusCallback(data); }
-void statusKTechMotorAxis2(uint8_t data[8]) { ktechMotorInstance[1]->updateStatusCallback(data); }
-void statusKTechMotorAxis3(uint8_t data[8]) { ktechMotorInstance[2]->updateStatusCallback(data); }
-void statusKTechMotorAxis4(uint8_t data[8]) { ktechMotorInstance[3]->updateStatusCallback(data); }
-void statusKTechMotorAxis5(uint8_t data[8]) { ktechMotorInstance[4]->updateStatusCallback(data); }
-void statusKTechMotorAxis6(uint8_t data[8]) { ktechMotorInstance[5]->updateStatusCallback(data); }
-void statusKTechMotorAxis7(uint8_t data[8]) { ktechMotorInstance[6]->updateStatusCallback(data); }
-void statusKTechMotorAxis8(uint8_t data[8]) { ktechMotorInstance[7]->updateStatusCallback(data); }
-void statusKTechMotorAxis9(uint8_t data[8]) { ktechMotorInstance[8]->updateStatusCallback(data); }
+void statusKTechMotorAxis1(uint8_t data[8]) { ktechMotorInstance[0]->requestStatusCallback(data); }
+void statusKTechMotorAxis2(uint8_t data[8]) { ktechMotorInstance[1]->requestStatusCallback(data); }
+void statusKTechMotorAxis3(uint8_t data[8]) { ktechMotorInstance[2]->requestStatusCallback(data); }
+void statusKTechMotorAxis4(uint8_t data[8]) { ktechMotorInstance[3]->requestStatusCallback(data); }
+void statusKTechMotorAxis5(uint8_t data[8]) { ktechMotorInstance[4]->requestStatusCallback(data); }
+void statusKTechMotorAxis6(uint8_t data[8]) { ktechMotorInstance[5]->requestStatusCallback(data); }
+void statusKTechMotorAxis7(uint8_t data[8]) { ktechMotorInstance[6]->requestStatusCallback(data); }
+void statusKTechMotorAxis8(uint8_t data[8]) { ktechMotorInstance[7]->requestStatusCallback(data); }
+void statusKTechMotorAxis9(uint8_t data[8]) { ktechMotorInstance[8]->requestStatusCallback(data); }
 
 // constructor
 KTechMotor::KTechMotor(uint8_t axisNumber, const KTechDriverSettings *Settings, bool useFastHardwareTimers) {
@@ -36,10 +36,8 @@ KTechMotor::KTechMotor(uint8_t axisNumber, const KTechDriverSettings *Settings, 
 
   driverType = ODRIVER;
 
-  strcpy(axisPrefix, "MSG: Axis_KTech, ");
-  axisPrefix[9] = '0' + axisNumber;
-  strcpy(axisPrefixWarn, "WRN: Axis_KTech, ");
-  axisPrefixWarn[9] = '0' + axisNumber;
+  strcpy(axisPrefix, " Axis_KTech, ");
+  axisPrefix[5] = '0' + axisNumber;
 
   // the motor CAN ID is the axis number!
   canID = 0x140 + axisNumber;
@@ -68,7 +66,7 @@ bool KTechMotor::init() {
   if (axisNumber < 1 || axisNumber > 9) return false;
 
   if (!canPlus.ready) {
-    VF(axisPrefixWarn); VLF("No CAN interface!");
+    V("ERR:"); V(axisPrefix); VLF("No CAN interface!");
     return false;
   }
 
@@ -78,7 +76,7 @@ bool KTechMotor::init() {
   enable(false);
 
   // start the motion timer
-  V(axisPrefix); VF("start task to track motion... ");
+  VF("MSG:"); V(axisPrefix); VF("start task to track motion... ");
   char timerName[] = "Ax_KTec";
   timerName[2] = axisNumber + '0';
   taskHandle = tasks.add(0, 0, true, 0, callback, timerName);
@@ -112,29 +110,22 @@ bool KTechMotor::init() {
     }
   }
 
+  ready = true;
   return true;
 }
 
-// low level reversal of axis directions
-// \param state: OFF normal or ON to reverse
-void KTechMotor::setReverse(int8_t state) {
-  if (state == ON) {
-    VF(axisPrefixWarn); VLF("axis reversal must be accomplished with hardware or KTech setup!");
-  }
-}
-
-// set driver parameters
-void KTechMotor::setParameters(float param1, float param2, float param3, float param4, float param5, float param6) {
+// set motor parameters
+bool KTechMotor::setParameters(float param1, float param2, float param3, float param4, float param5, float param6) {
   UNUSED(param1); // general purpose settings defined in Extended.config.h and stored in NV, they can be modified at runtime
   UNUSED(param2);
   UNUSED(param3);
   UNUSED(param4);
   UNUSED(param5);
   stepsPerMeasure = param6;
-  setSlewing(isSlewing);
+  return true;
 }
 
-// validate driver parameters
+// validate motor parameters
 bool KTechMotor::validateParameters(float param1, float param2, float param3, float param4, float param5, float param6) {
   UNUSED(param1);
   UNUSED(param2);
@@ -145,9 +136,21 @@ bool KTechMotor::validateParameters(float param1, float param2, float param3, fl
   return true;
 }
 
+// low level reversal of axis directions
+// \param state: OFF normal or ON to reverse
+void KTechMotor::setReverse(int8_t state) {
+  if (!ready) return;
+
+  if (state == ON) {
+    V("WRN:"); V(axisPrefix); VLF("axis reversal must be accomplished with hardware or KTech setup!");
+  }
+}
+
 // sets motor enable on/off (if possible)
 void KTechMotor::enable(bool state) {
-  V(axisPrefix);
+  if (!ready) return;
+
+  VF("MSG:"); V(axisPrefix);
   if (state) {
     uint8_t cmd[] = "\x88\x00\x00\x00\x00\x00\x00\x00";
     canPlus.writePacket(canID, cmd, 8);
@@ -167,6 +170,8 @@ void KTechMotor::setInstrumentCoordinateSteps(long value) {
 
 // resets motor and target angular position in steps, also zeros backlash and index
 void KTechMotor::resetPositionSteps(long value) {
+  if (!ready) return;
+
   uint8_t cmd[] = "\x95\x00\x00\x00";
   canPlus.beginPacket(canID);
   canPlus.write(cmd, 4);
@@ -182,6 +187,8 @@ void KTechMotor::resetPositionSteps(long value) {
 
 // set frequency (+/-) in steps per second negative frequencies move reverse in direction (0 stops motion)
 void KTechMotor::setFrequencySteps(float frequency) {
+  if (!ready) return;
+
   // negative frequency, convert to positive and reverse the direction
   int dir = 0;
   if (frequency > 0.0F) dir = 1; else if (frequency < 0.0F) { frequency = -frequency; dir = -1; }
@@ -230,12 +237,16 @@ void KTechMotor::setFrequencySteps(float frequency) {
 }
 
 float KTechMotor::getFrequencySteps() {
+  if (!ready) return 0.0F;
+
   if (lastPeriod == 0) return 0;
   return (16000000.0F / lastPeriod) * absStep;
 }
 
 // set slewing state (hint that we are about to slew or are done slewing)
 void KTechMotor::setSlewing(bool state) {
+  if (!ready) return;
+
   isSlewing = state;
 }
 
@@ -309,7 +320,7 @@ void KTechMotor::updateStatus() {
 }
 
 // update the associated driver status from CAN
-void KTechMotor::updateStatusCallback(uint8_t data[8]) {
+void KTechMotor::requestStatusCallback(uint8_t data[8]) {
   if (statusMode == OFF) return;
 
   uint8_t errorState = data[7];

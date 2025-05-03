@@ -35,10 +35,8 @@
 ServoDc::ServoDc(uint8_t axisNumber, const ServoDcPins *Pins, const ServoDcSettings *Settings) {
   this->axisNumber = axisNumber;
 
-  strcpy(axisPrefix, "MSG: Axis_ServoDC, ");
-  axisPrefix[9] = '0' + axisNumber;
-  strcpy(axisPrefixWarn, "WRN: Axis_ServoDC, ");
-  axisPrefixWarn[9] = '0' + axisNumber;
+  strcpy(axisPrefix, " Axis_ServoDC, ");
+  axisPrefix[5] = '0' + axisNumber;
 
   this->Pins = Pins;
   enablePin = Pins->enable;
@@ -54,15 +52,15 @@ ServoDc::ServoDc(uint8_t axisNumber, const ServoDcPins *Pins, const ServoDcSetti
   accelerationFs = acceleration/FRACTIONAL_SEC;
 }
 
-void ServoDc::init() {
+bool ServoDc::init() {
   ServoDriver::init();
 
   // show velocity control settings
-  VF(axisPrefix); VF("Vmax="); V(Settings->velocityMax); VF("% power, Acceleration="); V(Settings->acceleration); VLF("%/s/s");
-  VF(axisPrefix); VF("AccelerationFS="); V(accelerationFs); VLF("%/s/fs");
+  VF("MSG:"); V(axisPrefix); VF("Vmax="); V(Settings->velocityMax); VF("% power, Acceleration="); V(Settings->acceleration); VLF("%/s/s");
+  VF("MSG:"); V(axisPrefix); VF("AccelerationFS="); V(accelerationFs); VLF("%/s/fs");
 
   #if DEBUG == VERBOSE
-    VF(axisPrefix);
+    VF("MSG:"); V(axisPrefix);
     if (model == SERVO_EE) {
       V("pins pwm1="); if (Pins->in1 == OFF) VF("OFF"); else V(Pins->in1);
       V(", pwm2="); if (Pins->in2 == OFF) VLF("OFF"); else VL(Pins->in2);
@@ -90,7 +88,7 @@ void ServoDc::init() {
 
   // set PWM frequency
   #ifdef SERVO_ANALOG_WRITE_FREQUENCY
-    VF(axisPrefix); VF("setting control pins analog frequency "); VL(SERVO_ANALOG_WRITE_FREQUENCY);
+    VF("MSG:"); V(axisPrefix); VF("setting control pins analog frequency "); VL(SERVO_ANALOG_WRITE_FREQUENCY);
     #ifndef analogWritePin38
       analogWriteFrequency(Pins->in1, SERVO_ANALOG_WRITE_FREQUENCY);
     #endif
@@ -99,7 +97,7 @@ void ServoDc::init() {
 
   // set PWM bits
   #ifdef SERVO_ANALOG_WRITE_RESOLUTION
-    VF(axisPrefix); VF("setting control pins analog bits "); VL(SERVO_ANALOG_WRITE_RESOLUTION);
+    VF("MSG:"); V(axisPrefix); VF("setting control pins analog bits "); VL(SERVO_ANALOG_WRITE_RESOLUTION);
     analogWriteResolution(Pins->in2, SERVO_ANALOG_WRITE_RESOLUTION);
   #endif
 
@@ -111,6 +109,8 @@ void ServoDc::init() {
   #else
     if (statusMode == HIGH) pinModeEx(faultPin, INPUT);
   #endif
+
+  return true;
 }
 
 // enable or disable the driver using the enable pin or other method
@@ -119,7 +119,7 @@ void ServoDc::enable(bool state) {
 
   enabled = state;
 
-  VF(axisPrefix);
+  VF("MSG:"); V(axisPrefix);
   if (!enabled) {
     if (model == SERVO_EE) {
       VF("EE outputs off");
@@ -216,8 +216,6 @@ void ServoDc::updateStatus() {
   if (statusMode == LOW || statusMode == HIGH) {
     status.fault = digitalReadEx(faultPin) == statusMode;
   }
-
-  ServoDriver::updateStatus();
 }
 
 #endif

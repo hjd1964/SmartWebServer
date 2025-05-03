@@ -11,18 +11,15 @@
 StepDirGeneric::StepDirGeneric(uint8_t axisNumber, const StepDirDriverPins *Pins, const StepDirDriverSettings *Settings) {
   this->axisNumber = axisNumber;
 
-  strcpy(axisPrefix, "MSG: Axis_StepDirGeneric, ");
-  axisPrefix[9] = '0' + axisNumber;
-  strcpy(axisPrefixWarn, "WRN: Axis_StepDirGeneric, ");
-  axisPrefixWarn[9] = '0' + axisNumber;
+  strcpy(axisPrefix, " Axis_StepDirGeneric, ");
+  axisPrefix[5] = '0' + axisNumber;
 
   this->Pins = Pins;
   settings = *Settings;
 }
 
-// set up driver and parameters: microsteps, microsteps goto
-void StepDirGeneric::init(float param1, float param2, float param3, float param4, float param5, float param6) {
-  StepDirDriver::init(param1, param2, param3, param4, param5, param6);
+// setup driver
+void StepDirGeneric::init() {
 
   m0Pin = Pins->m0;
   m1Pin = Pins->m1;
@@ -117,10 +114,8 @@ void StepDirGeneric::modeDecaySlewing() {
   if (state != OFF) digitalWriteEx(decayPin, state);
 }
 
-void StepDirGeneric::updateStatus() {
-  if (settings.status == LOW || settings.status == HIGH) {
-    status.fault = digitalReadEx(Pins->fault) == settings.status;
-  }
+void StepDirGeneric::readStatus() {
+  status.sr = 0;
 }
 
 int8_t StepDirGeneric::getDecayPinState(int8_t decay) {

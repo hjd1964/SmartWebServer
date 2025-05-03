@@ -42,7 +42,7 @@ class ServoDcTmcSPI : public ServoDriver {
     ServoDcTmcSPI(uint8_t axisNumber, const ServoDcTmcPins *Pins, const ServoDcTmcSettings *TmcSettings);
 
     // decodes driver model and sets up the pin modes
-    void init();
+    bool init();
 
     // enable or disable the driver using the enable pin or other method
     void enable(bool state);
@@ -50,12 +50,11 @@ class ServoDcTmcSPI : public ServoDriver {
     // power level to the motor
     float setMotorVelocity(float power);
 
-    // update status info. for driver
-    void updateStatus();
-
     const ServoDcTmcSettings *Settings;
 
   private:
+    // read status info. from driver
+    void readStatus();
 
     TMCStepper *driver;
 

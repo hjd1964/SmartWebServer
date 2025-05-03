@@ -17,10 +17,8 @@
 ServoDcTmcSPI::ServoDcTmcSPI(uint8_t axisNumber, const ServoDcTmcSpiPins *Pins, const ServoDcTmcSettings *TmcSettings) {
   this->axisNumber = axisNumber;
 
-  strcpy(axisPrefix, "MSG: Axis_ServoTmcDC, ");
-  axisPrefix[9] = '0' + axisNumber;
-  strcpy(axisPrefixWarn, "WRN: Axis_ServoTmcDC, ");
-  axisPrefixWarn[9] = '0' + axisNumber;
+  strcpy(axisPrefix, " Axis_ServoTmcDC, ");
+  axisPrefix[5] = '0' + axisNumber;
 
   this->Pins = Pins;
   enablePin = Pins->enable;
@@ -35,7 +33,7 @@ ServoDcTmcSPI::ServoDcTmcSPI(uint8_t axisNumber, const ServoDcTmcSpiPins *Pins, 
   accelerationFs = acceleration/FRACTIONAL_SEC;
 }
 
-void ServoDcTmcSPI::init() {
+bool ServoDcTmcSPI::init() {
   ServoDriver::init();
 
   // automatically set fault status for known drivers
@@ -50,10 +48,10 @@ void ServoDcTmcSPI::init() {
   digitalWriteEx(Pins->dir, LOW);
 
   // show velocity control settings
-  VF(axisPrefix); VF("Vmax="); V(Settings->velocityMax); VF("% power, Acceleration="); V(Settings->acceleration); VLF("%/s");
-  VF(axisPrefix); VF("AccelerationFS="); V(accelerationFs); VLF("%/s/fs");
+  VF("MSG:"); V(axisPrefix); VF("Vmax="); V(Settings->velocityMax); VF("% power, Acceleration="); V(Settings->acceleration); VLF("%/s");
+  VF("MSG:"); V(axisPrefix); VF("AccelerationFS="); V(accelerationFs); VLF("%/s/fs");
 
-  VF(axisPrefix); VLF("TMC current control at max (IHOLD, IRUN, and IGOTO ignored)");
+  VF("MSG:"); V(axisPrefix); VLF("TMC current control at max (IHOLD, IRUN, and IGOTO ignored)");
 
   if (model == SERVO_TMC2130_DC) {
     driver = new TMC2130Stepper(Pins->cs, Pins->mosi, Pins->miso, Pins->sck);
@@ -85,22 +83,25 @@ void ServoDcTmcSPI::init() {
   }
 
   // automatically set fault status for known drivers
-  status.active = statusMode != OFF;
+  status.active = statusMode == ON;
 
-  // set fault pin mode
-  if (statusMode == LOW) pinModeEx(faultPin, INPUT_PULLUP);
-  #ifdef PULLDOWN
-    if (statusMode == HIGH) pinModeEx(faultPin, INPUT_PULLDOWN);
-  #else
-    if (statusMode == HIGH) pinModeEx(faultPin, INPUT);
+  // check to see if the driver is there and ok
+  #ifndef DRIVER_TMC_STEPPER_HW_SPI
+    if (Pins->miso != OFF)
   #endif
+  {
+    readStatus();
+    if (!status.standstill || status.overTemperature) { DF("ERR:"); D(axisPrefix); DLF("no driver detected!"); return false; }
+  }
+
+  return true;
 }
 
 // enable or disable the driver using the enable pin or other method
 void ServoDcTmcSPI::enable(bool state) {
   enabled = state;
 
-  VF(axisPrefix); VF("powered "); if (state) { VF("up"); } else { VF("down"); } VLF(" using SPI");
+  VF("MSG:"); V(axisPrefix); VF("powered "); if (state) { VF("up"); } else { VF("down"); } VLF(" using SPI");
 
   if (state) { driver->ihold(31); } else { driver->ihold(0); }
 
@@ -132,36 +133,21 @@ float ServoDcTmcSPI::setMotorVelocity(float velocity) {
   return currentVelocity;
 }
 
-// update status info. for driver
-void ServoDcTmcSPI::updateStatus() {
-  if (statusMode == ON) {
-    if ((long)(millis() - timeLastStatusUpdate) > 200) {
+// read status info. from driver
+void ServoDcTmcSPI::readStatus() {
+  TMC2130_n::DRV_STATUS_t status_result;
+  status_result.sr = 0;
 
-      TMC2208_n::DRV_STATUS_t status_result;
-      if (model == SERVO_TMC2130_DC) { status_result.sr = ((TMC2130Stepper*)driver)->DRV_STATUS(); } else
-      if (model == SERVO_TMC5160_DC) { status_result.sr = ((TMC5160Stepper*)driver)->DRV_STATUS(); }
-      status.outputA.shortToGround = status_result.s2ga;
-      status.outputA.openLoad      = status_result.ola;
-      status.outputB.shortToGround = false;
-      status.outputB.openLoad      = false;
-      status.overTemperatureWarning= status_result.otpw;
-      status.overTemperature       = status_result.ot;
-      status.standstill            = status_result.stst;
+  if (model == SERVO_TMC2130_DC) { status_result.sr = ((TMC2130Stepper*)driver)->DRV_STATUS(); } else
+  if (model == SERVO_TMC5160_DC) { status_result.sr = ((TMC5160Stepper*)driver)->DRV_STATUS(); }
 
-      // open load indication is not reliable in standstill
-      if (status.outputA.shortToGround ||
-          status.outputB.shortToGround ||
-          status.overTemperatureWarning ||
-          status.overTemperature) status.fault = true; else status.fault = false;
-
-      timeLastStatusUpdate = millis();
-    }
-  } else
-  if (statusMode == LOW || statusMode == HIGH) {
-    status.fault = digitalReadEx(Pins->fault) == statusMode;
-  }
-
-  ServoDriver::updateStatus();
+  status.outputA.shortToGround = status_result.s2ga;
+  status.outputA.openLoad      = status_result.ola;
+  status.outputB.shortToGround = false;
+  status.outputB.openLoad      = false;
+  status.overTemperatureWarning= status_result.otpw;
+  status.overTemperature       = status_result.ot;
+  status.standstill            = status_result.stst;
 }
 
 #endif

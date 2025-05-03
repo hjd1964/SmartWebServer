@@ -5,8 +5,10 @@
 
 #ifdef STEP_DIR_MOTOR_PRESENT
 
+#include "../../../gpioEx/GpioEx.h"
+
 // the various microsteps for different driver models, with the bit modes for each
-#define DRIVER_MODEL_COUNT 18 
+#define DRIVER_MODEL_COUNT 19
 
 const static int8_t steps[DRIVER_MODEL_COUNT][9] =
 //  1   2   4   8  16  32  64 128 256x
@@ -25,6 +27,7 @@ const static int8_t steps[DRIVER_MODEL_COUNT][9] =
   {OFF,OFF,OFF,  0,  3,  1,  2,OFF,OFF},   // TMC2209S/TMC2226S
 
   {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC2130
+  {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC2160
   {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC2660
   {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC5160
   {  8,  7,  6,  5,  4,  3,  2,  1,  0},   // TMC5161
@@ -50,6 +53,7 @@ const static int16_t DriverPulseWidth[DRIVER_MODEL_COUNT] =
   103,   // TMC2209S/TMC2226S
 
   103,   // TMC2130
+  103,   // TMC2160
   103,   // TMC2660
   103,   // TMC5160
   103,   // TMC5161
@@ -75,6 +79,7 @@ const static int16_t DriverPulseWidth[DRIVER_MODEL_COUNT] =
     "TMC2209/TMC2226",
 
     "TMC2130 (SPI)",
+    "TMC2160 (SPI)",
     "TMC2660 (SPI)",
     "TMC5160 (SPI)",
     "TMC5161 (SPI)",
@@ -85,7 +90,87 @@ const static int16_t DriverPulseWidth[DRIVER_MODEL_COUNT] =
 #endif
 
 // set up driver and parameters: microsteps, microsteps goto, hold current, run current, goto current, unused
-void StepDirDriver::init(float param1, float param2, float param3, float param4, float param5, float param6) {
+bool StepDirDriver::setParameters(float param1, float param2, float param3, float param4, float param5, float param6) {
+
+  // get the maximum current and Rsense for this axis
+  user_rSense = 0;
+  user_currentMax = 0;
+  switch (axisNumber) {
+    case 1:
+      #ifdef AXIS1_DRIVER_RSENSE
+        user_rSense = AXIS1_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS1_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS1_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 2:
+      #ifdef AXIS2_DRIVER_RSENSE
+        user_rSense = AXIS2_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS2_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS2_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 3:
+      #ifdef AXIS3_DRIVER_RSENSE
+        user_rSense = AXIS3_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS3_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS3_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 4:
+      #ifdef AXIS4_DRIVER_RSENSE
+        user_rSense = AXIS4_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS4_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS4_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 5:
+      #ifdef AXIS5_DRIVER_RSENSE
+        user_rSense = AXIS5_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS5_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS5_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 6:
+      #ifdef AXIS6_DRIVER_RSENSE
+        user_rSense = AXIS6_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS6_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS6_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 7:
+      #ifdef AXIS7_DRIVER_RSENSE
+        user_rSense = AXIS7_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS7_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS7_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 8:
+      #ifdef AXIS8_DRIVER_RSENSE
+        user_rSense = AXIS8_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS8_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS8_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+    case 9:
+      #ifdef AXIS9_DRIVER_RSENSE
+        user_rSense = AXIS9_DRIVER_RSENSE;
+      #endif
+      #ifdef AXIS9_DRIVER_MAX_CURRENT_MA
+        user_currentMax = AXIS9_DRIVER_MAX_CURRENT_MA;
+      #endif
+    break;
+  }
+
+  // remember the settings
   settings.microsteps = round(param1);
   settings.microstepsSlewing = round(param2);
   settings.currentHold = round(param3);
@@ -97,7 +182,7 @@ void StepDirDriver::init(float param1, float param2, float param3, float param4,
   if (settings.decay == OFF) settings.decay = STEALTHCHOP;
   if (settings.decaySlewing == OFF) settings.decaySlewing = SPREADCYCLE;
 
-  VF(axisPrefix); V(DRIVER_NAME[settings.model]);
+  VF("MSG:"); V(axisPrefix); V(DRIVER_NAME[settings.model]);
   VF(" u-step mode "); if (settings.microsteps == OFF) { VF("OFF (assuming 1X)"); settings.microsteps = 1; } else { V(settings.microsteps); VF("X"); }
   VF(" (goto mode "); if (settings.microstepsSlewing == OFF) { VLF("OFF)"); } else { V(settings.microstepsSlewing); VL("X)"); }
 
@@ -105,6 +190,8 @@ void StepDirDriver::init(float param1, float param2, float param3, float param4,
   microstepCode = subdivisionsToCode(settings.microsteps);
   microstepCodeSlewing = subdivisionsToCode(settings.microstepsSlewing);
   microstepRatio = settings.microsteps/settings.microstepsSlewing;
+
+  return true;
 }
 
 // validate driver parameters
@@ -118,11 +205,11 @@ bool StepDirDriver::validateParameters(float param1, float param2, float param3,
     if (axisNumber > 2) pulseWidth = 2000;
 
     if (DriverPulseWidth[settings.model] == OFF) {
-      VF(axisPrefix); V(DRIVER_NAME[settings.model]); VF(" min. pulse width unknown!");
+      VF("MSG:"); V(axisPrefix); V(DRIVER_NAME[settings.model]); VF(" min. pulse width unknown!");
     }
 
     if (DriverPulseWidth[settings.model] > pulseWidth) {
-      DF(axisPrefixWarn); D(DRIVER_NAME[settings.model]);
+      DF("WRN:"); D(axisPrefix); D(DRIVER_NAME[settings.model]);
       DF(" min. pulse width "); D(DriverPulseWidth[settings.model]); DF("ns > platform at ");
       D(pulseWidth); DLF("ns");
       return false;
@@ -137,22 +224,22 @@ bool StepDirDriver::validateParameters(float param1, float param2, float param3,
   UNUSED(param6);
 
   if (subdivisions == OFF) {
-    VF(axisPrefixWarn); VLF("subdivisions OFF (assuming 1X)");
+    V("WRN:"); V(axisPrefix); VLF("subdivisions OFF (assuming 1X)");
     subdivisions = 1;
   }
 
   if (subdivisions <= subdivisionsGoto) {
-    DF(axisPrefixWarn); DLF("subdivisions must be > subdivisionsGoto");
+    DF("WRN:"); D(axisPrefix); DLF("subdivisions must be > subdivisionsGoto");
     return false;
   }
 
   if (subdivisions != OFF && (subdivisionsToCode(subdivisions) == OFF)) {
-    DF(axisPrefixWarn); DF("bad subdivisions="); DL(subdivisions);
+    DF("WRN:"); D(axisPrefix); DF("bad subdivisions="); DL(subdivisions);
     return false;
   }
 
   if (subdivisionsGoto != OFF && (subdivisionsToCode(subdivisionsGoto) == OFF)) {
-    DF(axisPrefixWarn); DF("bad subdivisionsGoto="); DL(subdivisionsGoto);
+    DF("WRN:"); D(axisPrefix); DF("bad subdivisionsGoto="); DL(subdivisionsGoto);
     return false;
   }
 
@@ -180,6 +267,23 @@ int StepDirDriver::subdivisionsToCode(long microsteps) {
 
 // update status info. for driver
 void StepDirDriver::updateStatus() {
+  if (settings.status == ON) {
+    if ((long)(millis() - timeLastStatusUpdate) > 200) {
+      readStatus();
+
+      // open load indication is not reliable in standstill
+      if (status.outputA.shortToGround ||
+          status.outputB.shortToGround ||
+          status.overTemperatureWarning ||
+          status.overTemperature) status.fault = true; else status.fault = false;
+
+      timeLastStatusUpdate = millis();
+    }
+  } else
+  if (settings.status == LOW || settings.status == HIGH) {
+    status.fault = digitalReadEx(Pins->fault) == settings.status;
+  }
+
   #if DEBUG == VERBOSE
     if ((status.outputA.shortToGround     != lastStatus.outputA.shortToGround) ||
 //      (status.outputA.openLoad          != lastStatus.outputA.openLoad) ||
@@ -189,7 +293,7 @@ void StepDirDriver::updateStatus() {
         (status.overTemperature           != lastStatus.overTemperature) ||
 //      (status.standstill                != lastStatus.standstill) ||
         (status.fault                     != lastStatus.fault)) {
-      VF(axisPrefix);
+      VF("MSG:"); V(axisPrefix);
       VF("SGA"); if (status.outputA.shortToGround) VF("< "); else VF(". "); 
       VF("OLA"); if (status.outputA.openLoad) VF("< "); else VF(". "); 
       VF("SGB"); if (status.outputB.shortToGround) VF("< "); else VF(". "); 

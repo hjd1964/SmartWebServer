@@ -17,18 +17,15 @@
 StepDirTmcUART::StepDirTmcUART(uint8_t axisNumber, const StepDirDriverPins *Pins, const StepDirDriverSettings *Settings) {
   this->axisNumber = axisNumber;
 
-  strcpy(axisPrefix, "MSG: Axis_StepDirTmcUART legacy, ");
-  axisPrefix[9] = '0' + axisNumber;
-  strcpy(axisPrefixWarn, "WRN: Axis_StepDirTmcUART legacy, ");
-  axisPrefixWarn[9] = '0' + axisNumber;
+  strcpy(axisPrefix, " Axis_StepDirTmcUART legacy, ");
+  axisPrefix[5] = '0' + axisNumber;
 
   this->Pins = Pins;
   settings = *Settings;
 }
 
-// set up driver and parameters: microsteps, microsteps goto, hold current, run current, goto current, unused
-void StepDirTmcUART::init(float param1, float param2, float param3, float param4, float param5, float param6) {
-  StepDirDriver::init(param1, param2, param3, param4, param5, param6);
+// setup driver
+bool StepDirTmcUART::init() {
 
   if (settings.currentRun != OFF) {
     // automatically set goto and hold current if they are disabled
@@ -41,21 +38,28 @@ void StepDirTmcUART::init(float param1, float param2, float param3, float param4
     settings.currentHold = lround(settings.currentRun/2.0F);
   }
 
-  VF(axisPrefix);
   if (settings.currentRun == OFF) {
-    VLF("current control OFF (300mA)");
+    VF("MSG:"); V(axisPrefix); VLF("current control OFF (300mA)");
   } else {
+    VF("MSG:"); V(axisPrefix);
     VF("Ihold="); V(settings.currentHold); VF("mA, ");
     VF("Irun="); V(settings.currentRun); VF("mA, ");
     VF("Igoto="); V(settings.currentGoto); VL("mA");
   }
+
+  if (user_rSense > 0.0F) rSense = user_rSense; else rSense = TMC2209_RSENSE;
+  if (fabs(rSense - 0.11F) > 0.0001) {
+    DF("WRN:"); D(axisPrefix); VLF("driver supports Rsense=0.11ohms only!");
+    return false;
+  }
+  VF("MSG:"); V(axisPrefix); VLF("Rsense=0.11ohms (only)");
 
   // get TMC UART driver ready
   pinModeEx(Pins->m0, OUTPUT);
   pinModeEx(Pins->m1, OUTPUT);
 
   driver = new TMC2209Stepper();
-  if (driver == NULL) return; 
+  if (driver == NULL) return false; 
 
   int16_t rxPin = Pins->rx;
 
@@ -72,7 +76,7 @@ void StepDirTmcUART::init(float param1, float param2, float param3, float param4
       digitalWriteEx(Pins->m1, HIGH);
     #endif
 
-    VF(axisPrefix);
+    VF("MSG:"); V(axisPrefix);
     VF("HW UART driver pins rx="); V(SERIAL_TMC_RX); VF(", tx="); V(SERIAL_TMC_TX); VF(", baud="); V(SERIAL_TMC_BAUD); VLF(" bps");
     #if SERIAL_TMC_INVERT == ON
       driver->setup(SERIAL_TMC, SERIAL_TMC_BAUD, SERIAL_TMC_ADDRESS_MAP(axisNumber - 1), SERIAL_TMC_RX, SERIAL_TMC_TX, true);
@@ -88,17 +92,18 @@ void StepDirTmcUART::init(float param1, float param2, float param3, float param4
     #if SERIAL_TMC_RX_DISABLE == true
       rxPin = OFF;
     #endif
-    VF(axisPrefix);
+    VF("MSG:"); V(axisPrefix);
     VF("SW UART driver pins rx="); V(rxPin); VF(", tx="); V(Pins->tx); VF(", baud="); V(SERIAL_TMC_BAUD); VLF(" bps");
     driver->setup(SERIAL_TMC_BAUD, SERIAL_TMC_ADDRESS_MAP(axisNumber - 1), rxPin, Pins->tx);
   #endif
 
+  // this driver automatically switches to one-way communications, even if a RX pin is set
+  // so the following only returns false if communications are "half working"
   if (rxPin != OFF) {
-    if (driver->isSetupAndCommunicating()) {
-      VF(axisPrefix); VLF("driver found");
-    } else {
-      DF(axisPrefixWarn); DLF("driver detection failed");
-    }
+    if (!driver->isSetupAndCommunicating()) {
+      DF("ERR:"); D(axisPrefix); DLF("no motor driver device detected!");
+      return false;
+    } else { VF("MSG:"); V(axisPrefix); VLF("motor driver device detected"); }
   }
 
   driver->useExternalSenseResistors();
@@ -110,7 +115,7 @@ void StepDirTmcUART::init(float param1, float param2, float param3, float param4
   driver->setPwmGradient(pc_pwm_grad);
   if (pc_pwm_auto) driver->enableAutomaticCurrentScaling();
   if (!settings.intpol) {
-    VF(axisPrefix); VLF("driver interpolation control not supported");
+    VF("MSG:"); V(axisPrefix); VLF("driver interpolation control not supported");
   }
   modeMicrostepTracking();
   driver->setRunCurrent(settings.currentRun/25); // current in %
@@ -132,36 +137,40 @@ void StepDirTmcUART::init(float param1, float param2, float param3, float param4
   // use low speed mode switch for TMC drivers or high speed otherwise
   modeSwitchAllowed = microstepRatio != 1;
   modeSwitchFastAllowed = false;
+
+  return true;
 }
 
 // validate driver parameters
 bool StepDirTmcUART::validateParameters(float param1, float param2, float param3, float param4, float param5, float param6) {
   if (!StepDirDriver::validateParameters(param1, param2, param3, param4, param5, param6)) return false;
 
-  int maxCurrent;
-  if (settings.model == TMC2226) maxCurrent = 2800; else // allow enough range for TMC2209 and TMC2226
+  if (settings.model == TMC2209) currentMax = TMC2209_MAX_CURRENT_MA; else // both TMC2209 and TMC2226
   {
-    DF(axisPrefixWarn); DLF("unknown driver model!");
+    DF("WRN:"); D(axisPrefix); DLF("unknown driver model!");
     return false;
   }
+
+  // override max current with user setting
+  if (user_currentMax != 0) currentMax = user_currentMax;
 
   long currentHold = round(param3);
   long currentRun = round(param4);
   long currentGoto = round(param5);
   UNUSED(param6);
 
-  if (currentHold != OFF && (currentHold < 0 || currentHold > maxCurrent)) {
-    DF(axisPrefixWarn); DF("bad current hold="); DL(currentHold);
+  if (currentHold != OFF && (currentHold < 0 || currentHold > currentMax)) {
+    DF("WRN:"); D(axisPrefix); DF("bad current hold="); D(currentHold); DLF("mA");
     return false;
   }
 
-  if (currentRun != OFF && (currentRun < 0 || currentRun > maxCurrent)) {
-    DF(axisPrefixWarn); DF("bad current run="); DL(currentRun);
+  if (currentRun != OFF && (currentRun < 0 || currentRun > currentMax)) {
+    DF("WRN:"); D(axisPrefix); DF("bad current run="); D(currentRun); DLF("mA");
     return false;
   }
 
-  if (currentGoto != OFF && (currentGoto < 0 || currentGoto > maxCurrent)) {
-    DF(axisPrefixWarn); DF("bad current goto="); DL(currentGoto);
+  if (currentGoto != OFF && (currentGoto < 0 || currentGoto > currentMax)) {
+    DF("WRN:"); D(axisPrefix); DF("bad current goto="); D(currentGoto); DLF("mA");
     return false;
   }
 
@@ -193,34 +202,15 @@ void StepDirTmcUART::modeDecaySlewing() {
   driver->setHoldCurrent(settings.currentHold/25); // current in %
 }
 
-void StepDirTmcUART::updateStatus() {
-  if (settings.status == ON) {
-    if ((long)(millis() - timeLastStatusUpdate) > 200) {
-      TMC2209Stepper::Status tmc2209Status = driver->getStatus();
-      status.outputA.shortToGround = (bool)tmc2209Status.short_to_ground_a || (bool)tmc2209Status.low_side_short_a;
-      status.outputA.openLoad      = (bool)tmc2209Status.open_load_a;
-      status.outputB.shortToGround = (bool)tmc2209Status.short_to_ground_b || (bool)tmc2209Status.low_side_short_b;
-      status.outputB.openLoad      = (bool)tmc2209Status.open_load_b;
-      status.overTemperatureWarning = (bool)tmc2209Status.over_temperature_warning;
-      status.overTemperature       = (bool)tmc2209Status.over_temperature_shutdown;
-      status.standstill            = (bool)tmc2209Status.standstill;
-
-      // open load indication is not reliable in standstill
-      if (
-        status.outputA.shortToGround ||
-        status.outputB.shortToGround ||
-        status.overTemperatureWarning ||
-        status.overTemperature
-      ) status.fault = true; else status.fault = false;
-
-      timeLastStatusUpdate = millis();
-    }
-  } else
-  if (settings.status == LOW || settings.status == HIGH) {
-    status.fault = digitalReadEx(Pins->fault) == settings.status;
-  }
-
-  StepDirDriver::updateStatus();
+void StepDirTmcUART::readStatus() {
+  TMC2209Stepper::Status status_result = driver->getStatus();
+  status.outputA.shortToGround  = (bool)status_result.short_to_ground_a || (bool)status_result.low_side_short_a;
+  status.outputA.openLoad       = (bool)status_result.open_load_a;
+  status.outputB.shortToGround  = (bool)status_result.short_to_ground_b || (bool)status_result.low_side_short_b;
+  status.outputB.openLoad       = (bool)status_result.open_load_b;
+  status.overTemperatureWarning = (bool)status_result.over_temperature_warning;
+  status.overTemperature        = (bool)status_result.over_temperature_shutdown;
+  status.standstill             = (bool)status_result.standstill;
 }
 
 // secondary way to power down not using the enable pin

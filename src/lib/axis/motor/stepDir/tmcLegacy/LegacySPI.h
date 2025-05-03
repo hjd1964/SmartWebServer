@@ -18,8 +18,8 @@ class StepDirTmcSPI : public StepDirDriver {
     // get driver type code
     inline char getParameterTypeCode() { return 'T'; }
 
-    // set up driver and parameters: microsteps, microsteps goto, hold current, run current, goto current, unused
-    void init(float param1, float param2, float param3, float param4, float param5, float param6);
+    // setup driver
+    bool init();
 
     // validate driver parameters
     bool validateParameters(float param1, float param2, float param3, float param4, float param5, float param6);
@@ -36,9 +36,6 @@ class StepDirTmcSPI : public StepDirDriver {
     // set decay mode for slewing
     void modeDecaySlewing();
 
-    // update status info. for driver
-    void updateStatus();
-
     // secondary way to power down not using the enable pin
     bool enable(bool state);
 
@@ -48,6 +45,9 @@ class StepDirTmcSPI : public StepDirDriver {
     TmcSPI driver;
 
   private:
+    // read status info. from driver
+    void readStatus();
+
     // checks if decay pin should be HIGH/LOW for a given decay setting
     int8_t getDecayPinState(int8_t decay);
 };
