@@ -24,10 +24,6 @@
   #define VGPIO_PIN_2        AXIS2_ENCODER_A_PIN
   #define VGPIO_PIN_3        AXIS2_ENCODER_B_PIN
 #endif
-#define VGPIO_PIN_4          OFF
-#define VGPIO_PIN_5          OFF
-#define VGPIO_PIN_6          OFF
-#define VGPIO_PIN_7          OFF
 
 #define ETHERNET_RESET_PIN   9   // pin# for controlling the reset of W5500 so it comes up properly
 
