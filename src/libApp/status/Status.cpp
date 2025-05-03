@@ -57,7 +57,7 @@ bool Status::update()
     } else {
       onStepFound = true;
       if (onStep.command(":GVC#", result)) {
-        strncpy(configName, result, 40);
+        strncpy(configName, result, 40); configName[39] = 0;
       }
     }
   }
