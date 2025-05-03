@@ -34,7 +34,9 @@
 
 // New symbol for the default I2C port ---------------------------------------------------------------
 #include <Wire.h>
-#define HAL_WIRE Wire
+#ifndef HAL_WIRE
+  #define HAL_WIRE Wire
+#endif
 #ifndef HAL_WIRE_CLOCK
   #define HAL_WIRE_CLOCK 100000
 #endif
@@ -43,7 +45,7 @@
 #undef E2END
 #if NV_DRIVER == NV_DEFAULT
   #undef NV_DRIVER
-  #define NV_DRIVER NV_AT24C32
+  #define NV_DRIVER NV_24256
 #endif
 
 //--------------------------------------------------------------------------------------------------
@@ -52,13 +54,8 @@
 
 //--------------------------------------------------------------------------------------------------
 // General purpose initialize for HAL
-
 #define HAL_INIT() { \
   analogWriteResolution((int)log2(ANALOG_WRITE_RANGE + 1)); \
-  HAL_WIRE.setSDA(PB9); \
-  HAL_WIRE.setSCL(PB8); \
-  HAL_WIRE.setClock(HAL_WIRE_CLOCK); \
-  HAL_WIRE.begin(); \
 }
 
 //---------------------------------------------------------------------------------------------------
