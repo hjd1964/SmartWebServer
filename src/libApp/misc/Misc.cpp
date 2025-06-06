@@ -6,14 +6,18 @@
 #include "../status/Status.h"
 
 void stripNum(char* s) {
-  int pp=-1;
-  for (unsigned int p=0; p < strlen(s); p++) if (s[p] == '.') { pp=p; break; }
+  int pp = -1;
+  for (unsigned int p = 0; p < strlen(s); p++) if (s[p] == '.') { pp = p; break; }
   if (pp != -1) {
     int p;
-    for (p=strlen(s)-1; p >= pp; p--) { if (s[p] != '0') break; s[p]=0; }
-    if (s[p] == '.') s[p]=0;
+    for (p = strlen(s) - 1; p >= pp; p--) { if (s[p] != '0') break; s[p] = 0; }
+    if (s[p] == '.') s[p] = 0;
   }
-  while (s[0] == '0' && s[1] != '.' && strlen(s) > 1) memmove(&s[0],&s[1],strlen(s));
+  if (s[0] == '-' || s[0] == '+') {
+    while (s[1] == '0' && s[2] != '.' && strlen(s) > 2) memmove(&s[1], &s[2], strlen(s) - 1);
+  } else {
+    while (s[0] == '0' && s[1] != '.' && strlen(s) > 1) memmove(&s[0], &s[1], strlen(s));
+  }
 }
 
 int hexToInt(String s) {
