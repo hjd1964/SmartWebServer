@@ -83,22 +83,14 @@ void State::updateMount(bool now)
   #endif
 
   // Latitude
-  if (status.getVersionMajor() > 3) {
-    if (!onStep.command(":GtH#", temp)) strcpy(temp, "?");
-  } else {
-    if (!onStep.command(":Gt#", temp)) strcpy(temp, "?");
-  }
+  if (!onStep.command(status.getVersionMajor() > 3 ? ":GtH#" : ":Gt#", temp)) strcpy(temp, "?");
   strncpyex(latitudeStr, temp, 10);
   convert.dmsToDouble(&latitude, latitudeStr, true);
   formatDegreesStr(latitudeStr);
   Y;
 
   // Longitude
-  if (status.getVersionMajor() > 3) {
-    if (!onStep.command(":GgH#", temp)) strcpy(temp, "?");
-  } else {
-    if (!onStep.command(":Gg#", temp)) strcpy(temp, "?");
-  }
+  if (!onStep.command(status.getVersionMajor() > 3 ? ":GgH#" : ":Gg#", temp)) strcpy(temp, "?");
   strncpyex(longitudeStr, temp, 11);
   formatDegreesStr(longitudeStr);
   Y;

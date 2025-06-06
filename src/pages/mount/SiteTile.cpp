@@ -29,6 +29,8 @@ void siteTile(String &data)
   data.concat(temp);
   sprintf_P(temp, html_sidereal, state.lastStr);
   data.concat(temp);
+  www.sendContentAndClear(data);
+  
   sprintf_P(temp, html_site, state.latitudeStr, state.longitudeStr);
   data.concat(temp);
   data.concat(FPSTR(html_setDateTime));
@@ -42,16 +44,8 @@ void siteTile(String &data)
 
   // Latitude
   data.concat(FPSTR(html_latMsg));
-  if (status.getVersionMajor() > 3)
-  {
-    if (!onStep.command(":GtH#", reply))
-      strcpy(reply, "+00*00:00");
-  }
-  else
-  {
-    if (!onStep.command(":Gt#", reply))
-      strcpy(reply, "+00*00");
-  }
+  if (!onStep.command(status.getVersionMajor() > 3 ? ":GtH#" : ":Gt#", reply))
+    strcpy(reply, status.getVersionMajor() > 3 ? "+00*00:00" : "+00*00");
   reply[3] = 0;
   reply[6] = 0;
   reply[9] = 0;
@@ -71,24 +65,13 @@ void siteTile(String &data)
 
   // Longitude
   data.concat(FPSTR(html_longMsg));
-  if (status.getVersionMajor() > 3)
-  {
-    if (!onStep.command(":GgH#", reply))
-      strcpy(reply, "+000*00:00");
-  }
-  else
-  {
-    if (!onStep.command(":Gg#", reply))
-      strcpy(reply, "+000*00");
-  }
+  if (!onStep.command(status.getVersionMajor() > 3 ? ":GgH#" : ":Gg#", reply))
+    strcpy(reply, status.getVersionMajor() > 3 ? "+000*00:00" : "+000*00");
   reply[4] = 0;
   reply[7] = 0;
-  reply[10] = 0; // separate parts into strings
-  if (reply[0] == '+')
-    reply[0] = '0'; // remove +
-  stripNum(reply);  // get rid of white space
-  while (reply[0] == '0' && strlen(reply) > 1)
-    memmove(&reply[0], &reply[1], strlen(reply)); // remove leading 0's
+  reply[10] = 0;
+  if (reply[0] == '+') reply[0] = '0';
+  stripNum(reply);
   sprintf_P(temp, html_ninput_wide, "g1", reply, "-180", "180", "&deg;");
   data.concat(temp);
   sprintf_P(temp, html_ninput, "g2", &reply[5], "0", "60", "'");
@@ -104,9 +87,9 @@ void siteTile(String &data)
   // UTC Offset
   data.concat(FPSTR(html_offsetMsg));
   if (!onStep.command(":GG#", reply)) strcpy(reply, "+00");
-  reply[3] = 0; // deg. part only
-  if (reply[0] == '+') reply[0] = '0'; // remove +
-  stripNum(reply);  // get rid of white space
+  reply[3] = 0;
+  if (reply[0] == '+') reply[0] = '0';
+  stripNum(reply);
   sprintf_P(temp, html_ninput_wide, "u1", reply, "-14", "12", "h");
   data.concat(temp);
   sprintf_P(temp, html_offsetMin, reply[4] == '0' ? "selected" : "", reply[4] == '3' ? "selected" : "", reply[4] == '4' ? "selected" : "");
