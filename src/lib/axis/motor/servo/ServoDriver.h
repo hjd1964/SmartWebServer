@@ -36,7 +36,7 @@ class ServoDriver {
     ServoDriver(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings *Settings);
 
     // decodes driver model and sets up the pin modes
-    virtual bool init();
+    virtual bool init(bool reverse);
 
     // returns the number of axis parameters
     virtual uint8_t getParameterCount() { return 0; }
@@ -100,6 +100,7 @@ class ServoDriver {
     float accelerationFs;
 
     Direction motorDirection = DIR_FORWARD;
+    bool reversed = false;
 
     int16_t enablePin = OFF;
     uint8_t enabledState = LOW;

@@ -54,7 +54,7 @@ class ServoTmc2209 : public TmcServoDriver {
     ServoTmc2209(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings *Settings, float countsToStepsRatio, int16_t microsteps, int16_t current, int8_t decay, int8_t decaySlewing);
 
     // decodes driver model and sets up the pin modes
-    bool init();
+    bool init(bool reverse);
 
     // move using step/dir signals
     void alternateMode(bool state);

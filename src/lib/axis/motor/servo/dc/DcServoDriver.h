@@ -98,7 +98,7 @@ class ServoDcDriver : public ServoDriver {
         velocity = -velocity;
         sign = -1;
       }
-
+  
       long power = 0;
       if (velocity != 0.0F) {
         power = lround(((float)velocity/velocityMax)*(analogWriteRange - 1));

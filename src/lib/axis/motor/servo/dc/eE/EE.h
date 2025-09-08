@@ -15,7 +15,7 @@ class ServoEE : public DcServoDriver {
     ServoEE(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings *Settings);
 
     // decodes driver model and sets up the pin modes
-    bool init();
+    bool init(bool reverse);
 
     // enable or disable the driver using the enable pin or other method
     void enable(bool state);

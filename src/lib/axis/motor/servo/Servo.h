@@ -138,6 +138,7 @@ class ServoMotor : public Motor {
     volatile bool takeStep = false;     // should we take a step
     float trackingFrequency = 0;        // help figure out if equatorial mount is tracking
 
+    float currentDirection = 0.0F;      // last direction
     float currentFrequency = 0.0F;      // last frequency set in encoder counts per second
     float lastFrequency = 0.0F;         // last frequency requested
     unsigned long lastPeriod = 0;       // last timer period (in sub-micros)
@@ -148,6 +149,8 @@ class ServoMotor : public Motor {
     unsigned long lastEncoderReadMs = 0;
     
     long lastEncoderCounts = 0;         // the last encoder position for stall check
+    long lastDelta = 0;                 // the last distance from target for runaway check
+    long movingAwaySeconds = 0;         // amount of time for runaway check
     unsigned long lastCheckTime = 0;    // time since the last encoder position was checked
     unsigned long startTime = 0;        // time at start of servo polling
     unsigned long lastSlewingTime = 0;  // time when last slewing

@@ -25,8 +25,8 @@ ServoTmc2130DC::ServoTmc2130DC(uint8_t axisNumber, const ServoPins *Pins, const 
   accelerationFs = acceleration/FRACTIONAL_SEC;
 }
 
-bool ServoTmc2130DC::init() {
-  if (!ServoDcDriver::init()) return false;
+bool ServoTmc2130DC::init(bool reverse) {
+  if (!ServoDcDriver::init(reverse)) return false;
 
   // get TMC SPI driver ready
   pinModeEx(Pins->ph1, OUTPUT); // step
@@ -81,6 +81,7 @@ void ServoTmc2130DC::enable(bool state) {
 // motor control pwm update
 // \param power in SERVO_ANALOG_WRITE_RANGE units
 void ServoTmc2130DC::pwmUpdate(long power) {
+  if (reversed) power = -power;
   driver->XDIRECT((uint32_t)(power & 0b111111111));
 }
 

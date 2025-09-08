@@ -63,8 +63,8 @@ ServoKTech::ServoKTech(uint8_t axisNumber, const ServoSettings *Settings, float 
   }
 }
 
-bool ServoKTech::init() {
-  if (!ServoDriver::init()) return false;
+bool ServoKTech::init(bool reverse) {
+  if (!ServoDriver::init(reverse)) return false;
 
   // automatically set fault status for known drivers
   status.active = statusMode != OFF;
@@ -137,7 +137,8 @@ float ServoKTech::setMotorVelocity(float velocity) {
     uint8_t cmd[] = "\xa2\x00\x00\x00";
     canPlus.beginPacket(canID);
     canPlus.write(cmd, 4);
-    velocityLast != lround(velocityRamp*countsToStepsRatio);
+    velocityLast = lround(velocityRamp*countsToStepsRatio);
+    if (reversed) velocityLast = -velocityLast;
     canPlus.write((uint8_t*)&velocityLast, 4);
     canPlus.endPacket();
     lastVelocityUpdateTime = millis();

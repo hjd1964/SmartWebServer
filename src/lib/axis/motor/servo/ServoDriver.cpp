@@ -46,7 +46,7 @@ ServoDriver::ServoDriver(uint8_t axisNumber, const ServoPins *Pins, const ServoS
   accelerationFs = acceleration/FRACTIONAL_SEC;
 }
 
-bool ServoDriver::init() {
+bool ServoDriver::init(bool reverse) {
   #if DEBUG == VERBOSE
     VF("MSG:"); V(axisPrefix); VF("init model "); VL(SERVO_DRIVER_NAME[driverModel - SERVO_DRIVER_FIRST]);
     VF("MSG:"); V(axisPrefix); VF("en=");
@@ -73,6 +73,8 @@ bool ServoDriver::init() {
   #else
     if (statusMode == HIGH) pinModeEx(faultPin, INPUT);
   #endif
+
+  reversed = reverse;
 
   return true;
 }

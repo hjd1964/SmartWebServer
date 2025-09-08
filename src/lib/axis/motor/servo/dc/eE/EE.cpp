@@ -15,19 +15,13 @@ ServoEE::ServoEE(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings 
   axisPrefix[5] = '0' + axisNumber;
 }
 
-bool ServoEE::init() {
-  if (!ServoDriver::init()) return false;
+bool ServoEE::init(bool reverse) {
+  if (!ServoDriver::init(reverse)) return false;
 
   #if DEBUG == VERBOSE
     VF("MSG:"); V(axisPrefix);
-    if (driverModel == SERVO_EE) {
-      V("pins pwm1="); if (Pins->ph1 == OFF) VF("OFF"); else V(Pins->ph1);
-      V(", pwm2="); if (Pins->ph2 == OFF) VLF("OFF"); else VL(Pins->ph2);
-    } else
-    if (driverModel == SERVO_PE) {
-      V("pins dir="); if (Pins->ph1 == OFF) VF("OFF"); else V(Pins->ph1);
-      V(", pwm="); if (Pins->ph2 == OFF) VLF("OFF"); else VL(Pins->ph2);
-    }
+    V("pins pwm1="); if (Pins->ph1 == OFF) VF("OFF"); else V(Pins->ph1);
+    V(", pwm2="); if (Pins->ph2 == OFF) VLF("OFF"); else VL(Pins->ph2);
   #endif
 
   // init default driver control pins
@@ -81,12 +75,12 @@ void ServoEE::enable(bool state) {
 void ServoEE::pwmUpdate(long power) {
   if (!enabled) return;
 
-  if (motorDirection == DIR_FORWARD) {
+  if (motorDirection == (reversed ? DIR_REVERSE : DIR_FORWARD)) {
     if (Pins->ph1State == HIGH) analogWrite(Pins->ph1, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph1, 0);
     if (Pins->ph2State == HIGH) power = SERVO_ANALOG_WRITE_RANGE - power;
     analogWrite(Pins->ph2, power);
   } else
-  if (motorDirection == DIR_REVERSE) {
+  if (motorDirection == (reversed ? DIR_FORWARD : DIR_REVERSE)) {
     if (Pins->ph1State == HIGH) power = SERVO_ANALOG_WRITE_RANGE - power;
     analogWrite(Pins->ph1, power);
     if (Pins->ph2State == HIGH) analogWrite(Pins->ph2, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph2, 0);

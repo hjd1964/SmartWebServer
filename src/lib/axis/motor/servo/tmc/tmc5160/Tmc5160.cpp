@@ -26,8 +26,8 @@ ServoTmc5160::ServoTmc5160(uint8_t axisNumber, const ServoPins *Pins, const Serv
   this->countsToStepsRatio = countsToStepsRatio;
 }
 
-bool ServoTmc5160::init() {
-  if (!TmcServoDriver::init()) return false;
+bool ServoTmc5160::init(bool reverse) {
+  if (!TmcServoDriver::init(reverse)) return false;
 
   // get TMC SPI driver ready
   pinModeEx(Pins->ph1, OUTPUT); // step
@@ -116,10 +116,10 @@ float ServoTmc5160::setMotorVelocity(float velocity) {
   }
 
   if (velocityRamp >= 0.0F) {
-    driver->shaft(false);
+    driver->shaft(reversed ? true : false);
     motorDirection = DIR_FORWARD;
   } else {
-    driver->shaft(true);
+    driver->shaft(reversed ? false : true);
     motorDirection = DIR_REVERSE;
   }
 

@@ -24,7 +24,7 @@ class ServoKTech : public ServoDriver {
     ServoKTech(uint8_t axisNumber, const ServoSettings *Settings, float countsToDegreesRatio);
 
     // decodes driver model and sets up the pin modes
-    bool init();
+    bool init(bool reverse);
 
     // enable or disable the driver using the enable pin or other method
     void enable(bool state);

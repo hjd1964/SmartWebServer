@@ -17,8 +17,8 @@ TmcServoDriver::TmcServoDriver(uint8_t axisNumber, const ServoPins *Pins, const 
   this->decaySlewing.valueDefault = decaySlewing;
 }
 
-bool TmcServoDriver::init() {
-  if (!ServoDriver::init()) return false;
+bool TmcServoDriver::init(bool reverse) {
+  if (!ServoDriver::init(reverse)) return false;
 
   // get the maximum current and Rsense for this axis
   int16_t user_currentMax = 0;
@@ -102,8 +102,8 @@ bool TmcServoDriver::init() {
     break;
   }
 
-  if (driverModel == TMC5160) { currentMax = TMC5160_MAX_CURRENT; rSense = TMC5160_RSENSE; } else
-  if (driverModel == TMC2209) { currentMax = TMC2209_MAX_CURRENT; rSense = TMC2209_RSENSE; } else // both TMC2209 and TMC2226
+  if (driverModel == SERVO_TMC5160) { currentMax = TMC5160_MAX_CURRENT; rSense = TMC5160_RSENSE; } else
+  if (driverModel == SERVO_TMC2209) { currentMax = TMC2209_MAX_CURRENT; rSense = TMC2209_RSENSE; } else // both TMC2209 and TMC2226
   {
     DF("WRN:"); D(axisPrefix); DLF("unknown driver model!");
     return false;

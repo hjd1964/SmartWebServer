@@ -61,9 +61,6 @@ ServoMotor::ServoMotor(uint8_t axisNumber, int8_t reverse,
     case 8: callback = moveServoMotorAxis8; break;
     case 9: callback = moveServoMotorAxis9; break;
   }
-
-  // get the feedback control loop ready
-  feedback->init(axisNumber, control, driver->getMotorControlRange());
 }
 
 bool ServoMotor::init() {
@@ -77,9 +74,12 @@ bool ServoMotor::init() {
 
   encoder->setOrigin(encoderOrigin);
 
-  if (!driver->init()) { DF("ERR:"); D(axisPrefix); DLF("no motor driver!"); return false; }
+  if (!driver->init(normalizedReverse)) { DF("ERR:"); D(axisPrefix); DLF("no motor driver!"); return false; }
 
   driver->enable(false);
+  
+  // get the feedback control loop ready
+  feedback->init(axisNumber, control, driver->getMotorControlRange());
   feedback->reset();
 
   trackingFrequency = (AXIS1_STEPS_PER_DEGREE/240.0F)*SIDEREAL_RATIO_F;
@@ -224,6 +224,7 @@ void ServoMotor::setFrequencySteps(float frequency) {
     }
 
     currentFrequency = frequency;
+    currentDirection = dir;
 
     // change the motor rate/direction
     noInterrupts();
@@ -305,16 +306,17 @@ void ServoMotor::poll() {
 
   control->set = motorCounts;
   control->in = encoderCounts;
-  if (enabled) feedback->poll();
-
   float velocity;
   if (enabled) {
+    feedback->poll();
+
     // directly use fixed PWM value during calibration
     #ifdef CALIBRATE_SERVO_DC
       velocity = calibrateVelocity->experimentMode ? calibrateVelocity->experimentPwm * driver->getMotorControlRange() / 100.0F : control->out;
     #else
-      velocity = control->out + currentFrequency;
+      velocity = control->out + currentDirection*currentFrequency;
     #endif
+
   } else velocity = 0.0F;
 
   // for virtual encoders set the velocity and direction
@@ -342,7 +344,7 @@ void ServoMotor::poll() {
   if (velocityPercent < -33) wasBelow33 = true;
   if (velocityPercent > 33) wasAbove33 = true;
 
-  if (millis() - lastCheckTime > 2000) {
+  if (millis() - lastCheckTime > 1000) {
 
     #ifndef SERVO_SAFETY_DISABLE
       // if above SERVO_SAFETY_STALL_POWER (33% default) and we're not moving something is seriously wrong, so shut it down
@@ -354,14 +356,18 @@ void ServoMotor::poll() {
         safetyShutdown = true;
       }
 
-      // if above 90% power and we're moving away from the target something is seriously wrong, so shut it down
-      if (labs(encoderCounts - lastEncoderCounts) > lastTargetDistance && abs(velocityPercent) >= 90) {
-        DF("WRN:"); D(axisPrefix); DF("runaway detected!");
-        DLF(" > 90% power while moving away from the target!");
-        enable(false);
-        safetyShutdown = true;
-      }
-      lastTargetDistance = labs(encoderCounts - lastEncoderCounts);
+      // if above 90% power for > three seconds and the distance to the target is increasing
+      // something is seriously wrong so shut it down
+      if (labs(delta - lastDelta) > lastTargetDistance && abs(velocityPercent) >= 90) {
+        movingAwaySeconds++;
+        if (movingAwaySeconds >= 3) {
+          DF("WRN:"); D(axisPrefix); DF("runaway detected!");
+          DLF(" > 90% power while moving away from the target!");
+          enable(false);
+          safetyShutdown = true;
+        }
+      } else movingAwaySeconds = 0;
+      lastTargetDistance = labs(delta - lastDelta);
 
       // if we were below -33% and above 33% power in a one second period something is seriously wrong, so shut it down
       if (wasBelow33 && wasAbove33) {
@@ -375,6 +381,7 @@ void ServoMotor::poll() {
     wasAbove33 = false;
     wasBelow33 = false;
     lastEncoderCounts = encoderCounts;
+    lastDelta = delta;
     lastCheckTime = millis();
   }
 

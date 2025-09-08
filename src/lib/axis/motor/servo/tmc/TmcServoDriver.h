@@ -28,7 +28,7 @@ class TmcServoDriver : public ServoDriver {
     TmcServoDriver(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings *Settings, int16_t microsteps, int16_t current, int8_t decay, int8_t decaySlewing);
 
     // decodes driver model and sets up the pin modes
-    virtual bool init();
+    virtual bool init(bool reverse);
 
     // returns the number of axis parameters
     uint8_t getParameterCount() { return numParameters; }

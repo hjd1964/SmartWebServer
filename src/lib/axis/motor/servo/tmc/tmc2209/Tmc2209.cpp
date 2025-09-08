@@ -33,8 +33,8 @@ ServoTmc2209::ServoTmc2209(uint8_t axisNumber, const ServoPins *Pins, const Serv
   this->countsToStepsRatio = countsToStepsRatio;
 }
 
-bool ServoTmc2209::init() {
-  if (!TmcServoDriver::init()) return false;
+bool ServoTmc2209::init(bool reverse) {
+  if (!TmcServoDriver::init(reverse)) return false;
 
   // get TMC UART driver ready
   pinModeEx(Pins->m0, OUTPUT);
@@ -167,7 +167,7 @@ float ServoTmc2209::setMotorVelocity(float velocity) {
 
   if (velocityRamp >= 0.0F) motorDirection = DIR_FORWARD; else motorDirection = DIR_REVERSE;
 
-  driver->VACTUAL((velocityRamp/0.715F)*countsToStepsRatio);
+  driver->VACTUAL(reversed ? -(velocityRamp/0.715F)*countsToStepsRatio : (velocityRamp/0.715F)*countsToStepsRatio);
 
   return velocityRamp;
 }

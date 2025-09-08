@@ -37,25 +37,18 @@ void DualPid::init(uint8_t axisNumber, ServoControl *control, float controlRange
                      QuickPID::Action::direct);
   pid->SetSampleTimeUs(PID_SAMPLE_TIME_US);
   pid->SetOutputLimits(-controlRange, controlRange);
+  pid->Initialize();
   pid->SetMode(QuickPID::Control::automatic);
 }
 
 // reset feedback control and parameters
 void DualPid::reset() {
   VF("MSG:"); V(axisPrefix); VLF("reset");
-  pid->SetMode(QuickPID::Control::manual);
   control->in = 0;
   control->set = 0;
   control->out = 0;
-  pid->SetMode(QuickPID::Control::automatic);
-  pid->SetMode(QuickPID::Control::manual);
-  pid->SetMode(QuickPID::Control::automatic);
   trackingSelected = false;
-  parameterSelectPercent = 100;
-  pid->SetTunings(slewingP.value, slewingI.value, slewingD.value);
-  lastP = slewingP.value;
-  lastI = slewingI.value;
-  lastD = slewingD.value;
+  selectTrackingParameters();
 }
 
 void DualPid::setControlDirection(int8_t state) {
@@ -65,11 +58,10 @@ void DualPid::setControlDirection(int8_t state) {
 // select PID param set for slewing
 void DualPid::selectTrackingParameters() {
   if (!trackingSelected) {
-    pid->SetMode(QuickPID::Control::manual);
-    pid->SetMode(QuickPID::Control::automatic);
     VF("MSG:"); V(axisPrefix); VL("tracking selected");
     trackingSelected = true;
     parameterSelectPercent = 0;
+    pid->Reset();
     pid->SetTunings(trackingP.value, trackingI.value, trackingD.value);
     lastP = trackingP.value;
     lastI = trackingI.value;
@@ -80,11 +72,10 @@ void DualPid::selectTrackingParameters() {
 // select PID param set for slewing
 void DualPid::selectSlewingParameters() {
   if (trackingSelected) {
-    pid->SetMode(QuickPID::Control::manual);
-    pid->SetMode(QuickPID::Control::automatic);
     VF("MSG:"); V(axisPrefix); VL("slewing selected");
     trackingSelected = false;
     parameterSelectPercent = 100;
+    pid->Reset();
     pid->SetTunings(slewingP.value, slewingI.value, slewingD.value);
     lastP = slewingP.value;
     lastI = slewingI.value;

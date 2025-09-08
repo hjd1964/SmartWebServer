@@ -33,6 +33,7 @@ void DualPid::init(uint8_t axisNumber, ServoControl *control, float controlRange
                      QuickPID::Action::direct);
   pid->SetSampleTimeUs(PID_SAMPLE_TIME_US);
   pid->SetOutputLimits(-controlRange, controlRange);
+  pid->Initialize();
   pid->SetMode(QuickPID::Control::automatic);
 
   autoScaleParameters = false;
@@ -41,15 +42,11 @@ void DualPid::init(uint8_t axisNumber, ServoControl *control, float controlRange
 // reset feedback control and parameters
 void Pid::reset() {
   VF("MSG:"); V(axisPrefix); VLF("reset");
-  pid->SetMode(QuickPID::Control::manual);
   control->in = 0;
   control->set = 0;
   control->out = 0;
-  pid->SetMode(QuickPID::Control::automatic);
-  pid->SetMode(QuickPID::Control::manual);
-  pid->SetMode(QuickPID::Control::automatic);
   trackingSelected = false;
-  pid->SetTunings(P.value, I.value, D.value);
+  selectTrackingParameters();
 }
 
 void DualPid::setControlDirection(int8_t state) {
@@ -59,10 +56,9 @@ void DualPid::setControlDirection(int8_t state) {
 // select PID param set for slewing
 void Pid::selectTrackingParameters() {
   if (!trackingSelected) {
-    pid->SetMode(QuickPID::Control::manual);
-    pid->SetMode(QuickPID::Control::automatic);
     VF("MSG:"); V(axisPrefix); VL("tracking selected");
     trackingSelected = true;
+    pid->Reset();
     pid->SetTunings(P.value, I.value, D.value);
   }
 }
@@ -70,10 +66,9 @@ void Pid::selectTrackingParameters() {
 // select PID param set for slewing
 void Pid::selectSlewingParameters() {
   if (trackingSelected) {
-    pid->SetMode(QuickPID::Control::manual);
-    pid->SetMode(QuickPID::Control::automatic);
     VF("MSG:"); V(axisPrefix); VL("slewing selected");
     trackingSelected = false;
+    pid->Reset();
     pid->SetTunings(P.value, I.value, D.value);
   }
 }
