@@ -51,7 +51,7 @@ void encAxisTile(int axis, String &data)
   }
 
   dtostrf(ticksPerDeg, 1, 3, ticksPerDegStr);
-  stripNum(ticksPerDegStr);
+  convert.stripNumericStr(ticksPerDegStr);
 
   sprintf_P(temp, html_encAxisValueTpd, ticksPerDegStr);
   data.concat(temp);

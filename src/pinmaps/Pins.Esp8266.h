@@ -18,8 +18,8 @@
 #define SD_CARD_CS_PIN       OFF // pin 4 to CS for SD adapter on Arduino Ethernet Shield
 
 #define AXIS1_ENCODER_A_PIN  14  // pin# for Axis1 encoder, for A or CW  or MA/CLK
-#define AXIS1_ENCODER_B_PIN  12  // pin# for Axis1 encoder, for B or CCW or SLO
-#define AXIS2_ENCODER_A_PIN  5   // pin# for Axis2 encoder, for A or CW  or MA/CLK
+#define AXIS1_ENCODER_B_PIN  12  // pin# for Axis1 encoder, for B or CCW or SLO (this is pin13 on the ESP-M3)
+#define AXIS2_ENCODER_A_PIN  5   // pin# for Axis2 encoder, for A or CW  or MA/CLK (this is pin16 on the ESP-M3 and can go logic high at boot)
 #define AXIS2_ENCODER_B_PIN  4   // pin# for Axis2 encoder, for B or CCW or SLO
 
 #if AXIS1_ENCODER == OFF || AXIS2_ENCODER == OFF

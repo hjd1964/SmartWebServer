@@ -286,6 +286,7 @@
 #define L_PEC_RECORDING "Zeichne auf"
 #define L_PEC_UNK "Unbekannt"
 #define L_PEC_EEWRITING "schreibe in EEPROM"
+#define L_PEC_STEPS_PER_WORM_ROTATION "Schritte pro Umdrehung"
 
 // --------------------------- Settings --------------------------
 
@@ -362,33 +363,44 @@
 #define L_LOCATION_MESSAGE_UTC_OFFSET "Entgegengesetzter Zeitzonenwert f&uuml;r die Standardzeit (Keine Winterzeit!)"
 
 // advanced configuration
+
+#define L_AXPN_STEPS_PER_DEG "Schritte/Grad"
+#define L_AXPN_LIMIT_DEGS_MIN "Min. Grenzwert Grad"
+#define L_AXPN_LIMIT_DEGS_MAX "Max. Grenzwert Grad"
+#define L_AXPN_STEPS_PER_UM "Schritte/µm"
+#define L_AXPN_LIMIT_UM_MIN "Min. Grenzwert µm"
+#define L_AXPN_LIMIT_UM_MAX "Max. Grenzwert µm"
+#define L_AXPN_REVERSE "Umkehren"
+#define L_AXPN_MICROSTEPS "Mikroschritte"
+#define L_AXPN_MICROSTEPS_GOTO "Mikroschritte Goto"
+#define L_AXPN_DECAY_MODE "Zerfallsmodus"
+#define L_AXPN_DECAY_MODE_GOTO "Zerfallsmodus Goto"
+#define L_AXPN_CURRENT_HOLD "mA Halten"
+#define L_AXPN_CURRENT_RUN "mA Betrieb"
+#define L_AXPN_CURRENT_GOTO "mA Goto"
+#define L_AXPN_INTERPOLATE "256x Interpolieren"
+#define L_AXPN_PID_P "P-Nachführung"
+#define L_AXPN_PID_I "I-Nachführung"
+#define L_AXPN_PID_D "D-Nachführung"
+#define L_AXPN_PID_SLEWING_P "P-Schwenken"
+#define L_AXPN_PID_SLEWING_I "I-Schwenken"
+#define L_AXPN_PID_SLEWING_D "D-Schwenken"
+#define L_AXPN_RADS_PER_COUNT "Rad/Zählung"
+
+#define L_ADV_DECAY_SLOW "Langsam"
+#define L_ADV_DECAY_FAST "Schnell"
+#define L_ADV_DECAY_MIXED "Gemischt"
+#define L_ADV_DECAY_SPREADCYCLE "SpreadCycle"
+#define L_ADV_DECAY_STEALTHCHOP "StealthChop"
+
+#define L_ADV_MOTOR "Motor"
 #define L_REVERT "Auf Standard zurücksetzen"
 #define L_ADV_SET_TITLE "Fortgeschrittene"
 #define L_ADV_SET_HEADER_MSG "sofern nicht anders angegeben, werden die unten aufgeführten Änderungen nach dem Neustart von OnStep wirksam:"
 #define L_ADV_MOUNT_TYPE " wählen 1 GEM, 2 EQ Fork, 3 Alt/Azm"
 #define L_ADV_BOOL "0 falsch oder 1 wahr"
 
-#define L_ADV_SET_SPWR "Schritte pro Schneckendrehung (0 zum Deaktivieren)"
-#define L_ADV_SET_SPD "Schritte pro Grad"
-#define L_ADV_SET_SPM "Schritte pro Mikron"
-
-#define L_ADV_SET_REV "Umgekehrte Richtung, 0 falsch oder 1 wahr"
-#define L_ADV_SET_MIN "Mindestposition"
-#define L_ADV_SET_MAX "Maximale Position"
-
-#define L_ADV_SET_SPECIAL "Step/Dir Driver:<br /><br />Ein Wert von -1 entspricht Config.h OFF. <i>Seien Sie vorsichtig damit!</i>"
-#define L_ADV_SET_IMMEDIATE "Servotreiber:<br /><br />Einstellungen werden sofort wirksam, kein Neustart erforderlich. <i>Seien Sie vorsichtig damit!</i>"
-#define L_ADV_SET_TRAK_us "Mikroschritte"
-#define L_ADV_SET_GOTO_us "Mikroschritte Goto"
-#define L_ADV_SET_HOLD_ma "mA Strom halten"
-#define L_ADV_SET_TRAK_ma "mA Tracking-Strom"
-#define L_ADV_SET_SLEW_ma "mA Schwenkstrom"
-#define L_ADV_SET_P "Verfolgung Porportional"
-#define L_ADV_SET_I "Verfolgung Integral"
-#define L_ADV_SET_D "Verfolgung Ableitung"
-#define L_ADV_SET_P_GOTO "Schwenken Porportional"
-#define L_ADV_SET_I_GOTO "Schwenken Integral"
-#define L_ADV_SET_D_GOTO "Schwenken Ableitung"
+#define L_ADV_SET_REV "Umgekehrte Richtung"
 
 #define L_ADV_ENABLE "Aktivieren Sie die erweiterte Konfiguration"
 #define L_ADV_DISABLE "Deaktivieren Sie die erweiterte Konfiguration (alle Standardeinstellungen beim Neustart)"

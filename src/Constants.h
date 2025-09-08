@@ -29,7 +29,7 @@
 #define TIMEOUT_CMD                  200
 
 // task manager
-#define TASKS_MAX                    32      // up to 32 tasks
+#define TASKS_MAX                    40      // up to 40 tasks
 #define TASKS_SKIP_MISSED
 
 // EEPROM contents

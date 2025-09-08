@@ -50,7 +50,7 @@ void siteTile(String &data)
   reply[6] = 0;
   reply[9] = 0;
   if (reply[0] == '+') reply[0] = '0';
-  stripNum(reply);
+  convert.stripNumericStr(reply);
   sprintf_P(temp, html_ninput_wide, "t1", reply, "-90", "90", "&deg;");
   data.concat(temp);
   sprintf_P(temp, html_ninput, "t2", &reply[4], "0", "60", "'");
@@ -71,7 +71,7 @@ void siteTile(String &data)
   reply[7] = 0;
   reply[10] = 0;
   if (reply[0] == '+') reply[0] = '0';
-  stripNum(reply);
+  convert.stripNumericStr(reply);
   sprintf_P(temp, html_ninput_wide, "g1", reply, "-180", "180", "&deg;");
   data.concat(temp);
   sprintf_P(temp, html_ninput, "g2", &reply[5], "0", "60", "'");
@@ -89,7 +89,7 @@ void siteTile(String &data)
   if (!onStep.command(":GG#", reply)) strcpy(reply, "+00");
   reply[3] = 0;
   if (reply[0] == '+') reply[0] = '0';
-  stripNum(reply);
+  convert.stripNumericStr(reply);
   sprintf_P(temp, html_ninput_wide, "u1", reply, "-14", "12", "h");
   data.concat(temp);
   sprintf_P(temp, html_offsetMin, reply[4] == '0' ? "selected" : "", reply[4] == '3' ? "selected" : "", reply[4] == '4' ? "selected" : "");

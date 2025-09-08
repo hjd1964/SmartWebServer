@@ -12,9 +12,6 @@
 #if DISPLAY_SERVO_MONITOR == ON
   #include "ServoTile.h"
 #endif
-#if DISPLAY_SERVO_CALIBRATION == ON
-  #include "ServoCalibrateTile.h"
-#endif
 
 #if DRIVE_CONFIGURATION == ON
   const char html_configAxesNotes[] PROGMEM =

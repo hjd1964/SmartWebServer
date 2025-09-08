@@ -27,3 +27,7 @@ L_PEC_CLEAR_MESSAGE "<br />";
 
 const char html_pecControls4[] PROGMEM =
 "<br /><button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('pec','wrt')\" type='submit'>" L_PEC_EEWRITE "</button><br />" L_PEC_EEWRITE_MESSAGE "<br />";
+
+const char html_configAxisSpwr[] PROGMEM =
+L_PEC_STEPS_PER_WORM_ROTATION ":<br />"
+"<input style='width: 7em;' value='%ld' type='number' name='spwr' min='%d' max='%ld' step='1'><br />\n";

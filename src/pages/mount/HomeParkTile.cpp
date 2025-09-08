@@ -47,21 +47,31 @@ void homeParkTile(String &data)
       long homeOffsetAxis2 = 0;
       if (sscanf(reply, "%d,%ld,%ld", &hasHomeSense, &homeOffsetAxis1, &homeOffsetAxis2) == 3) {
         status.hasHomeSense = (bool)hasHomeSense;
-        sprintf_P(temp, html_form_begin, "mount.htm");
-        data.concat(temp);
 
         if (status.hasHomeSense) {
+
+          data.concat(FPSTR(html_collapsable_end));
+          data.concat(F("<div style='margin-top: 0.5em';></div>"));
+          www.sendContentAndClear(data);
+
+          sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+          data.concat(temp);
+
           #ifdef HOME_SWITCH_DIRECTION_CONTROL
-            data.concat(F("<br />" L_HOME_REV "<br />"));
+            data.concat(F(L_HOME_REV "<br />"));
             data.concat(html_homeReverse);
           #endif
 
-          data.concat(F("<br />" L_HOME_OFFSET "<br />"));
+          sprintf_P(temp, html_form_begin, "mount.htm");
+          data.concat(temp);
+
+          data.concat(F(L_HOME_OFFSET "<br />"));
           sprintf_P(temp, html_homeOffsetAxis1, homeOffsetAxis1);
           data.concat(temp);
           sprintf_P(temp, html_homeOffsetAxis2, homeOffsetAxis2);
           data.concat(temp);
           data.concat(F("<button type='submit'>" L_UPLOAD "</button><br />\n"));
+
           data.concat(FPSTR(html_form_end));
           www.sendContentAndClear(data);
         }
@@ -70,9 +80,9 @@ void homeParkTile(String &data)
   }
 
   data.concat(FPSTR(html_collapsable_end));
+
   data.concat(FPSTR(html_tile_end));
   www.sendContentAndClear(data);
-
 }
 
 // use Ajax key/value pairs to pass related data to the web client in the background
