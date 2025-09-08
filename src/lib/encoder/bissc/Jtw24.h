@@ -8,11 +8,11 @@
   class Jtw24 : public Bissc {
     public:
       // initialize BiSS-C encoder
-      Jtw24(int16_t maPin, int16_t sloPin, int16_t axis);
+      Jtw24(int16_t axis, int16_t maPin, int16_t sloPin);
 
     private:
-      // read encoder position
-      bool readEnc(uint32_t &position);
+      // get encoder count relative to origin
+      bool getCount(uint32_t &count);
 
       // BiSS-C 6-bit CRC of 26 bit data (24 position + 2 err/wrn)
       uint8_t crc6(uint64_t data);

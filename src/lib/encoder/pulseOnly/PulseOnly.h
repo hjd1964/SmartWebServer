@@ -9,7 +9,7 @@
 
 class PulseOnly : public Encoder {
   public:
-    PulseOnly(int16_t pulsePin, int16_t *direction, int16_t axis);
+    PulseOnly(int16_t axis, int16_t pulsePin, volatile int8_t *direction);
     bool init();
 
     int32_t read();
@@ -17,8 +17,14 @@ class PulseOnly : public Encoder {
 
     void setDirection(volatile int8_t *direction);
 
+    void pulse();
+
   private:
-    int16_t pulsePin;
+    int16_t axis_index;
+
+    int16_t PulsePin;
+    volatile int32_t pulseCount;
+    volatile int8_t *pulseDirection;
 };
 
 #endif
