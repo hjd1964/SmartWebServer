@@ -33,7 +33,7 @@
 #define EncoderSettingsSize 72
 typedef struct EncoderAxis {
   uint32_t zero;
-  uint32_t offset;
+  uint32_t index;
   int32_t diffTo;
   double ticksPerDeg;
   int16_t reverse;

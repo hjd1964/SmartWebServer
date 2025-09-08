@@ -29,39 +29,39 @@
   void pollEncoders() { encoders.poll(); }
 
   #if AXIS1_ENCODER == AB
-    Quadrature encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    Quadrature encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == AB_ESP32
-    QuadratureEsp32 encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    QuadratureEsp32 encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == CW_CCW
-    CwCcw encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    CwCcw encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == PULSE_DIR
-    PulseDir encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    PulseDir encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == AS37_H39B_B
-    As37h39bb encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    As37h39bb encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == JTW_24BIT
-    Jtw24 encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    Jtw24 encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == JTW_26BIT
-    Jtw26 encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    Jtw26 encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #elif AXIS1_ENCODER == LIKA_ASC85
-    LikaAsc85 encAxis1(AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN, 1);
+    LikaAsc85 encAxis1(1, AXIS1_ENCODER_A_PIN, AXIS1_ENCODER_B_PIN);
   #endif
 
   #if AXIS2_ENCODER == AB
-    Quadrature encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    Quadrature encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == AB_ESP32
-    QuadratureEsp32 encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    QuadratureEsp32 encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == CW_CCW
-    CwCcw encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    CwCcw encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == PULSE_DIR
-    PulseDir encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    PulseDir encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == AS37_H39B_B
-    As37h39bb encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    As37h39bb encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == JTW_24BIT
-    Jtw24 encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    Jtw24 encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == JTW_26BIT
-    Jtw26 encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    Jtw26 encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #elif AXIS2_ENCODER == LIKA_ASC85
-    LikaAsc85 encAxis2(AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN, 2);
+    LikaAsc85 encAxis2(2, AXIS2_ENCODER_A_PIN, AXIS2_ENCODER_B_PIN);
   #endif
 #endif
 
@@ -88,8 +88,8 @@ void Encoders::init() {
     #ifdef ENC_ABSOLUTE
       encAxis1.setOrigin(settings.axis1.zero);
       encAxis2.setOrigin(settings.axis2.zero);
-      encAxis1.offset = settings.axis1.offset;
-      encAxis2.offset = settings.axis2.offset;
+      encAxis1.index = settings.axis1.index;
+      encAxis2.index = settings.axis2.index;
     #endif
 
     VF("MSG: Encoders, start polling task (priority 4)... ");
@@ -101,11 +101,11 @@ void Encoders::init() {
   void Encoders::syncFromOnStep(bool force) {
     if (Axis1EncDiffFrom == OFF || force || fabs(osAxis1 - enAxis1) <= (double)(Axis1EncDiffFrom/3600.0)) {
       encAxis1.write(settings.axis1.reverse == ON ? -osAxis1*settings.axis1.ticksPerDeg : osAxis1*settings.axis1.ticksPerDeg);
-      settings.axis1.offset = encAxis1.offset;
+      settings.axis1.index = encAxis1.index;
     }
     if (Axis2EncDiffFrom == OFF || force || fabs(osAxis2 - enAxis2) <= (double)(Axis2EncDiffFrom/3600.0)) {
       encAxis2.write(settings.axis2.reverse == ON ? -osAxis2*settings.axis2.ticksPerDeg : osAxis2*settings.axis2.ticksPerDeg);
-      settings.axis2.offset = encAxis2.offset;
+      settings.axis2.index = encAxis2.index;
     }
     nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
   }
@@ -114,8 +114,8 @@ void Encoders::init() {
     void Encoders::originFromOnStep() {
       encAxis1.origin = 0;
       encAxis2.origin = 0;
-      encAxis1.offset = 0;
-      encAxis2.offset = 0;
+      encAxis1.index = 0;
+      encAxis2.index = 0;
 
       settings.axis1.zero = (uint32_t)(-encAxis1.read());
       settings.axis2.zero = (uint32_t)(-encAxis2.read());
@@ -123,8 +123,8 @@ void Encoders::init() {
       encAxis2.setOrigin(settings.axis2.zero);
 
       syncFromOnStep(true);
-      settings.axis1.offset = encAxis1.offset;
-      settings.axis2.offset = encAxis2.offset;
+      settings.axis1.index = encAxis1.index;
+      settings.axis2.index = encAxis2.index;
 
       nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
     }
