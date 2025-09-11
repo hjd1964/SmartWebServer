@@ -77,12 +77,13 @@ void servoTileAjax(String &data)
     // make sure we have steps per measure for this axis
     if (_stepsPerMeasure[_servo_axis - 1] < 0) {
       _stepsPerMeasure[_servo_axis - 1] = 0.0;
-      AxisSettings a;
       char result[120];
-      sprintf(command, ":GXA%d#", _servo_axis);
+      sprintf(command, ":GXA%d,1#", _servo_axis);
       if (!onStep.command(command, result)) strcpy(result, "0");
-      if (decodeAxisSettings(result, &a)) {
-        _stepsPerMeasure[_servo_axis - 1] = a.stepsPerMeasure;
+      char *conv_end;
+      double stepsPerMeasure = strtod(result, &conv_end);
+      if (&temp[0] != conv_end) {
+        _stepsPerMeasure[_servo_axis - 1] = stepsPerMeasure;
       }
     }
 

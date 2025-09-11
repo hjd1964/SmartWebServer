@@ -118,6 +118,7 @@
 #define L_DRIVER_FAULT "Fault"
 
 // misc. errors/workload
+#define L_HARDWARE "Hardware"
 #define L_INTERNAL_TEMP "Controller Temperature"
 #define L_LAST_GENERAL_ERROR "Last Error"
 #define L_WORKLOAD "Workload"

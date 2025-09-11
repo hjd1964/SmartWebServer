@@ -118,6 +118,7 @@
 #define L_DRIVER_FAULT "过错"
 
 // misc. errors/workload
+#define L_HARDWARE "硬件"
 #define L_INTERNAL_TEMP "内部控制器温度"
 #define L_LAST_GENERAL_ERROR "最后一个一般(背景)错误"
 #define L_WORKLOAD "工作量"

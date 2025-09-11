@@ -16,6 +16,15 @@ void statusTile(String &data)
 
   // General status
 
+  // get hardware name
+  if (status.getVersionMajor() > 10 || (status.getVersionMajor() == 10 && status.getVersionMinor() >= 26)) {
+    if (onStep.command(":GVH#", temp)) {
+      data.concat(F(L_HARDWARE ": <span class='c'>"));
+      data.concat(temp);
+      data.concat(F("</span><br />"));
+    }
+  }
+
   sprintf_P(temp, html_indexGeneralError, state.lastErrorStr);
   data.concat(temp);
 
