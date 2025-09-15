@@ -357,11 +357,11 @@
 
 // AxisToTile.cpp has a count and array matching these values
 #define L_AXPN_STEPS_PER_DEG "Steps/degree"      // "$1" (first axis parameter)
-#define L_AXPN_LIMIT_DEGS_MIN "Min. limit degs"  // "$2"
-#define L_AXPN_LIMIT_DEGS_MAX "Max. limit degs"  // "$3"
+#define L_AXPN_LIMIT_DEGS_MIN "Min limit, degs"  // "$2"
+#define L_AXPN_LIMIT_DEGS_MAX "Max limit, degs"  // "$3"
 #define L_AXPN_STEPS_PER_UM "Steps/um"           // "$4"
-#define L_AXPN_LIMIT_UM_MIN "Min. limit um"      // "$5"
-#define L_AXPN_LIMIT_UM_MAX "Max. limit um"      // "$6"
+#define L_AXPN_LIMIT_UM_MIN "Min limit, um"      // "$5"
+#define L_AXPN_LIMIT_UM_MAX "Max limit, um"      // "$6"
 #define L_AXPN_REVERSE "Reverse"                 // "$7" (first motor parameter)
 #define L_AXPN_MICROSTEPS "Microsteps"           // "$8"
 #define L_AXPN_MICROSTEPS_GOTO "Microsteps Goto" // "$9"
@@ -378,6 +378,10 @@
 #define L_AXPN_PID_SLEWING_I "<big><code>I</code></big> Slewing" // "$20"
 #define L_AXPN_PID_SLEWING_D "<big><code>D</code></big> Slewing" // "$21"
 #define L_AXPN_RADS_PER_COUNT "Rads/count"       // "$22"
+#define L_AXPN_STEPS_TO_COUNTS "Steps/count ratio" // "$23"
+#define L_AXPN_MAX_ACCEL "Max accel, %/s/s"      // "$24"
+#define L_AXPN_MIN_PWR "Min power, %"            // "$25"
+#define L_AXPN_MAX_PWR "Max power, %"            // "$26"
 
 #define L_ADV_DECAY_SLOW "Slow"
 #define L_ADV_DECAY_FAST "Fast"

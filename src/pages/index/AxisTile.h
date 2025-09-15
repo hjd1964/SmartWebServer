@@ -35,7 +35,7 @@ const char html_configMountType[] PROGMEM =
   const char html_configAxisRevert[] PROGMEM =
   "<button name='revert' value='%d' type='submit'>" L_REVERT "</button>";
 
-  #define AXPN_COUNT 22
+  #define AXPN_COUNT 26
   const char html_axpn_1[] PROGMEM = L_AXPN_STEPS_PER_DEG;
   const char html_axpn_2[] PROGMEM = L_AXPN_LIMIT_DEGS_MIN;
   const char html_axpn_3[] PROGMEM = L_AXPN_LIMIT_DEGS_MAX;
@@ -58,4 +58,8 @@ const char html_configMountType[] PROGMEM =
   const char html_axpn_20[] PROGMEM = L_AXPN_PID_SLEWING_I;
   const char html_axpn_21[] PROGMEM = L_AXPN_PID_SLEWING_D;
   const char html_axpn_22[] PROGMEM = L_AXPN_RADS_PER_COUNT;
+  const char html_axpn_23[] PROGMEM = L_AXPN_STEPS_TO_COUNTS;
+  const char html_axpn_24[] PROGMEM = L_AXPN_MAX_ACCEL;
+  const char html_axpn_25[] PROGMEM = L_AXPN_MIN_PWR;
+  const char html_axpn_26[] PROGMEM = L_AXPN_MAX_PWR;
 #endif

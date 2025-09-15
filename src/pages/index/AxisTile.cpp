@@ -88,6 +88,10 @@ bool axisTile(int axis, String &data)
                   case 20: strcpy_P(name, html_axpn_20); break;
                   case 21: strcpy_P(name, html_axpn_21); break;
                   case 22: strcpy_P(name, html_axpn_22); break;
+                  case 23: strcpy_P(name, html_axpn_23); break;
+                  case 24: strcpy_P(name, html_axpn_24); break;
+                  case 25: strcpy_P(name, html_axpn_25); break;
+                  case 26: strcpy_P(name, html_axpn_26); break;
                 }
               }
 

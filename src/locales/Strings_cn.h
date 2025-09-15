@@ -355,7 +355,6 @@
 #define L_LOCATION_MESSAGE_UTC_OFFSET "标准时间的相对时区值（无冬季时间！）"
 
 // advanced configuration
-
 #define L_AXPN_STEPS_PER_DEG "步/度"
 #define L_AXPN_LIMIT_DEGS_MIN "最小限制度数"
 #define L_AXPN_LIMIT_DEGS_MAX "最大限制度数"
@@ -378,6 +377,10 @@
 #define L_AXPN_PID_SLEWING_I "I 摆动"
 #define L_AXPN_PID_SLEWING_D "D 摆动"
 #define L_AXPN_RADS_PER_COUNT "弧度/计数"
+#define L_AXPN_STEPS_TO_COUNTS "步数/计数比"
+#define L_AXPN_MAX_ACCEL "最大加速度，%/秒/秒"
+#define L_AXPN_MIN_PWR "最小功率，%"
+#define L_AXPN_MAX_PWR "最大功率，%"
 
 #define L_ADV_DECAY_SLOW "慢速"
 #define L_ADV_DECAY_FAST "快速"

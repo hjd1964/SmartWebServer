@@ -364,13 +364,12 @@
 #define L_LOCATION_MESSAGE_UTC_OFFSET "Entgegengesetzter Zeitzonenwert f&uuml;r die Standardzeit (Keine Winterzeit!)"
 
 // advanced configuration
-
 #define L_AXPN_STEPS_PER_DEG "Schritte/Grad"
-#define L_AXPN_LIMIT_DEGS_MIN "Min. Grenzwert Grad"
-#define L_AXPN_LIMIT_DEGS_MAX "Max. Grenzwert Grad"
+#define L_AXPN_LIMIT_DEGS_MIN "Min Grenzwert, Grad"
+#define L_AXPN_LIMIT_DEGS_MAX "Max Grenzwert, Grad"
 #define L_AXPN_STEPS_PER_UM "Schritte/µm"
-#define L_AXPN_LIMIT_UM_MIN "Min. Grenzwert µm"
-#define L_AXPN_LIMIT_UM_MAX "Max. Grenzwert µm"
+#define L_AXPN_LIMIT_UM_MIN "Min Grenzwert, µm"
+#define L_AXPN_LIMIT_UM_MAX "Max Grenzwert, µm"
 #define L_AXPN_REVERSE "Umkehren"
 #define L_AXPN_MICROSTEPS "Mikroschritte"
 #define L_AXPN_MICROSTEPS_GOTO "Mikroschritte Goto"
@@ -387,6 +386,10 @@
 #define L_AXPN_PID_SLEWING_I "I-Schwenken"
 #define L_AXPN_PID_SLEWING_D "D-Schwenken"
 #define L_AXPN_RADS_PER_COUNT "Rad/Zählung"
+#define L_AXPN_STEPS_TO_COUNTS "Schritt/zählen"
+#define L_AXPN_MAX_ACCEL "Beschleunigen, %/s/s"
+#define L_AXPN_MIN_PWR "Min Leistung, %"
+#define L_AXPN_MAX_PWR "Max Leistung, %"
 
 #define L_ADV_DECAY_SLOW "Langsam"
 #define L_ADV_DECAY_FAST "Schnell"
