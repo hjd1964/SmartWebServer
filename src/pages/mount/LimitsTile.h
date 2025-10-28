@@ -16,10 +16,10 @@ const char html_configFormEnd[] PROGMEM = "\n</form><br />\n</div><br />\n";
 
 // Overhead and Horizon limits - CONDITIONAL RESTRICTIONS FOR FORK MOUNTS
 const char html_configMinAlt[] PROGMEM =
-  "<input value='%d' type='number' name='hl'>&nbsp;" L_LIMITS_RANGE_HORIZON "<br />\n";
+  "<input value='%d' type='number' name='hl'>&nbsp;Horizon, min altitude &pm;90&deg;<br />\n";
 
 const char html_configMaxAlt[] PROGMEM =
-  "<input value='%d' type='number' name='ol'>&nbsp;" L_LIMITS_RANGE_OVERHEAD "<br />\n";
+  "<input value='%d' type='number' name='ol'>&nbsp;Overhead, max altitude &pm;90&deg;<br />\n";
 
 // Original restricted versions for non-fork mounts
 const char html_configMinAltRestricted[] PROGMEM =
