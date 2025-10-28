@@ -14,11 +14,18 @@ extern void limitsTileGet();
 const char html_configFormBegin[] PROGMEM = "<div class='content'><br />\n<form method='get' action='/configuration.htm'>";
 const char html_configFormEnd[] PROGMEM = "\n</form><br />\n</div><br />\n";
 
-// Overhead and Horizon limits
+// Overhead and Horizon limits - CONDITIONAL RESTRICTIONS FOR FORK MOUNTS
 const char html_configMinAlt[] PROGMEM =
-  "<input value='%d' type='number' name='hl' min='-30' max='30'>&nbsp;" L_LIMITS_RANGE_HORIZON "<br />\n";
+  "<input value='%d' type='number' name='hl'>&nbsp;" L_LIMITS_RANGE_HORIZON "<br />\n";
 
 const char html_configMaxAlt[] PROGMEM =
+  "<input value='%d' type='number' name='ol'>&nbsp;" L_LIMITS_RANGE_OVERHEAD "<br />\n";
+
+// Original restricted versions for non-fork mounts
+const char html_configMinAltRestricted[] PROGMEM =
+  "<input value='%d' type='number' name='hl' min='-30' max='30'>&nbsp;" L_LIMITS_RANGE_HORIZON "<br />\n";
+
+const char html_configMaxAltRestricted[] PROGMEM =
   "<input value='%d' type='number' name='ol' min='60' max='90'>&nbsp;" L_LIMITS_RANGE_OVERHEAD "<br />\n";
 
 const char html_configBlAxis1[] PROGMEM =

@@ -71,12 +71,20 @@ void limitsTile(String &data)
 
   data.concat(F("<br />Limits:<br />"));
 
-  // Overhead and Horizon Limits
-  sprintf_P(temp, html_configMinAlt, minAlt);
-  data.concat(temp);
-
-  sprintf_P(temp, html_configMaxAlt, maxAlt);
-  data.concat(temp);
+  // Overhead and Horizon Limits - Conditional restrictions for fork mounts
+  if (status.mountType == MT_FORK) {
+    // Fork mounts: No restrictions on horizon limits
+    sprintf_P(temp, html_configMinAlt, minAlt);
+    data.concat(temp);
+    sprintf_P(temp, html_configMaxAlt, maxAlt);
+    data.concat(temp);
+  } else {
+    // Other mount types: Use restricted limits
+    sprintf_P(temp, html_configMinAltRestricted, minAlt);
+    data.concat(temp);
+    sprintf_P(temp, html_configMaxAltRestricted, maxAlt);
+    data.concat(temp);
+  }
 
   // Meridian Limits
   if (status.mountType == MT_GEM)
@@ -112,25 +120,39 @@ extern void limitsTileGet()
   String v;
   char temp[80];
 
-  // Overhead limit
+  // Overhead limit - Conditional restrictions for fork mounts
   v = www.arg("ol");
   if (!v.equals(EmptyStr))
   {
-    if (v.toInt() >= 60 && v.toInt() <= 90)
-    {
+    if (status.mountType == MT_FORK) {
+      // Fork mounts: No restrictions
       sprintf(temp, ":So%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
+    } else {
+      // Other mount types: Apply restrictions
+      if (v.toInt() >= 60 && v.toInt() <= 90)
+      {
+        sprintf(temp, ":So%d#", (int16_t)v.toInt());
+        onStep.commandBool(temp);
+      }
     }
   }
 
-  // Horizon limit
+  // Horizon limit - Conditional restrictions for fork mounts
   v = www.arg("hl");
   if (!v.equals(EmptyStr))
   {
-    if (v.toInt() >= -30 && v.toInt() <= 30)
-    {
+    if (status.mountType == MT_FORK) {
+      // Fork mounts: No restrictions
       sprintf(temp, ":Sh%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
+    } else {
+      // Other mount types: Apply restrictions
+      if (v.toInt() >= -30 && v.toInt() <= 30)
+      {
+        sprintf(temp, ":Sh%d#", (int16_t)v.toInt());
+        onStep.commandBool(temp);
+      }
     }
   }
 
