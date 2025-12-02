@@ -127,6 +127,11 @@ void handleAux() {
       } else
       if (state.featurePurpose() == DEW_HEATER) {
         data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>"));
+        #if UNITS == METRIC
+          data.concat("DP " L_DP_MSG " (&deg;C)");
+        #else
+          data.concat("DP " L_DP_MSG " (&deg;F)");
+        #endif
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         sprintf_P(temp, html_auxOnSwitch, i + 1, i + 1); data.concat(temp);
         sprintf_P(temp, html_auxOffSwitch, i + 1, i + 1); data.concat(temp);
@@ -136,11 +141,11 @@ void handleAux() {
         data.concat(temp);
         data.concat(F("</div>\n"));
 
-        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
-        data.concat(L_ZERO " (100% " L_POWER ")");
+        data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_DP_ZERO);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxHeater));
-        sprintf(temp,"%d' onchange=\"sz('x%dv2',this.value)\">", (int)lround(celsiusToNativeRelative(state.featureValue2())*10.0F), i + 1);
+        sprintf(temp,"%d' onchange=\"sz('x%dv2',this.value)\">", (int)lround(celsiusToNativeRelative(state.featureValue2())*DEW_HEATER_CONTROL_SCALE), i + 1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(celsiusToNativeRelative(state.featureValue2()), 3, 1, temp1);
@@ -148,11 +153,11 @@ void handleAux() {
         data.concat(temp);
         data.concat(F("</div>\n"));
         
-        data.concat(F("<div style='float: left; text-align: right; width: 8em; height: 2em; line-height: 2em'>"));
-        data.concat(L_SPAN " (0% " L_POWER ")");
+        data.concat(F("<div style='float: left; width: 8em; height: 2em; line-height: 2em'>"));
+        data.concat(L_DP_SPAN);
         data.concat(F("</div><div style='float: left; width: 14em; height: 2em; line-height: 2em'>"));
         data.concat(FPSTR(html_auxHeater));
-        sprintf(temp,"%d' onchange=\"sz('x%dv3',this.value)\">", (int)lround(celsiusToNativeRelative(state.featureValue3())*10.0), i + 1);
+        sprintf(temp,"%d' onchange=\"sz('x%dv3',this.value)\">", (int)lround(celsiusToNativeRelative(state.featureValue3())*DEW_HEATER_CONTROL_SCALE), i + 1);
         data.concat(temp);
         data.concat(F("</div><div style='float: left; width: 4em; height: 2em; line-height: 2em'>"));
         dtostrf(celsiusToNativeRelative(state.featureValue3()), 3, 1, temp1);
@@ -361,14 +366,14 @@ void processAuxGet() {
       sprintf(temp, "x%cv2", c);
       v = www.arg(temp);
       if (!v.equals(EmptyStr)) {
-        dtostrf(nativeToCelsiusRelative(v.toFloat()/10.0), 0, 1, temp1);
+        dtostrf(nativeToCelsiusRelative(v.toFloat()/DEW_HEATER_CONTROL_SCALE), 0, 1, temp1);
         sprintf(temp, ":SXX%c,Z%s#", c, temp1);
         onStep.commandBool(temp);
       }
       sprintf(temp, "x%cv3", c);
       v = www.arg(temp);
       if (!v.equals(EmptyStr)) {
-        dtostrf(nativeToCelsiusRelative(v.toFloat()/10.0), 0, 1, temp1);
+        dtostrf(nativeToCelsiusRelative(v.toFloat()/DEW_HEATER_CONTROL_SCALE), 0, 1, temp1);
         sprintf(temp, ":SXX%c,S%s#", c, temp1);
         onStep.commandBool(temp);
       }

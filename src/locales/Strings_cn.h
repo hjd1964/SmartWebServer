@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// Locale Chinese ISO ISO639-1 language code "cn"
+// Locale Chinese, ISO ISO639-1 language code "cn"
 #pragma once
 
 // General
@@ -28,8 +28,9 @@
 #define L_OFF "关"
 #define L_START "开始"
 #define L_DELTA "对冲值"
-#define L_ZERO "零"
-#define L_SPAN "跨度"
+#define L_DP_MSG  "相对"
+#define L_DP_ZERO "低于则全功率"
+#define L_DP_SPAN "高于则关闭"
 #define L_POWER "功率"
 #define L_GUIDE "引导"
 #define L_CENTER "居中"

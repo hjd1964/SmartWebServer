@@ -17,9 +17,11 @@ const char html_auxStartStop3[] PROGMEM = "','0')\" type='button'>" L_STOP "</bu
 
 const char html_auxAnalog[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='0' max='255' value='";
 #if UNITS == METRIC
-  const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-50' max='200' value='";
+  const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-10' max='40' value='";
+  #define DEW_HEATER_CONTROL_SCALE 2.0F
 #else
-  const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-90' max='360' value='";
+  const char html_auxHeater[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='-9' max='36' value='";
+  #define DEW_HEATER_CONTROL_SCALE 1.0F
 #endif
 const char html_auxExposure[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='0' max='255' value='";
 const char html_auxDelay[] PROGMEM ="<input style='width: 12em; background: #111' type='range' min='10' max='255' value='";

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// Locale German  ISO ISO639-1 language code "de"
+// Locale German, ISO ISO639-1 language code "de"
 #pragma once
 
 // special German characters 
@@ -37,8 +37,9 @@
 #define L_OFF "Aus"
 #define L_START "Anfang"
 #define L_DELTA "Delta"
-#define L_ZERO "Null"
-#define L_SPAN "Spanne"
+#define L_DP_MSG  "Rel."
+#define L_DP_ZERO "Volle Leist. unter"
+#define L_DP_SPAN "Heiz. aus über"
 #define L_POWER "Macht"
 #define L_GUIDE "Nachf&uuml;hrung"
 #define L_CENTER "Zentrieren"

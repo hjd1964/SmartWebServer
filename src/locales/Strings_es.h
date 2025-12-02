@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// Locale English (default,) ISO ISO639-1 language code "en"
+// Locale Spanish, ISO ISO639-1 language code "es"
 #pragma once
 
 // General
@@ -28,8 +28,9 @@
 #define L_OFF "Off"
 #define L_START "Iniciar"
 #define L_DELTA "Delta"
-#define L_ZERO "Zero"
-#define L_SPAN "Span"
+#define L_DP_MSG  "Rel."
+#define L_DP_ZERO "Máx. pot. bajo"
+#define L_DP_SPAN "Apaga sobre"
 #define L_POWER "Pwr"
 #define L_GUIDE "Guiar"
 #define L_CENTER "Centrar"
