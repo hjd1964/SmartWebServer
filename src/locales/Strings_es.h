@@ -176,7 +176,7 @@
 #define L_HINT_CLOCK "Establecer fecha/hora"
 #define L_HINT_CONTINUE_GOTO "Continuar GoTo (cuando está en pausa en posición de Inicio)"
 #define L_HOME_PARK_TITLE "Localización y Posición de Inicio"
-#define L_FIND_HOME "Buscar Posición de Inicio"
+#define L_RETURN_HOME "Buscar Posición de Inicio"
 #define L_RESET_HOME "Posición de Inicio (Resetear)"
 #define L_UNPARK "Desestacionar"
 #define L_PARK "Estacionar"

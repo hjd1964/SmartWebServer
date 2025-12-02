@@ -176,7 +176,7 @@
 #define L_HINT_CLOCK "设置日期/时间"
 #define L_HINT_CONTINUE_GOTO "继续转到（如果在原位）"
 #define L_HOME_PARK_TITLE "归巢和停车"
-#define L_FIND_HOME "搜索起始位置"
+#define L_RETURN_HOME "搜索起始位置"
 #define L_RESET_HOME "原始位置（重置）"
 #define L_UNPARK "取消停车"
 #define L_PARK "停车"

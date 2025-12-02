@@ -12,7 +12,7 @@ extern void homeParkTileGet();
 
 // Homing
 const char html_homeReturn[] PROGMEM =
-"<button onpointerdown=\"g('qh')\" type='button'>" ARROW_DR HOME_CH " " L_FIND_HOME "</button>";
+"<button onpointerdown=\"g('qh')\" type='button'>" ARROW_DR HOME_CH " " L_RETURN_HOME "</button>";
 const char html_homeReset[] PROGMEM =
 "<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) g('qr')\" type='button'>" CAUTION_CH HOME_CH " " L_RESET_HOME "</button>";
 

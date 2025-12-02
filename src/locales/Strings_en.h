@@ -176,7 +176,7 @@
 #define L_HINT_CLOCK "Set Date/Time"
 #define L_HINT_CONTINUE_GOTO "Continue Goto (when paused at home)"
 #define L_HOME_PARK_TITLE "Homing and Parking"
-#define L_FIND_HOME "Find Home"
+#define L_RETURN_HOME "Return Home"
 #define L_RESET_HOME "Home (Reset)"
 #define L_UNPARK "Un-Park"
 #define L_PARK "Park"

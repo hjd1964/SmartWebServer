@@ -185,7 +185,7 @@
 #define L_HINT_CLOCK "Setze Datum/Zeit"
 #define L_HINT_CONTINUE_GOTO "Setze Goto fort (wenn pausiert bei Homeposition)"
 #define L_HOME_PARK_TITLE "Referenzieren und Parken"
-#define L_FIND_HOME "Suche Homeposition"
+#define L_RETURN_HOME "Suche Homeposition"
 #define L_RESET_HOME "Homeposition (Reset)"
 #define L_UNPARK "Entparken"
 #define L_PARK "Parken"

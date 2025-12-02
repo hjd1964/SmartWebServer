@@ -12,6 +12,6 @@ extern void focuserHomeTileGet();
 
 const char html_focuserHome[] PROGMEM =
   "<button onpointerdown=\"gf('Fh')\" type='button'>"
-  ARROW_DR HOME_CH " " L_FIND_HOME "</button>"
+  ARROW_DR HOME_CH " " L_RETURN_HOME "</button>"
   "<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) gf('FH')\" type='button'>"
   CAUTION_CH HOME_CH " " L_RESET_HOME "</button>&nbsp;&nbsp;&nbsp;&nbsp;";
