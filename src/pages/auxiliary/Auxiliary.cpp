@@ -5,6 +5,9 @@
 #include "../Page.h"
 #include "../Pages.common.h"
 
+#include "../../lib/convert/Convert.h"
+
+extern void handleNotFound();
 void processAuxGet();
 
 void handleAux() {
@@ -12,6 +15,7 @@ void handleAux() {
   char temp1[80] = "";
 
   state.updateAuxiliary(false, true);
+  if (status.auxiliaryFound != SD_TRUE) { handleNotFound(); return; }
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
@@ -81,23 +85,21 @@ void handleAux() {
       sprintf_P(temp, html_tile_beg, "27em", "8em", title); data.concat(temp);
 
       data.concat(F("<div style='float: right; text-align: right;' class='c'>"));
-      #if defined(V_SENSE_PINS) && defined(V_SENSE_FORMULA)
-        int voltageSensePin[8] = V_SENSE_PINS;
-        if (voltageSensePin[i] >= 0) {
-          sprintf(temp,"<span id='vout%d'>?</span>V", i + 1);
-          data.concat(temp);
-        }
-        #if defined(I_SENSE_PINS) && defined(I_SENSE_FORMULA)
-          data.concat(" @ ");
-        #endif
-      #endif
-      #if defined(I_SENSE_PINS) && defined(I_SENSE_FORMULA)
-        int currentSensePin[8] = I_SENSE_PINS;
-        if (currentSensePin[i] >= 0) {
-          sprintf(temp,"<span id='iout%d'>?</span>A", i + 1);
-          data.concat(temp);
-        }
-      #endif
+
+      float voltageV = state.featureVoltage();
+      float currentI = state.featureCurrent();
+
+      if (!isnan(voltageV)) {
+        sprintf(temp,"<span id='vout%d'>?</span>V", i + 1);
+        data.concat(temp);
+        if (!isnan(currentI)) data.concat(" @ ");
+      }
+
+      if (!isnan(currentI)) {
+        sprintf(temp,"<span id='iout%d'>?</span>A", i + 1);
+        data.concat(temp);
+      }
+
       data.concat(F("</div><br /><hr>"));
 
       if (state.featurePurpose() == SWITCH) {
@@ -248,13 +250,6 @@ void auxAjaxGet() {
   www.sendContent("");
 }
 
-#if defined(V_SENSE_PINS) && defined(V_SENSE_FORMULA)
-  extern float featureVoltage[8];
-#endif
-#if defined(I_SENSE_PINS) && defined(I_SENSE_FORMULA)
-  extern float featureCurrent[8];
-#endif
-
 void auxAjax() {
   String data="";
   char temp[120]="";
@@ -269,33 +264,34 @@ void auxAjax() {
     for (int i = 0; i < 8; i++) {
       state.selectFeature(i);
 
-      #if defined(V_SENSE_PINS) && defined(V_SENSE_FORMULA)
-        if (!isnan(featureVoltage[i])) {
+      if (state.featurePurpose() && state.featurePurpose() != INTERVALOMETER && state.featurePurpose() != COVER_SWITCH) {
+
+        const float voltageV = state.featureVoltage();
+        const float currentI = state.featureCurrent();
+        if (!isnan(voltageV)) {
           if (state.featureValue1()) {
             sprintf(temp, "vout%d|", i + 1);
             data.concat(temp);
-            sprintF(temp, "%3.1f\n", featureVoltage[i]);
+            sprintF(temp, "%3.1f\n", voltageV);
             data.concat(temp);
           } else {
             sprintf(temp, "vout%d|0.0\n", i + 1);
             data.concat(temp);
           }
         }
-      #endif
 
-      #if defined(I_SENSE_PINS) && defined(I_SENSE_FORMULA)
-        if (!isnan(featureCurrent[i])) {
-          if (fabs(featureCurrent[i]) > 0.2499F) {
+        if (!isnan(currentI)) {
+          if (fabs(currentI) > 0.2499F) {
             sprintf(temp, "iout%d|", i + 1);
             data.concat(temp);
-            sprintF(temp, "%3.1f\n", featureCurrent[i]);
+            sprintF(temp, "%3.1f\n", currentI);
             data.concat(temp);
           } else {
             sprintf(temp, "iout%d|0.0\n", i + 1);
             data.concat(temp);
           }
         }
-      #endif
+      }
 
       if (state.featurePurpose() == SWITCH) {
         if (state.featureValue1() != 0) {
