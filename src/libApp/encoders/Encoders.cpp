@@ -150,7 +150,7 @@ void Encoders::init() {
   void Encoders::poll() {
     char *conv_end;
 
-    if (status.mountFound != SD_TRUE) return;
+    if (!status.ready || status.mountFound != SD_TRUE) return;
 
     char result[80];
     if (onStep.command(":GX42#", result) && strlen(result) > 1) {
@@ -176,7 +176,7 @@ void Encoders::init() {
     bool syncDuringGoto = false;
     if (ENC_SYNC_DURING_GOTO == ON && status.getVersionMajor() * 100 + status.getVersionMinor() >= 1015) syncDuringGoto = true;
 
-    if (settings.autoSync && status.onStepFound && !enAxis1Fault && !enAxis2Fault) {
+    if (settings.autoSync && !enAxis1Fault && !enAxis2Fault) {
       if (
           #ifdef ENC_ABSOLUTE
             (status.getVersionMajor() * 100 + status.getVersionMinor() < 1015 && (status.atHome || status.parked)) ||
