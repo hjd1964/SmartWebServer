@@ -45,6 +45,8 @@ class State {
     inline float featureValue2() { return status.feature[featureSelected].value2; }
     inline float featureValue3() { return status.feature[featureSelected].value3; }
     inline float featureValue4() { return status.feature[featureSelected].value4; }
+    inline float featureVoltage() { return status.feature[featureSelected].voltage; }
+    inline float featureCurrent() { return status.feature[featureSelected].current; }
 
     void updateEncoders(bool now = false);
 
@@ -108,7 +110,6 @@ class State {
 
     int featureSelected = 0;
 
-    int focuserActive = 0;
     int focuserSelected = 0;
     char focuserPositionStr[20] = "?";
     bool focuserSlewing = false;

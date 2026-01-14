@@ -22,6 +22,8 @@ typedef struct Features {
     float value2;
     float value3;
     float value4;
+    float voltage;
+    float current;
 } features;
 
 #define PierSideNone     0
@@ -49,6 +51,7 @@ class Status {
 
     char configName[40] = "";
 
+    bool ready = false;
     bool atHome = false;
     bool homing = false;
     bool hasHomeSense = false;

@@ -6,13 +6,15 @@
 #include "../KeyValue.h"
 #include "../Pages.common.h"
 
+extern void handleNotFound();
 void processRotatorGet();
 
 void handleRotator() {
   char temp[240] = "";
 
   state.updateRotator(true);
-
+  if (status.rotatorFound != SD_TRUE) { handleNotFound(); return; }
+  
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();
 

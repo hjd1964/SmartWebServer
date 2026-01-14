@@ -6,12 +6,14 @@
 #include "../Page.h"
 #include "../Pages.common.h"
 
+extern void handleNotFound();
 void processFocuserGet();
 
 void handleFocuser() {
   char temp[240] = "";
 
   state.updateFocuser(true);
+  if (status.focuserFound != SD_TRUE) { handleNotFound(); return; }
 
   SERIAL_ONSTEP.setTimeout(webTimeout);
   onStep.serialRecvFlush();

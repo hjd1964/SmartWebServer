@@ -15,32 +15,8 @@ void State::updateRotator(bool now)
 
   if (status.rotatorFound == SD_TRUE) {
 
-    // rotator position
-    if (onStep.command(":rG#", temp1))
-    {
-      temp1[4] = 0;
-      strcpy(temp, temp1);
-      strcat(temp, "&deg;");
-      strcat(temp, &temp1[5]);
-      strcat(temp, "&#39;");
-    } else strcpy(temp, "?");
-    strncpyex(rotatorPositionStr, temp, 20); Y;
-
-    // rotator working slew rate
-    if (status.getVersionMajor() >= 10)
-    {
-      if (onStep.command(":rW#", temp))
-      {
-        double s = atof(temp);
-        if (s != 0.0) {
-          sprintF(rotateSlewSpeedStr, "%0.1f&deg;/s", s);
-        } else strcpy(rotateSlewSpeedStr, "?");
-      } else strcpy(rotateSlewSpeedStr, "?");
-    } else strcpy(rotateSlewSpeedStr, "?");
-
     // rotator status
-    if (onStep.command(":rT#", temp))
-    {
+    if (onStep.command(":rT#", temp)) {
       rotatorSlewing = (bool)strchr(temp, 'M');
       rotatorDerotate = (bool)strchr(temp, 'D');
       rotatorDerotateReverse = (bool)strchr(temp, 'R');
@@ -53,11 +29,36 @@ void State::updateRotator(bool now)
         default: rotatorGotoRate = 0; break;
       }
     } else {
+      strcpy(rotatorPositionStr, "?");
       rotatorSlewing = false;
       rotatorDerotate = false;
       rotatorDerotateReverse = false;
-      rotatorGotoRate = 0;
+      rotatorGotoRate = 3;
+      strcpy(rotateSlewSpeedStr, "?");
+      status.rotatorFound = SD_UNKNOWN;
+      return;
     }
     Y;
+
+    // rotator position
+    if (onStep.command(":rG#", temp1)) {
+      temp1[4] = 0;
+      strcpy(temp, temp1);
+      strcat(temp, "&deg;");
+      strcat(temp, &temp1[5]);
+      strcat(temp, "&#39;");
+    } else strcpy(temp, "?");
+    strncpyex(rotatorPositionStr, temp, 20); Y;
+
+    // rotator working slew rate
+    if (status.getVersionMajor() >= 10) {
+      if (onStep.command(":rW#", temp)) {
+        double s = atof(temp);
+        if (s != 0.0) {
+          sprintF(rotateSlewSpeedStr, "%0.1f&deg;/s", s);
+        } else strcpy(rotateSlewSpeedStr, "?");
+      } else strcpy(rotateSlewSpeedStr, "?");
+    } else strcpy(rotateSlewSpeedStr, "?");
+
   }
 }

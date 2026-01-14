@@ -8,15 +8,32 @@
 #include "../../locales/Locale.h"
 #include "../../lib/convert/Convert.h"
 
-void State::updateFocuser(bool now)
-{
+void State::updateFocuser(bool now) {
   if (!now && millis() - lastFocuserPageLoadTime > 2000) return;
 
   char temp[80];
 
   // identify active focuser
   if (status.getVersionMajor() >= 10) {
-    if (onStep.command(":FA#", temp)) focuserSelected = atoi(temp); else focuserSelected = 0;
+    if (!onStep.command(":FA#", temp)) focuserSelected = 0; else focuserSelected = atoi(temp);  
+    delay(0);
+    
+    if (focuserSelected < 1 || focuserSelected > 6) {
+      // reset and attempt re-discovery
+      focuserSelected = 0;
+      strcpy(focuserPositionStr, "?");
+      focuserSlewing = false;
+      strcpy(focuserTemperatureStr, "?");
+      strcpy(focuserBacklashStr, "?");
+      strcpy(focuserDeadbandStr, "?");
+      focuserTcfEnable = false;
+      strcpy(focuserTcfCoefStr, "?");
+      focuserGotoRate = 3;
+      strcpy(focuserSlewSpeedStr, "?");
+      status.focuserFound = SD_UNKNOWN;
+      return;
+    }
+
   } else {
     if (onStep.command(":Fa#", temp)) {
       focuserSelected = atoi(temp);
