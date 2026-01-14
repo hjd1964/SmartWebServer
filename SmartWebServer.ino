@@ -69,7 +69,7 @@
 #endif
 
 void systemServices() {
-  nv.poll();
+  nv.poll(false);
 }
 
 void pollWebSvr() {
