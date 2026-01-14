@@ -4,6 +4,7 @@
 
 #include "../KeyValue.h"
 #include "../Pages.common.h"
+#include "../../lib/tasks/OnTask.h"
 
 // create the related webpage tile
 void statusTile(String &data)
@@ -152,7 +153,10 @@ void statusTileGet()
         pinMode(RESET_PIN, INPUT);
       #endif
 
-      delay(250);
+      // and also attempt to reset the SWS
+      tasks.yield(1000);
+      HAL_RESET();
+
       return;
     }
     if (ssa.equals("wipe"))
