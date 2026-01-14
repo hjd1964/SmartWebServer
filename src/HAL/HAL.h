@@ -16,6 +16,21 @@
  */
 #pragma once
 
+// null decoration for non-ESP processors
+#ifndef IRAM_ATTR
+  #define IRAM_ATTR
+#endif
+
+#ifndef ICACHE_RAM_ATTR
+  #define ICACHE_RAM_ATTR
+#endif
+
+#ifndef FPSTR
+  #define FPSTR
+#endif
+
+#include "HAL_FAST_TICKS.h"
+
 #if defined(__AVR_ATmega328P__)
   #define MCU_STR "AtMega328"
   #include "atmel/Mega328.h"
@@ -150,33 +165,25 @@
   #include "default/Default.h"
 #endif
 
-// create null decoration for non-ESP processors
-#ifndef IRAM_ATTR
-  #define IRAM_ATTR
+#include "HAL_ANALOG.h"
+
+#ifndef HAL_INIT
+  #define HAL_INIT() do { HAL_FAST_TICKS_INIT(); } while (0)
 #endif
 
-#ifndef ICACHE_RAM_ATTR
-  #define ICACHE_RAM_ATTR
-#endif
-
-#ifndef FPSTR
-  #define FPSTR
-#endif
-
+// baseline critical task timing
 #ifdef HAL_FRACTIONAL_SEC
   #define FRACTIONAL_SEC  HAL_FRACTIONAL_SEC
 #else
   #define FRACTIONAL_SEC  100.0F
 #endif
 
-#ifndef HAL_MIN_PPS_SUB_MICRO
-  #define HAL_MIN_PPS_SUB_MICRO 4
-#endif
-
+// progmem standin for platforms that don't have it
 #ifndef CAT_ATTR
   #define CAT_ATTR
 #endif
 
+// default I2C interface
 #if defined(HAL_WIRE_CLOCK)
   #define HAL_WIRE_SET_CLOCK() HAL_WIRE.setClock(HAL_WIRE_CLOCK)
 #else
