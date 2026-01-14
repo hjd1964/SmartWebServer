@@ -22,6 +22,7 @@
 #define ANALOG_OUTPUT                2
 #define DEW_HEATER                   3
 #define INTERVALOMETER               4
+#define COVER_SWITCH                 7
 
 // The settings below are for initialization only, afterward they are stored and recalled from EEPROM and must
 // be changed in the web interface OR with a reset (for initialization again) as described in the Config.h comments
