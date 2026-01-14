@@ -404,7 +404,6 @@
 #define L_ADV_SET_FOOTER_MSG0 "La mayoría de los cambios en la configuración de los ejes requieren un reinicio para que surtan efecto."
 #define L_ADV_SET_FOOTER_MSG1 "Después de presionar [Cargar], tome nota de los cambios anteriores, ya que la carga puede haber sido rechazada debido a un parámetro no válido."
 #define L_ADV_SET_FOOTER_MSG2 "Cuando elige [Revertir], ese grupo deja de estar disponible para editar hasta que reinicia OnStep."
-#define L_ADV_SET_FOOTER_MSG3 "Si IRUN se establece en un valor diferente al predeterminado de Config.h, IHOLD se establece en(HALF.)"
 #define L_ADV_SET_FOOTER_MSG4 "Cambiar la relación de Pasos de Axis1 por rotación de engranajes y Pasos por grado puede dañar el área de memoria de Library NV, primero haga una copia de seguridad de los catálogos si es necesario."
 
 // reset control

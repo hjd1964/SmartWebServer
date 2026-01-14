@@ -406,7 +406,6 @@
 #define L_ADV_SET_FOOTER_MSG0 "Most axis setting changes require a reboot to take effect."
 #define L_ADV_SET_FOOTER_MSG1 "After pressing [Upload] take note of changes above since the upload may have been rejected due to an invalid parameter."
 #define L_ADV_SET_FOOTER_MSG2 "When you choose to [Revert] that group becomes unavailable for editing until you reboot OnStep."
-#define L_ADV_SET_FOOTER_MSG3 "If IRUN is set to other than the Config.h default, IHOLD is set to 50% (HALF.)"
 #define L_ADV_SET_FOOTER_MSG4 "Changing the ratio of Axis1 Steps per worm rotation and Steps per degree may corrupt the Library NV memory area, backup any catalogs first if needed."
 
 // reset control

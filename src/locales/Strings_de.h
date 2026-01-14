@@ -414,7 +414,6 @@
 #define L_ADV_SET_FOOTER_MSG0 "Die meisten Änderungen an den Achseneinstellungen erfordern einen Neustart, damit sie wirksam werden."
 #define L_ADV_SET_FOOTER_MSG1 "Beachten Sie nach dem Drücken von [Upload] die obigen Änderungen, da der Upload möglicherweise aufgrund eines ungültigen Parameters abgelehnt wurde."
 #define L_ADV_SET_FOOTER_MSG2 "Wenn Sie [Zurücksetzen] wählen, kann diese Gruppe erst bearbeitet werden, wenn Sie OnStep neu starten."
-#define L_ADV_SET_FOOTER_MSG3 "Wenn IRUN auf einen anderen Wert als den Standardwert von Config.h eingestellt ist, wird IHOLD auf 50% (HALF) eingestellt."
 #define L_ADV_SET_FOOTER_MSG4 "Durch Ändern des Verhältnisses von Axis1-Schritten pro Wurmdrehung und Schritten pro Grad kann der Speicherbereich von Library NV beschädigt werden. Sichern Sie bei Bedarf zuerst alle Kataloge."
 
 // reset control

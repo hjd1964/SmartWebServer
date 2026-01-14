@@ -405,7 +405,6 @@
 #define L_ADV_SET_FOOTER_MSG0 "大多数轴设置更改需要重新启动才能生效。"
 #define L_ADV_SET_FOOTER_MSG1 "在按下[Upload]后，请注意上述更改，因为上载可能由于参数无效而被拒绝。"
 #define L_ADV_SET_FOOTER_MSG2 "当您选择[还原]时，该组将不可编辑，直到您重新启动OnStep。"
-#define L_ADV_SET_FOOTER_MSG3 "如果 IRUN 设置为非 Config.h 默认值，则 IHOLD 设置为 50% (HALF)。"
 #define L_ADV_SET_FOOTER_MSG4 "更改每蠕虫蠕虫的Axis1步进数和每度步进数的比率可能会损坏Library NV存储区，如果需要，请首先备份所有目录。"
 
 // reset control
