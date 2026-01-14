@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// axis ktech servo motor
+// axis ktech servo motor (designed for the MS4010v3)
 #pragma once
 #include "../../../../Common.h"
 
@@ -11,11 +11,6 @@
 
 #include "../Motor.h"
 #include "../../../convert/Convert.h"
-
-// KTECH update rate default 10Hz
-#ifndef CAN_SEND_RATE_MS
-  #define CAN_SEND_RATE_MS 100
-#endif
 
 // KTECH status rate default 1Hz
 #ifndef KTECH_STATUS_MS
@@ -52,12 +47,13 @@ class KTechMotor : public Motor {
 
     // get the associated driver status
     DriverStatus getDriverStatus() { if (ready) updateStatus(); else status = errorStatus; return status; }
+    bool hasHeartbeat(uint32_t maxAgeMs) const;
 
     // resets motor and target angular position in steps, also zeros backlash and index 
     void resetPositionSteps(long value);
 
     // get tracking mode steps per slewing mode step
-    inline int getStepsPerStepSlewing() { return 64; }
+    inline int getStepsPerStepSlewing() { return 256; }
 
     // get movement frequency in steps per second
     float getFrequencySteps();
@@ -84,25 +80,27 @@ class KTechMotor : public Motor {
     const char* name() { return "KTECH"; }
 
   private:
+    void stopSyntheticMotion();
+    void resetToTrackingBaseline();
+
     int canID;
 
     unsigned long lastSetPositionTime = 0;
     unsigned long lastStatusRequestTime = 0;
     unsigned long lastStatusUpdateTime = 0;
+    bool statusValid = false;
 
     uint8_t taskHandle = 0;
 
     int  stepSize = 1;                  // step size
-    volatile int  homeSteps = 1;        // step count for microstep sequence between home positions (driver indexer)
     volatile bool takeStep = false;     // should we take a step
     long lastTarget = 0;
 
     float currentFrequency = 0.0F;      // last frequency set 
-    float lastFrequency = 0.0F;         // last frequency requested
     unsigned long lastPeriod = 0;       // last timer period (in sub-micros)
     float maxFrequency = HAL_FRACTIONAL_SEC; // fastest timer rate
 
-    volatile int absStep = 1;           // absolute step size (unsigned)
+    volatile int absStep = 0;           // absolute step size (unsigned)
 
     void (*callback)() = NULL;
 

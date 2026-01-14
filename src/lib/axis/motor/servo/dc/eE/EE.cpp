@@ -6,6 +6,7 @@
 #ifdef SERVO_EE_PRESENT
 
 #include "../../../../../gpioEx/GpioEx.h"
+#include "../../../../../analog/Analog.h"
 
 ServoEE::ServoEE(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings *Settings, float pwmMinimum, float pwmMaximum)
                  :ServoDcDriver(axisNumber, Pins, Settings, pwmMinimum, pwmMaximum) {
@@ -16,7 +17,7 @@ ServoEE::ServoEE(uint8_t axisNumber, const ServoPins *Pins, const ServoSettings 
 }
 
 bool ServoEE::init(bool reverse) {
-  if (!ServoDriver::init(reverse)) return false;
+if (!ServoDcDriver::init(reverse)) return false;
 
   #if DEBUG == VERBOSE
     VF("MSG:"); V(axisPrefix);
@@ -30,68 +31,59 @@ bool ServoEE::init(bool reverse) {
   pinModeEx(Pins->ph2, OUTPUT);
   digitalWriteF(Pins->ph2, Pins->ph2State); // either ph2 or step (PWM,) state should default to inactive
 
-  // set PWM frequency
+  // set PWM range & frequency
+  AnalogPwmConfig scfg{};
   #ifdef SERVO_ANALOG_WRITE_FREQUENCY
-    VF("MSG:"); V(axisPrefix); VF("setting control pins analog frequency "); VL(SERVO_ANALOG_WRITE_FREQUENCY);
-    analogWriteFrequency(Pins->ph2, SERVO_ANALOG_WRITE_FREQUENCY);
+    scfg.hz = SERVO_ANALOG_WRITE_FREQUENCY;
   #endif
-
-  // set PWM bits
-  #ifdef SERVO_ANALOG_WRITE_RESOLUTION
-    VF("MSG:"); V(axisPrefix); VF("setting control pins analog bits "); VL(SERVO_ANALOG_WRITE_RESOLUTION);
-    analogWriteResolution(Pins->ph2, SERVO_ANALOG_WRITE_RESOLUTION);
+  #ifdef SERVO_ANALOG_WRITE_RANGE
+    scfg.range = SERVO_ANALOG_WRITE_RANGE;
   #endif
+  if (!analog.pwmInit(Pins->ph1, scfg)) return false;
+  if (!analog.pwmInit(Pins->ph2, scfg)) return false;
 
   return true;
 }
 
 // enable or disable the driver using the enable pin or other method
 void ServoEE::enable(bool state) {
-  enabled = state;
+  ServoDriver::enable(state);
 
   VF("MSG:"); V(axisPrefix);
   if (!enabled) {
     VF("EE outputs off");
-    if (Pins->ph1State == HIGH) analogWrite(Pins->ph1, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph1, 0);
-    if (Pins->ph2State == HIGH) analogWrite(Pins->ph2, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph2, 0);
 
-    if (enablePin != SHARED) {
-      VF(" and powered down using enable pin");
-      digitalWriteF(enablePin, !enabledState);
-    }
+    // force both outputs inactive
+    analog.write(Pins->ph1, off1());
+    analog.write(Pins->ph2, off2());
+
     VLF("");
   } else {
-    if (enablePin != SHARED) {
-      VLF("powered up using enable pin");
-      digitalWriteF(enablePin, enabledState);
-    }
+    VLF("EE enabled");
   }
-
-  velocityRamp = 0.0F;
 
   ServoDriver::updateStatus();
 }
 
-void ServoEE::pwmUpdate(long power) {
+void ServoEE::pwmUpdate(float power01) {
   if (!enabled) return;
 
-  if (motorDirection == (reversed ? DIR_REVERSE : DIR_FORWARD)) {
-    if (Pins->ph1State == HIGH) analogWrite(Pins->ph1, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph1, 0);
-    if (Pins->ph2State == HIGH) power = SERVO_ANALOG_WRITE_RANGE - power;
-    analogWrite(Pins->ph2, power);
-  } else
-  if (motorDirection == (reversed ? DIR_FORWARD : DIR_REVERSE)) {
-    if (Pins->ph1State == HIGH) power = SERVO_ANALOG_WRITE_RANGE - power;
-    analogWrite(Pins->ph1, power);
-    if (Pins->ph2State == HIGH) analogWrite(Pins->ph2, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph2, 0);
+  if (reversed) power01 = -power01;
+  float duty01 = fabsf(power01);
+
+  if (power01 >= 0.0F) {
+    if (Pins->ph2State == HIGH) duty01 = 1.0F - duty01;
+    analog.write(Pins->ph1, off1());
+    analog.write(Pins->ph2, duty01);
   } else {
-    if (Pins->ph1State == HIGH) analogWrite(Pins->ph1, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph1, 0);
-    if (Pins->ph2State == HIGH) analogWrite(Pins->ph2, SERVO_ANALOG_WRITE_RANGE); else analogWrite(Pins->ph2, 0);
+    if (Pins->ph1State == HIGH) duty01 = 1.0F - duty01;
+    analog.write(Pins->ph1, duty01);
+    analog.write(Pins->ph2, off2());
   }
 }
 
 // update status info. for driver
-void ServoDc::updateStatus() {
+void ServoEE::updateStatus() {
   if (statusMode == LOW || statusMode == HIGH) {
     status.fault = digitalReadEx(faultPin) == statusMode;
   }

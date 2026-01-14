@@ -114,6 +114,11 @@ StepDirDriver::StepDirDriver(uint8_t axisNumber, const StepDirDriverPins *Pins, 
 }
 
 bool StepDirDriver::init() {
+  if (driverModel >= DRIVER_MODEL_COUNT) {
+    DF("ERR:"); D(axisPrefix); DLF("invalid driver model");
+    return false;
+  }
+
   VF("MSG:"); V(axisPrefix); VL(name());
 
   // check if platform pulse width (ns) is ok for this stepper driver timing in PULSE mode
@@ -261,7 +266,9 @@ const char* StepDirDriver::name() {
 // update status info. for driver
 void StepDirDriver::updateStatus() {
   if (statusMode == ON) {
-    if ((long)(millis() - timeLastStatusUpdate) > 200) {
+    const unsigned long now = millis();
+
+    if (now - timeLastStatusUpdate > 200U) {
       readStatus();
 
       // open load indication is not reliable in standstill
@@ -270,7 +277,7 @@ void StepDirDriver::updateStatus() {
                      status.overTemperatureWarning ||
                      status.overTemperature;
 
-      timeLastStatusUpdate = millis();
+      timeLastStatusUpdate = now;
     }
   } else
   if (statusMode == LOW || statusMode == HIGH) {

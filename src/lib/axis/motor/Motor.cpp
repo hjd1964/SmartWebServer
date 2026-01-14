@@ -26,17 +26,30 @@ AxisParameter* Motor::getParameterByName(const char* name) {
 
 // check if parameter is valid
 bool Motor::parameterIsValid(AxisParameter* parameter, bool next) {
-  float value;
-  if (next) value = parameter->valueNv; else value = parameter->value;
-  if (value < parameter->min) return false;
-  if (value > parameter->max) return false;
+  const float value = next ? parameter->valueNv : parameter->value;
+
+  if (isnan(value) || isinf(value)) return false;
+
+  // reject nonsense bounds
+  const float pmin = parameter->min;
+  const float pmax = parameter->max;
+  if (isnan(pmin) || isnan(pmax) || isinf(pmin) || isinf(pmax) || (pmax < pmin)) return false;
+
+  if (value < pmin) return false;
+  if (value > pmax) return false;
+
   if (parameter->type == AXP_POW2) {
-    if (value != 1.0F && value != 2.0F && value != 4.0F &&
-        value != 8.0F && value != 16.0F && value != 32.0F &&
-        value != 64.0F && value != 128.0F && value != 256.0F) {
-      return false;
-    }
+    static constexpr float kIntEps = 1E-3F;
+
+    // Value must be effectively integral
+    const float vf = value;
+    const int32_t vi = (int32_t)lroundf(vf);
+    if (fabsf(vf - (float)vi) > kIntEps) return false;
+
+    if (vi < 1 || vi > 256) return false;
+    if ((vi & (vi - 1)) != 0) return false; // power of two check
   }
+
   return true;
 }
 
@@ -67,37 +80,33 @@ long Motor::getMotorPositionSteps() {
 
 // get instrument coordinate, in steps
 long Motor::getInstrumentCoordinateSteps() {
-  noInterrupts();
-  long steps = motorSteps + indexSteps;
-  interrupts();
-  return steps;
+  long steps = ATOMIC_LOAD(motorSteps);
+  return steps + indexSteps;
 }
 
 // set instrument coordinate, in steps
 void Motor::setInstrumentCoordinateSteps(long value) {
-  noInterrupts();
-  indexSteps = value - motorSteps;
-  interrupts();
+  indexSteps = value - ATOMIC_LOAD(motorSteps);
 }
 
 // set instrument park coordinate, in steps
 // should only be called when the axis is not moving
+// nudge index so park lands on a stable cogging grid (multiple of 4*modulo steps)
 void Motor::setInstrumentCoordinateParkSteps(long value, int modulo) {
+  long priorLocationOffset = value - ATOMIC_LOAD(motorSteps);
   if (driverType == STEP_DIR) {
     if (modulo == OFF) modulo = 1;
-    long steps = value - motorSteps;
+    long steps = priorLocationOffset;
     steps -= modulo*2L;
     for (int l = 0; l < modulo*4; l++) { if (steps % (modulo*4L) == 0) break; steps++; }
     indexSteps = steps;
   } else setInstrumentCoordinateSteps(value);
-  VF("MSG:"); V(axisPrefix); VF("setInstrumentCoordinateParkSteps at "); V(indexSteps); VF(" (was "); V(value - motorSteps); VL(")");
+  VF("MSG:"); V(axisPrefix); VF("setInstrumentCoordinateParkSteps at "); V(indexSteps); VF(" (was "); V(priorLocationOffset); VL(")");
 }
 
 // get target coordinate (with index), in steps
 long Motor::getTargetCoordinateSteps() {
-  noInterrupts();
-  long steps = targetSteps + indexSteps;
-  interrupts();
+  long steps = ATOMIC_LOAD(targetSteps) + indexSteps;
   return steps;
 }
 
@@ -125,17 +134,15 @@ void Motor::setTargetCoordinateParkSteps(long value, int modulo) {
 
 // get backlash amount in steps
 long Motor::getBacklashSteps() {
-  noInterrupts();
-  uint16_t backlash = backlashAmountSteps;
-  interrupts();
-  return backlash;
+  uint16_t backlash = ATOMIC_LOAD(backlashAmountSteps);
+  return (long)backlash;
 }
 
 // set backlash amount in steps
 void Motor::setBacklashSteps(long value) {
-  noInterrupts();
-  backlashAmountSteps = value;
-  interrupts();
+  if (value < 0) value = 0;
+  if (value > 65535) value = 65535;
+  ATOMIC_STORE(backlashAmountSteps, (uint16_t)value);
 }
 
 // mark origin coordinate for autoGoto as current location
@@ -155,9 +162,7 @@ long Motor::getTargetDistanceSteps() {
 
 // distance to origin or target, whichever is closer, in steps
 long Motor::getOriginOrTargetDistanceSteps() {
-  noInterrupts();
-  long steps = motorSteps;
-  interrupts();
+  long steps = ATOMIC_LOAD(motorSteps);
   long distanceOrigin = labs(originSteps - steps);
   long distanceTarget = labs(targetSteps - steps);
   if (distanceOrigin < distanceTarget) return distanceOrigin; else return distanceTarget;
@@ -165,9 +170,7 @@ long Motor::getOriginOrTargetDistanceSteps() {
 
 // returns 1 if distance to origin is closer else -1 if target is closer
 int Motor::getRampDirection() {
-  noInterrupts();
-  long steps = motorSteps;
-  interrupts();
+  long steps = ATOMIC_LOAD(motorSteps);
   long distanceOrigin = labs(originSteps - steps);
   long distanceTarget = labs(targetSteps - steps);
   if (distanceOrigin < distanceTarget) return 1; else return -1;

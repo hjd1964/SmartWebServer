@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------------
-// axis servo KTech motor driver
+// axis servo KTech motor driver (designed for the MS4010v3 with 16bit encoder)
 #pragma once
 
 #include <Arduino.h>
@@ -55,7 +55,6 @@ class ServoKTech : public ServoDriver {
     void readStatus();
 
     int canID;
-    unsigned long lastVelocityUpdateTime = 0;
     unsigned long lastStatusUpdateTime = 0;
 
     void (*callback)() = NULL;
@@ -66,8 +65,8 @@ class ServoKTech : public ServoDriver {
     // runtime adjustable settings
     AxisParameter countsToStepsRatio = {NAN, NAN, NAN, -1, 20000, AXP_FLOAT, "Count/Step ratio"};
 
-    const int numParameters = 2;
-    AxisParameter* parameter[3] = {&invalid, &acceleration, &countsToStepsRatio};
+    const int numParameters = 3;
+    AxisParameter* parameter[4] = {&invalid, &acceleration, &zeroDeadband, &countsToStepsRatio};
 
 };
 

@@ -42,6 +42,7 @@ ServoDriver::ServoDriver(uint8_t axisNumber, const ServoPins *Pins, const ServoS
   statusMode = Settings->status;
 
   acceleration.valueDefault = Settings->acceleration;
+  zeroDeadband.valueDefault = 0.0F;
 }
 
 bool ServoDriver::init(bool reverse) {
@@ -73,8 +74,21 @@ bool ServoDriver::init(bool reverse) {
   return true;
 }
 
+void ServoDriver::enable(bool state) {
+  enabled = state;
+
+  // Only touch a real, dedicated enable pin
+  if (enablePin != OFF && enablePin != SHARED) {
+    digitalWriteEx(enablePin, state ? enabledState : !enabledState);
+  }
+
+  // Default behavior: if disabled, force ramp to 0 so outputs converge quickly
+  if (!state) velocityRamp = 0.0F;
+}
+
 void ServoDriver::setFrequencyMax(float frequency) {
   velocityMax = frequency;
+  InvVelocityMax = 1.0F/frequency;
 
   normalizedAcceleration = (acceleration.value/100.0F)*velocityMax;
   accelerationFs = normalizedAcceleration/FRACTIONAL_SEC;
@@ -87,16 +101,23 @@ void ServoDriver::setFrequencyMax(float frequency) {
 float ServoDriver::setMotorVelocity(float velocity) {
   if (!enabled) velocity = 0.0F;
 
+  if (zeroDeadband.value > 0.0F && fabsf(velocity) < zeroDeadband.value) velocity = 0.0F;
+
   if (velocity > velocityMax) velocity = velocityMax; else
   if (velocity < -velocityMax) velocity = -velocityMax;
 
-  if (velocity > velocityRamp) {
-    velocityRamp += accelerationFs;
-    if (velocityRamp > velocity) velocityRamp = velocity;
-  } else
-  if (velocity < velocityRamp) {
-    velocityRamp -= accelerationFs;
-    if (velocityRamp < velocity) velocityRamp = velocity;
+  if(bypassAccelOnTracking)
+    velocityRamp = velocity;
+  else {
+    // ramp velocity
+    if (velocity > velocityRamp) {
+      velocityRamp += accelerationFs;
+      if (velocityRamp > velocity) velocityRamp = velocity;
+    } else
+    if (velocity < velocityRamp) {
+      velocityRamp -= accelerationFs;
+      if (velocityRamp < velocity) velocityRamp = velocity;
+    }
   }
 
   if (velocityRamp >= 0.0F) motorDirection = DIR_FORWARD; else motorDirection = DIR_REVERSE;
@@ -107,7 +128,9 @@ float ServoDriver::setMotorVelocity(float velocity) {
 // update status info. for driver
 void ServoDriver::updateStatus() {
   if (statusMode == ON) {
-    if ((long)(millis() - timeLastStatusUpdate) > 200) {
+    const unsigned long now = millis();
+
+    if ((long)(now - timeLastStatusUpdate) > 200L) {
       readStatus();
 
       // open load indication is not reliable in standstill
@@ -116,7 +139,7 @@ void ServoDriver::updateStatus() {
           status.overTemperatureWarning ||
           status.overTemperature) status.fault = true; else status.fault = false;
 
-      timeLastStatusUpdate = millis();
+      timeLastStatusUpdate = now;
     }
   }
 
@@ -131,14 +154,14 @@ void ServoDriver::updateStatus() {
         (status.standstill                != lastStatus.standstill) ||
         (status.fault                     != lastStatus.fault)) {
       VF("MSG:"); V(axisPrefix); VF("status change ");
-      VF("SGA"); if (status.outputA.shortToGround) VF("< "); else VF(". "); 
-      VF("OLA"); if (status.outputA.openLoad) VF("< "); else VF(". "); 
-      VF("SGB"); if (status.outputB.shortToGround) VF("< "); else VF(". "); 
-      VF("OLB"); if (status.outputB.openLoad) VF("< "); else VF(". "); 
-      VF("OTP"); if (status.overTemperatureWarning) VF("< "); else VF(". "); 
-      VF("OTE"); if (status.overTemperature) VF("< "); else VF(". "); 
-      VF("SST"); if (status.standstill) VF("< "); else VF(". "); 
-      VF("FLT"); if (status.fault) VLF("<"); else VLF("."); 
+      VF("SGA"); if (status.outputA.shortToGround) VF("< "); else VF(". ");
+      VF("OLA"); if (status.outputA.openLoad) VF("< "); else VF(". ");
+      VF("SGB"); if (status.outputB.shortToGround) VF("< "); else VF(". ");
+      VF("OLB"); if (status.outputB.openLoad) VF("< "); else VF(". ");
+      VF("OTP"); if (status.overTemperatureWarning) VF("< "); else VF(". ");
+      VF("OTE"); if (status.overTemperature) VF("< "); else VF(". ");
+      VF("SST"); if (status.standstill) VF("< "); else VF(". ");
+      VF("FLT"); if (status.fault) VLF("<"); else VLF(".");
     }
     lastStatus = status;
   #endif

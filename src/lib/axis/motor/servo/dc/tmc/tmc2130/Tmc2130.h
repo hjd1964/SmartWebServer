@@ -27,8 +27,8 @@ class ServoTmc2130DC : public ServoDcDriver {
 
   private:
     // motor control pwm update
-    // \param power in +/-255 units
-    void pwmUpdate(long power);
+    // \param power01 in -1.0 to 1.0 units
+    void pwmUpdate(float power01);
     
     // read status info. from driver
     void readStatus();

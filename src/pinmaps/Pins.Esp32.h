@@ -39,3 +39,16 @@
   #define VGPIO_PIN_2        AXIS2_ENCODER_A_PIN
   #define VGPIO_PIN_3        AXIS2_ENCODER_B_PIN
 #endif
+
+#ifndef VGPIO_PIN_4
+#define VGPIO_PIN_4          16
+#endif
+#ifndef VGPIO_PIN_5
+#define VGPIO_PIN_5          25
+#endif
+#ifndef VGPIO_PIN_6
+#define VGPIO_PIN_6          33
+#endif
+#ifndef VGPIO_PIN_7
+#define VGPIO_PIN_7          32
+#endif

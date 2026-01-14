@@ -50,17 +50,25 @@ class ServoDriver {
     virtual void alternateMode(bool state) { UNUSED(state); }
 
     // enable or disable the driver using the enable pin or other method
-    virtual void enable(bool state) { UNUSED(state); }
+    virtual void enable(bool state);
 
-    // sets overall maximum frequency
+    // sets frequency corrosponding to the fastest allowed slew rate
     // \param frequency: rate of motion in steps (counts) per second
     void setFrequencyMax(float frequency);
 
     // set motor velocity
-    // \param velocity as needed to reach the target position, in encoder counts per second
-    // \returns velocity in effect, in encoder counts per second
+    // \param velocity as needed to reach the target position, in signed encoder counts per second
     virtual float setMotorVelocity(float velocity);
 
+    // set motor velocity
+    // \param velocity as needed to reach the target position, in signed encoder counts per second
+    // \param encoderVelocity in signed encoder counts per second
+    // \returns velocity in effect, in signed encoder counts per second
+    virtual float setMotorVelocity(float velocity, float encoderVelocity) {
+      UNUSED(encoderVelocity);
+      return setMotorVelocity(velocity);
+    }
+    
     // returns motor direction (DIR_FORWARD or DIR_REVERSE)
     Direction getMotorDirection() { return motorDirection; };
 
@@ -71,7 +79,10 @@ class ServoDriver {
     // get status info.
     // this is a required method for the Axis class
     DriverStatus getStatus() { return status; }
-   
+
+    // do not use acceleration while trackings
+    void setBypassAccelOnTracking(bool on) { bypassAccelOnTracking = on; }
+
     // calibrate the motor if required
     virtual void calibrateDriver() {}
 
@@ -80,7 +91,7 @@ class ServoDriver {
 
   protected:
     virtual void readStatus() {}
-    
+
     int axisNumber;
     char axisPrefix[32]; // prefix for debug messages
 
@@ -95,8 +106,9 @@ class ServoDriver {
 
     float normalizedAcceleration; // in encoder counts/s/s
     float accelerationFs;         // in encoder counts/s/fs
-    float velocityRamp = 0.0F;    // regulate velocity changes
-    float velocityMax = 0.0F;     // in encoder counts/s
+    float velocityRamp = 1.0F;    // regulate velocity changes
+    float velocityMax = 1.0F;     // frequency corrosponding to the fastest allowed slew rate, in encoder counts/s
+    float InvVelocityMax = 1.0F;
 
     Direction motorDirection = DIR_FORWARD;
     bool reversed = false;
@@ -105,6 +117,7 @@ class ServoDriver {
     uint8_t enabledState = LOW;
     bool enabled = false;
     int16_t faultPin = OFF;
+    bool bypassAccelOnTracking = false;
 
     const ServoPins *Pins;
     const ServoSettings *Settings;
@@ -112,9 +125,11 @@ class ServoDriver {
     // runtime adjustable settings
     AxisParameter invalid = {NAN, NAN, NAN, NAN, NAN, AXP_INVALID, ""};
     AxisParameter acceleration = {NAN, NAN, NAN, 0, 100000, AXP_FLOAT, AXPN_MAX_ACCEL};
+    AxisParameter zeroDeadband = {NAN, NAN, NAN, 0.0, 500.0, AXP_FLOAT_IMMEDIATE, "Deadband, cps"};
 
+    // this array list isn't used if overridden, just a place holder!
     const int numParameters = 2;
-    AxisParameter* parameter[2] = {&invalid, &acceleration};
+    AxisParameter* parameter[3] = {&invalid, &acceleration, &zeroDeadband};
 };
 
 #endif

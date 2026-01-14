@@ -44,6 +44,7 @@
 #include "motor/Motor.h"
 #include "motor/stepDir/StepDir.h"
 #include "motor/servo/Servo.h"
+#include "motor/oDrive/ODriveNew.h"
 #include "motor/oDrive/ODrive.h"
 #include "motor/kTech/KTech.h"
 
@@ -132,7 +133,7 @@ public:
   Axis(uint8_t axisNumber, const AxisPins *pins, const AxisSettings *settings, const AxisMeasure axisMeasure, float targetTolerance = 0.0F);
 
   // process axis commands
-  bool command(char *reply, char *command, char *parameter, bool *supressFrame, bool *numericReply, CommandError *commandError);
+  bool command(char *reply, char *command, char *parameter, bool *suppressFrame, bool *numericReply, CommandError *commandError);
 
   // init prepares this motion controller and the provided motor for operation
   // \param motor: associated motor to be controlled
@@ -519,11 +520,11 @@ private:
 
   void (*volatile callback)() = NULL;
 
-  AxisParameter stepsPerDegree = {NAN, NAN, NAN, 300.0, 360000.0, AXP_FLOAT, AXPN_STEPS_PER_DEG};
+  AxisParameter stepsPerDegree = {NAN, NAN, NAN, 1.0, 360000.0, AXP_FLOAT, AXPN_STEPS_PER_DEG};
   AxisParameter minDegrees     = {NAN, NAN, NAN, -360.0, 360.0, AXP_FLOAT, AXPN_LIMIT_DEGS_MIN};
   AxisParameter maxDegrees     = {NAN, NAN, NAN, -360.0, 360.0, AXP_FLOAT, AXPN_LIMIT_DEGS_MAX};
 
-  AxisParameter stepsPerRadian = {NAN, NAN, NAN, radToDegF(300.0), radToDegF(360000.0), AXP_FLOAT_RAD_INV, AXPN_STEPS_PER_DEG};
+  AxisParameter stepsPerRadian = {NAN, NAN, NAN, radToDegF(1.0), radToDegF(360000.0), AXP_FLOAT_RAD_INV, AXPN_STEPS_PER_DEG};
   AxisParameter minRadians     = {NAN, NAN, NAN, -Deg360, Deg360, AXP_FLOAT_RAD, AXPN_LIMIT_DEGS_MIN};
   AxisParameter maxRadians     = {NAN, NAN, NAN, -Deg360, Deg360, AXP_FLOAT_RAD, AXPN_LIMIT_DEGS_MAX};
 

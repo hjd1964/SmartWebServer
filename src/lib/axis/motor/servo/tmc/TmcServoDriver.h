@@ -37,9 +37,8 @@ class TmcServoDriver : public ServoDriver {
     AxisParameter* getParameter(uint8_t number) { if (number > numParameters) return &invalid; else return parameter[number]; }
 
     // set motor velocity
-    // \param velocity as needed to reach the target position, in encoder counts per second
-    // \param velocityTarget is the desired instantanous velocity at this moment, in encoder counts per second
-    // \returns velocity in effect, in encoder counts per second
+    // \param velocity as needed to reach the target position, in signed encoder counts per second
+    // \returns velocity in effect, in signed encoder counts per second
     virtual float setMotorVelocity(float velocity) { return 0; }
 
   protected:
@@ -57,8 +56,8 @@ class TmcServoDriver : public ServoDriver {
     AxisParameter decay         = {NAN, NAN, NAN, SPREADCYCLE, STEALTHCHOP, AXP_DECAY, AXPN_DECAY_MODE};
     AxisParameter decaySlewing  = {NAN, NAN, NAN, SPREADCYCLE, STEALTHCHOP, AXP_DECAY, AXPN_DECAY_MODE_GOTO};
 
-    const int numParameters = 5;
-    AxisParameter* parameter[6] = {&invalid, &acceleration, &countsToStepsRatio, &currentRun, &decay, &decaySlewing};
+    const int numParameters = 6;
+    AxisParameter* parameter[7] = {&invalid, &acceleration, &zeroDeadband, &countsToStepsRatio, &currentRun, &decay, &decaySlewing};
 };
 
 #endif

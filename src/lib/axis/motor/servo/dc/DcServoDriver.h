@@ -7,14 +7,15 @@
 
 #if defined(SERVO_PE_PRESENT) || defined(SERVO_EE_PRESENT) || defined(SERVO_TMC2130_DC_PRESENT) || defined(SERVO_TMC5160_DC_PRESENT)
 
-#ifndef ANALOG_WRITE_RANGE
-  #define ANALOG_WRITE_RANGE 255
-#endif
-#ifndef SERVO_ANALOG_WRITE_RANGE
-  #define SERVO_ANALOG_WRITE_RANGE ANALOG_WRITE_RANGE
-#endif
-
 #include "../ServoDriver.h"
+
+#ifndef SERVO_DC_VPID
+  #if ENCODER_VELOCITY == ON
+    #define SERVO_DC_VPID ON
+  #else
+    #define SERVO_DC_VPID OFF
+  #endif
+#endif
 
 class ServoDcDriver : public ServoDriver {
   public:
@@ -28,42 +29,37 @@ class ServoDcDriver : public ServoDriver {
     AxisParameter* getParameter(uint8_t number) { if (number > numParameters) return &invalid; else return parameter[number]; }
 
     // set motor velocity
-    // \param velocity as needed to reach the target position, in encoder counts per second
-    // \returns velocity in effect, in encoder counts per second
-    float setMotorVelocity(float velocity);
+    // \param velocity as needed to reach the target position, in signed encoder counts per second
+    // \param encoderVelocity in signed encoder counts per second
+    // \returns velocity in effect, in signed encoder counts per second
+    float setMotorVelocity(float velocity, float encoderVelocity) override;
 
   protected:
-    // convert from encoder counts per second to analogWriteRange units to roughly match velocity
-    long toAnalogRange(float velocity) {
-      long sign = 1;
-      if (velocity < 0.0F) {
-        velocity = -velocity;
-        sign = -1;
-      }
-  
-      long power = 0;
-      if (velocity != 0.0F) {
-        power = lround(((float)velocity/velocityMax)*(analogWriteRange - 1));
-        long pwmMin = lround(pwmMinimum.value/100.0F*(analogWriteRange - 1));
-        long pwmMax = lround(pwmMaximum.value/100.0F*(analogWriteRange - 1));
 
-        power = map(power, 0, analogWriteRange - 1, pwmMin, pwmMax);
-      }
-
-      return power*sign;
-    }
-
-    // motor control update
-    virtual void pwmUpdate(long power) { }
-
-    long analogWriteRange = SERVO_ANALOG_WRITE_RANGE;
+    // motor control pwm update
+    // \param power01 in -1.0 to 1.0 units
+    virtual void pwmUpdate(float power01) { }
 
     // runtime adjustable settings
-    AxisParameter pwmMinimum = {NAN, NAN, NAN, 0.0, 25.0, AXP_FLOAT_IMMEDIATE, AXPN_MIN_PWR};
-    AxisParameter pwmMaximum = {NAN, NAN, NAN, 25.0, 100.0, AXP_FLOAT_IMMEDIATE, AXPN_MAX_PWR};
+    AxisParameter pwmMinimum = {NAN, NAN, NAN, 0.0, 100.0, AXP_FLOAT_IMMEDIATE, AXPN_MIN_PWR};
+    AxisParameter pwmMaximum = {NAN, NAN, NAN, 1.0, 100.0, AXP_FLOAT_IMMEDIATE, AXPN_MAX_PWR};
+    AxisParameter dirDeadTimeMs = {NAN, NAN, NAN, 0.0, 50.0, AXP_FLOAT_IMMEDIATE, "Deadtime, ms"};
+    #if SERVO_DC_VPID == ON
+      AxisParameter velKp      = {NAN, NAN, NAN, 0.0, 10.0,  AXP_FLOAT_IMMEDIATE, "Vel Kp"};
+      AxisParameter velKi      = {NAN, NAN, NAN, 0.0, 10.0,  AXP_FLOAT_IMMEDIATE, "Vel Ki"};
+      AxisParameter velIMax    = {NAN, NAN, NAN, 0.0, 1.0,   AXP_FLOAT_IMMEDIATE, "Vel Imax"};
+      const int numParameters = 8;
+      AxisParameter* parameter[9] = {&invalid, &acceleration, &zeroDeadband, &pwmMinimum, &pwmMaximum, &dirDeadTimeMs, &velKp, &velKi, &velIMax};
+    #else
+      const int numParameters = 5;
+      AxisParameter* parameter[6] = {&invalid, &acceleration, &zeroDeadband, &pwmMinimum, &pwmMaximum, &dirDeadTimeMs};
+    #endif
 
-    const int numParameters = 3;
-    AxisParameter* parameter[4] = {&invalid, &acceleration, &pwmMinimum, &pwmMaximum};
+  private:
+    float vI = 0.0F;
+    uint32_t velLastUs = 0;
+    uint32_t dirHoldUntilMs = 0;
+    int8_t lastEffectiveDirection = 0; // -1,0,+1
 };
 
 #endif
