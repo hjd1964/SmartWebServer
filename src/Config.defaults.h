@@ -28,20 +28,6 @@
 #define DISPLAY_HIGH_PRECISION_COORDS  OFF       // for high precision coordinate display on status page
 #endif
 
-// drive configuration
-#ifndef DRIVE_CONFIGURATION
-#define DRIVE_CONFIGURATION            ON        // to display/modify mount, rotator, focuser settings
-#endif
-#ifndef DRIVE_MAIN_AXES_MICROSTEPS
-#define DRIVE_MAIN_AXES_MICROSTEPS     ON        // to display Axis1/2 Microsteps if available
-#endif
-#ifndef DRIVE_MAIN_AXES_CURRENT
-#define DRIVE_MAIN_AXES_CURRENT        ON        // to display Axis1/2 IRUN if available
-#endif
-#ifndef DRIVE_MAIN_AXES_REVERSE
-#define DRIVE_MAIN_AXES_REVERSE        ON        // to display Axis1/2 Reverse if available
-#endif
-
 // enable and customize WiFi/Ethernet functionality
 // for other default IP settings see the file:
 // src/lib/wifi/WifiManager.defaults.h
