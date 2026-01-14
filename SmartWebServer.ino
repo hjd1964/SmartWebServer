@@ -32,7 +32,7 @@
 #define Product "Smart Web Server"
 #define FirmwareVersionMajor  "2"
 #define FirmwareVersionMinor  "09"
-#define FirmwareVersionPatch  "d"
+#define FirmwareVersionPatch  "e"
 
 // Use Config.h to configure the SWS to your requirements
 
