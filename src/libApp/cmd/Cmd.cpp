@@ -214,7 +214,6 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
       xSemaphoreGive(xMutex);
     #endif
     return response[strlen(response) - 1] == '#';
-//    return (response[0] != 0);
   }
 }
 
