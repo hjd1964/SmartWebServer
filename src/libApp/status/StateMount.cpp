@@ -109,7 +109,7 @@ void State::updateMount(bool now)
     preferredPierSideChar = '?';
     char temp[80];
     if (onStep.command(":GX96#", temp)) {
-      if (temp[0] == 'E' || temp[0] == 'W' || temp[0] == 'B') preferredPierSideChar = temp[0];
+      if (temp[0] == 'E' || temp[0] == 'W' || temp[0] == 'B' || temp[0] == 'A') preferredPierSideChar = temp[0];
     }
   }
 

@@ -86,9 +86,12 @@ const char html_gotoMfPause[] PROGMEM =
   "<button id='gto_mfp_off' class='btns_left' onpointerdown=\"s('goto','mp_off')\" type='button'>" L_OFF "</button>"
   "<br />\n";
 
-const char html_gotoPreferredPierSide[] PROGMEM =
+const char html_gotoPreferredPierSide1[] PROGMEM =
   "%s: <br />"
   "<button id='gto_pps_east' class='btns_right' onpointerdown=\"s('goto','pps_e')\"  type='button'>%s</button>"
-  "<button id='gto_pps_west' class='btns_mid' onpointerdown=\"s('goto','pps_w')\" type='button'>%s</button>"
-  "<button id='gto_pps_best' class='btns_left' onpointerdown=\"s('goto','pps_b')\" type='button'>" L_BEST "</button>"
+  "<button id='gto_pps_west' class='btns_mid' onpointerdown=\"s('goto','pps_w')\" type='button'>%s</button>";
+
+const char html_gotoPreferredPierSide2[] PROGMEM =
+  "<button id='gto_pps_best' class='btns_mid' onpointerdown=\"s('goto','pps_b')\" type='button'>" L_BEST "</button>"
+  "<button id='gto_pps_auto' class='btns_left' onpointerdown=\"s('goto','pps_a')\" type='button'>" L_AUTO "</button>"
   "<br />\n";

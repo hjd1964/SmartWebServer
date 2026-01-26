@@ -97,12 +97,15 @@ void gotoTile(String &data)
     data.concat(F("<br />"));
 
     if (status.mountType == MT_ALTAZM) {
-      sprintf_P(temp, html_gotoPreferredPierSide, L_ORIENTATION_CHANGE_PPS, L_NORMAL, L_ALTERNATE);
+      sprintf_P(temp, html_gotoPreferredPierSide1, L_ORIENTATION_CHANGE_PPS, L_NORMAL, L_ALTERNATE);
       data.concat(temp);
     } else {
-      sprintf_P(temp, html_gotoPreferredPierSide, L_MERIDIAN_FLIP_PPS, L_EAST, L_WEST);
+      sprintf_P(temp, html_gotoPreferredPierSide1, L_MERIDIAN_FLIP_PPS, L_EAST, L_WEST);
       data.concat(temp);
     }
+    www.sendContentAndClear(data);
+
+    data.concat(FPSTR(html_gotoPreferredPierSide2));
   }
 
   data.concat(FPSTR(html_collapsable_end));
@@ -146,6 +149,7 @@ void gotoTileAjax(String &data)
     data.concat(keyValueBoolSelected("gto_pps_east", state.preferredPierSideChar == 'E'));
     data.concat(keyValueBoolSelected("gto_pps_west", state.preferredPierSideChar == 'W'));
     data.concat(keyValueBoolSelected("gto_pps_best", state.preferredPierSideChar == 'B'));
+    data.concat(keyValueBoolSelected("gto_pps_auto", state.preferredPierSideChar == 'A'));
   }
 
   data.concat(keyValueString("gto_rate", state.slewSpeedStr));
@@ -198,6 +202,7 @@ extern void gotoTileGet()
     if (v.equals("pps_e")) onStep.commandBool(":SX96,E#");   // meridian-flip, preferred pier side East
     if (v.equals("pps_w")) onStep.commandBool(":SX96,W#");   // meridian-flip, preferred pier side West
     if (v.equals("pps_b")) onStep.commandBool(":SX96,B#");   // meridian flip, preferred pier side Best
+    if (v.equals("pps_a")) onStep.commandBool(":SX96,A#");   // meridian flip, preferred pier side Auto
 
     if (v.equals("go")) onStep.command(":MS#", temp);        // goto start
     if (v.equals("stop")) onStep.commandBlind(":Q#");        // goto/slew stop
