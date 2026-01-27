@@ -108,7 +108,7 @@
 #endif
 
 // Fast GPIO read/write for Arduino-ESP32 cores 2.x / 3.x
-// Works across ESP32 / ESP32-S2 / ESP32-S3 / ESP32-C3
+// Works across ESP32 / ESP32-S2 / ESP32-S3
 #if defined(CONFIG_IDF_TARGET_ESP32) || defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3)
   #include "soc/gpio_struct.h"
 
