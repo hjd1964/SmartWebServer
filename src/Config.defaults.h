@@ -16,6 +16,10 @@
 #define NV_DRIVER                      NV_DEFAULT
 #endif
 
+#ifndef DRIVE_CONFIGURATION
+#define DRIVE_CONFIGURATION            ON        // display/modify axis settings 
+#endif
+
 #ifndef LED_STATUS_ON_STATE
 #define LED_STATUS_ON_STATE            LOW       // use HIGH so indicator stays on when connected as needed
 #endif
