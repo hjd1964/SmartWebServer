@@ -110,7 +110,7 @@ bool axisTile(int axis, String &data)
 
             if (type == 2 || type == 4 || type == 6) strcat(name, " (<i>i</i>)");
 
-            long valueInt = roundl(value);
+            long valueInt = lround(value);
             char valueStr[24];
             dtostrf(value, 1, 3, valueStr);
             convert.stripNumericStr(valueStr, true);
