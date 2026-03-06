@@ -191,14 +191,14 @@ void processNetworkGet() {
   v = www.arg("ccto");
   if (!v.equals(EmptyStr)) {
     cmdTimeout = v.toInt();
-    nv.update(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
+    nv().kv().put("NETWORK_TIMEOUT_CMD", cmdTimeout);
   }
 
   // Web channel timeout
   v = www.arg("wcto");
   if (!v.equals(EmptyStr)) {
     webTimeout = v.toInt();
-    nv.update(NV_TIMEOUT_WEB, (int16_t)webTimeout);
+    nv().kv().put("NETWORK_TIMEOUT_WEB", webTimeout);
   }
 
   #if OPERATIONAL_MODE == WIFI
@@ -227,7 +227,6 @@ void processNetworkGet() {
 
     // Station SSID
     v = www.arg("stssid");
-    v1 = v;
     if (!v.equals(EmptyStr)) {
       if (!strcmp(wifiManager.sta->ssid, (char*)v.c_str())) restartRequired = true;
       strcpy(wifiManager.sta->ssid, (char*)v.c_str());
@@ -235,6 +234,10 @@ void processNetworkGet() {
       // if this section was submitted set the stationEnabled default to false
       wifiManager.sta->dhcpEnabled = false;
       wifiManager.settings.stationEnabled = false;
+
+      // flag, the Station settings changed
+      updateNV = true;
+      restartRequired = true;
     }
 
     // Station password
@@ -273,11 +276,6 @@ void processNetworkGet() {
     v = www.arg("stagw2"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[1] = v.toInt();
     v = www.arg("stagw3"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[2] = v.toInt();
     v = www.arg("stagw4"); if (!v.equals(EmptyStr)) wifiManager.sta->gw[3] = v.toInt();
-      
-    if (!v1.equals(EmptyStr)) {
-      updateNV = true;
-      restartRequired = true;
-    }
 
     // --------------------------------------------------------------------------
     // Access-Point MAC
@@ -310,6 +308,10 @@ void processNetworkGet() {
 
       // if this section was submitted set the accessPointEnabled default to false
       wifiManager.settings.accessPointEnabled = false;
+
+      // flag, the AP settings changed
+      updateNV = true;
+      restartRequired = true;
     }
 
     // Access-Point password
@@ -350,14 +352,8 @@ void processNetworkGet() {
     v = www.arg("apgw3"); if (!v.equals(EmptyStr)) wifiManager.settings.ap.gw[2] = v.toInt();
     v = www.arg("apgw4"); if (!v.equals(EmptyStr)) wifiManager.settings.ap.gw[3] = v.toInt();
 
-    if (!v.equals(EmptyStr)) {
-      updateNV = true;
-      restartRequired = true;
-    }
 
-    if (updateNV) {
-      nv.writeBytes(NV_WIFI_SETTINGS_BASE, &wifiManager.settings, sizeof(WifiSettings));
-    }
+    if (updateNV) { wifiManager.writeSettings(); }
   #else
     // Ethernet ip
     v = www.arg("ethip1");
@@ -390,7 +386,7 @@ void processNetworkGet() {
     }
 
     if (updateNV) {
-      nv.writeBytes(NV_ETHERNET_SETTINGS_BASE, &ethernetManager.settings, sizeof(EthernetSettings));
+      ethernetManager.writeSettings();
     }
   #endif
 }

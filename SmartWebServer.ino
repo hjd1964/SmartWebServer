@@ -68,17 +68,16 @@
   CmdServer cmdSvr(9999, 1L*1000L);
 #endif
 
-void systemServices() {
-  nv.poll(false);
-}
-
 void pollWebSvr() {
   www.handleClient();
 }
 
 void pollCmdSvr() {
+  if (otaEnabled) return;
+
   #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
     persistentCmdSvr1.handleClient(); Y;
+
     #if OPERATIONAL_MODE != ETHERNET_W5100
       persistentCmdSvr2.handleClient(); Y;
     #endif
@@ -96,7 +95,7 @@ void setup(void) {
     WiFi.softAPdisconnect(true);
   #endif
 
-  strcpy(firmwareVersion.str, FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch);
+  sstrcpy(firmwareVersion.str, FirmwareVersionMajor "." FirmwareVersionMinor FirmwareVersionPatch);
 
   // start debug serial port
   if (DEBUG == ON || DEBUG == VERBOSE || DEBUG == PROFILER) SERIAL_DEBUG.begin(SERIAL_DEBUG_BAUD);
@@ -109,7 +108,7 @@ void setup(void) {
   VF("MSG: SmartWebServer "); VL(firmwareVersion.str);
   VF("MSG: MCU = "); VF(MCU_STR); V(", "); VF("Pinmap = "); VLF(PINMAP_STR);
 
-  delay(2000);
+  delay(1000);
 
   // call gamepad BLE initialization
   #if (BLE_GAMEPAD == ON && ESP32)
@@ -120,7 +119,6 @@ void setup(void) {
   // call hardware specific initialization
   VLF("MSG: Init HAL");
   HAL_INIT();
-  nv.init();
 
   #if LED_STATUS != OFF
     pinMode(LED_STATUS_PIN, OUTPUT);
@@ -180,26 +178,66 @@ Again:
   }
   onStep.clearSerialChannel();
 
-  // System services
-  // add task for system services, runs at 10ms intervals so commiting 1KB of NV takes about 10 seconds
-  VF("MSG: Setup, starting system services");
-  VF(" task (rate 10ms priority 7)... ");
-  if (tasks.add(10, 0, true, 7, systemServices, "SysSvcs")) { VL("success"); } else { VL("FAILED!"); }
+  // ----------------------------------------------------------------------------------------
+  // start the NV/EEPROM subsystem for settings storage
+  bool initErrorNv = false;
+  bool success = nv().init(2);
+  if (!success) { DLF("ERR: Setup, NV (EEPROM/FRAM/Flash/etc.) device not found!"); }
 
-  // get NV ready
-  if (!nv.isKeyValid(INIT_NV_KEY)) {
-    VF("MSG: NV, invalid key wipe "); V(nv.size); VLF(" bytes");
-    if (nv.verify()) { VLF("MSG: NV, ready for reset to defaults"); }
-  } else { VLF("MSG: NV, correct key found"); }
+  #if defined(NV_WIPE) && NV_WIPE == ON
+    if (success) nv().wipe();
+  #endif
+
+  NvVolume &nvVolume = nv().volume();
+
+  success = success && (nvVolume.mount("SWS", NV_VOLUME_SIGNATURE) == NvVolume::Status::Ok);
+  VF("MSG: Nv, volume ");
+  if (success) { VLF("'SWS' mounted"); } else { VLF("invalid/unformatted"); }
+
+  if (!success) {
+
+    // automatic kv partition sizing
+    uint32_t vSize = nvVolume.byteCount() - 32;
+    uint32_t kvSize = vSize;
+    if (vSize > 1039) {
+
+      // start the volume format
+      success = nvVolume.formatBegin("SWS", NV_VOLUME_SIGNATURE) == NvVolume::Status::Ok;
+      if (success) { VF("MSG: Nv, volume 'SWS' format started ("); V(vSize); VLF(" bytes)"); }
+
+      // add the KV partition
+      success = success && nvVolume.formatAddPartition("KV", kvSize);
+      if (success) { VF("MSG: Nv, volume format added 'KV' partition ("); V(kvSize); VLF(" bytes)"); }
+
+      // finally commit the volume format
+      success = success && (nvVolume.formatCommit() == NvVolume::Status::Ok);
+      if (success) { VLF("MSG: Nv, volume format done"); }
+
+      // try to mount the volume again
+      success = success && (nvVolume.mount("SWS", NV_VOLUME_SIGNATURE) == NvVolume::Status::Ok);
+      if (success) { VLF("MSG: Nv, volume 'SWS' mounted"); } else { DLF("WRN: Nv, volume 'SWS' mount FAILED!"); }
+
+    } else {
+      DLF("WRN: Nv, volume compatible storage device NOT FOUND!");
+      success = false;
+    }
+  }
+
+  // Bind global KV instance to the KV partition index
+  success = success && (nv().kv().init(nvVolume, "KV") == KvPartition::Status::Ok);
+  if (success) { VLF("MSG: Nv, partition 'KV' mounted"); } else { DLF("WRN: Nv, partition 'KV' mount FAILED!"); }
+
+  if (!success) {
+    VLF("WRN: Nv, init FAILED!");
+    initErrorNv = true;
+  }
+  nv().kv().resetInitErrorFlag();
 
   // get the command and web timeouts
-  if (!nv.hasValidKey()) {
-    nv.write(NV_TIMEOUT_CMD, (int16_t)cmdTimeout);
-    nv.write(NV_TIMEOUT_WEB, (int16_t)webTimeout);
-  }
-  cmdTimeout = nv.readUI(NV_TIMEOUT_CMD);
-  webTimeout = nv.readUI(NV_TIMEOUT_WEB);
+  if (!nv().kv().getOrInit("NETWORK_TIMEOUT_CMD", cmdTimeout)) { DLF("WRN: Nv, init failed for NETWORK_TIMEOUT_CMD"); }
+  if (!nv().kv().getOrInit("NETWORK_TIMEOUT_WEB", webTimeout)) { DLF("WRN: Nv, init failed for NETWORK_TIMEOUT_WEB"); }
 
+  // ----------------------------------------------------------------------------------------
   // bring network servers up
   #if OPERATIONAL_MODE == WIFI
     VLF("MSG: Init WiFi");
@@ -213,12 +251,22 @@ Again:
   VLF("MSG: Initialize Encoders");
   encoders.init();
 
-  // init is done, write the NV key if necessary
-  if (!nv.hasValidKey()) {
-    nv.writeKey((uint32_t)INIT_NV_KEY);
-    nv.wait();
-    if (!nv.isKeyValid(INIT_NV_KEY)) { DLF("ERR: NV, failed to read back key!"); } else { VLF("MSG: NV, reset complete"); }
-  }
+  // ----------------------------------------------------------------------------------------
+  // init is done let the user see what's in the KV
+  #if DEBUG != OFF
+    KvPartition::Stats stats;
+    if (success && nv().kv().stats(stats) == KvPartition::Status::Ok) {
+      VF("MSG: Nv, partition 'KV' data blocks used = ");
+      V(stats.dataBlocksTotal - stats.dataBlocksFree); VF(" (of "); V(stats.dataBlocksTotal); VF(")");
+      VF(" key slots used = ");
+      V(stats.slotsTotal - stats.slotsFree); VF(" (of "); V(stats.slotsTotal); VLF(")");
+    }
+  #endif
+
+  // and capture any errors
+  if (nv().kv().getInitErrorFlag()) initErrorNv = true;
+  UNUSED(initErrorNv);
+  // ----------------------------------------------------------------------------------------
 
   VLF("MSG: Set webpage handlers");
   www.on("/index.htm", handleRoot);
@@ -255,14 +303,18 @@ Again:
   www.onNotFound(handleNotFound);
 
   #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
-    #if OPERATIONAL_MODE != ETHERNET_W5100
+    if (!otaEnabled) {
       VLF("MSG: Starting port 9996 cmd server");
+      persistentCmdSvr1.begin();
+      #if OPERATIONAL_MODE != ETHERNET_W5100
+        VLF("MSG: Starting port 9997 cmd server");
+        persistentCmdSvr2.begin();
+      #endif
+      VLF("MSG: Starting port 9998 cmd server");
       persistentCmdSvr3.begin();
-      VLF("MSG: Starting port 9997 cmd server");
-      persistentCmdSvr2.begin();
-    #endif
-    VLF("MSG: Starting port 9998 cmd server");
-    persistentCmdSvr1.begin();
+    } else {
+      VLF("MSG: OTA mode active, command ports 9996..9998 disabled");
+    }
   #endif
 
   #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH

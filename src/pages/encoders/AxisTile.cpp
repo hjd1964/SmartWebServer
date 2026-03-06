@@ -177,8 +177,8 @@ extern void encAxisTileGet() {
     }
   }
 
-    nv.writeBytes(NV_ENCODER_SETTINGS_BASE, &encoders.settings, sizeof(EncoderSettings));
   if (updateNV) {
+    nv().kv().put("ENCODER_SETTINGS", encoders.settings);
   }
 }
 

@@ -64,7 +64,7 @@ extern void syncTileGet()
     #endif
     if (v.equals("on")) encoders.settings.autoSync = true;
     if (v.equals("off")) encoders.settings.autoSync = false;
-    nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &encoders.settings, sizeof(EncoderSettings));
+    nv().kv().put("ENCODER_SETTINGS", encoders.settings);
   }
 }
 
