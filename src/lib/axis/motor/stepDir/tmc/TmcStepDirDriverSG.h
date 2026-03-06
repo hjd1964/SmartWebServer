@@ -121,6 +121,12 @@
   #define SG_ARM_WARM_MS 200
 #endif
 
+// Minimum period (ms) between StallGuard evaluations in isStalled().
+// This normalizes model learning and fault integration against loop-rate variance.
+#ifndef SG_EVAL_MIN_MS
+  #define SG_EVAL_MIN_MS 20
+#endif
+
 #ifndef SG_MODEL_SAVE_MS
   #define SG_MODEL_SAVE_MS 300000
 #endif

@@ -38,7 +38,7 @@ class Motor {
     virtual void setReverse(bool state) { reversed = state; }
 
     // sets motor enable on/off (if possible)
-    virtual void enable(bool value) {}
+    virtual void enable(bool value) { UNUSED(value); }
 
     // get the associated stepper motor driver status
     virtual DriverStatus getDriverStatus() { return errorStatus; }
@@ -101,7 +101,7 @@ class Motor {
     virtual float getFrequencySteps() { return 0; }
 
     // set frequency (+/-) in steps per second negative frequencies move reverse in direction (0 stops motion)
-    virtual void setFrequencySteps(float frequency) {}
+    virtual void setFrequencySteps(float frequency) { UNUSED(frequency); }
 
     // set backlash frequency in steps per second
     virtual void setBacklashFrequencySteps(float frequency);
@@ -129,7 +129,7 @@ class Motor {
     int getSequencerSteps() { return 1; };
 
     // set slewing state (hint that we are about to slew or are done slewing)
-    virtual void setSlewing(bool state) {}
+    virtual void setSlewing(bool state) { UNUSED(state); }
 
     // signal that the motor load has exceeded its threshold
     virtual bool isStalled() { return false; }

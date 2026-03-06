@@ -11,15 +11,23 @@
 
 // Dual-rate adaptation:
 // - SG Train ON  => fast EMA (explicit training)
-#define BASE_TC_FAST 128.0f
-#define DEV_TC_FAST  256.0f
+#ifndef BASE_TC_FAST
+  #define BASE_TC_FAST 128.0f
+#endif
+#ifndef DEV_TC_FAST
+  #define DEV_TC_FAST  256.0f
+#endif
 // - SG Train OFF => slow EMA drift tracking
-#define BASE_TC_SLOW 2048.0f
-#define DEV_TC_SLOW  4096.0f
+#ifndef BASE_TC_SLOW
+  #define BASE_TC_SLOW 4096.0f
+#endif
+#ifndef DEV_TC_SLOW
+  #define DEV_TC_SLOW  8192.0f
+#endif
 
 // Margin for model:
-#define MARGIN_GENERAL 40  // general
-#define MARGIN_NOISE   3   // noise relative
+#define MARGIN_GENERAL 80 // general was 40
+#define MARGIN_NOISE   4  // noise relative was 3
 
 TmcStepDirDriverSG::TmcStepDirDriverSG(uint8_t axisNumber, const StepDirDriverPins *Pins, const StepDirDriverSettings *Settings,
                                        int16_t currentHold, int16_t currentRun, int16_t currentSlewing, int8_t intpol)
@@ -151,6 +159,7 @@ bool TmcStepDirDriverSG::isStalled(float stepsPerSec) {
     sgTrainPrev = sgTrain.value;
 
     const uint32_t nowMs = millis();
+    if (sgLastMs != 0 && (uint32_t)(nowMs - sgLastMs) < (uint32_t)SG_EVAL_MIN_MS) return sgLatch;
 
     // Convert signed microsteps/s -> signed fullsteps/s
     const float fpsSigned = stepsPerSec / normalizedMicrosteps;
