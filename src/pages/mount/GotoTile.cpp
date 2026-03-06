@@ -162,8 +162,8 @@ void gotoTileAjax(String &data)
 
     if (rateRatio > 1.75F) { rate_en[0] = true; }
     else if (rateRatio > 1.25F) { rate_en[1] = true; }
-    else if (rateRatio > 0.875F) { rate_en[2] = true; }
-    else if (rateRatio > 0.625F) { rate_en[3] = true; }
+    else if (rateRatio > 0.75F) { rate_en[2] = true; }
+    else if (rateRatio > 0.583F) { rate_en[3] = true; }
     else rate_en[4] = true;
     for (int i = 0; i < 5; i++) {
       String s = keyValueBoolSelected(rate_key[i], rate_en[i]);
