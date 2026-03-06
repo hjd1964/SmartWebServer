@@ -11,6 +11,10 @@
 #define HOST_NAME                      "OnStep-SWS"
 #endif
 
+#ifndef OPERATIONAL_MODE
+#define OPERATIONAL_MODE              WIFI       // WIFI, ETHERNET_W5100, or ETHERNET_W5500
+#endif
+
 // use the HAL specified default NV driver
 #ifndef NV_DRIVER
 #define NV_DRIVER                      NV_DEFAULT
@@ -35,6 +39,18 @@
 // enable and customize WiFi/Ethernet functionality
 // for other default IP settings see the file:
 // src/lib/wifi/WifiManager.defaults.h
+
+#ifndef NV_WIFI_SETTINGS
+#define NV_WIFI_SETTINGS                         // allow NV storage of WiFi settings
+#endif
+
+#ifndef NV_ETHERNET_SETTINGS
+#define NV_ETHERNET_SETTINGS                     // allow NV storage of Ethernet settings
+#endif
+
+#if defined(ESP32) || defined(ESP8266)
+  #define OTA_PRESENT
+#endif
 
 #ifndef MDNS_SERVER
 #define MDNS_SERVER                    ON

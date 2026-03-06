@@ -425,7 +425,7 @@
 #define L_NETWORK_PWD "Password"
 #define L_NETWORK_PWD_MSG "8 char min."
 #define L_NETWORK_EN_DHCP "Enable DHCP"
-#define L_NETWORK_EN_DHCP_MSG "Note: above addresses are ignored if DHCP is enabled"
+#define L_NETWORK_EN_DHCP_MSG "Note: above addresses ignored if DHCP is enabled"
 #define L_NETWORK_EN_STA "Enable Station Mode"
 #define L_IP_ADDRESS "IP Address"
 #define L_GATEWAY "Gateway"
@@ -433,9 +433,13 @@
 #define L_NETWORK_CHA "Channel"
 #define L_NETWORK_EN_AP_MODE "Enable Access-Point Mode"
 
+#define L_NETWORK_OTA_TITLE "OTA SWS firmware update"
+#define L_NETWORK_EN_OTA "Enable OTA Mode"
+#define L_REBOOT_OTA "Reboot into OTA mode"
+
 #define L_NETWORK_CONFIG_SECURITY "Network Configuration Security"
 
-#define L_NETWORK_AP "Access-Point mode"
+#define L_NETWORK_AP "Access-Point mode (auto-enabled if Station mode fails to connect)"
 
 #define L_NETWORK_RESTART_MSG "You must <u>manually</u> restart for changes to take effect."
 

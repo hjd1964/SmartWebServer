@@ -7,14 +7,17 @@
 #include "../htmlScripts.h"
 
 const char htmL_NETWORKSerial[] PROGMEM =
-"<b>" L_NETWORK_PERFORMANCE ":</b><br/>"
-"<form method='post' action='/net.htm'>"
+"<br/><hr><form method='post' action='/net.htm'>"
 L_NETWORK_CMD_TO ": <input style='width:4em' name='ccto' value='%d' type='number' min='100' max='300'> ms<br/>"
 L_NETWORK_WWW_TO ": <input style='width:4em' name='wcto' value='%d' type='number' min='100' max='300'> ms<br/>"
-"<button type='submit'>" L_UPLOAD "</button></form><br />\n";
+"<br/><button type='submit'>" L_UPLOAD "</button></form>\n";
 
 const char htmL_NET_MAC[] PROGMEM =
 "MAC: <input style='width:10em' name='%s' type='text' value='%s' maxlength='17' disabled><br/>";
+
+const char htmL_NET_MAC_AP[] PROGMEM =
+"MAC: <input style='width:10em' name='apmac' type='text' value='%s' maxlength='17' disabled>&nbsp;&nbsp;&nbsp;"
+L_NETWORK_CHA ": <input style='width:3em' name='apch' value='%d' type='number' min='1' max='11'><br/>";
 
 const char htmL_NET_IP[] PROGMEM =
 "<table><tr><td>" L_IP_ADDRESS ": </td><td>"
@@ -39,45 +42,55 @@ const char htmL_NET_SN[] PROGMEM =
 
 #if OPERATIONAL_MODE == WIFI
   const char htmL_NETWORKSSID1[] PROGMEM =
-  "<br/><b>" L_NETWORK_STA_TITLE ":</b><br/>"
-  "<form method='post' action='/net.htm'>"
-  "SSID: <input style='width:6em' name='stssid' type='text' value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
-  L_NETWORK_PWD ": <input style='width:8em' name='stpwd' type='password' value='%s' minlength='8' maxlength='63'> (" L_NETWORK_PWD_MSG ")<br/>";
+  "<br/><hr><form method='post' action='/net.htm'>"
+  "SSID: <input style='width:13em; text-align:left;' name='stssid' type='text' value='%s' maxlength='32'>&nbsp;&nbsp;&nbsp;"
+  L_NETWORK_PWD ": <input style='width:8em; text-align:left;' name='stpwd' type='password' minlength='8' maxlength='63'> (" L_NETWORK_PWD_MSG ")<br/>";
 
   const char htmL_NETWORKSSID2[] PROGMEM =
   L_NETWORK_EN_DHCP ": <input type='checkbox' name='stadhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>"
   L_NETWORK_EN_STA ": <input type='checkbox' name='staen' value='1' %s><br/>"
-  "<button type='submit'>" L_UPLOAD "</button></form><br />\n";
+  "<br/><button type='submit'>" L_UPLOAD "</button></form>\n";
 
   const char htmL_NETWORKSSID3A[] PROGMEM =
-  "<br/><b>" L_NETWORK_AP ":</b><br/>"
-  "<form method='post' action='/net.htm'>"
-  "SSID: <input style='width:6em' name='apssid' type='text' ";
+  "<br/><hr><form method='post' action='/net.htm'>"
+  "SSID: <input style='width:13em; text-align:left;' name='apssid' type='text' ";
 
   const char htmL_NETWORKSSID3B[] PROGMEM =
   "value='%s' maxlength='31'>&nbsp;&nbsp;&nbsp;"
-  L_NETWORK_PWD ": <input style='width:8em' name='appwd' type='password' value='%s' minlength='8' maxlength='31'> " L_NETWORK_PWD_MSG "&nbsp;&nbsp;&nbsp;"
-  L_NETWORK_CHA ": <input style='width:3em' name='apch' value='%d' type='number' min='1' max='11'><br/>";
+  L_NETWORK_PWD ": <input style='width:8em; text-align:left;' name='appwd' type='password' minlength='8' maxlength='31'> (" L_NETWORK_PWD_MSG ")<br/>";
 
   const char htmL_NETWORKSSID7[] PROGMEM =
-  L_NETWORK_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s> (Note: auto-enabled if Station Mode fails to connect)<br/>"
-  "<button type='submit'>" L_UPLOAD "</button></form><br />\n";
+  L_NETWORK_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s><br/>"
+  "<br/><button type='submit'>" L_UPLOAD "</button></form>\n";
+
+  #ifdef OTA_PRESENT
+    const char htmL_NETWORKSSID8[] PROGMEM =
+    "<br/><hr><form method='post' action='/net.htm'>"
+    L_NETWORK_PWD ": <input style='width:8em; text-align:left;' name='otapwd' type='password' minlength='8' maxlength='63'> (" L_NETWORK_PWD_MSG ")<br/>"
+    #if DISPLAY_RESET_CONTROLS != OFF
+      "<br/><button onclick=\"return confirm('" L_ARE_YOU_SURE "?')\" type='submit' name='otareboot' value='1'>" L_REBOOT_OTA "</button></form>\n"
+    #else
+      L_NETWORK_EN_OTA ": <input type='checkbox' name='otaen' value='1' %s><br/>"
+      "<br/><button type='submit'>" L_UPLOAD "</button></form>\n"
+    #endif
+    ;
+  #endif
+
 #else
   const char htmL_NETWORK_ETH_DHCP[] PROGMEM =
   L_NETWORK_EN_DHCP ": <input type='checkbox' name='ethdhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>";
 
   const char htmL_NETWORK_ETH_BEG[] PROGMEM =
-  "<br/><b>Ethernet:</b><br/>"
-  "<form method='post' action='/net.htm'><br />\n";
+  "<br/><hr><form method='post' action='/net.htm'>\n";
 
   const char htmL_NETWORK_ETH_END[] PROGMEM =
-  "<button type='submit'>" L_UPLOAD "</button></form><br />\n";
+  "<button type='submit'>" L_UPLOAD "</button></form>\n";
 #endif
 
 const char html_logout[] PROGMEM =
-"<br/><b>" L_NETWORK_CONFIG_SECURITY ":</b><br/>"
-"<form method='post' action='/net.htm'>"
-L_NETWORK_PWD ": <input style='width:8em' name='webpwd' type='password' minlength='3' maxlength='31'> "
+"<br/>" L_NETWORK_CONFIG_SECURITY ":"
+"<br/><br/><form method='post' action='/net.htm'>"
+L_NETWORK_PWD ": <input style='width:8em; text-align:left;' name='webpwd' type='password' minlength='3' maxlength='31'> "
 "<button type='submit'>" L_UPLOAD "</button></form>"
 "<form method='post' action='/net.htm'>"
 "<button type='submit' name='logout' value='1'>" L_LOGOUT "</button></form><br />\n";
@@ -92,7 +105,7 @@ const char html_reboot[] PROGMEM =
 const char html_login[] PROGMEM =
 "<br/><form method='post' action='/net.htm'>"
 "<br/>" L_NETWORK_TITLE "<br />"
-"<input style='width:8em' name='login' type='password' minlength='3' maxlength='31'>"
+"<input style='width:8em; text-align:left;' name='login' type='password' minlength='3' maxlength='31'>"
 "<button type='submit'>" L_OK "</button>"
 "</form><br/><br/><br/>"
 #if OPERATIONAL_MODE == WIFI

@@ -38,6 +38,17 @@
 
 #include "src/Common.h"
 
+#ifdef OTA_PRESENT
+  #include <ArduinoOTA.h>
+
+  typedef struct OtaSettings {
+    char password[64];
+    bool enabled;
+  } OtaSettings;
+#endif
+
+bool otaEnabled = false;
+
 #include "src/lib/tasks/OnTask.h"
 #include "src/lib/nv/Nv.h"
 #include "src/lib/ethernet/cmdServer/CmdServer.h"
@@ -302,6 +313,26 @@ Again:
   
   www.onNotFound(handleNotFound);
 
+  #ifdef OTA_PRESENT
+    OtaSettings otaSettings = {"", false};
+    nv().kv().getOrInit("OTA_SETTINGS", otaSettings);
+    if (strlen(otaSettings.password) == 0) otaSettings.enabled = false;
+
+    if (otaSettings.enabled) {
+      otaEnabled = true;
+      VLF("MSG: Setup, bringing up OTA service for " HOST_NAME "-OTA");
+      ArduinoOTA.setHostname(HOST_NAME "-OTA");
+      ArduinoOTA.setPassword(otaSettings.password);
+      ArduinoOTA.begin();
+    }
+
+    // since this disturbs operation (ESP8266) allow one-shot enable only
+    if (otaSettings.enabled) {
+      otaSettings.enabled = false;
+      nv().kv().put("OTA_SETTINGS", otaSettings);
+    }
+  #endif
+
   #if COMMAND_SERVER == PERSISTENT || COMMAND_SERVER == BOTH
     if (!otaEnabled) {
       VLF("MSG: Starting port 9996 cmd server");
@@ -318,8 +349,12 @@ Again:
   #endif
 
   #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
-    VLF("MSG: Starting port 9999 cmd server");
-    cmdSvr.begin();
+    if (!otaEnabled) {
+      VLF("MSG: Starting port 9999 cmd server");
+      cmdSvr.begin();
+    } else {
+      VLF("MSG: OTA mode active, command port 9999 disabled");
+    }
   #endif
 
   VLF("MSG: Starting port 80 web server");
@@ -362,6 +397,10 @@ void loop(void) {
   #if (BLE_GAMEPAD == ON && ESP32)
     bleTimers(); Y;
     bleConnTest(); Y;
+  #endif
+
+  #ifdef OTA_PRESENT
+    if (otaEnabled) ArduinoOTA.handle();
   #endif
 
   tasks.yield();
