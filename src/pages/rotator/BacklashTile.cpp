@@ -14,22 +14,22 @@ void rotatorBacklashTile(String &data)
   if (!onStep.command(":rb#", temp1)) strcpy(temp1, "0");
   int backlash = atoi(temp1);
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "13em", "Backlash");
+  snprintf_P(temp, sizeof(temp), html_tile_text_beg, "22em", "13em", "Backlash");
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
-  sprintf_P(temp, html_backlashValue, backlash);
+  snprintf_P(temp, sizeof(temp), html_backlashValue, backlash);
   data.concat(temp);
 
   data.concat(F("<hr>"));
 
-  sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_SETTINGS "...");
   data.concat(temp);
 
-  sprintf_P(temp, html_form_begin, "rotator.htm");
+  snprintf_P(temp, sizeof(temp), html_form_begin, "rotator.htm");
   data.concat(temp);
 
-  sprintf_P(temp, html_configBlAxis3, backlash);
+  snprintf_P(temp, sizeof(temp), html_configBlAxis3, backlash);
   data.concat(temp);
   data.concat(F("<button type='submit'>" L_UPLOAD "</button>\n"));
 
@@ -57,7 +57,7 @@ extern void rotatorBacklashTileGet()
   v = www.arg("b3");
   if (!v.equals(EmptyStr)) {
     if (v.toInt() >= 0 && v.toInt() <= 32767) { 
-      sprintf(temp, ":rb%d#", (int16_t)v.toInt());
+      snprintf(temp, sizeof(temp), ":rb%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
     }
   }

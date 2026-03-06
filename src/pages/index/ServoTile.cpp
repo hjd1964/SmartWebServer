@@ -28,7 +28,7 @@ void servoTile(String &data)
   www.sendContentAndClear(data);
 
   // servo monitor tile start
-  sprintf_P(temp, html_tile_beg, "28em", "15em", "Servo <span class='c'>Axis</span><span id='svoA' class='c'>?</span> Monitor");
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "28em", "15em", "Servo <span class='c'>Axis</span><span id='svoA' class='c'>?</span> Monitor");
   data.concat(temp);
   data.concat(F("<div style='float: right; text-align: right;'>"));
   data.concat(F("Delta <span id='svoD' class='c'>?</span> <span id='units'>?</span>, "));
@@ -37,13 +37,13 @@ void servoTile(String &data)
 
   // allow selecting servo axis
   data.concat(F("<div>"));
-  sprintf_P(temp, html_servoSelect, 0, 0, 'x');
+  snprintf_P(temp, sizeof(temp), html_servoSelect, 0, 0, 'x');
   data.concat(temp);
   for (int i=1; i<9; i++) {
     char command[10];
-    sprintf(command, ":GXS%d#", i);
+    snprintf(command, sizeof(command), ":GXS%d#", i);
     if (onStep.command(command, temp)) {
-      sprintf_P(temp, html_servoSelect, i, i, '0'+ i); data.concat(temp);
+      snprintf_P(temp, sizeof(temp), html_servoSelect, i, i, '0'+ i); data.concat(temp);
     }
   }
   data.concat(F("</div>"));
@@ -53,7 +53,7 @@ void servoTile(String &data)
   data.concat(temp);
 
   #if DISPLAY_SERVO_ORIGIN_CONTROLS == ON
-    sprintf_P(temp, html_servoZeroEncoders);
+    snprintf_P(temp, sizeof(temp), html_servoZeroEncoders);
     data.concat(temp);
   #endif
 
@@ -69,16 +69,16 @@ void servoTileAjax(String &data)
 {
   char temp[120] = "", command[10];
 
-  if (_servo_axis == 0) strcpy(temp, "svoA|?\n"); else sprintf(temp, "svoA|%d\n", _servo_axis); data.concat(temp);
+  if (_servo_axis == 0) strcpy(temp, "svoA|?\n"); else snprintf(temp, sizeof(temp), "svoA|%d\n", _servo_axis); data.concat(temp);
 
-  sprintf(command, ":GXS%d#", _servo_axis);
+  snprintf(command, sizeof(command), ":GXS%d#", _servo_axis);
   if (_servo_axis >= 1 && _servo_axis <= 9 && onStep.command(command, temp)) {
 
     // make sure we have steps per measure for this axis
     if (_stepsPerMeasure[_servo_axis - 1] < 0) {
       _stepsPerMeasure[_servo_axis - 1] = 0.0;
       char result[120];
-      sprintf(command, ":GXA%d,1#", _servo_axis);
+      snprintf(command, sizeof(command), ":GXA%d,1#", _servo_axis);
       if (!onStep.command(command, result)) strcpy(result, "0");
       char *conv_end;
       double stepsPerMeasure = strtod(result, &conv_end);
@@ -103,7 +103,7 @@ void servoTileAjax(String &data)
       } else {
         delta = round(atoi(temp));
         data.concat(F("units|stps\n"));
-        sprintf(temp,"%ld", delta);
+        snprintf(temp, sizeof(temp), "%ld", delta);
       }
 
       data.concat(F("svoD|")); data.concat(temp); data.concat("\n");

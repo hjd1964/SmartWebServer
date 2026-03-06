@@ -11,7 +11,7 @@ void statusTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "11em", L_STATE);
+  snprintf_P(temp, sizeof(temp), html_tile_text_beg, "22em", "11em", L_STATE);
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
@@ -26,22 +26,22 @@ void statusTile(String &data)
     }
   }
 
-  sprintf_P(temp, html_indexGeneralError, state.lastErrorStr);
+  snprintf_P(temp, sizeof(temp), html_indexGeneralError, state.lastErrorStr);
   data.concat(temp);
 
   if (status.getVersionMajor() < 10)
   {
-    sprintf_P(temp, html_indexWorkload, state.workLoadStr);
+    snprintf_P(temp, sizeof(temp), html_indexWorkload, state.workLoadStr);
     data.concat(temp);
   }
 
   #if DISPLAY_INTERNAL_TEMPERATURE == ON
-    sprintf_P(temp, html_indexTemp, L_INTERNAL_TEMP ":", 'm', state.controllerTemperatureStr);
+    snprintf_P(temp, sizeof(temp), html_indexTemp, L_INTERNAL_TEMP ":", 'm', state.controllerTemperatureStr);
     data.concat(temp);
   #endif
 
   #if OPERATIONAL_MODE == WIFI
-    sprintf_P(temp, html_indexSignalStrength, state.signalStrengthStr);
+    snprintf_P(temp, sizeof(temp), html_indexSignalStrength, state.signalStrengthStr);
     data.concat(temp);
   #endif
 
@@ -60,7 +60,7 @@ void statusTile(String &data)
 
   if (displayCollapsable)
   {
-    sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+    snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_SETTINGS "...");
     data.concat(temp);
     www.sendContentAndClear(data);
   }
@@ -68,9 +68,9 @@ void statusTile(String &data)
   #if DRIVE_CONFIGURATION == ON
     if (mountType >= 1 && mountType <= 3)
     {
-      sprintf_P(temp, html_form_begin, "index.htm");
+      snprintf_P(temp, sizeof(temp), html_form_begin, "index.htm");
       data.concat(temp);
-      sprintf_P(temp, html_indexMountType, mountType);
+      snprintf_P(temp, sizeof(temp), html_indexMountType, mountType);
       data.concat(temp);
       data.concat(F("<button type='submit'>" L_UPLOAD "</button> "));
       data.concat(F("<button name='revert' value='0' type='submit'>" L_REVERT "</button>\n"));
@@ -81,7 +81,7 @@ void statusTile(String &data)
 
   #if DISPLAY_RESET_CONTROLS != OFF
     if (mountType != 0) data.concat(F("<br /><hr>"));
-    sprintf_P(temp, html_form_begin, "index.htm");
+    snprintf_P(temp, sizeof(temp), html_form_begin, "index.htm");
     data.concat(temp);
     data.concat(L_RESET_TITLE "<br/><br/>");
     data.concat(F("<button onpointerdown=\"if (confirm('" L_ARE_YOU_SURE "?')) s('boot','reset')\" type='button'>" L_RESET "!</button><br />"));
@@ -204,7 +204,7 @@ void statusTileGet()
   String ssm = www.arg("mountt");
   if (!ssm.equals(EmptyStr))
   {
-    sprintf(temp, ":SXEM,%s#", ssm.c_str());
+    snprintf(temp, sizeof(temp), ":SXEM,%s#", ssm.c_str());
     onStep.commandBool(temp);
   }
 }

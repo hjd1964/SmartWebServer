@@ -12,15 +12,15 @@ void ambientTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "11em", "Weather");
+  snprintf_P(temp, sizeof(temp), html_tile_text_beg, "22em", "11em", "Weather");
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
   // Ambient conditions
-  sprintf_P(temp, html_indexTPHD, L_AMBIENT_TEMPERATURE ":", 't', state.siteTemperatureStr); data.concat(temp);
-  sprintf_P(temp, html_indexTPHD, L_PRESSURE ":", 'p', state.sitePressureStr); data.concat(temp);
-  sprintf_P(temp, html_indexTPHD, L_HUMIDITY ":", 'h', state.siteHumidityStr); data.concat(temp);
-  sprintf_P(temp, html_indexTPHD, L_DEW_POINT ":", 'd', state.siteDewPointStr); data.concat(temp);
+  snprintf_P(temp, sizeof(temp), html_indexTPHD, L_AMBIENT_TEMPERATURE ":", 't', state.siteTemperatureStr); data.concat(temp);
+  snprintf_P(temp, sizeof(temp), html_indexTPHD, L_PRESSURE ":", 'p', state.sitePressureStr); data.concat(temp);
+  snprintf_P(temp, sizeof(temp), html_indexTPHD, L_HUMIDITY ":", 'h', state.siteHumidityStr); data.concat(temp);
+  snprintf_P(temp, sizeof(temp), html_indexTPHD, L_DEW_POINT ":", 'd', state.siteDewPointStr); data.concat(temp);
   www.sendContentAndClear(data);
 
   data.concat(F("<hr>"));

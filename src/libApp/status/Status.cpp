@@ -58,6 +58,10 @@ bool Status::update()
       onStepFound = true;
       if (onStep.command(":GVC#", result)) {
         strncpy(configName, result, 40); configName[39] = 0;
+        for (int i = 0; i < 39; i++) {
+          if (configName[i] == 0) break;
+          if (configName[i] == '_') configName[i] = ' ';
+        }
       }
     }
   }
@@ -112,14 +116,20 @@ bool Status::update()
 
         if (mountType == MT_GEM) autoMeridianFlips = strstr(result, "a"); else autoMeridianFlips = false;
 
-        guideRatePulse = result[strlen(result) - 3] - '0';
+        const size_t statusLen = strlen(result);
+        if (statusLen < 3) {
+          onStepFound = false;
+          return false;
+        }
+
+        guideRatePulse = result[statusLen - 3] - '0';
         if (guideRatePulse < 0) guideRatePulse = 0;
         if (guideRatePulse > 9) guideRatePulse = 9;
-        guideRate = result[strlen(result) - 2] - '0';
+        guideRate = result[statusLen - 2] - '0';
         if (guideRate < 0) guideRate = 0;
         if (guideRate > 9) guideRate = 9;
 
-        int e = result[strlen(result) - 1] - '0';
+        int e = result[statusLen - 1] - '0';
         if (e < ERR_NONE) lastError = ERR_UNSPECIFIED;
         if (e > ERR_NV_INIT) lastError = ERR_UNSPECIFIED;
         lastError = (Errors)(e);
@@ -215,7 +225,7 @@ bool Status::auxiliaryScan() {
 
       if (present[i] == '0') continue;
 
-      sprintf(cmd, ":GXY%d#", i+1);
+      snprintf(cmd, sizeof(cmd), ":GXY%d#", i+1);
       if (!onStep.command(cmd, out) || out[0] == 0) valid = false; Y;
       if (!valid) { for (uint8_t j = 0; j < 8; j++) feature[j].purpose = 0; auxiliaryFound = SD_FALSE; return false; }
 
@@ -248,25 +258,25 @@ bool Status::auxiliaryScan() {
   return true;
 }
 
-bool Status::getLastErrorMessage(char message[]) {
-  strcpy(message,"");
-  if (lastError == ERR_NONE) strcpy(message, L_GE_NONE); else
-  if (lastError == ERR_MOTOR_FAULT) strcpy(message, L_GE_MOTOR_FAULT); else
-  if (lastError == ERR_ALT_MIN) strcpy(message, L_GE_ALT_MIN); else
-  if (lastError == ERR_LIMIT_SENSE) strcpy(message, L_GE_LIMIT_SENSE); else
-  if (lastError == ERR_DEC) strcpy(message, L_GE_DEC); else
-  if (lastError == ERR_AZM) strcpy(message, L_GE_AZM); else
-  if (lastError == ERR_UNDER_POLE) strcpy(message, L_GE_UNDER_POLE); else
-  if (lastError == ERR_MERIDIAN) strcpy(message, L_GE_MERIDIAN); else
-  if (lastError == ERR_SYNC) strcpy(message, L_GE_SYNC); else
-  if (lastError == ERR_PARK) strcpy(message, L_GE_PARK); else
-  if (lastError == ERR_GOTO_SYNC) strcpy(message, L_GE_GOTO_SYNC); else
-  if (lastError == ERR_UNSPECIFIED) strcpy(message, L_GE_UNSPECIFIED); else
-  if (lastError == ERR_ALT_MAX) strcpy(message, L_GE_ALT_MAX); else
-  if (lastError == ERR_WEATHER_INIT) strcpy(message, L_GE_WEATHER_INIT); else
-  if (lastError == ERR_SITE_INIT) strcpy(message, L_GE_SITE_INIT); else
-  if (lastError == ERR_NV_INIT) strcpy(message, L_GE_NV_INIT); else
-  sprintf(message, L_GE_OTHER " %d", (int)lastError);
+bool Status::getLastErrorMessage(char message[], size_t messageSize) {
+  strncpy(message, "", messageSize);
+  if (lastError == ERR_NONE) strncpy(message, L_GE_NONE, messageSize); else
+  if (lastError == ERR_MOTOR_FAULT) strncpy(message, L_GE_MOTOR_FAULT, messageSize); else
+  if (lastError == ERR_ALT_MIN) strncpy(message, L_GE_ALT_MIN, messageSize); else
+  if (lastError == ERR_LIMIT_SENSE) strncpy(message, L_GE_LIMIT_SENSE, messageSize); else
+  if (lastError == ERR_DEC) strncpy(message, L_GE_DEC, messageSize); else
+  if (lastError == ERR_AZM) strncpy(message, L_GE_AZM, messageSize); else
+  if (lastError == ERR_UNDER_POLE) strncpy(message, L_GE_UNDER_POLE, messageSize); else
+  if (lastError == ERR_MERIDIAN) strncpy(message, L_GE_MERIDIAN, messageSize); else
+  if (lastError == ERR_SYNC) strncpy(message, L_GE_SYNC, messageSize); else
+  if (lastError == ERR_PARK) strncpy(message, L_GE_PARK, messageSize); else
+  if (lastError == ERR_GOTO_SYNC) strncpy(message, L_GE_GOTO_SYNC, messageSize); else
+  if (lastError == ERR_UNSPECIFIED) strncpy(message, L_GE_UNSPECIFIED, messageSize); else
+  if (lastError == ERR_ALT_MAX) strncpy(message, L_GE_ALT_MAX, messageSize); else
+  if (lastError == ERR_WEATHER_INIT) strncpy(message, L_GE_WEATHER_INIT, messageSize); else
+  if (lastError == ERR_SITE_INIT) strncpy(message, L_GE_SITE_INIT, messageSize); else
+  if (lastError == ERR_NV_INIT) strncpy(message, L_GE_NV_INIT, messageSize); else
+  snprintf(message, messageSize, L_GE_OTHER " %d", (int)lastError);
   return message[0];
 }
 

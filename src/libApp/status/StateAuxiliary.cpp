@@ -19,11 +19,11 @@ bool State::updateAuxiliary(bool all, bool now) {
     char *valueV_str = NULL; // monitor voltage
     char *valueI_str = NULL; // monitor current
     char *valueS_str = NULL; // monitor status
-    char cmd[20], out[80];
+    char command[20], out[80];
 
     if (all || (status.feature[i].purpose == SWITCH || status.feature[i].purpose == ANALOG_OUTPUT || status.feature[i].purpose == DEW_HEATER || status.feature[i].purpose == INTERVALOMETER)) {
-      sprintf(cmd,":GXX%d#", i + 1);
-      if (!onStep.command(cmd, out) || strlen(out) == 0) valid = false; else valid = true; Y;
+      snprintf(command, sizeof(command), ":GXX%d#", i + 1);
+      if (!onStep.command(command, out) || strlen(out) == 0) valid = false; else valid = true; Y;
       if (!valid) {
         status.feature[i].value1 = 0;
         status.feature[i].value2 = NAN;

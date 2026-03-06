@@ -55,7 +55,7 @@ void handleEncoders()
   }
 
   // scripts
-  sprintf_P(temp, html_script_ajax_get, "enc-ajax-get.txt");
+  snprintf_P(temp, sizeof(temp), html_script_ajax_get, "enc-ajax-get.txt");
   data.concat(temp);
 
   data.concat(F("<script>var ajaxPage='enc-ajax.txt';</script>\n"));

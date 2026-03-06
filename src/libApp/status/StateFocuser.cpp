@@ -50,15 +50,15 @@ void State::updateFocuser(bool now) {
 
     // focuser/telescope temperature
     if (!onStep.command(":Ft#", temp)) strcpy(temp, "?"); else localeTemperature(temp);
-    strncpyex(focuserTemperatureStr, temp, 16); Y;
+    sstrcpyex(focuserTemperatureStr, temp, 16); Y;
 
     // focuser backlash
     if (!onStep.command(":Fb#", temp)) strcpy(temp, "?");
-    strncpyex(focuserBacklashStr, temp, 16); Y;
+    sstrcpyex(focuserBacklashStr, temp, 16); Y;
 
     // focuser deadband
     if (!onStep.command(":Fd#", temp)) strcpy(temp, "?");
-    strncpyex(focuserDeadbandStr, temp, 16); Y;
+    sstrcpyex(focuserDeadbandStr, temp, 16); Y;
 
     // focuser TCF enable
     focuserTcfEnable = onStep.commandBool(":Fc#"); Y;
@@ -72,7 +72,7 @@ void State::updateFocuser(bool now) {
         dtostrf(tcfCoef, 1, 4, temp);
       } else strcpy(temp, "?");
     } else strcpy(temp, "?");
-    strncpyex(focuserTcfCoefStr, temp, 16); Y;
+    sstrcpyex(focuserTcfCoefStr, temp, 16); Y;
 
     // focuser slew rate
     if (status.getVersionMajor() >= 10)

@@ -107,7 +107,7 @@ void State::pollGpio()
 
         if (vGpioState != vGpioLastState[i]) {
           VF("MSG: VGPIO"); V(i); VF(", digitalRead "); VL(vGpioState);
-          sprintf(cmd, ":SXG%d,%d#", i, vGpioState);
+          snprintf(cmd, sizeof(cmd), ":SXG%d,%d#", i, vGpioState);
           if (onStep.commandBool(cmd)) vGpioLastState[i] = vGpioState;
         }
       }

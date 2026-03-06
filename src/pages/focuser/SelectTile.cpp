@@ -10,7 +10,7 @@ void focuserSelectTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "13em", "Select");
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "13em", "Select");
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
@@ -23,7 +23,7 @@ void focuserSelectTile(String &data)
     data.concat(L_FOCUSER " " L_INACTIVE);
   } else
   {
-    sprintf(temp, L_FOCUSER "%d " L_SELECTED, state.focuserSelected);
+    snprintf(temp, sizeof(temp), L_FOCUSER "%d " L_SELECTED, state.focuserSelected);
     data.concat(temp);
   }
   data.concat(F("</span></big><br /><br />"));
@@ -53,7 +53,7 @@ void focuserSelectTileAjax(String &data)
     data.concat(keyValueString("foc_sel", L_INACTIVE));
   else
   {
-    sprintf(temp, L_FOCUSER "%d " L_SELECTED, state.focuserSelected);
+    snprintf(temp, sizeof(temp), L_FOCUSER "%d " L_SELECTED, state.focuserSelected);
     data.concat(keyValueString("foc_sel", temp));
   }
   data.concat(keyValueBoolSelected("foc1_sel", state.focuserSelected == 1));

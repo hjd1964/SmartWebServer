@@ -23,18 +23,18 @@ bool axisTile(int axis, String &data)
   if (axis >= 3 && !status.focuserPresent[axis - 3]) return success;
 
   switch (axis) {
-    case 0: sprintf(temp1, "Axis%d RA/Azm", 1); break;
-    case 1: sprintf(temp1, "Axis%d Dec/Alt", 2); break;
-    case 2: sprintf(temp1, "Axis%d Rotator", 3); break;
+    case 0: snprintf(temp1, sizeof(temp1), "Axis%d RA/Azm", 1); break;
+    case 1: snprintf(temp1, sizeof(temp1), "Axis%d Dec/Alt", 2); break;
+    case 2: snprintf(temp1, sizeof(temp1), "Axis%d Rotator", 3); break;
     case 3: case 4: case 5: case 6: case 7: case 8:
-      sprintf(temp1, "Axis%d Focuser%d", axis + 1, axis - 2);
+      snprintf(temp1, sizeof(temp1), "Axis%d Focuser%d", axis + 1, axis - 2);
     break;
   }
-  sprintf_P(temp, html_tile_text_beg, "22em", "11em", temp1);
+  snprintf_P(temp, sizeof(temp), html_tile_text_beg, "22em", "11em", temp1);
   data.concat(temp);
   data.concat(F("<br /><hr>"));
   if (state.driverStatusStr[axis][0] == '?') strcpy(temp1, L_UNKNOWN); else strcpy(temp1, state.driverStatusStr[axis]);
-  sprintf_P(temp, html_indexDriverStatus, axis, temp1);
+  snprintf_P(temp, sizeof(temp), html_indexDriverStatus, axis, temp1);
   data.concat(temp);
 
   data.concat(F("<hr>"));
@@ -43,21 +43,21 @@ bool axisTile(int axis, String &data)
   #if DRIVE_CONFIGURATION == ON
     if (status.getVersionMajor() > 10 || (status.getVersionMajor() == 10 && status.getVersionMinor() >= 26)) {
 
-      sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+      snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_SETTINGS "...");
       data.concat(temp);
 
-      sprintf_P(temp, html_form_begin, "index.htm");
+      snprintf_P(temp, sizeof(temp), html_form_begin, "index.htm");
       data.concat(temp);
       www.sendContentAndClear(data);
 
       // get axis parameter count
-      sprintf(temp, ":GXA%d,0#", axis + 1);
+      snprintf(temp, sizeof(temp), ":GXA%d,0#", axis + 1);
       if (onStep.command(temp, temp1)) {
         int parameterCount = atoi(temp1);
 
         // show controls
         for (int parameterNumber = 1; parameterNumber <= parameterCount; parameterNumber++) {
-          sprintf(temp, ":GXA%d,%d#", axis + 1, parameterNumber);
+          snprintf(temp, sizeof(temp), ":GXA%d,%d#", axis + 1, parameterNumber);
           if (onStep.command(temp, temp1)) {
             decodeParameter(temp1, &value, &min, &max, &type, name);
 
@@ -98,7 +98,7 @@ bool axisTile(int axis, String &data)
               // if element 7 (reverse) is present, which it always is, show the Motor/Driver identification string
               if (i == 7) {
                 data.concat("<br />" L_ADV_MOTOR ": ");
-                sprintf(temp, ":GXA%d,M#", axis + 1);
+                snprintf(temp, sizeof(temp), ":GXA%d,M#", axis + 1);
                 if (onStep.command(temp, temp1)) {
                   data.concat(temp1);
                 } else {
@@ -118,64 +118,64 @@ bool axisTile(int axis, String &data)
             switch (type) {
               // AXP_BOOLEAN, AXP_BOOLEAN_IMMEDIATE
               case 1: case 2: {
-                sprintf_P(temp, html_configAxisSelectStart, axis + 1, parameterNumber);
+                snprintf_P(temp, sizeof(temp), html_configAxisSelectStart, axis + 1, parameterNumber);
                 data.concat(temp);
                 int selection[4] = {-1, -2, 0, 1};
                 const char *selectionName[5] = {L_OFF, L_ON, L_OFF, L_ON};
                 for (int i = 0; i < 4; i++) {
                   if (selection[i] >= min && selection[i] <= max) {
-                    sprintf_P(temp, valueInt == selection[i] ? html_configAxisSelectOptionSelected : html_configAxisSelectOption, selection[i], selectionName[i]);
+                    snprintf_P(temp, sizeof(temp), valueInt == selection[i] ? html_configAxisSelectOptionSelected : html_configAxisSelectOption, selection[i], selectionName[i]);
                     data.concat(temp);
                     www.sendContentAndClear(data);
                   }
                 }
-                sprintf_P(temp, html_configAxisSelectEnd, name);
+                snprintf_P(temp, sizeof(temp), html_configAxisSelectEnd, name);
                 data.concat(temp);
               } break;
 
               // AXP_INTEGER, AXP_INTEGER_IMMEDIATE
               case 3: case 4:
-                sprintf_P(temp, html_configAxisInt, valueInt, axis + 1, parameterNumber, min, max, name);
+                snprintf_P(temp, sizeof(temp), html_configAxisInt, valueInt, axis + 1, parameterNumber, min, max, name);
                 data.concat(temp);
               break;
 
               // AXP_FLOAT, AXP_FLOAT_IMMEDIATE
               case 5: case 6:
-                sprintf_P(temp, html_configAxisFloat, valueStr, axis + 1, parameterNumber, min, max, name);
+                snprintf_P(temp, sizeof(temp), html_configAxisFloat, valueStr, axis + 1, parameterNumber, min, max, name);
                 data.concat(temp);
               break;
 
               // AXP_POW2
               case 9: {
-                sprintf_P(temp, html_configAxisSelectStart, axis + 1, parameterNumber);
+                snprintf_P(temp, sizeof(temp), html_configAxisSelectStart, axis + 1, parameterNumber);
                 data.concat(temp);
                 int selection[9] = {1, 2, 4, 8, 16, 32, 64, 128, 256};
                 const char *selectionName[9] = {"1", "2", "4", "8", "16", "32", "64", "128", "256"};
                 for (int i = 0; i < 9; i++) {
                   if (selection[i] >= min && selection[i] <= max) {
-                    sprintf_P(temp, valueInt == selection[i] ? html_configAxisSelectOptionSelected : html_configAxisSelectOption, selection[i], selectionName[i]);
+                    snprintf_P(temp, sizeof(temp), valueInt == selection[i] ? html_configAxisSelectOptionSelected : html_configAxisSelectOption, selection[i], selectionName[i]);
                     data.concat(temp);
                     www.sendContentAndClear(data);
                   }
                 }
-                sprintf_P(temp, html_configAxisSelectEnd, name);
+                snprintf_P(temp, sizeof(temp), html_configAxisSelectEnd, name);
                 data.concat(temp);
               } break;
 
               // AXP_DECAY
               case 10: {
-                sprintf_P(temp, html_configAxisSelectStart, axis + 1, parameterNumber);
+                snprintf_P(temp, sizeof(temp), html_configAxisSelectStart, axis + 1, parameterNumber);
                 data.concat(temp);
                 int selection[5] = {1, 2, 3, 4, 5};
                 const char *selectionName[5] = {L_ADV_DECAY_MIXED, L_ADV_DECAY_FAST, L_ADV_DECAY_SLOW, L_ADV_DECAY_SPREADCYCLE, L_ADV_DECAY_STEALTHCHOP};
                 for (int i = 0; i < 5; i++) {
                   if (selection[i] >= min && selection[i] <= max) {
-                    sprintf_P(temp, valueInt == selection[i] ? html_configAxisSelectOptionSelected : html_configAxisSelectOption, selection[i], selectionName[i]);
+                    snprintf_P(temp, sizeof(temp), valueInt == selection[i] ? html_configAxisSelectOptionSelected : html_configAxisSelectOption, selection[i], selectionName[i]);
                     data.concat(temp);
                     www.sendContentAndClear(data);
                   }
                 }
-                sprintf_P(temp, html_configAxisSelectEnd, name);
+                snprintf_P(temp, sizeof(temp), html_configAxisSelectEnd, name);
                 data.concat(temp);
               } break;
               
@@ -185,7 +185,7 @@ bool axisTile(int axis, String &data)
 
         data.concat(F("<br /><button type='submit'>" L_UPLOAD "</button> "));
         www.sendContentAndClear(data);
-        sprintf_P(temp, html_configAxisRevert, axis + 1);
+        snprintf_P(temp, sizeof(temp), html_configAxisRevert, axis + 1);
         data.concat(temp);
         www.sendContentAndClear(data);
 
@@ -215,7 +215,7 @@ void axisTileAjax(int axis, String &data)
 {
   char temp[80], temp1[80];
 
-  sprintf(temp, "dvr_stat%d", axis);
+  snprintf(temp, sizeof(temp), "dvr_stat%d", axis);
   if (state.driverStatusStr[axis][0] == '?') strcpy(temp1, L_UNKNOWN); else strcpy(temp1, state.driverStatusStr[axis]);
   data.concat(keyValueString(temp, temp1));
 
@@ -241,7 +241,7 @@ void axisTileGet()
         onStep.commandBool(command);
       } else
       if (axis >= 1 && axis <= 9) {
-        sprintf(command, ":SXA%d,R#",axis);
+        snprintf(command, sizeof(command), ":SXA%d,R#",axis);
         onStep.commandBool(command);
       }
       return;
@@ -250,7 +250,7 @@ void axisTileGet()
     // determine what axis is being set
     int axisNumber = 0;
     for (int i = 1; i < 9; i++) {
-      sprintf(argStr, "a%dp%dvalue", i, 1);
+      snprintf(argStr, sizeof(argStr), "a%dp%dvalue", i, 1);
       if (!www.arg(argStr).equals(EmptyStr)) {
         axisNumber = i;
         break;
@@ -259,15 +259,15 @@ void axisTileGet()
     if (axisNumber == 0) return;
 
     // get axis parameter count
-    sprintf(command, ":GXA%d,0#", axisNumber);
+    snprintf(command, sizeof(command), ":GXA%d,0#", axisNumber);
     if (!onStep.command(command, response)) return;
     int parameterCount = atoi(response);
 
     // send axis parameters to OnStepX
     for (int parameterNumber = 1; parameterNumber <= parameterCount; parameterNumber++) {
-      sprintf(argStr, "a%dp%dvalue", axisNumber, parameterNumber);
+      snprintf(argStr, sizeof(argStr), "a%dp%dvalue", axisNumber, parameterNumber);
       String parameterValue = www.arg(argStr);
-      sprintf(command, ":SXA%d,%d,%s#", axisNumber, parameterNumber, parameterValue.c_str());
+      snprintf(command, sizeof(command), ":SXA%d,%d,%s#", axisNumber, parameterNumber, parameterValue.c_str());
       onStep.commandBool(command);
     }
   #endif
@@ -293,7 +293,7 @@ bool decodeParameter(char* s, double *value, long *min, long *max, int *type, ch
         ws = strchr(ws, ',');
         if (ws != NULL) {
           ws++;
-          sstrcpy(name, ws, 18);
+          sstrcpyex(name, ws, 18);
           return true;
         }
       }

@@ -10,7 +10,7 @@ void pecTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "15em", L_PAGE_PEC);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "15em", L_PAGE_PEC);
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
@@ -21,7 +21,7 @@ void pecTile(String &data)
   data.concat(F("<br /><hr>"));
 
   // display pec controls
-  sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_CONTROLS "...");
   data.concat(temp);
 
   if (status.pecEnabled) {
@@ -38,16 +38,16 @@ void pecTile(String &data)
 
   // display steps per worm rotation
   data.concat(F("<div style='margin-top: 0.5em';></div>"));
-  sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_SETTINGS "...");
   data.concat(temp);
 
   char response[80];
   if (status.pecEnabled && onStep.command(":GXE7#", response)) {
-    sprintf_P(temp, html_form_begin, "mount.htm");
+    snprintf_P(temp, sizeof(temp), html_form_begin, "mount.htm");
     data.concat(temp);
 
     long value = strtol(response, NULL, 10);
-    sprintf_P(temp, html_configAxisSpwr, value, 0, 129600000L);
+    snprintf_P(temp, sizeof(temp), html_configAxisSpwr, value, 0, 129600000L);
     data.concat(temp);
     data.concat(F("<br /><button type='submit'>" L_UPLOAD "</button><br />\n"));
 
@@ -100,7 +100,7 @@ extern void pecTileGet()
 
   v = www.arg("spwr");
   if (!v.equals(EmptyStr)) {
-    sprintf(temp, ":SXE7,%s#", v.c_str());
+    snprintf(temp, sizeof(temp), ":SXE7,%s#", v.c_str());
     onStep.commandBool(temp);
   }
 }

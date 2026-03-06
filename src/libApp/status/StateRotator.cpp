@@ -48,7 +48,7 @@ void State::updateRotator(bool now)
       strcat(temp, &temp1[5]);
       strcat(temp, "&#39;");
     } else strcpy(temp, "?");
-    strncpyex(rotatorPositionStr, temp, 20); Y;
+    sstrcpyex(rotatorPositionStr, temp, 20); Y;
 
     // rotator working slew rate
     if (status.getVersionMajor() >= 10) {

@@ -10,7 +10,7 @@ void rotatorHomeTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "13em", L_HOMING);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "13em", L_HOMING);
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 

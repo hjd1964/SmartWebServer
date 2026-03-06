@@ -19,49 +19,49 @@ void State::updateEncoders(bool now)
     double f;
     f = encoders.getOnStepAxis1();
     convert.doubleToDms(temp, f, true, true, PM_HIGH);
-    strncpyex(angleAxis1Str, temp, 14);
+    sstrcpyex(angleAxis1Str, temp, 14);
     formatDegreesStr(angleAxis1Str);
     if (encoders.validAxis1())
     {
       f = encoders.getAxis1();
       convert.doubleToDms(temp, f, true, true, PM_HIGH);
-      strncpyex(encAngleAxis1Str, temp, 14);
+      sstrcpyex(encAngleAxis1Str, temp, 14);
       formatDegreesStr(encAngleAxis1Str);
 
       f = encoders.getOnStepAxis1() - encoders.getAxis1();
       convert.doubleToDms(temp, f, true, true, PM_HIGHEST);
-      strncpyex(diffAngleAxis1Str, temp, 18);
+      sstrcpyex(diffAngleAxis1Str, temp, 18);
       formatDegreesStr(diffAngleAxis1Str);
     }
     else
     {
-      strcpy(temp, " ** " L_FAULT " ** ");
-      strncpyex(encAngleAxis1Str, temp, 14);
-      strncpyex(diffAngleAxis1Str, temp, 18);
+      sstrcpy(temp, " ** " L_FAULT " ** ");
+      sstrcpyex(encAngleAxis1Str, temp, 14);
+      sstrcpyex(diffAngleAxis1Str, temp, 18);
     }
     Y;
 
     f = encoders.getOnStepAxis2();
     convert.doubleToDms(temp, f, true, true, PM_HIGH);
-    strncpyex(angleAxis2Str, temp, 14);
+    sstrcpyex(angleAxis2Str, temp, 14);
     formatDegreesStr(angleAxis2Str);
     if (encoders.validAxis2())
     {
       f = encoders.getAxis2();
       convert.doubleToDms(temp, f, true, true, PM_HIGH);
-      strncpyex(encAngleAxis2Str, temp, 14);
+      sstrcpyex(encAngleAxis2Str, temp, 14);
       formatDegreesStr(encAngleAxis2Str);
 
       f = encoders.getOnStepAxis2() - encoders.getAxis2();
       convert.doubleToDms(temp, f, true, true, PM_HIGHEST);
-      strncpyex(diffAngleAxis2Str, temp, 18);
+      sstrcpyex(diffAngleAxis2Str, temp, 18);
       formatDegreesStr(diffAngleAxis2Str);
     }
     else
     {
-      strcpy(temp, " ** " L_FAULT " ** ");
-      strncpyex(encAngleAxis2Str, temp, 14);
-      strncpyex(diffAngleAxis2Str, temp, 18);
+      sstrcpy(temp, " ** " L_FAULT " ** ");
+      sstrcpyex(encAngleAxis2Str, temp, 14);
+      sstrcpyex(diffAngleAxis2Str, temp, 18);
     }
     Y;
   #else

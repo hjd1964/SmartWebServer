@@ -10,7 +10,7 @@ void alignTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "15em", L_ALIGN);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "15em", L_ALIGN);
   data.concat(temp);
 
   data.concat(F("<div style='float: right; text-align: right;' id='align_progress' class='c'>"));
@@ -20,7 +20,7 @@ void alignTile(String &data)
   char poleName[8] = L_ZENITH;
   if (status.mountType != MT_ALTAZM) { if (state.latitude < 0) strcpy(poleName, L_SCP); else strcpy(poleName, L_NCP); }
 
-  sprintf_P(temp, html_alignCorrection, state.alignLrStr, state.alignUdStr, poleName);
+  snprintf_P(temp, sizeof(temp), html_alignCorrection, state.alignLrStr, state.alignUdStr, poleName);
   data.concat(temp);
   www.sendContentAndClear(data);
 
@@ -72,7 +72,7 @@ void alignTile(String &data)
 
   if (status.mountType != MT_ALTAZM)
   {
-    sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
+    snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_CONTROLS "...");
     data.concat(temp);
 
     data.concat(L_REFINE_POLAR_ALIGN ":<br /><br />");

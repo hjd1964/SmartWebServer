@@ -11,8 +11,8 @@ void guideTile(String &data)
   char temp[240] = "";
   char temp1[120] = "";
 
-  sprintf(temp1, L_GUIDE " <span id='guide_rate' class='c'>%s</span>", GuideRatesStr[status.guideRate]);
-  sprintf_P(temp, html_tile_beg, "22em", "15em", temp1);
+  snprintf(temp1, sizeof(temp1), L_GUIDE " <span id='guide_rate' class='c'>%s</span>", GuideRatesStr[status.guideRate]);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "15em", temp1);
   data.concat(temp);
   data.concat(F("<div style='float: right; text-align: right;' id='guide_sta' class='c'>"));
   if (status.guiding) data.concat(L_SLEWING); else data.concat(L_INACTIVE);
@@ -21,12 +21,12 @@ void guideTile(String &data)
   data.concat(FPSTR(html_guidePad));
   www.sendContentAndClear(data);
 
-  sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_CONTROLS "...");
   data.concat(temp);
 
   data.concat(FPSTR("Guide rate, in x sidereal:<br />"));
 
-  sprintf_P(temp, html_form_begin, "mount.htm");
+  snprintf_P(temp, sizeof(temp), html_form_begin, "mount.htm");
   data.concat(temp);
 
   data.concat(FPSTR(html_guidePulseRates));

@@ -18,27 +18,27 @@ void siteTile(String &data)
   char temp[240] = "";
   char reply[80] = "";
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "15em", L_LOCATION_TITLE);
+  snprintf_P(temp, sizeof(temp), html_tile_text_beg, "22em", "15em", L_LOCATION_TITLE);
   data.concat(temp);
   data.concat(F("<br/><hr>"));
 
   data.concat(FPSTR(html_browserTime));
-  sprintf_P(temp, html_date, state.dateStr);
+  snprintf_P(temp, sizeof(temp), html_date, state.dateStr);
   data.concat(temp);
-  sprintf_P(temp, html_time, state.timeStr);
+  snprintf_P(temp, sizeof(temp), html_time, state.timeStr);
   data.concat(temp);
-  sprintf_P(temp, html_sidereal, state.lastStr);
+  snprintf_P(temp, sizeof(temp), html_sidereal, state.lastStr);
   data.concat(temp);
   www.sendContentAndClear(data);
   
-  sprintf_P(temp, html_site, state.latitudeStr, state.longitudeStr);
+  snprintf_P(temp, sizeof(temp), html_site, state.latitudeStr, state.longitudeStr);
   data.concat(temp);
   data.concat(FPSTR(html_setDateTime));
   data.concat(F("<hr>"));
 
-  sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_SETTINGS "...");
   data.concat(temp);
-  sprintf_P(temp, html_form_begin, "mount.htm");
+  snprintf_P(temp, sizeof(temp), html_form_begin, "mount.htm");
   data.concat(temp);
   www.sendContentAndClear(data);
 
@@ -51,13 +51,13 @@ void siteTile(String &data)
   reply[9] = 0;
   if (reply[0] == '+') reply[0] = '0';
   convert.stripNumericStr(reply);
-  sprintf_P(temp, html_ninput_wide, "t1", reply, "-90", "90", "&deg;");
+  snprintf_P(temp, sizeof(temp), html_ninput_wide, "t1", reply, "-90", "90", "&deg;");
   data.concat(temp);
-  sprintf_P(temp, html_ninput, "t2", &reply[4], "0", "60", "'");
+  snprintf_P(temp, sizeof(temp), html_ninput, "t2", &reply[4], "0", "60", "'");
   data.concat(temp);
   if (status.getVersionMajor() > 3)
   {
-    sprintf_P(temp, html_ninput, "t3", &reply[7], "0", "60", "\"");
+    snprintf_P(temp, sizeof(temp), html_ninput, "t3", &reply[7], "0", "60", "\"");
     data.concat(temp);
   }
   data.concat(F("<br />"));
@@ -72,13 +72,13 @@ void siteTile(String &data)
   reply[10] = 0;
   if (reply[0] == '+') reply[0] = '0';
   convert.stripNumericStr(reply);
-  sprintf_P(temp, html_ninput_wide, "g1", reply, "-180", "180", "&deg;");
+  snprintf_P(temp, sizeof(temp), html_ninput_wide, "g1", reply, "-180", "180", "&deg;");
   data.concat(temp);
-  sprintf_P(temp, html_ninput, "g2", &reply[5], "0", "60", "'");
+  snprintf_P(temp, sizeof(temp), html_ninput, "g2", &reply[5], "0", "60", "'");
   data.concat(temp);
   if (status.getVersionMajor() > 3)
   {
-    sprintf_P(temp, html_ninput, "g3", &reply[8], "0", "60", "\"");
+    snprintf_P(temp, sizeof(temp), html_ninput, "g3", &reply[8], "0", "60", "\"");
     data.concat(temp);
   }
   data.concat(F("<br />"));
@@ -90,9 +90,9 @@ void siteTile(String &data)
   reply[3] = 0;
   if (reply[0] == '+') reply[0] = '0';
   convert.stripNumericStr(reply);
-  sprintf_P(temp, html_ninput_wide, "u1", reply, "-14", "12", "h");
+  snprintf_P(temp, sizeof(temp), html_ninput_wide, "u1", reply, "-14", "12", "h");
   data.concat(temp);
-  sprintf_P(temp, html_offsetMin, reply[4] == '0' ? "selected" : "", reply[4] == '3' ? "selected" : "", reply[4] == '4' ? "selected" : "");
+  snprintf_P(temp, sizeof(temp), html_offsetMin, reply[4] == '0' ? "selected" : "", reply[4] == '3' ? "selected" : "", reply[4] == '4' ? "selected" : "");
   data.concat(temp);
   data.concat(FPSTR(html_offsetFooterMsg));
   www.sendContentAndClear(data);
@@ -143,7 +143,7 @@ extern void siteTileGet()
     if ((convert.atoi2((char *)v.c_str(), &i)) && (i >= 2016 && i <= 9999))
     {
       get_temp_year = i - 2000;
-      sprintf(temp, ":SC%02d/%02d/%02d#", get_temp_month, get_temp_day, get_temp_year);
+      snprintf(temp, sizeof(temp), ":SC%02d/%02d/%02d#", get_temp_month, get_temp_day, get_temp_year);
       onStep.commandBool(temp);
     }
   }
@@ -166,7 +166,7 @@ extern void siteTileGet()
     {
       get_temp_second = i;
       char temp[20];
-      sprintf(temp, ":SL%02d:%02d:%02d#", get_temp_hour, get_temp_minute, get_temp_second);
+      snprintf(temp, sizeof(temp), ":SL%02d:%02d:%02d#", get_temp_hour, get_temp_minute, get_temp_second);
       onStep.commandBool(temp);
     }
   }
@@ -183,9 +183,9 @@ extern void siteTileGet()
     if (d >= 0 && d <= 180 && m >= 0 && m <= 60 && s >= 0 && s <= 60)
     {
       if (status.getVersionMajor() > 3)
-        sprintf(temp, ":Sg%c%03d*%02d:%02d#", sign, d, m, s);
+        snprintf(temp, sizeof(temp), ":Sg%c%03d*%02d:%02d#", sign, d, m, s);
       else
-        sprintf(temp, ":Sg%c%03d*%02d#", sign, d, m);
+        snprintf(temp, sizeof(temp), ":Sg%c%03d*%02d#", sign, d, m);
       onStep.commandBool(temp);
     }
   }
@@ -200,7 +200,7 @@ extern void siteTileGet()
     int16_t s = v2.toInt();
     if (d >= 0 && d <= 90 && m >= 0 && m <= 60 && s >= 0 && s <= 60)
     {
-      sprintf(temp, ":St%c%02d*%02d:%02d#", sign, d, m, s);
+      snprintf(temp, sizeof(temp), ":St%c%02d*%02d:%02d#", sign, d, m, s);
       onStep.commandBool(temp);
     }
   }
@@ -213,7 +213,7 @@ extern void siteTileGet()
     int16_t m = v1.toInt();
     if (v.toInt() >= -14 && h <= 12 && (m == 0 || m == 30 || m == 45))
     {
-      sprintf(temp, ":SG%c%02d:%02d#", sign, h, m);
+      snprintf(temp, sizeof(temp), ":SG%c%02d:%02d#", sign, h, m);
       onStep.commandBool(temp);
     }
   }

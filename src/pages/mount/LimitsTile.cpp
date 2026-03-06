@@ -11,7 +11,7 @@ void limitsTile(String &data)
   char temp[240] = "";
   char reply[120] = "";
 
-  sprintf_P(temp, html_tile_text_beg, "22em", "15em", "Backlash and Limits");
+  snprintf_P(temp, sizeof(temp), html_tile_text_beg, "22em", "15em", "Backlash and Limits");
   data.concat(temp);
 
   data.concat(F("<br /><hr>"));
@@ -38,53 +38,53 @@ void limitsTile(String &data)
   degPastMerW = round((degPastMerW * 15.0) / 60.0);
 
   // show values
-  sprintf(temp, "Backlash, Axis1 <span id='limBl1' class='c'>%d</span> arc-sec<br />", backlashAxis1);
+  snprintf(temp, sizeof(temp), "Backlash, Axis1 <span id='limBl1' class='c'>%d</span> arc-sec<br />", backlashAxis1);
   data.concat(temp);
-  sprintf(temp, "Backlash, Axis2 <span id='limBl2' class='c'>%d</span> arc-sec<br /><br />", backlashAxis2);
+  snprintf(temp, sizeof(temp), "Backlash, Axis2 <span id='limBl2' class='c'>%d</span> arc-sec<br /><br />", backlashAxis2);
   data.concat(temp);
-  sprintf(temp, "Limit Horizon, min altitude <span id='limAltMin' class='c'>%d</span>&deg;<br />", minAlt);
+  snprintf(temp, sizeof(temp), "Limit Horizon, min altitude <span id='limAltMin' class='c'>%d</span>&deg;<br />", minAlt);
   data.concat(temp);
-  sprintf(temp, "Limit Overhead, max altitude <span id='limAltMax' class='c'>%d</span>&deg;<br />", maxAlt);
+  snprintf(temp, sizeof(temp), "Limit Overhead, max altitude <span id='limAltMax' class='c'>%d</span>&deg;<br />", maxAlt);
   data.concat(temp);
-  sprintf(temp, "Limit past Meridian, East <span id='limMerE' class='c'>%d</span>&deg;<br />", degPastMerE);
+  snprintf(temp, sizeof(temp), "Limit past Meridian, East <span id='limMerE' class='c'>%d</span>&deg;<br />", degPastMerE);
   data.concat(temp);
-  sprintf(temp, "Limit past Meridian, West <span id='limMerW' class='c'>%d</span>&deg;<br />", degPastMerW);
+  snprintf(temp, sizeof(temp), "Limit past Meridian, West <span id='limMerW' class='c'>%d</span>&deg;<br />", degPastMerW);
   data.concat(temp);
 
   data.concat(F("<hr>"));
 
-  sprintf_P(temp, html_collapsable_beg, L_SETTINGS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_SETTINGS "...");
   data.concat(temp);
 
-  sprintf_P(temp, html_form_begin, "mount.htm");
+  snprintf_P(temp, sizeof(temp), html_form_begin, "mount.htm");
   data.concat(temp);
 
   // Backlash
   data.concat(F("Backlash:<br />"));
 
-  sprintf_P(temp, html_configBlAxis1, backlashAxis1);
+  snprintf_P(temp, sizeof(temp), html_configBlAxis1, backlashAxis1);
   data.concat(temp);
   www.sendContentAndClear(data);
 
-  sprintf_P(temp, html_configBlAxis2, backlashAxis2);
+  snprintf_P(temp, sizeof(temp), html_configBlAxis2, backlashAxis2);
   data.concat(temp);
 
   data.concat(F("<br />Limits:<br />"));
 
   // Overhead and Horizon Limits
-  sprintf_P(temp, html_configMinAlt, minAlt);
+  snprintf_P(temp, sizeof(temp), html_configMinAlt, minAlt);
   data.concat(temp);
 
-  sprintf_P(temp, html_configMaxAlt, maxAlt);
+  snprintf_P(temp, sizeof(temp), html_configMaxAlt, maxAlt);
   data.concat(temp);
 
   // Meridian Limits
   if (status.mountType == MT_GEM)
   {
-    sprintf_P(temp, html_configPastMerE, degPastMerE);
+    snprintf_P(temp, sizeof(temp), html_configPastMerE, degPastMerE);
     data.concat(temp);
 
-    sprintf_P(temp, html_configPastMerW, degPastMerW);
+    snprintf_P(temp, sizeof(temp), html_configPastMerW, degPastMerW);
     data.concat(temp);
   }
   else
@@ -118,7 +118,7 @@ extern void limitsTileGet()
   {
     if (v.toInt() >= 60 && v.toInt() <= 90)
     {
-      sprintf(temp, ":So%d#", (int16_t)v.toInt());
+      snprintf(temp, sizeof(temp), ":So%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
     }
   }
@@ -129,7 +129,7 @@ extern void limitsTileGet()
   {
     if (v.toInt() >= -30 && v.toInt() <= 30)
     {
-      sprintf(temp, ":Sh%d#", (int16_t)v.toInt());
+      snprintf(temp, sizeof(temp), ":Sh%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
     }
   }
@@ -140,7 +140,7 @@ extern void limitsTileGet()
   {
     if (v.toInt() >= -270 && v.toInt() <= 270)
     {
-      sprintf(temp, ":SXE9,%d#", (int16_t)round((v.toInt() * 60.0) / 15.0));
+      snprintf(temp, sizeof(temp), ":SXE9,%d#", (int16_t)round((v.toInt() * 60.0) / 15.0));
       onStep.commandBool(temp);
     }
   }
@@ -151,7 +151,7 @@ extern void limitsTileGet()
   {
     if (v.toInt() >= -270 && v.toInt() <= 270)
     {
-      sprintf(temp, ":SXEA,%d#", (int16_t)round((v.toInt() * 60.0) / 15.0));
+      snprintf(temp, sizeof(temp), ":SXEA,%d#", (int16_t)round((v.toInt() * 60.0) / 15.0));
       onStep.commandBool(temp);
     }
   }
@@ -162,7 +162,7 @@ extern void limitsTileGet()
   {
     if (v.toInt() >= 0 && v.toInt() <= 3600)
     {
-      sprintf(temp, ":$BR%d#", (int16_t)v.toInt());
+      snprintf(temp, sizeof(temp), ":$BR%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
     }
   }
@@ -172,7 +172,7 @@ extern void limitsTileGet()
   {
     if (v.toInt() >= 0 && v.toInt() <= 3600)
     {
-      sprintf(temp, ":$BD%d#", (int16_t)v.toInt());
+      snprintf(temp, sizeof(temp), ":$BD%d#", (int16_t)v.toInt());
       onStep.commandBool(temp);
     }
   }

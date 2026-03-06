@@ -14,11 +14,11 @@ void syncTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "15em", "Sync Control");
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "15em", "Sync Control");
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
-  sprintf_P(temp, html_form_begin, "enc.htm");
+  snprintf_P(temp, sizeof(temp), html_form_begin, "enc.htm");
   data.concat(temp);
 
   data.concat(FPSTR(html_syncOnStepNow));

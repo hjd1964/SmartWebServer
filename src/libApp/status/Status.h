@@ -47,7 +47,7 @@ class Status {
     inline int  getVersionMinor() { return ver_min; }
     inline char getVersionPatch() { return ver_patch; }
 
-    bool getLastErrorMessage(char message[]);
+    bool getLastErrorMessage(char message[], size_t messageSize);
 
     char configName[40] = "";
 

@@ -10,7 +10,7 @@ void focuserSlewingTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "13em", L_SLEWING);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "13em", L_SLEWING);
   data.concat(temp);
   data.concat(F("<div style='float: right; text-align: right;' id='foc_sta' class='c'>"));
   if (state.focuserSlewing) data.concat(L_ACTIVE); else data.concat(L_INACTIVE);
@@ -30,10 +30,10 @@ void focuserSlewingTile(String &data)
   data.concat(F("<hr>"));
 
   if (status.getVersionMajor() >= 10) {
-    sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
+    snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_CONTROLS "...");
     data.concat(temp);
 
-    sprintf_P(temp, html_focuserSlewSpeed, state.focuserSlewSpeedStr);
+    snprintf_P(temp, sizeof(temp), html_focuserSlewSpeed, state.focuserSlewSpeedStr);
     data.concat(temp);
     data.concat(FPSTR(html_focuserGotoSelect));
 
@@ -90,7 +90,7 @@ extern void focuserSlewingTileGet()
     if (p >= -500000 || p <= 500000)
     {
       char temp[80];
-      sprintf(temp, ":FS%d#", p);
+      snprintf(temp, sizeof(temp), ":FS%d#", p);
       onStep.commandBool(temp);
     }
   }

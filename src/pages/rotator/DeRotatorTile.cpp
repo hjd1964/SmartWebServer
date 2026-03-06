@@ -10,7 +10,7 @@ void deRotatorTile(String &data)
 {
   char temp[240] = "";
 
-  sprintf_P(temp, html_tile_beg, "22em", "13em", L_DEROTATOR);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "13em", L_DEROTATOR);
   data.concat(temp);
   data.concat(F("<br /><hr>"));
 
