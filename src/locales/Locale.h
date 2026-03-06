@@ -30,6 +30,10 @@
   #include "Strings_es.h"
   #define UNITS METRIC
 #endif
+#if DISPLAY_LANGUAGE == L_jp
+  #include "Strings_jp.h"
+  #define UNITS METRIC
+#endif
 
 // misc. locale support functions
 #ifndef DISPLAY_UNITS
