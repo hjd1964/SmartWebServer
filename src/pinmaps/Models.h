@@ -3,11 +3,11 @@
 #pragma once
 
 #if defined(CONFIG_IDF_TARGET_ESP32S2)
-  #include "Pins.Esp32S2.h"
+  #include "Pins.Esp32s2.h"
   #define PINMAP_STR "ESP32-S2"
 
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
-  #include "Pins.Esp32C3.h"
+  #include "Pins.Esp32c3.h"
   #define PINMAP_STR "ESP32-C3"
 
 #elif defined(ESP32)
