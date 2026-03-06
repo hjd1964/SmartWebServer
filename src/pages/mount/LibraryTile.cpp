@@ -31,7 +31,7 @@ void libraryTile(String &data)
   // Scripts
   data.concat(FPSTR(html_script_ajax_library));
 
-  sprintf_P(temp, html_tile_beg, "22em", "15em", L_PAGE_LIBRARY);
+  snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "15em", L_PAGE_LIBRARY);
   data.concat(temp);
   data.concat(F("<div style='float: right; text-align: right;' id='lib_free' class='c'>"));
   data.concat(onStep.commandString(":L?#"));
@@ -54,7 +54,7 @@ void libraryTile(String &data)
 
   data.concat(F("<hr>"));
 
-  sprintf_P(temp, html_collapsable_beg, L_CONTROLS "...");
+  snprintf_P(temp, sizeof(temp), html_collapsable_beg, L_CONTROLS "...");
   data.concat(temp);
 
   data.concat(FPSTR(html_libUploadCatalog));
@@ -180,7 +180,7 @@ void libraryTileAjax(String &data)
       data.concat(F("cat_data&"));
       bool success = false;
       char temp[80] = "";
-      sprintf(temp, ":Lo%ld#", (long)currentCatalog - 1);
+      snprintf(temp, sizeof(temp), ":Lo%ld#", (long)currentCatalog - 1);
       if (onStep.commandBool(temp))
       {
         data.concat("$");
@@ -313,7 +313,7 @@ void libraryTileGet()
     currentCatalog = v.toInt();
     if (currentCatalog > 0 && currentCatalog < 16)
     {
-      sprintf(temp, ":Lo%d#", currentCatalog - 1);
+      snprintf(temp, sizeof(temp), ":Lo%d#", currentCatalog - 1);
       if (onStep.commandBool(temp)) currentObject = onStep.commandString(":LI#"); else currentCatalog = 0;
     } else currentCatalog = 0;
     if (currentObject.equals(",UNK")) currentObject = "-";
@@ -344,7 +344,7 @@ void libraryTileGet()
     {
       if (v.equals("clear")) // clear just this catalog
       {
-        sprintf(temp, ":Lo%ld#", (long)currentCatalog - 1);
+        snprintf(temp, sizeof(temp), ":Lo%ld#", (long)currentCatalog - 1);
         onStep.commandBool(temp);
         onStep.commandBlind(":LL#");
         strcpy(currentCatName, "");
@@ -373,7 +373,7 @@ void libraryTileGet()
       } else
       if (v.equals("cat_download"))
       {
-        sprintf(temp, ":Lo%ld#", (long)currentCatalog - 1);
+        snprintf(temp, sizeof(temp), ":Lo%ld#", (long)currentCatalog - 1);
         if (onStep.commandBool(temp)) downloadCatalogData = true; else currentCatalog = 0;
       }
     }
@@ -393,7 +393,7 @@ void libraryTileGet()
     if (currentCatalog > 0 && currentCatalog < 16)
     {
 
-      sprintf(temp, ":Lo%d#", currentCatalog - 1);
+      snprintf(temp, sizeof(temp), ":Lo%d#", currentCatalog - 1);
       if (onStep.commandBool(temp))
       {
         v.replace("_", " ");
