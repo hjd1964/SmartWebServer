@@ -190,6 +190,7 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
   if (shortResponse) {
     while ((long)(timeout - millis()) > 0) {
       if (SERIAL_ONSTEP.available()) { response[SERIAL_ONSTEP.readBytes(response, 1)] = 0; break; }
+      delay(0);
     }
     if ((long)(timeout - millis()) <= 0) { DF("WRN: cmd "); D(cmd); DLF(" timed out"); }
     #ifdef ESP32
@@ -208,12 +209,14 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
         if (responsePos > 79) responsePos = 79;
         response[responsePos] = 0;
       }
+      delay(0);
     }
     if ((long)(timeout - millis()) <= 0) { DF("WRN: cmd \""); D(cmd); DLF("\" timed out"); }
     #ifdef ESP32
       xSemaphoreGive(xMutex);
     #endif
-    return response[strlen(response) - 1] == '#';
+    const size_t n = strlen(response);
+    return (n > 0) && (response[n - 1] == '#');
   }
 }
 
@@ -232,7 +235,7 @@ bool OnStepCmd::commandBlind(const char* command) {
 bool OnStepCmd::commandEcho(const char* command) {
   char response[80] = "";
   char c[40] = "";
-  sprintf(c, ":EC%s#", command);
+  snprintf(c, sizeof(c), ":EC%s#", command);
   return processCommand(c, response, webTimeout);
 }
 

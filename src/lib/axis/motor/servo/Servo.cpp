@@ -441,21 +441,21 @@ void ServoMotor::poll() {
     lastCheckTime = now;
   }
 
-  #if DEBUG != OFF && defined(DEBUG_SERVO) && DEBUG_SERVO != OFF
-    if (axisNumber == DEBUG_SERVO) {
+  #if DEBUG != OFF && defined(DEBUG_AXIS) && DEBUG_AXIS != OFF
+    if (axisNumber == DEBUG_AXIS) {
       static uint16_t count = 0;
       count++;
       if (count % 10 == 0) {
-        char s[800];
+        char s[256];
 
         float spas = 0;
         if (axisNumber == 1) spas = AXIS1_STEPS_PER_DEGREE/3600.0F; else if (axisNumber == 2) spas = AXIS2_STEPS_PER_DEGREE/3600.0F;
 
-//      sprintf(s, "Ax%dSvo: Delta %6ld, Motor %6ld, Encoder %6ld, Ax%dSvo_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts), motorCounts, (long)encoderCounts, (int)axisNumber, velocityPercent);
-//      sprintf(s, "Ax%dSvo: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
-//      sprintf(s, "Ax%dSvo: Delta %0.2f\r\n", (int)axisNumber, (motorCounts - (long)encoderCounts)/12.9425);
-//      sprintf(s, "Ax%dSvo: DeltaASf: %0.2f, DeltaAS: %0.2f, Ax%dSvo_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (motorCounts - unfilteredEncoderCounts)/spas, (int)axisNumber, velocityPercent);
-        sprintf(s, "%0.2f, %6.3f%%\r\n", (motorCounts - unfilteredEncoderCounts)/spas, velocityPercent);
+//      snprintf(s, sizeof(s), "Ax%dSvo: Delta %6ld, Motor %6ld, Encoder %6ld, Ax%dSvo_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts), motorCounts, (long)encoderCounts, (int)axisNumber, velocityPercent);
+//      snprintf(s, sizeof(s), "Ax%dSvo: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
+//      snprintf(s, sizeof(s), "Ax%dSvo: Delta %0.2f\r\n", (int)axisNumber, (motorCounts - (long)encoderCounts)/12.9425);
+//      snprintf(s, sizeof(s), "Ax%dSvo: DeltaASf: %0.2f, DeltaAS: %0.2f, Ax%dSvo_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts)/spas, (motorCounts - unfilteredEncoderCounts)/spas, (int)axisNumber, velocityPercent);
+        snprintf(s, sizeof(s), "%0.2f, %6.3f%%\r\n", (motorCounts - unfilteredEncoderCounts)/spas, velocityPercent);
 
         D(s);
         UNUSED(spas);

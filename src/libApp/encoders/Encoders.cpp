@@ -69,17 +69,7 @@
 // background process position/rate control for encoders 
 
 void Encoders::init() { 
-  // confirm the data structure size
-  if (EncoderSettingsSize < sizeof(EncoderSettings)) { nv.initError = true; DL("ERR: Encoders::init(); EncoderSettingsSize error NV subsystem writes disabled"); }
-
-  // write the default settings to NV
-  if (!nv.hasValidKey()) {
-    VLF("MSG: Encoders, writing defaults to NV");
-    nv.writeBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
-  }
-
-  // read the settings
-  nv.readBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
+  if (!nv().kv().getOrInit("ENCODER_SETTINGS", settings)) { DLF("WRN: Failed to create ENCODER_SETTINGS"); }
 
   #if ENCODERS == ON
     encAxis1.init();
@@ -108,7 +98,9 @@ void Encoders::init() {
       encAxis2.write(settings.axis2.reverse == ON ? -osAxis2*settings.axis2.ticksPerDeg : osAxis2*settings.axis2.ticksPerDeg);
       if (settings.axis2.index != encAxis2.index) { settings.axis2.index = encAxis2.index; updateNv = true; }
     }
-    if (updateNv) nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
+    if (updateNv) {
+      nv().kv().put("ENCODER_SETTINGS", settings);
+    }
   }
 
   #ifdef ENC_ABSOLUTE
@@ -127,7 +119,7 @@ void Encoders::init() {
       settings.axis1.index = encAxis1.index;
       settings.axis2.index = encAxis2.index;
 
-      nv.updateBytes(NV_ENCODER_SETTINGS_BASE, &settings, sizeof(EncoderSettings));
+      nv().kv().put("ENCODER_SETTINGS", settings);
     }
   #endif
 
