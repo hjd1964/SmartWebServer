@@ -8,6 +8,9 @@
 
 #include "SiteTile.h"
 #include "HomeParkTile.h"
+#if DISPLAY_COORDINATE_ORIGIN == ON
+  #include "CoordinateTile.h"
+#endif
 #include "AlignTile.h"
 #include "GotoTile.h"
 #include "LibraryTile.h"

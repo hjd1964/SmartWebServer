@@ -72,6 +72,9 @@ void handleMount()
   guideTile(data);
   trackingTile(data);
   if (status.pecEnabled) pecTile(data);
+  #if DISPLAY_COORDINATE_ORIGIN == ON
+    coordinateTile(data);
+  #endif
   limitsTile(data);
 
   data.concat(F("<br class='clear' />"));
@@ -142,6 +145,9 @@ void processMountGet()
 {
   siteTileGet();
   homeParkTileGet();
+  #if DISPLAY_COORDINATE_ORIGIN == ON
+    coordinateTileGet();
+  #endif
   alignTileGet();
   gotoTileGet();
   libraryTileGet();

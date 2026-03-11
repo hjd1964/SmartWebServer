@@ -291,6 +291,9 @@
 #define L_PARK "パーク"
 #define L_SET_PARK "パーク設定"
 #define L_SET_PARK_CURRENT_COORDS "現在の座標をパーク位置に設定"
+#define L_COORD_ORIGIN_TITLE "座標原点"
+#define L_COORD_ORIGIN "座標原点を設定"
+#define L_COORD_ORIGIN_MSG "ホーム位置で追尾をオフにした状態で、同期制限に使う物理姿勢と座標原点の関係を設定します。"
 
 #define L_TRK_FASTER "追尾速度を上げる"
 #define L_TRK_SLOWER "追尾速度を下げる"

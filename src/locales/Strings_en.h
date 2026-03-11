@@ -291,6 +291,9 @@
 #define L_PARK "Park"
 #define L_SET_PARK "Set-Park"
 #define L_SET_PARK_CURRENT_COORDS "Set park position at current coordinates"
+#define L_COORD_ORIGIN_TITLE "Coordinate Origin"
+#define L_COORD_ORIGIN "Set Coordinate Origin"
+#define L_COORD_ORIGIN_MSG "At home with tracking off, establishes the physical/coordinate origin used for sync limits."
 
 #define L_TRK_FASTER "faster"
 #define L_TRK_SLOWER "slower"

@@ -52,11 +52,6 @@ void servoTile(String &data)
   strcpy_P(temp, html_servoGraph);
   data.concat(temp);
 
-  #if DISPLAY_SERVO_ORIGIN_CONTROLS == ON
-    snprintf_P(temp, sizeof(temp), html_servoZeroEncoders);
-    data.concat(temp);
-  #endif
-
   // servo monitor tile end
   data.concat(FPSTR(html_tile_end));
   www.sendContentAndClear(data);
@@ -134,10 +129,6 @@ void servoTileGet()
     int axis = v.toInt();
     if (axis >= 0 && axis <= 9) _servo_axis = axis;
   }
-
-  // trigger encoder bridge to set zero
-  v = www.arg("sv");
-  if (v.equals("zro")) { onStep.commandBool(":SEO#"); }
 
   // intercept advanced configuration toggle on and trigger spm reload
   String ssa = www.arg("advanced");

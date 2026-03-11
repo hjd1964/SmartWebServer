@@ -291,6 +291,9 @@
 #define L_PARK "Estacionar"
 #define L_SET_PARK "Colocar en Posición de Estacionamiento"
 #define L_SET_PARK_CURRENT_COORDS "Establecer la posición de estacionamiento en las coordenadas actuales"
+#define L_COORD_ORIGIN_TITLE "Origen de Coordenadas"
+#define L_COORD_ORIGIN "Establecer Origen de Coordenadas"
+#define L_COORD_ORIGIN_MSG "En la posicion de inicio y con el seguimiento apagado, establece el origen fisico/de coordenadas usado por los limites de sincronizacion."
 
 #define L_TRK_FASTER "más rápido"
 #define L_TRK_SLOWER "más lento"

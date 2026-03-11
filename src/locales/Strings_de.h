@@ -301,6 +301,9 @@
 #define L_PARK "Parken"
 #define L_SET_PARK "Setze Parkposition"
 #define L_SET_PARK_CURRENT_COORDS "Parkposition auf aktuelle Koordinaten setzen"
+#define L_COORD_ORIGIN_TITLE "Koordinatenursprung"
+#define L_COORD_ORIGIN "Koordinatenursprung setzen"
+#define L_COORD_ORIGIN_MSG "In Home-Position bei abgeschalteter Nachfuehrung legt dies den physikalischen/koordinatenbezogenen Ursprung fuer Sync-Grenzen fest."
 
 #define L_TRK_FASTER "schneller"
 #define L_TRK_SLOWER "langsamer"
