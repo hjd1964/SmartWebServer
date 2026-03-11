@@ -5,7 +5,7 @@
 #include "../../locales/Locale.h"
 
 int webTimeout = TIMEOUT_WEB;
-int cmdTimeout = TIMEOUT_CMD;
+int cmdTimeout = TIMEOUT_COMMAND;
 
 void OnStepCmd::serialBegin(long baudRate, int swap) {
   static bool firstRun = true;
