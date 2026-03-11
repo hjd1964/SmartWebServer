@@ -48,7 +48,7 @@
 #define NV_ETHERNET_SETTINGS                     // allow NV storage of Ethernet settings
 #endif
 
-#if defined(ESP32) || defined(ESP8266)
+#if (defined(ESP32) || defined(ESP8266)) && OPERATIONAL_MODE == WIFI
   #define OTA_PRESENT
 #endif
 
