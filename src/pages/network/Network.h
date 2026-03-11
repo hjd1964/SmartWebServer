@@ -62,20 +62,6 @@ const char htmL_NET_SN[] PROGMEM =
   const char htmL_NETWORKSSID7[] PROGMEM =
   L_NETWORK_EN_AP_MODE ": <input type='checkbox' name='apen' value='1' %s><br/>"
   "<br/><button type='submit'>" L_UPLOAD "</button></form>\n";
-
-  #ifdef OTA_PRESENT
-    const char htmL_NETWORKSSID8[] PROGMEM =
-    "<br/><hr><form method='post' action='/net.htm'>"
-    L_NETWORK_PWD ": <input style='width:8em; text-align:left;' name='otapwd' type='password' minlength='8' maxlength='63'> (" L_NETWORK_PWD_MSG ")<br/>"
-    #if DISPLAY_RESET_CONTROLS != OFF
-      "<br/><button onclick=\"return confirm('" L_ARE_YOU_SURE "?')\" type='submit' name='otareboot' value='1'>" L_REBOOT_OTA "</button></form>\n"
-    #else
-      L_NETWORK_EN_OTA ": <input type='checkbox' name='otaen' value='1' %s><br/>"
-      "<br/><button type='submit'>" L_UPLOAD "</button></form>\n"
-    #endif
-    ;
-  #endif
-
 #else
   const char htmL_NETWORK_ETH_DHCP[] PROGMEM =
   L_NETWORK_EN_DHCP ": <input type='checkbox' name='ethdhcp' value='1' %s> (" L_NETWORK_EN_DHCP_MSG ")<br/>";
@@ -85,6 +71,19 @@ const char htmL_NET_SN[] PROGMEM =
 
   const char htmL_NETWORK_ETH_END[] PROGMEM =
   "<button type='submit'>" L_UPLOAD "</button></form>\n";
+#endif
+
+#ifdef OTA_PRESENT
+  const char htmL_NETWORKSSID8[] PROGMEM =
+  "<br/><hr><form method='post' action='/net.htm'>"
+  L_NETWORK_PWD ": <input style='width:8em; text-align:left;' name='otapwd' type='password' minlength='8' maxlength='63'> (" L_NETWORK_PWD_MSG ")<br/>"
+  #if DISPLAY_RESET_CONTROLS != OFF
+    "<br/><button onclick=\"return confirm('" L_ARE_YOU_SURE "?')\" type='submit' name='otareboot' value='1'>" L_REBOOT_OTA "</button></form>\n"
+  #else
+    L_NETWORK_EN_OTA ": <input type='checkbox' name='otaen' value='1' %s><br/>"
+    "<br/><button type='submit'>" L_UPLOAD "</button></form>\n"
+  #endif
+  ;
 #endif
 
 const char html_logout[] PROGMEM =
