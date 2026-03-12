@@ -75,9 +75,13 @@ void Encoders::init() {
     encAxis1.init();
     encAxis2.init();
 
+    #ifdef AXIS1_ENCODER_ABSOLUTE
+      if (settings.axis1.zero != (uint32_t)ENCODER_ORIGIN_INVALID) encAxis1.setOrigin((int32_t)settings.axis1.zero);
+    #endif
+    #ifdef AXIS2_ENCODER_ABSOLUTE
+      if (settings.axis2.zero != (uint32_t)ENCODER_ORIGIN_INVALID) encAxis2.setOrigin((int32_t)settings.axis2.zero);
+    #endif
     #ifdef ENC_ABSOLUTE
-      encAxis1.setOrigin(settings.axis1.zero);
-      encAxis2.setOrigin(settings.axis2.zero);
       encAxis1.index = settings.axis1.index;
       encAxis2.index = settings.axis2.index;
     #endif
@@ -105,15 +109,25 @@ void Encoders::init() {
 
   #ifdef ENC_ABSOLUTE
     void Encoders::originFromOnStep() {
-      encAxis1.origin = 0;
-      encAxis2.origin = 0;
       encAxis1.index = 0;
       encAxis2.index = 0;
 
-      settings.axis1.zero = (uint32_t)(-encAxis1.read());
-      settings.axis2.zero = (uint32_t)(-encAxis2.read());
-      encAxis1.setOrigin(settings.axis1.zero);
-      encAxis2.setOrigin(settings.axis2.zero);
+      #ifdef AXIS1_ENCODER_ABSOLUTE
+        encAxis1.origin = 0;
+        settings.axis1.zero = (uint32_t)ENCODER_ORIGIN_INVALID;
+        if (encAxis1.ready) {
+          int32_t axis1Count = encAxis1.read();
+          if (axis1Count != INT32_MAX) encAxis1.setOrigin(settings.axis1.zero = (uint32_t)(-axis1Count));
+        }
+      #endif
+      #ifdef AXIS2_ENCODER_ABSOLUTE
+        encAxis2.origin = 0;
+        settings.axis2.zero = (uint32_t)ENCODER_ORIGIN_INVALID;
+        if (encAxis2.ready) {
+          int32_t axis2Count = encAxis2.read();
+          if (axis2Count != INT32_MAX) encAxis2.setOrigin(settings.axis2.zero = (uint32_t)(-axis2Count));
+        }
+      #endif
 
       syncFromOnStep(true);
       settings.axis1.index = encAxis1.index;
@@ -123,12 +137,57 @@ void Encoders::init() {
     }
   #endif
 
+  bool Encoders::hasUsableAxisReadings() {
+    return enAxis1Available && enAxis2Available;
+  }
+
+  bool Encoders::axis1OriginValid() {
+    #ifdef AXIS1_ENCODER_ABSOLUTE
+      return settings.axis1.zero != (uint32_t)ENCODER_ORIGIN_INVALID;
+    #else
+      return false;
+    #endif
+  }
+
+  bool Encoders::axis2OriginValid() {
+    #ifdef AXIS2_ENCODER_ABSOLUTE
+      return settings.axis2.zero != (uint32_t)ENCODER_ORIGIN_INVALID;
+    #else
+      return false;
+    #endif
+  }
+
+  bool Encoders::axis1TrustedAbsoluteReading() {
+    #ifdef AXIS1_ENCODER_ABSOLUTE
+      return validAxis1() && axis1OriginValid() && !encAxis1.errorThresholdExceeded();
+    #else
+      return false;
+    #endif
+  }
+
+  bool Encoders::axis2TrustedAbsoluteReading() {
+    #ifdef AXIS2_ENCODER_ABSOLUTE
+      return validAxis2() && axis2OriginValid() && !encAxis2.errorThresholdExceeded();
+    #else
+      return false;
+    #endif
+  }
+
+  bool Encoders::hasTrustedAbsolutePair() {
+    return hasUsableAxisReadings() && axis1TrustedAbsoluteReading() && axis2TrustedAbsoluteReading();
+  }
+
   void Encoders::syncToOnStep() {
     char cmd[60], cmd1[30];
+    if (!hasUsableAxisReadings()) return;
+
     if (status.getVersionMajor() >= 10) {
+      // Only advertise authoritative absolute truth when the pair is clearly trustworthy.
+      const bool trustedAbsolutePair = hasTrustedAbsolutePair();
       sprintF(cmd, ":SX44,%0.6f,", enAxis1);
-      sprintF(cmd1, "%0.6f#", enAxis2); // 28
+      sprintF(cmd1, "%0.6f", enAxis2);
       strcat(cmd, cmd1);
+      strcat(cmd, trustedAbsolutePair ? "a#" : "#");
       onStep.commandBool(cmd);
     } else {
       sprintF(cmd, ":SX40,%0.6f#", enAxis1); // 17
@@ -155,13 +214,25 @@ void Encoders::init() {
       if (&result[0] != conv_end && f >= -999.9 && f <= 999.9) osAxis2 = f;
     }
 
-    long pos = encAxis1.read();
-    if (pos == INT32_MAX) { enAxis1Fault = true; pos = 0; } else enAxis1Fault = false;
+    long pos = 0;
+    if (!encAxis1.ready) {
+      enAxis1Fault = true;
+      enAxis1Available = false;
+    } else {
+      pos = encAxis1.read();
+      if (pos == INT32_MAX) { enAxis1Fault = true; enAxis1Available = false; pos = 0; } else { enAxis1Fault = false; enAxis1Available = true; }
+    }
     enAxis1 = (double)pos/settings.axis1.ticksPerDeg;
     if (settings.axis1.reverse == ON) enAxis1 = -enAxis1;
 
-    pos = encAxis2.read();
-    if (pos == INT32_MAX) { enAxis2Fault = true; pos = 0; } else enAxis2Fault = false;
+    pos = 0;
+    if (!encAxis2.ready) {
+      enAxis2Fault = true;
+      enAxis2Available = false;
+    } else {
+      pos = encAxis2.read();
+      if (pos == INT32_MAX) { enAxis2Fault = true; enAxis2Available = false; pos = 0; } else { enAxis2Fault = false; enAxis2Available = true; }
+    }
     enAxis2 = (double)pos/settings.axis2.ticksPerDeg;
     if (settings.axis2.reverse == ON) enAxis2 = -enAxis2;
 
@@ -169,7 +240,7 @@ void Encoders::init() {
     bool syncDuringGoto = false;
     if (ENC_SYNC_DURING_GOTO == ON && status.getVersionMajor() * 100 + status.getVersionMinor() >= 1015) syncDuringGoto = true;
 
-    if (settings.autoSync && !enAxis1Fault && !enAxis2Fault) {
+    if (settings.autoSync && validAxis1() && validAxis2()) {
       if (
           #ifdef ENC_ABSOLUTE
             (status.getVersionMajor() * 100 + status.getVersionMinor() < 1015 && (status.atHome || status.parked)) ||
@@ -191,8 +262,8 @@ void Encoders::init() {
 
   double Encoders::getAxis1() { return enAxis1; }
   double Encoders::getAxis2() { return enAxis2; }
-  bool   Encoders::validAxis1() { return !enAxis1Fault; }
-  bool   Encoders::validAxis2() { return !enAxis2Fault; }
+  bool   Encoders::validAxis1() { return enAxis1Available && !enAxis1Fault; }
+  bool   Encoders::validAxis2() { return enAxis2Available && !enAxis2Fault; }
   double Encoders::getOnStepAxis1() { return osAxis1; }
   double Encoders::getOnStepAxis2() { return osAxis2; }
 #endif
