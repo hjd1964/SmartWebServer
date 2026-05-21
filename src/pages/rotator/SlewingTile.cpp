@@ -13,7 +13,7 @@ void rotatorSlewingTile(String &data)
   snprintf_P(temp, sizeof(temp), html_tile_beg, "22em", "13em", L_SLEWING);
   data.concat(temp);
   data.concat(F("<div style='float: right; text-align: right;' id='rot_sta' class='c'>"));
-  if (state.focuserSlewing) data.concat(L_ACTIVE); else data.concat(L_INACTIVE);
+  if (state.rotatorSlewing) data.concat(L_ACTIVE); else data.concat(L_INACTIVE);
   data.concat(F("</div><br /><hr>"));
 
   data.concat(L_CURRENT ": <span id='rotatorpos' class='c'>");
