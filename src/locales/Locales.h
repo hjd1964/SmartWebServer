@@ -14,3 +14,4 @@
 #define L_it 7 // Italian
 #define L_jp 8 // Japanese
 #define L_us 9 // English (US, imperial units)
+#define L_ro 10 // Romanian

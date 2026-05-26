@@ -46,6 +46,10 @@
   #include "Strings_en.h"
   #define UNITS IMPERIAL
 #endif
+#if DISPLAY_LANGUAGE == L_ro
+  #include "Strings_ro.h"
+  #define UNITS METRIC
+#endif
 
 // misc. locale support functions
 #ifndef DISPLAY_UNITS
