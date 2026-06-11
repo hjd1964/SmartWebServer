@@ -132,7 +132,10 @@ class Motor {
     virtual void setSlewing(bool state) { UNUSED(state); }
 
     // signal that the motor load has exceeded its threshold
-    virtual bool isStalled() { return false; }
+    virtual bool isStalled(double axisPosition = NAN) { UNUSED(axisPosition); return false; }
+
+    // get live StallGuard telemetry if the motor/driver supports it
+    virtual bool getStallGuardTelemetry(char *reply, size_t replySize) { UNUSED(reply); UNUSED(replySize); return false; }
 
     // calibrate the motor if required
     virtual void calibrate(float value) { UNUSED(value); }
@@ -148,6 +151,9 @@ class Motor {
 
     // set origin of absolute encoders
     virtual void encoderSetOrigin(uint32_t origin) { UNUSED(origin); }
+
+    // true when this motor has an absolute position source after boot
+    virtual bool hasAbsoluteEncoder() const { return false; }
 
     // get the motor name
     virtual const char* name() { return NULL; }

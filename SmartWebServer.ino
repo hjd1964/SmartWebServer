@@ -2,7 +2,7 @@
  * Title       OnStep Smart Web Server
  * by          Howard Dutton
  *
- * Copyright (C) 2016 to 2025 Howard Dutton
+ * Copyright (C) 2016 to 2026 Howard Dutton
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

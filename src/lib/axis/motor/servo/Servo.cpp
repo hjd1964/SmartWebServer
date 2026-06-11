@@ -24,7 +24,7 @@ ServoMotor::ServoMotor(uint8_t axisNumber, int8_t reverse,
                        ServoDriver *Driver, Filter *filter,
                        Encoder *encoder, uint32_t encoderOrigin, bool encoderReverse,
                        Feedback *feedback, ServoControl *control,
-                       long syncThreshold, bool useFastHardwareTimers)
+                       bool useFastHardwareTimers)
                        :Motor(axisNumber, reverse) {
   if (axisNumber < 1 || axisNumber > 9) return;
 
@@ -37,7 +37,6 @@ ServoMotor::ServoMotor(uint8_t axisNumber, int8_t reverse,
   this->encoder = encoder;
   this->feedback = feedback;
   this->control = control;
-  this->syncThreshold = syncThreshold;
 
   if (axisNumber > 2) useFastHardwareTimers = false;
   this->useFastHardwareTimers = useFastHardwareTimers;
@@ -86,7 +85,7 @@ bool ServoMotor::init() {
   // get the feedback control loop ready
   feedback->init(axisNumber, control);
   feedback->reset();
-  trackingFrequency = (AXIS1_STEPS_PER_DEGREE/240.0F)*SIDEREAL_RATIO_F;
+  trackingFrequency = (AXIS1_COUNTS_PER_DEGREE/240.0F)*SIDEREAL_RATIO_F;
 
   // start the motion timer
   VF("MSG:"); V(axisPrefix); VF("start task to synthesize motion... ");
@@ -161,7 +160,7 @@ void ServoMotor::resetPositionSteps(long value) {
   if (!ready) return;
 
   Motor::resetPositionSteps(value);
-  if (syncThreshold == OFF) {
+  if (!encoder->isAbsolute()) {
     encoder->write(value);
   } else {
     VF("MSG:"); V(axisPrefix); VL("absolute encoder ignored reset position");
@@ -177,23 +176,13 @@ long ServoMotor::getInstrumentCoordinateSteps() {
 
 // set instrument coordinate, in steps
 void ServoMotor::setInstrumentCoordinateSteps(long value) {
+  bool startupOriginState = indexSteps == 0 && motorSteps == 0 && targetSteps == 0 && backlashSteps == 0;
+
   noInterrupts();
-  long i = value - motorSteps;
+  indexSteps = value - motorSteps;
   interrupts();
 
-  bool atHome = indexSteps == 0 && motorSteps == 0 && targetSteps == 0 && backlashSteps == 0;
-
-  if (syncThreshold == OFF || atHome) {
-    indexSteps = i;
-    originIndexSteps = i;
-    if (atHome) homeSet = true;
-  } else {
-    if (abs(originIndexSteps - i) < syncThreshold) {
-      indexSteps = i;
-    } else {
-      VF("MSG:"); V(axisPrefix); VL("absolute encoder ignored sync exceeds threshold");
-    }
-  }
+  if (encoder->isAbsolute() && startupOriginState) homeSet = true;
 }
 
 // distance to target in steps (+/-)
@@ -299,7 +288,7 @@ void ServoMotor::poll() {
   if (encoderReverse) encoderCounts = -encoderCounts;
 
   // for absolute encoders initialize the motor position at startup
-  if (syncThreshold != OFF) {
+  if (encoder->isAbsolute()) {
     if (!motorStepsInitDone && homeSet) {
       noInterrupts();
       motorSteps = encoderCounts;
@@ -449,7 +438,7 @@ void ServoMotor::poll() {
         char s[256];
 
         float spas = 0;
-        if (axisNumber == 1) spas = AXIS1_STEPS_PER_DEGREE/3600.0F; else if (axisNumber == 2) spas = AXIS2_STEPS_PER_DEGREE/3600.0F;
+        if (axisNumber == 1) spas = AXIS1_COUNTS_PER_DEGREE/3600.0F; else if (axisNumber == 2) spas = AXIS2_COUNTS_PER_DEGREE/3600.0F;
 
 //      snprintf(s, sizeof(s), "Ax%dSvo: Delta %6ld, Motor %6ld, Encoder %6ld, Ax%dSvo_Power: %6.3f%%\r\n", (int)axisNumber, (motorCounts - encoderCounts), motorCounts, (long)encoderCounts, (int)axisNumber, velocityPercent);
 //      snprintf(s, sizeof(s), "Ax%dSvo: Motor %6ld, Encoder %6ld\r\n", (int)axisNumber, motorCounts, (long)encoderCounts);
