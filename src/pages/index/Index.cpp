@@ -81,6 +81,12 @@ void handleRoot()
     data.concat(F("<br class=\"clear\" />\n"));
   #endif
 
+  #if DISPLAY_STALLGUARD_MONITOR == ON
+    data.concat(F("<hr>"));
+    stallGuardTile(data);
+    data.concat(F("<br class=\"clear\" />\n"));
+  #endif
+
   #if DRIVE_CONFIGURATION == ON
     data.concat(F("<hr>"));
     if (numShown == 0) data.concat(F("<br />" L_ADV_SET_NO_EDIT "<br />"));
@@ -140,6 +146,9 @@ void indexAjax() {
     #if DISPLAY_SERVO_MONITOR == ON
       servoTileAjax(data);
     #endif
+    #if DISPLAY_STALLGUARD_MONITOR == ON
+      stallGuardTileAjax(data);
+    #endif
   }
 
   www.sendContentAndClear(data);
@@ -167,6 +176,9 @@ void processIndexGet()
   axisTileGet();
   #if DISPLAY_SERVO_MONITOR == ON
     servoTileGet();
+  #endif
+  #if DISPLAY_STALLGUARD_MONITOR == ON
+    stallGuardTileGet();
   #endif
 
   state.lastControllerPageLoadTime = millis();

@@ -12,6 +12,9 @@
 #if DISPLAY_SERVO_MONITOR == ON
   #include "ServoTile.h"
 #endif
+#if DISPLAY_STALLGUARD_MONITOR == ON
+  #include "StallGuardTile.h"
+#endif
 
 #if DRIVE_CONFIGURATION == ON
   const char html_configAxesNotes[] PROGMEM =
