@@ -18,6 +18,7 @@ void guideTile(String &data)
   if (status.guiding) data.concat(L_SLEWING); else data.concat(L_INACTIVE);
   data.concat(F("</div><br />"));
 
+  data.concat(FPSTR(html_script_motion_controls));
   data.concat(FPSTR(html_guidePad));
   www.sendContentAndClear(data);
 
@@ -80,6 +81,7 @@ extern void guideTileGet()
     if (v.equals("s0")) onStep.commandBlind(":Qs#");
     if (v.equals("e0")) onStep.commandBlind(":Qe#");
     if (v.equals("w0")) onStep.commandBlind(":Qw#");
+    if (v.equals("q"))  onStep.commandBlind(":Q#"); // quit all guide motion
 
     if (v.equals("sy")) onStep.commandBool(":CS#"); // sync
 

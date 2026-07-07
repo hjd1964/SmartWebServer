@@ -19,6 +19,39 @@ const char html_script_ajax_shortcuts[] PROGMEM =
 "let lzh; function sz(key,v1){clearTimeout(lzh);lzh=setTimeout(s," STR(AJAX_PAGE_LAZY_GET_MS) ",key,v1);}\n"
 "</script>\n";
 
+// Javascript for hold-to-run motion controls
+const char html_script_motion_controls[] PROGMEM =
+"<script>"
+"function motionControls(o){"
+"var m={},q=[],b=0,g=0;"
+"function send(v){q.push(v);run();}"
+"function run(){if(b||!q.length)return;b=1;var v=q.shift(),x=new XMLHttpRequest(),d=0;function f(){if(d)return;d=1;b=0;run();}x.onreadystatechange=function(){if(x.readyState==4)f();};x.onerror=x.ontimeout=f;x.timeout=1000;x.open('GET',o.p+'?'+o.k+'='+encodeURIComponent(v)+'&x='+new Date().getTime(),true);x.send();}"
+"function active(){for(var k in m)if(m[k])return true;return false;}"
+"function stopValue(a){return typeof o.s=='function'?o.s(a):o.s;}"
+"function allStopValue(){return typeof o.a=='function'?o.a():o.a;}"
+"function haltValue(){return typeof o.h=='function'?o.h():o.h||allStopValue()||stopValue('');}"
+"function repeat(a,h){return o.g?h==g&&!active():!m[a];}"
+"function stop(a){if(!m[a])return;m[a]=0;var h=++g,v=stopValue(a);send(v);setTimeout(function(){if(repeat(a,h))send(v)},150);setTimeout(function(){if(repeat(a,h))send(v)},500);}"
+"function clearActive(){var r=0;for(var k in m){if(m[k])r=1;m[k]=0;}return r;}"
+"function repeatSend(v){send(v);setTimeout(function(){send(v)},150);setTimeout(function(){send(v)},500);}"
+"function stopAll(){var v=allStopValue();if(v){if(clearActive()){g++;repeatSend(v);}return;}for(var k in m)stop(k);}"
+"function halt(){clearActive();g++;repeatSend(haltValue());}"
+"function down(e,v,a){if(e&&e.preventDefault)e.preventDefault();a=a||v;m[a]=1;g++;send(v);}"
+"function up(e,a){if(e&&e.preventDefault)e.preventDefault();stop(a);}"
+"function pointerDown(e,v,a){if(e.pointerType=='touch')return;down(e,v,a);}"
+"function pointerUp(e,a){if(e.pointerType=='touch')return;up(e,a);}"
+"function windowUp(e){if(e&&e.pointerType=='touch')return;stopAll();}"
+"function cancel(e){if(e&&e.preventDefault)e.preventDefault();return false;}"
+"window.addEventListener('pointerup',windowUp);"
+"window.addEventListener('pointercancel',windowUp);"
+"window.addEventListener('touchend',stopAll);"
+"window.addEventListener('touchcancel',stopAll);"
+"window.addEventListener('blur',stopAll);"
+"document.addEventListener('visibilitychange',function(){if(document.hidden)stopAll();});"
+"return{send:send,stop:stop,stopAll:stopAll,halt:halt,t:down,u:up,p:pointerDown,r:pointerUp,c:cancel};"
+"}"
+"</script>\n";
+
 // Javascript for Date/Time return
 const char html_script_ajax_date_time_return[] PROGMEM =
 "<script>\n"

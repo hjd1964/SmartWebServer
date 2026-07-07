@@ -24,6 +24,7 @@ void focuserSlewingTile(String &data)
   if (status.getVersionMajor() >= 10) data.concat(FPSTR(html_focStop));
   data.concat(F("<br />"));
 
+  data.concat(FPSTR(html_script_motion_controls));
   data.concat(FPSTR(html_focuserIn));
   data.concat(FPSTR(html_focuserOut));
 

@@ -15,15 +15,23 @@ const char html_rotPosition[] PROGMEM =
   "<button class='bbh' onpointerdown=\"s('rs',document.getElementById('rot_set').value)\" type='button'>" L_SET_LABEL "</button></span>";
 
 const char html_rotStop[] PROGMEM =
-  "<button class='bbh' onpointerdown=\"s('rot','stop')\" type='button' style='color: White; margin-bottom: 0.5em;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button><br />";
+  "<button class='bbh' onpointerdown=\"if(window.rmc)rmc.halt();else s('rot','stop')\" type='button' style='color: White; margin-bottom: 0.5em;' title='" L_HINT_EMERGENCY_STOP "'>" L_STOP "!</button><br />";
 
 const char html_rotateCcw[] PROGMEM =
-  "<button class='bbh' style='height: 2.1em' onpointerdown=\"s('rot','ccwf')\" onpointerup=\"s('rot','stop')\" type='button'>" ARROW_LL "</button>"
-  "<button class='bbh' style='width: 2em' onpointerdown=\"s('rot','ccw')\" onpointerup=\"s('rot','stop')\" type='button'>" ARROW_L "</button>";
+  "<script>"
+  "var rmc=motionControls({p:'rotator-ajax-get.txt',k:'rot',s:'stop',g:1});"
+  "function rt(e,v){rmc.t(e,v);}"
+  "function ru(e,v){rmc.u(e,v);}"
+  "function rp(e,v){rmc.p(e,v);}"
+  "function rr(e,v){rmc.r(e,v);}"
+  "function rc(e){return rmc.c(e);}"
+  "</script>"
+  "<button class='bbh' style='height: 2.1em' ontouchstart=\"rt(event,'ccwf')\" ontouchend=\"ru(event,'ccwf')\" ontouchcancel=\"ru(event,'ccwf')\" ontouchmove=\"return rc(event)\" onpointerdown=\"rp(event,'ccwf')\" onpointerup=\"rr(event,'ccwf')\" onpointercancel=\"rr(event,'ccwf')\" oncontextmenu=\"return rc(event)\" type='button'>" ARROW_LL "</button>"
+  "<button class='bbh' style='width: 2em' ontouchstart=\"rt(event,'ccw')\" ontouchend=\"ru(event,'ccw')\" ontouchcancel=\"ru(event,'ccw')\" ontouchmove=\"return rc(event)\" onpointerdown=\"rp(event,'ccw')\" onpointerup=\"rr(event,'ccw')\" onpointercancel=\"rr(event,'ccw')\" oncontextmenu=\"return rc(event)\" type='button'>" ARROW_L "</button>";
 
 const char html_rotateCw[] PROGMEM =
-  "<button class='bbh' style='width: 2em' onpointerdown=\"s('rot','cw')\" onpointerup=\"s('rot','stop')\" type='button'>" ARROW_R "</button>"
-  "<button class='bbh' style='height: 2.1em' onpointerdown=\"s('rot','cwf')\" onpointerup=\"s('rot','stop')\" type='button'>" ARROW_RR "</button><br />";
+  "<button class='bbh' style='width: 2em' ontouchstart=\"rt(event,'cw')\" ontouchend=\"ru(event,'cw')\" ontouchcancel=\"ru(event,'cw')\" ontouchmove=\"return rc(event)\" onpointerdown=\"rp(event,'cw')\" onpointerup=\"rr(event,'cw')\" onpointercancel=\"rr(event,'cw')\" oncontextmenu=\"return rc(event)\" type='button'>" ARROW_R "</button>"
+  "<button class='bbh' style='height: 2.1em' ontouchstart=\"rt(event,'cwf')\" ontouchend=\"ru(event,'cwf')\" ontouchcancel=\"ru(event,'cwf')\" ontouchmove=\"return rc(event)\" onpointerdown=\"rp(event,'cwf')\" onpointerup=\"rr(event,'cwf')\" onpointercancel=\"rr(event,'cwf')\" oncontextmenu=\"return rc(event)\" type='button'>" ARROW_RR "</button><br />";
 
 const char html_rotateSlewSpeed[] PROGMEM =
   L_MAX_SLEW_SPEED " <span id='rot_rate' class='c'>%s</span>:<br />";

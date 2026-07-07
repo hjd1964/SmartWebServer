@@ -23,6 +23,7 @@ void rotatorSlewingTile(String &data)
   data.concat(FPSTR(html_rotPosition));
   data.concat(FPSTR(html_rotStop));
 
+  data.concat(FPSTR(html_script_motion_controls));
   data.concat(FPSTR(html_rotateCcw));
   data.concat(FPSTR(html_rotateCw));
 
