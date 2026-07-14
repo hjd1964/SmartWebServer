@@ -26,6 +26,8 @@
 #define L_OK "Ok"
 #define L_ON "Pornit"
 #define L_OFF "Oprit"
+#define L_VISIT "Vizită"
+#define L_PAUSE "Pauză"
 #define L_START "Start"
 #define L_DELTA "Delta"
 #define L_DP_MSG "Relativ"
@@ -309,6 +311,7 @@
 #define L_MERIDIAN_FLIP_AUTO "Flip Meridian Automat la Limită"
 #define L_MERIDIAN_FLIP_NOW "Acum"
 #define L_MERIDIAN_FLIP_PAUSE "Flip Meridian, Pauză Acasă"
+#define L_MERIDIAN_FLIP_HOMING "Flip Meridian, Acasă"
 #define L_MERIDIAN_FLIP_PPS "Flip Meridian, Latură Pivot Preferată"
 
 #define L_ORIENTATION_AUTO "Schimbare Orientare"

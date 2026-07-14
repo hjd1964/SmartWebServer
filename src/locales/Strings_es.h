@@ -26,6 +26,8 @@
 #define L_OK "Ok"
 #define L_ON "On"
 #define L_OFF "Off"
+#define L_VISIT "Visitar"
+#define L_PAUSE "Pausa"
 #define L_START "Iniciar"
 #define L_DELTA "Delta"
 #define L_DP_MSG  "Rel."
@@ -309,6 +311,7 @@
 #define L_MERIDIAN_FLIP_AUTO "Volteo de meridiano automático en el límite"
 #define L_MERIDIAN_FLIP_NOW "Ahora"
 #define L_MERIDIAN_FLIP_PAUSE "Volteo de Meridiano, Pausa en Posicion de Inicio"
+#define L_MERIDIAN_FLIP_HOMING "Volteo de meridiano, posicion de inicio"
 #define L_MERIDIAN_FLIP_PPS "Volteo de Meridiano, lado del muelle preferido"
 
 #define L_ORIENTATION_AUTO "Cambio de orientación"

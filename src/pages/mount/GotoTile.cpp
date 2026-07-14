@@ -84,8 +84,12 @@ void gotoTile(String &data)
       data.concat(temp);
     } else {
       data.concat(FPSTR(html_gotoMfAuto));
-      snprintf_P(temp, sizeof(temp), html_gotoMfPause, L_MERIDIAN_FLIP_PAUSE);
-      data.concat(temp);
+      if (status.hasMeridianFlipHomeModes() && (status.mountType == MT_GEM || status.mountType == MT_FORK)) {
+        data.concat(FPSTR(html_gotoMfHome));
+      } else {
+        snprintf_P(temp, sizeof(temp), html_gotoMfPause, L_MERIDIAN_FLIP_PAUSE);
+        data.concat(temp);
+      }
     }
 
     www.sendContentAndClear(data);
@@ -138,7 +142,13 @@ void gotoTileAjax(String &data)
     data.concat(keyValueBoolEnabled("gto_mfa_on", true));
     data.concat(keyValueBoolEnabled("gto_mfa_off", true));
     data.concat(keyValueToggleBoolSelected("gto_mfa_on", "gto_mfa_off", status.autoMeridianFlips));
-    data.concat(keyValueToggleBoolSelected("gto_mfp_on", "gto_mfp_off", status.pauseAtHome));
+    if (status.hasMeridianFlipHomeModes() && (status.mountType == MT_GEM || status.mountType == MT_FORK)) {
+      data.concat(keyValueBoolSelected("gto_mfh_off", status.meridianFlipHomeMode == MFHM_OFF));
+      data.concat(keyValueBoolSelected("gto_mfh_visit", status.meridianFlipHomeMode == MFHM_VISIT));
+      data.concat(keyValueBoolSelected("gto_mfh_pause", status.meridianFlipHomeMode == MFHM_PAUSE));
+    } else {
+      data.concat(keyValueToggleBoolSelected("gto_mfp_on", "gto_mfp_off", status.meridianFlipHomeMode == MFHM_PAUSE));
+    }
   } else {
     data.concat(keyValueBoolEnabled("gto_mfa_on", false));
     data.concat(keyValueBoolEnabled("gto_mfa_off", false));
@@ -198,6 +208,12 @@ extern void gotoTileGet()
     if (v.equals("mp_on")) onStep.commandBool(":SX98,1#");   // meridian-flip, pause at home on
     if (v.equals("mp_off")) onStep.commandBool(":SX98,0#");  // meridian-flip, pause at home off
     if (v.equals("mp_cnt")) onStep.commandBool(":SX99,1#");  // meridian flip, pause->continue
+
+    if (status.hasMeridianFlipHomeModes() && (status.mountType == MT_GEM || status.mountType == MT_FORK)) {
+      if (v.equals("mh_off"))   onStep.commandBool(":SX94,0#"); // meridian-flip, direct slew
+      if (v.equals("mh_visit")) onStep.commandBool(":SX94,1#"); // meridian-flip, visit home
+      if (v.equals("mh_pause")) onStep.commandBool(":SX94,2#"); // meridian-flip, pause at home
+    }
 
     if (v.equals("pps_e")) onStep.commandBool(":SX96,E#");   // meridian-flip, preferred pier side East
     if (v.equals("pps_w")) onStep.commandBool(":SX96,W#");   // meridian-flip, preferred pier side West

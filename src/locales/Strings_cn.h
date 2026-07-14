@@ -26,6 +26,8 @@
 #define L_OK "Ok"
 #define L_ON "开"
 #define L_OFF "关"
+#define L_VISIT "经过"
+#define L_PAUSE "暂停"
 #define L_START "开始"
 #define L_DELTA "对冲值"
 #define L_DP_MSG  "相对"
@@ -310,6 +312,7 @@
 #define L_MERIDIAN_FLIP_AUTO "越过边界时自动翻转子午线"
 #define L_MERIDIAN_FLIP_NOW "目前"
 #define L_MERIDIAN_FLIP_PAUSE "子午线翻转期间在原始位置暂停"
+#define L_MERIDIAN_FLIP_HOMING "子午线翻转归位"
 #define L_MERIDIAN_FLIP_PPS "经络翻转, 首选码头侧"
 
 #define L_ORIENTATION_AUTO "方向改变"

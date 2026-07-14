@@ -26,6 +26,8 @@
 #define L_OK "OK"
 #define L_ON "ON"
 #define L_OFF "OFF"
+#define L_VISIT "経由"
+#define L_PAUSE "一時停止"
 #define L_START "開始"
 #define L_DELTA "差分(Delta)"
 #define L_DP_MSG "相対"
@@ -309,6 +311,7 @@
 #define L_MERIDIAN_FLIP_AUTO "境界を超えた際に自動で子午線反転"
 #define L_MERIDIAN_FLIP_NOW "今すぐ実行"
 #define L_MERIDIAN_FLIP_PAUSE "子午線反転、ホームで一時停止"
+#define L_MERIDIAN_FLIP_HOMING "子午線反転、ホーム動作"
 #define L_MERIDIAN_FLIP_PPS "子午線反転、優先ピアサイド"
 
 #define L_ORIENTATION_AUTO "方向転換"

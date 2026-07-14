@@ -35,6 +35,8 @@
 #define L_OK "Tun"
 #define L_ON "An"
 #define L_OFF "Aus"
+#define L_VISIT "Anfahren"
+#define L_PAUSE "Pause"
 #define L_START "Anfang"
 #define L_DELTA "Delta"
 #define L_DP_MSG  "Rel."
@@ -319,6 +321,7 @@
 #define L_MERIDIAN_FLIP_AUTO "Automatischer Meridianflip bei Grenz&uuml;berschreitung"
 #define L_MERIDIAN_FLIP_NOW "Jetzt"
 #define L_MERIDIAN_FLIP_PAUSE "Pausiere an Homeposition w&auml;hrend Meridian Flip"
+#define L_MERIDIAN_FLIP_HOMING "Meridianflip, Homeposition"
 #define L_MERIDIAN_FLIP_PPS "Meridianflip, bevorzugte Pierseite"
 
 #define L_ORIENTATION_AUTO "Orientierungsänderung"

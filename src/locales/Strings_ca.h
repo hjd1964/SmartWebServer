@@ -26,6 +26,8 @@
 #define L_OK "Ok"
 #define L_ON "On"
 #define L_OFF "Off"
+#define L_VISIT "Visita"
+#define L_PAUSE "Pausa"
 #define L_START "Iniciar"
 #define L_DELTA "Delta"
 #define L_DP_MSG  "Relativa"
@@ -309,6 +311,7 @@
 #define L_MERIDIAN_FLIP_AUTO "Canvi de meridià automàtic en el límit"
 #define L_MERIDIAN_FLIP_NOW "Canvia ara"
 #define L_MERIDIAN_FLIP_PAUSE "Aturar-se a l'origen en fer el canvi de meridià"
+#define L_MERIDIAN_FLIP_HOMING "Canvi de meridià, retorn a l'origen"
 #define L_MERIDIAN_FLIP_PPS "Costat preferit del peu per al canvi de meridià"
 
 #define L_ORIENTATION_AUTO "Canvi d'orientació"

@@ -26,6 +26,8 @@
 #define L_OK "Ok"
 #define L_ON "On"
 #define L_OFF "Off"
+#define L_VISIT "Visit"
+#define L_PAUSE "Pause"
 #define L_START "Start"
 #define L_DELTA "Delta"
 #define L_DP_MSG "Relative"
@@ -309,6 +311,7 @@
 #define L_MERIDIAN_FLIP_AUTO "Automatic Meridian Flip at Limit"
 #define L_MERIDIAN_FLIP_NOW "Now"
 #define L_MERIDIAN_FLIP_PAUSE "Meridian Flip, Pause at Home"
+#define L_MERIDIAN_FLIP_HOMING "Meridian Flip Homing"
 #define L_MERIDIAN_FLIP_PPS "Meridian Flip, Preferred Pier Side"
 
 #define L_ORIENTATION_AUTO "Orientation Change"

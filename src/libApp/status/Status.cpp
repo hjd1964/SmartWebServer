@@ -105,8 +105,9 @@ bool Status::update()
         if (strstr(result, "r")) { if (strstr(result, "s")) rateCompensation = RC_REFR_RA; else rateCompensation = RC_REFR_BOTH; } else
         if (strstr(result, "t")) { if (strstr(result, "s")) rateCompensation = RC_FULL_RA; else rateCompensation = RC_FULL_BOTH; } else rateCompensation = RC_NONE;
 
-        waitingHome   = strstr(result, "w");
-        pauseAtHome   = strstr(result, "u");
+        waitingHome = strstr(result, "w");
+        if (strstr(result, "u")) meridianFlipHomeMode = MFHM_PAUSE; else
+        if (hasMeridianFlipHomeModes() && strstr(result, "v")) meridianFlipHomeMode = MFHM_VISIT; else meridianFlipHomeMode = MFHM_OFF;
         buzzerEnabled = strstr(result, "z");
 
         if (strstr(result,"E")) mountType = MT_GEM; else
