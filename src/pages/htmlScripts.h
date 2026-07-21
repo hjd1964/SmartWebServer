@@ -20,7 +20,7 @@ const char html_script_ajax_shortcuts[] PROGMEM =
 "</script>\n";
 
 // Javascript for hold-to-run motion controls
-const char html_script_motion_controls[] PROGMEM =
+const char html_script_motion_controls_1[] PROGMEM =
 "<script>"
 "function motionControls(o){"
 "var m={},q=[],b=0,g=0;"
@@ -32,7 +32,9 @@ const char html_script_motion_controls[] PROGMEM =
 "function haltValue(){return typeof o.h=='function'?o.h():o.h||allStopValue()||stopValue('');}"
 "function repeat(a,h){return o.g?h==g&&!active():!m[a];}"
 "function stop(a){if(!m[a])return;m[a]=0;var h=++g,v=stopValue(a);send(v);setTimeout(function(){if(repeat(a,h))send(v)},150);setTimeout(function(){if(repeat(a,h))send(v)},500);}"
-"function clearActive(){var r=0;for(var k in m){if(m[k])r=1;m[k]=0;}return r;}"
+"function clearActive(){var r=0;for(var k in m){if(m[k])r=1;m[k]=0;}return r;}";
+
+const char html_script_motion_controls_2[] PROGMEM =
 "function repeatSend(v){send(v);setTimeout(function(){send(v)},150);setTimeout(function(){send(v)},500);}"
 "function stopAll(){var v=allStopValue();if(v){if(clearActive()){g++;repeatSend(v);}return;}for(var k in m)stop(k);}"
 "function halt(){clearActive();g++;repeatSend(haltValue());}"
