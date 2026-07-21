@@ -14,7 +14,11 @@ void stallGuardTile(String &data)
 {
   char temp[240] = "";
 
-  data.concat(FPSTR(html_stallGuardScript));
+  data.concat(FPSTR(html_stallGuardScript_1));
+  www.sendContentAndClear(data);
+  data.concat(FPSTR(html_stallGuardScript_2));
+  www.sendContentAndClear(data);
+  data.concat(FPSTR(html_stallGuardScript_3));
   www.sendContentAndClear(data);
 
   snprintf_P(temp, sizeof(temp), html_tile_beg, "28em", "13em", "StallGuard <span class='c'>Axis</span><span id='sgA' class='c'>?</span> Monitor");

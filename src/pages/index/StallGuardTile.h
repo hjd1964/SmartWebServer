@@ -16,7 +16,7 @@ const char html_stallGuardSelect[] PROGMEM = "<button id='sgax%d' onpointerdown=
 
 const char html_stallGuardGraph[] PROGMEM = "<canvas id='stallGuardCanvas' width='420' height='220' style='border:1px solid #000000;'></canvas> \n";
 
-const char html_stallGuardScript[] PROGMEM =
+const char html_stallGuardScript_1[] PROGMEM =
   "<script>\n"
   "var sgu=setInterval(updateStallGuard,500);"
   "var sgr=false;"
@@ -42,7 +42,9 @@ const char html_stallGuardScript[] PROGMEM =
     "if(!sgr){for(i=0;i<sgw;i++){sgData[i]=-1;sgTrip[i]=-1;}sgr=true;sgtm=0;sgx=0;sgy=sgh;sgty=sgh;sglastTrip=-1;clearStallGuard(ctx);}"
     "if(tripValid){sglastTrip=trip;}else{trip=sglastTrip;tripValid=(trip>=0);}"
     "sgtm++;"
-    "var x=sgtm;"
+    "var x=sgtm;";
+
+const char html_stallGuardScript_2[] PROGMEM =
     "if(x>=sgw-1){x=sgw-1;for(i=1;i<=x;i++){sgData[i-1]=sgData[i];sgTrip[i-1]=sgTrip[i];}sgtm=x;clearStallGuard(ctx);sgx=x-1;if(sgData[sgx]>=0){sgy=sgh-sgData[sgx]*(sgh/1023);}if(sgTrip[sgx]>=0){sgty=sgh-sgTrip[sgx]*(sgh/1023);}}"
     "sgData[x]=sgValid?sg:-1;"
     "sgTrip[x]=tripValid?trip:-1;"
@@ -60,7 +62,9 @@ const char html_stallGuardScript[] PROGMEM =
     "ctx.stroke();"
     "ctx.strokeStyle='" COLOR_SERVO_PEN_3 "';"
     "ctx.beginPath();ctx.moveTo(0,sgh/2);ctx.lineTo(sgw*2,sgh/2);ctx.stroke();"
-    "ctx.strokeStyle='" COLOR_SERVO_PEN_2 "';"
+    "ctx.strokeStyle='" COLOR_SERVO_PEN_2 "';";
+
+const char html_stallGuardScript_3[] PROGMEM =
     "ctx.beginPath();ctx.moveTo(0,sgh*0.25);ctx.lineTo(sgw*2,sgh*0.25);ctx.moveTo(0,sgh*0.75);ctx.lineTo(sgw*2,sgh*0.75);ctx.stroke();"
     "ctx.fillStyle='" COLOR_SERVO_BACKGROUND_3 "';"
     "ctx.font='bold 12px Arial';"

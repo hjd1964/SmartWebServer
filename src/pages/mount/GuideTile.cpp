@@ -17,8 +17,12 @@ void guideTile(String &data)
   data.concat(F("<div style='float: right; text-align: right;' id='guide_sta' class='c'>"));
   if (status.guiding) data.concat(L_SLEWING); else data.concat(L_INACTIVE);
   data.concat(F("</div><br />"));
+  www.sendContentAndClear(data);
 
-  data.concat(FPSTR(html_script_motion_controls));
+  data.concat(FPSTR(html_script_motion_controls_1));
+  www.sendContentAndClear(data);
+  data.concat(FPSTR(html_script_motion_controls_2));
+  www.sendContentAndClear(data);
   data.concat(FPSTR(html_guidePad));
   www.sendContentAndClear(data);
 
