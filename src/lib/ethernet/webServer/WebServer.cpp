@@ -53,13 +53,27 @@
           // scan the header
           if (currentSection == 1) {
             if (!modifiedSinceFound && line.indexOf("If-Modified-Since:") >= 0) modifiedSinceFound = true;
+            // some HTTP/1.1 clients (e.g. .NET's HttpClient, used by ASCOM Conform) send
+            // "Expect: 100-continue" on PUT/POST requests with a body and then wait (~1s by
+            // default) for this interim response before actually sending the body -- well past
+            // WEB_SOCKET_TIMEOUT (250ms) below, which covers reading the *whole* request. Left
+            // unanswered, this server gives up and responds before the body ever arrives, then
+            // the body lands on an already-closed socket -- seen as "response ended prematurely"
+            // by the client. Replying immediately makes the client send the body right away.
+            if (line.indexOf("Expect:") >= 0 && line.indexOf("100-continue") >= 0) {
+              client.print(F("HTTP/1.1 100 Continue\r\n\r\n"));
+            }
             if (lastMethod == HTTP_UNKNOWN) {
               int index = line.indexOf("GET ");
               if (index >= 0) {
                 lastMethod = HTTP_GET;
                 line = line.substring(index + 4);
                 handler_number = getHandler(&line);
-                if (handler_number >= 0) processGet(&line);
+                // parse query-string arguments regardless of whether an exact-match route was
+                // found -- www.on() only covers a small fixed table of routes, but a handler
+                // reached via onNotFound() (e.g. the Alpaca API's dynamic paths) still needs
+                // www.args()/arg()/argName() to work
+                processGet(&line);
                 break;
               } else {
                 index = line.indexOf("POST ");
@@ -73,15 +87,18 @@
                     lastMethod = HTTP_PUT;
                     line = line.substring(index + 4);
                     handler_number = getHandler(&line);
-                    if (handler_number >= 0) processPut(&line);
+                    // see the processGet() comment above -- same reasoning applies here
+                    processPut(&line);
                   }
                 }
               }
             }
           } else
 
-          // scan the request
-          if (currentSection == 2 && handler_number >= 0) {
+          // scan the request body (see the processGet() comment above: parsed regardless of
+          // whether an exact-match route was found, so onNotFound()-reached handlers still see
+          // PUT/POST form arguments)
+          if (currentSection == 2) {
             if (lastMethod == HTTP_PUT) processPut(&line); else
             if (lastMethod == HTTP_POST) processPost(&line);
           }
@@ -306,12 +323,17 @@
   void WebServer::send(int code, const char* content_type, const String& content) {
     header = "HTTP/1.1 " + String(code) + " OK\r\n" + header;
     header += "Content-Type: "; header += content_type; header += "\r\n";
-    if (length == CONTENT_LENGTH_UNKNOWN) {
-      header += "Connection: close\r\n";
-    } else {
+    if (length != CONTENT_LENGTH_UNKNOWN) {
       if (length == CONTENT_LENGTH_NOT_SET) length = content.length();
       header += "content-length: " + String(length) + "\r\n";
     }
+    // handleClient() unconditionally calls client.stop() after every request (this server
+    // never keeps a connection open across requests), so every response must say so -- omitting
+    // this let HTTP/1.1 clients that default to keep-alive (e.g. .NET's HttpClient, used by
+    // ASCOM Conform) assume the socket stays open and try to reuse it for their next request,
+    // landing on an already-closed connection roughly every other call ("An error occurred
+    // while sending the request" / "the response ended prematurely" on the client side).
+    header += "Connection: close\r\n";
     header += "\r\n";
 
     client.print(header);
