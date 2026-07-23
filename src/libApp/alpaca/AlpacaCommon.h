@@ -18,8 +18,10 @@
 //
 // `deviceStateJson` supplies the device-specific DeviceState entries as already-valid,
 // comma-joined {"Name":...,"Value":...} JSON object fragments (no wrapping brackets).
+// It's passed the same deviceNumber as the request -- needed for multi-instance device types
+// (e.g. Focuser, one instance per OnStep axis 4-9); single-instance callbacks just ignore it.
 bool alpacaHandleCommonMember(const String &member, int httpMethod, AlpacaResponse &resp,
                                const char *name, const char *description, int interfaceVersion,
-                               bool connected, String (*deviceStateJson)());
+                               bool connected, int deviceNumber, String (*deviceStateJson)(int));
 
 #endif

@@ -169,7 +169,8 @@ static int nearestGuideRateIndex(double degPerSec) {
   return bestIndex;
 }
 
-static String telescopeDeviceStateJson() {
+static String telescopeDeviceStateJson(int deviceNumber) {
+  UNUSED(deviceNumber); // single-instance device
   String out;
   bool first = true;
   double ra, dec, az, alt, lst;
@@ -209,7 +210,7 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
   bool connected = status.onStepFound;
 
   if (alpacaHandleCommonMember(method, httpMethod, resp, "OnStep", "OnStep telescope mount, via SmartWebServer",
-                                4, connected, telescopeDeviceStateJson)) {
+                                4, connected, deviceNumber, telescopeDeviceStateJson)) {
     return;
   }
 

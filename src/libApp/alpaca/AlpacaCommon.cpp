@@ -12,7 +12,7 @@
 
 bool alpacaHandleCommonMember(const String &member, int httpMethod, AlpacaResponse &resp,
                                const char *name, const char *description, int interfaceVersion,
-                               bool connected, String (*deviceStateJson)()) {
+                               bool connected, int deviceNumber, String (*deviceStateJson)(int)) {
 
   if (member == "connected") {
     if (httpMethod == HTTP_GET) {
@@ -51,7 +51,7 @@ bool alpacaHandleCommonMember(const String &member, int httpMethod, AlpacaRespon
 
   if (member == "devicestate") {
     String out = "[";
-    out += deviceStateJson();
+    out += deviceStateJson(deviceNumber);
     out += "]";
     resp.setValue(out);
     return true;

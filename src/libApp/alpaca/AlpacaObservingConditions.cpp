@@ -66,7 +66,8 @@ static bool sensorAvailable(int index) {
   return cmdGetSensor(sensors[index].cmd, v) && !isnan(v);
 }
 
-static String obsCondDeviceStateJson() {
+static String obsCondDeviceStateJson(int deviceNumber) {
+  UNUSED(deviceNumber); // single-instance device
   String out;
   bool first = true;
   for (int i = 0; i < sensorCount; i++) {
@@ -88,7 +89,7 @@ void AlpacaObservingConditions::handleRequest(int deviceNumber, const String &me
   bool connected = status.onStepFound;
 
   if (alpacaHandleCommonMember(method, httpMethod, resp, "OnStep", "OnStep ambient weather sensors, via SmartWebServer",
-                                2, connected, obsCondDeviceStateJson)) {
+                                2, connected, deviceNumber, obsCondDeviceStateJson)) {
     return;
   }
 

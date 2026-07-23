@@ -12,6 +12,7 @@
 #include "AlpacaTelescope.h"
 #include "AlpacaObservingConditions.h"
 #include "AlpacaRotator.h"
+#include "AlpacaFocuser.h"
 
 void handleNotFound();
 
@@ -105,6 +106,11 @@ void Alpaca::handleApiRequest(String segments[], int count, AlpacaResponse &resp
 
   if (deviceType == "rotator") {
     alpacaRotator.handleRequest(deviceNumber, method, httpMethod, resp);
+    return;
+  }
+
+  if (deviceType == "focuser") {
+    alpacaFocuser.handleRequest(deviceNumber, method, httpMethod, resp);
     return;
   }
 

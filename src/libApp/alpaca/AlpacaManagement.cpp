@@ -54,6 +54,18 @@ void alpacaManagementConfiguredDevices(AlpacaResponse &resp) {
     appendDevice(out, first, "OnStep", "Rotator", 0);
   }
 
+  // focusers are axes 4-9 configured at compile time on the OnStepX side; presence per slot is
+  // decided once at boot by Status::focuserScan() (Status.cpp, ":F1a#".."F6a#") -- device number
+  // N is advertised only when slot N is actually present, so gaps in OnStep's own focuser
+  // numbering show up as gaps in the Alpaca device numbers too rather than being compacted
+  for (int i = 0; i < 6; i++) {
+    if (status.focuserPresent[i]) {
+      char name[16];
+      snprintf(name, sizeof(name), "OnStep %d", i + 1);
+      appendDevice(out, first, name, "Focuser", i);
+    }
+  }
+
   out += "]";
   resp.setValue(out);
 }

@@ -48,7 +48,8 @@ static bool getIsMoving(bool &out) {
 static bool targetPositionSet = false;
 static double targetPositionValue = 0;
 
-static String rotatorDeviceStateJson() {
+static String rotatorDeviceStateJson(int deviceNumber) {
+  UNUSED(deviceNumber); // single-instance device
   String out;
   bool first = true;
   double pos;
@@ -71,7 +72,7 @@ void AlpacaRotator::handleRequest(int deviceNumber, const String &method, int ht
   bool connected = status.onStepFound && status.rotatorFound == SD_TRUE;
 
   if (alpacaHandleCommonMember(method, httpMethod, resp, "OnStep", "OnStep rotator, via SmartWebServer",
-                                4, connected, rotatorDeviceStateJson)) {
+                                4, connected, deviceNumber, rotatorDeviceStateJson)) {
     return;
   }
 
