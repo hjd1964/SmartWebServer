@@ -47,6 +47,13 @@ void alpacaManagementConfiguredDevices(AlpacaResponse &resp) {
     appendDevice(out, first, "OnStep Weather", "ObservingConditions", 0);
   }
 
+  // a rotator is fundamentally an axis 3 configured at compile time on the OnStepX side, and
+  // its presence is decided once at boot by Status::rotatorScan() (Status.cpp), which probes
+  // ":GX98#" -- reuse that same decision here rather than probing again
+  if (status.rotatorFound == SD_TRUE) {
+    appendDevice(out, first, "OnStep", "Rotator", 0);
+  }
+
   out += "]";
   resp.setValue(out);
 }
