@@ -38,6 +38,11 @@
 #define SERIAL_SWAP                  AUTO //   AUTO, Automatic check both, ON for swapped port or OFF for default port only.  Infreq
                                           //         this option is ignored in ETHERNET modes
 
+// ASCOM ALPACA --------------------------------------------------------------------------------------------------------------------
+#define ALPACA_SERVER                 OFF //     ON, Exposes OnStep as an ASCOM Alpaca Telescope over HTTP/JSON on port 80.   Option
+                                          //         Also starts the Alpaca UDP discovery responder (see ALPACA_DISCOVERY_PORT
+                                          //         in Config.defaults.h, default 32227.) OFF to disable both.
+
 // BLE GAMEPAD SETTINGS (ESP32 ONLY) ------------------------------------------------ see https://onstep.groups.io/g/main/wiki/26762
 #define BLE_GAMEPAD                   OFF //    OFF, ON to allow BLE gamepad connection for ESP32 only.                       Option
 #define BLE_GP_ADDR   "ff:ff:de:09:f5:cf" // f5:cf", GamePad MAC address #1                                                   Adjust

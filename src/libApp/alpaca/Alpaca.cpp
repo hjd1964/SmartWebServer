@@ -149,6 +149,17 @@ Alpaca alpaca;
 
 void alpacaOrNotFound() {
   String uri = www.uri();
+
+  // the Alpaca spec requires a browser-facing setup page at "/setup" (server-wide) and at
+  // "/setup/v1/{devicetype}/{devicenumber}/setup" (per-device) -- rather than building a
+  // bespoke configuration UI for each device class, both simply redirect to the existing
+  // SmartWebServer root page, which already covers the same ground (network/mount/etc. setup)
+  if (uri.equals("/setup") || uri.startsWith("/setup/")) {
+    www.sendHeader("Location", "/");
+    www.send(302, "text/html", "");
+    return;
+  }
+
   if (uri.startsWith("/api/") || uri.startsWith("/management/") || uri.equals("/management")) {
     alpaca.handleRequest();
   } else {

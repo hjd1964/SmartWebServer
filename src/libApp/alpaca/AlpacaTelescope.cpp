@@ -90,6 +90,40 @@ static bool getSiteLatLon(double &lat, double &lon) {
   return ok1 && ok2;
 }
 
+// converts Alt/Az to RA/Dec so SlewToAltAzAsync can go through the (already hardware-confirmed)
+// ":Sr#"/":Sd#"+":MS#" RA/Dec goto path instead of ":Sz#"/":Sa#" -- confirmed against OnStepX
+// src/telescope/mount/goto/Goto.cpp's setTarget(): for any mount type other than ALTAZM/ALTALT
+// (i.e. every GEM/Fork equatorial mount), ":MS#" ignores whatever ":Sz#"/":Sa#" set and instead
+// *overwrites* the goto target's Alt/Az from its existing (possibly stale, e.g. left over from
+// the previous test's RA/Dec target) equatorial target -- confirmed via ASCOM Conform against
+// real hardware: SlewToAltAzAsync landed ~100 degrees away in Azimuth and ~28 degrees away in
+// Altitude, matching where the mount's *previous* RA/Dec target converted to, not the requested
+// Alt/Az. The math below mirrors OnStepX's own Transform::horToEqu (src/telescope/mount/
+// coordinates/Transform.cpp) exactly, so it round-trips correctly against OnStepX's own
+// equToHor() used for the AltAz GET properties -- and works regardless of the mount's physical
+// type, since horizontal<->equatorial conversion is invertible either way.
+static bool altAzToRaDec(double az, double alt, double &ra, double &dec) {
+  double lat, lon, lst;
+  if (!getSiteLatLon(lat, lon) || !cmdGetHours(":GS#", lst)) return false;
+
+  const double d2r = 0.017453292519943295;
+  double latRad = lat * d2r, azRad = az * d2r, altRad = alt * d2r;
+  double cosAz = cos(azRad);
+  double sinDec = sin(altRad) * sin(latRad) + cos(altRad) * cos(latRad) * cosAz;
+  dec = asin(sinDec) / d2r;
+
+  double t1 = sin(azRad);
+  double t2 = cosAz * sin(latRad) - tan(altRad) * cos(latRad);
+  double ha = atan2(t1, t2) / d2r;
+  ha += 180.0;
+  if (ha > 180.0) ha -= 360.0;
+
+  ra = lst - ha / 15.0;
+  while (ra < 0) ra += 24.0;
+  while (ra >= 24.0) ra -= 24.0;
+  return true;
+}
+
 // starts a goto via ":MS#" (single-digit reply per Cmd.cpp's shortResponse handling for the
 // "S" sub-command). Confirmed against OnStepX src/telescope/mount/goto/Goto.command.cpp: the
 // digit is OnStepX's own 0..9 goto-result code (0=possible, 1=below horizon, ... 9=unspecified),
@@ -109,6 +143,20 @@ static bool startGoto(AlpacaResponse &resp) {
     return false;
   }
   return true;
+}
+
+// per the ASCOM spec, AbortSlew/FindHome/MoveAxis/PulseGuide/SyncToCoordinates/SyncToTarget (and,
+// defensively, the SlewTo*Async methods -- see startGoto()'s CE_SLEW_ERR_IN_PARK handling, which
+// already covers those via OnStep's own rejection) must throw ParkedException while parked --
+// confirmed via ASCOM Conform against real hardware: several of these use commandBlind() or a
+// "fails silently" OnStep reply (":CS#"), so nothing would otherwise surface OnStep's own
+// rejection (if any) as an Alpaca error
+static bool rejectIfParked(AlpacaResponse &resp) {
+  if (status.parked) {
+    resp.setError(ALPACA_ERR_PARKED, "Parked");
+    return true;
+  }
+  return false;
 }
 
 // OnStep's ":Gr#"/":Gd#" always return *some* parseable value (its own last/default target),
@@ -147,11 +195,22 @@ static int sideOfPier() {
 }
 
 // DriveRates: driveSidereal=0, driveLunar=1, driveSolar=2, driveKing=3
+// index 0=Sidereal,1=Lunar,2=Solar,3=King, matching Alpaca's DriveRate enum and this file's
+// trackingrate PUT handler below. Picks the *nearest* of OnStepX's four known rate constants
+// (src/lib/Constants.h: SIDEREAL_RATE_HZ=60.16427..., LUNAR_RATE_HZ=57.9, SOLAR_RATE_HZ=60.0,
+// KING_RATE_HZ=60.136) instead of fixed +/-0.05 thresholds -- confirmed via ASCOM Conform
+// against real hardware: Sidereal and King are only 0.028Hz apart, so a fixed-order threshold
+// check matched true Sidereal readings against the King branch first, misreporting the rate
+// right after setting it and making Conform think the Sidereal write had failed.
 static int trackingRateFromHz(double hz) {
-  if (fabs(hz - 57.900) < 0.05) return 1;
-  if (fabs(hz - 60.000) < 0.05) return 2;
-  if (fabs(hz - 60.136) < 0.05) return 3;
-  return 0; // default/closest match is sidereal
+  static const double rateHz[4] = {60.16427456104770, 57.9, 60.0, 60.136};
+  int best = 0;
+  double bestDiff = fabs(hz - rateHz[0]);
+  for (int i = 1; i < 4; i++) {
+    double diff = fabs(hz - rateHz[i]);
+    if (diff < bestDiff) { bestDiff = diff; best = i; }
+  }
+  return best;
 }
 
 static double guideRateDegPerSec(int index) {
@@ -167,6 +226,36 @@ static int nearestGuideRateIndex(double degPerSec) {
     if (d < best) { best = d; bestIndex = i; }
   }
   return bestIndex;
+}
+
+// remembers which continuous-motion direction command is active per axis so MoveAxis(axis,0) knows what to stop
+static char axis0Dir = 0; // 'e', 'w', or 0
+static char axis1Dir = 0; // 'n', 's', or 0
+
+// live ":GU#" query for goto-in-progress/pulse-guiding state, bypassing status.inGoto/
+// status.pulseGuiding, which are only refreshed by the periodic background status poll (up to
+// ~1s stale) -- confirmed via ASCOM Conform against real hardware: IsPulseGuiding read
+// immediately after PulseGuide() started a 2s pulse returned FALSE, because the cached flag
+// hadn't been refreshed yet since the pulse began. Falls back to the cached status.* fields on
+// comms failure.
+static void queryGotoPulseState(bool &inGoto, bool &pulseGuiding) {
+  inGoto = status.inGoto;
+  pulseGuiding = status.pulseGuiding;
+  char temp[80];
+  if (!onStep.command(":GU#", temp)) return;
+  inGoto = strstr(temp, "N") == NULL;
+  pulseGuiding = strstr(temp, "G") != NULL;
+}
+
+// Slewing must be true during MoveAxis-driven jogging, not just during a goto -- confirmed via
+// ASCOM Conform against real hardware ("Slewing is not true immediately/after 2 seconds moving").
+// The live goto flag only reflects OnStepX's goto engine; the ":Me#"/":Mw#"/":Mn#"/":Ms#" jog
+// commands MoveAxis uses are a different subsystem that doesn't set it, so this also has to
+// track the jog state kept above.
+static bool isSlewing() {
+  bool inGoto, pulseGuiding;
+  queryGotoPulseState(inGoto, pulseGuiding);
+  return inGoto || axis0Dir != 0 || axis1Dir != 0;
 }
 
 static String telescopeDeviceStateJson(int deviceNumber) {
@@ -187,19 +276,17 @@ static String telescopeDeviceStateJson(int deviceNumber) {
     jsonStateValueEntry(out, first, "Altitude", jsonNumber(alt));
   }
   if (haveLst) jsonStateValueEntry(out, first, "SiderealTime", jsonNumber(lst));
+  bool inGoto, pulseGuiding;
+  queryGotoPulseState(inGoto, pulseGuiding);
   jsonStateValueEntry(out, first, "AtHome", jsonBool(status.atHome));
   jsonStateValueEntry(out, first, "AtPark", jsonBool(status.parked));
-  jsonStateValueEntry(out, first, "Slewing", jsonBool(status.inGoto));
+  jsonStateValueEntry(out, first, "Slewing", jsonBool(inGoto || axis0Dir != 0 || axis1Dir != 0));
   jsonStateValueEntry(out, first, "Tracking", jsonBool(status.tracking));
   jsonStateValueEntry(out, first, "SideOfPier", jsonInt(sideOfPier()));
-  jsonStateValueEntry(out, first, "IsPulseGuiding", jsonBool(status.pulseGuiding));
+  jsonStateValueEntry(out, first, "IsPulseGuiding", jsonBool(pulseGuiding));
   jsonStateValueEntry(out, first, "TimeStamp", jsonString(""));
   return out;
 }
-
-// remembers which continuous-motion direction command is active per axis so MoveAxis(axis,0) knows what to stop
-static char axis0Dir = 0; // 'e', 'w', or 0
-static char axis1Dir = 0; // 'n', 's', or 0
 
 void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int httpMethod, AlpacaResponse &resp) {
   if (deviceNumber != 0) {
@@ -225,9 +312,39 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
 
   if (method == "alignmentmode") { resp.setValue(jsonInt(alignmentMode())); return; }
 
-  if (method == "aperturearea" || method == "aperturediameter" || method == "focallength" ||
-      method == "siteelevation") {
+  if (method == "aperturearea" || method == "aperturediameter" || method == "focallength") {
     resp.setError(ALPACA_ERR_NOT_IMPLEMENTED, "Not known to OnStep/SmartWebServer");
+    return;
+  }
+
+  if (method == "siteelevation") {
+    // confirmed against OnStepX src/telescope/mount/site/Site.command.cpp: ":Gv#"/":Sv#" exist
+    // (meters, simple signed decimal, no dms/hms conversion needed) -- previously left as
+    // NotImplementedException, which turned out to be the root cause of an ASCOM Conform
+    // "CheckMethods" abort (some other test apparently needs elevation internally and didn't
+    // handle that exception gracefully)
+    if (httpMethod == HTTP_GET) {
+      char temp[80];
+      if (!onStep.command(":Gv#", temp)) { resp.setError(ALPACA_ERR_DRIVER_COMMS_FAILURE, "Comms failure"); return; }
+      resp.setValue(jsonNumber(atof(temp)));
+    } else {
+      // validated against the *intersection* of two different valid ranges, confirmed via ASCOM
+      // Conform against real hardware both ways:
+      //  - ASCOM's own spec documents SiteElevation as valid from -300 to +10,000m, and Conform
+      //    enforces that ceiling regardless of what the hardware can actually do (a value above
+      //    10,000 must be rejected here even though OnStep would happily accept it)
+      //  - OnStepX's Site::setElevation() (src/telescope/mount/site/Site.cpp) only accepts
+      //    [-100, 20000) -- narrower than ASCOM's floor of -300, so a value between -300 and
+      //    -100 would pass a check against the ASCOM range alone and then genuinely get
+      //    rejected by OnStep (surfaced as a confusing "OnStep rejected value" rather than a
+      //    clean InvalidValueException)
+      // the intersection (-100 to 10,000) guarantees anything accepted here is valid on both counts
+      double v;
+      if (!alpacaArgDouble("SiteElevation", v) || v < -100 || v > 10000) { resp.setError(ALPACA_ERR_INVALID_VALUE, "SiteElevation out of range"); return; }
+      char cmd[24];
+      snprintf(cmd, sizeof(cmd), ":Sv%+.1f#", v);
+      if (!onStep.commandBool(cmd)) resp.setError(ALPACA_ERR_INVALID_VALUE, "OnStep rejected value");
+    }
     return;
   }
 
@@ -302,12 +419,17 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
       char cmd[24];
       if (method == "sitelatitude") {
         if (v < -90 || v > 90) { resp.setError(ALPACA_ERR_INVALID_VALUE, "Bad latitude"); return; }
-        convert.doubleToDms(buf, v, false, true, PM_HIGH);
+        // PM_HIGHEST (fractional arcseconds), not PM_HIGH -- confirmed via ASCOM Conform that
+        // PM_HIGH's whole-second precision was losing the fractional part on round-trip (Conform
+        // writes e.g. +44:17:27.4 and expects to read the same value back); OnStepX's ":St#"
+        // documents the ".SSS" fractional form as valid input
+        convert.doubleToDms(buf, v, false, true, PM_HIGHEST);
         snprintf(cmd, sizeof(cmd), ":St%s#", buf);
       } else {
         if (v < -180 || v > 180) { resp.setError(ALPACA_ERR_INVALID_VALUE, "Bad longitude"); return; }
         // negate: ASCOM SiteLongitude is +East, OnStepX's ":Sg#" is +West ("east is negative"), see getSiteLatLon()
-        convert.doubleToDms(buf, -v, true, true, PM_HIGH);
+        // PM_HIGHEST: see the sitelatitude comment above, same round-trip precision fix
+        convert.doubleToDms(buf, -v, true, true, PM_HIGHEST);
         snprintf(cmd, sizeof(cmd), ":Sg%s#", buf);
       }
       if (!onStep.commandBool(cmd)) resp.setError(ALPACA_ERR_INVALID_VALUE, "OnStep rejected value");
@@ -325,8 +447,13 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
 
   if (method == "athome") { resp.setValue(jsonBool(status.atHome)); return; }
   if (method == "atpark") { resp.setValue(jsonBool(status.parked)); return; }
-  if (method == "slewing") { resp.setValue(jsonBool(status.inGoto)); return; }
-  if (method == "ispulseguiding") { resp.setValue(jsonBool(status.pulseGuiding)); return; }
+  if (method == "slewing") { resp.setValue(jsonBool(isSlewing())); return; }
+  if (method == "ispulseguiding") {
+    bool inGoto, pulseGuiding;
+    queryGotoPulseState(inGoto, pulseGuiding);
+    resp.setValue(jsonBool(pulseGuiding));
+    return;
+  }
   if (method == "sideofpier") {
     if (httpMethod == HTTP_GET) resp.setValue(jsonInt(sideOfPier()));
     else resp.setError(ALPACA_ERR_NOT_IMPLEMENTED, "SideOfPier cannot be set");
@@ -334,7 +461,12 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
   }
 
   if (method == "slewsettletime") {
-    if (httpMethod == HTTP_GET) resp.setValue(jsonInt(0));
+    // OnStepX's goto engine does a final slow-speed "near destination" refine/backlash-takeup
+    // pass right before it clears its in-goto flag (src/telescope/mount/goto/Goto.cpp,
+    // nearDestinationRefineStages) -- confirmed via ASCOM Conform against real hardware: reading
+    // RA/Dec/Az/Alt immediately after Slewing goes false was consistently ~10-25 arcseconds off
+    // target. 2s is a heuristic buffer for that settling, not a measured minimum.
+    if (httpMethod == HTTP_GET) resp.setValue(jsonInt(2));
     else resp.setError(ALPACA_ERR_NOT_IMPLEMENTED, "Not adjustable");
     return;
   }
@@ -431,10 +563,17 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
 
   // ---- methods ----
 
-  if (method == "abortslew") { onStep.commandBlind(":Q#"); return; }
-  if (method == "findhome") { onStep.commandBlind(":hC#"); return; }
+  if (method == "abortslew") { if (rejectIfParked(resp)) return; onStep.commandBlind(":Q#"); return; }
+  if (method == "findhome") { if (rejectIfParked(resp)) return; onStep.commandBlind(":hC#"); return; }
   if (method == "park") { if (!onStep.commandBool(":hP#")) resp.setError(ALPACA_ERR_INVALID_OPERATION, "Park failed"); return; }
-  if (method == "unpark") { if (!onStep.commandBool(":hR#")) resp.setError(ALPACA_ERR_INVALID_OPERATION, "Unpark failed"); return; }
+  if (method == "unpark") {
+    // per the ASCOM spec, unparking an already-unparked scope must be a harmless no-op, not an
+    // error -- confirmed via ASCOM Conform: OnStep's ":hR#" isn't idempotent the way ":hP#" is
+    // (it fails when there's nothing to unpark), so that has to be handled here instead
+    if (!status.parked) return;
+    if (!onStep.commandBool(":hR#")) resp.setError(ALPACA_ERR_INVALID_OPERATION, "Unpark failed");
+    return;
+  }
   if (method == "setpark") { if (!onStep.commandBool(":hQ#")) resp.setError(ALPACA_ERR_INVALID_OPERATION, "SetPark failed"); return; }
 
   if (method == "slewtocoordinates" || method == "slewtotarget" || method == "slewtoaltaz") {
@@ -443,6 +582,7 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
   }
 
   if (method == "slewtocoordinatesasync") {
+    if (rejectIfParked(resp)) return;
     double ra, dec;
     if (!alpacaArgDouble("RightAscension", ra) || !alpacaArgDouble("Declination", dec) ||
         ra < 0 || ra >= 24 || dec < -90 || dec > 90) {
@@ -454,34 +594,29 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
     return;
   }
   if (method == "slewtotargetasync") {
+    if (rejectIfParked(resp)) return;
     if (!targetRaSet || !targetDecSet) { resp.setError(ALPACA_ERR_VALUE_NOT_SET, "Target has not been set"); return; }
     startGoto(resp);
     return;
   }
   if (method == "slewtoaltazasync") {
-    // confirmed against OnStepX src/telescope/mount/goto/Goto.command.cpp: ":Sz#" takes an
-    // unsigned DDD*MM[:SS[.SSS]] (dmsToDouble signPresent=false, 0..360) and ":Sa#" a signed
-    // sDD*MM[:SS[.SSS]] (signPresent=true, -90..90) -- matches doubleToDms(fullRange, signPresent)
-    // below exactly. (Their docs show a "'" seconds separator; the shared Convert::dmsToDouble
-    // parser accepts ':' equally, which is what doubleToDms here actually emits.)
+    if (rejectIfParked(resp)) return;
     double az, alt;
     if (!alpacaArgDouble("Azimuth", az) || !alpacaArgDouble("Altitude", alt) ||
         az < 0 || az > 360 || alt < -90 || alt > 90) {
       resp.setError(ALPACA_ERR_INVALID_VALUE, "Bad coordinates");
       return;
     }
-    char buf[16], cmd[24];
-    convert.doubleToDms(buf, az, true, false, PM_HIGH);
-    snprintf(cmd, sizeof(cmd), ":Sz%s#", buf);
-    onStep.commandBool(cmd);
-    convert.doubleToDms(buf, alt, false, true, PM_HIGH);
-    snprintf(cmd, sizeof(cmd), ":Sa%s#", buf);
-    onStep.commandBool(cmd);
+    // goes via RA/Dec, not OnStepX's ":Sz#"/":Sa#" -- see altAzToRaDec()'s comment for why
+    double ra, dec;
+    if (!altAzToRaDec(az, alt, ra, dec)) { resp.setError(ALPACA_ERR_DRIVER_COMMS_FAILURE, "Comms failure"); return; }
+    setRaDecTarget(ra, dec);
     startGoto(resp);
     return;
   }
 
   if (method == "synctocoordinates") {
+    if (rejectIfParked(resp)) return;
     double ra, dec;
     if (!alpacaArgDouble("RightAscension", ra) || !alpacaArgDouble("Declination", dec) ||
         ra < 0 || ra >= 24 || dec < -90 || dec > 90) {
@@ -493,6 +628,7 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
     return;
   }
   if (method == "synctotarget") {
+    if (rejectIfParked(resp)) return;
     if (!targetRaSet || !targetDecSet) { resp.setError(ALPACA_ERR_VALUE_NOT_SET, "Target has not been set"); return; }
     if (!onStep.commandBool(":CS#")) resp.setError(ALPACA_ERR_INVALID_OPERATION, "Sync failed");
     return;
@@ -522,9 +658,28 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
   }
 
   if (method == "moveaxis") {
+    if (rejectIfParked(resp)) return;
     uint32_t axis = alpacaArgUint32("Axis", 99);
     double rate;
     if ((axis != 0 && axis != 1) || !alpacaArgDouble("Rate", rate)) { resp.setError(ALPACA_ERR_INVALID_VALUE, "Bad axis/rate"); return; }
+
+    // per the ASCOM spec, a non-zero Rate outside the range AxisRates() advertises (indices 0..7
+    // of guideRateXSidereal, see "axisrates" above) must throw InvalidValueException -- confirmed
+    // via ASCOM Conform, which deliberately probes just outside both ends
+    if (rate != 0) {
+      double minRate = guideRateXSidereal[0] * siderealDegPerSec;
+      double maxRate = guideRateXSidereal[7] * siderealDegPerSec;
+      // tolerance: the client only ever sees these bounds after they've round-tripped through
+      // AxisRates()'s 6-decimal JSON (jsonNumber()), so a client re-sending exactly the
+      // advertised boundary value produces a double that differs from this freshly-recomputed
+      // maxRate by a tiny rounding amount -- confirmed via ASCOM Conform, which does exactly
+      // that and had the true boundary rate spuriously rejected by a strict comparison here
+      const double rateEpsilon = 0.0001;
+      if (fabs(rate) < minRate - rateEpsilon || fabs(rate) > maxRate + rateEpsilon) {
+        resp.setError(ALPACA_ERR_INVALID_VALUE, "Rate outside the range AxisRates() advertises");
+        return;
+      }
+    }
 
     if (axis == 0) {
       if (axis0Dir) { char c[6]; snprintf(c, sizeof(c), ":Q%c#", axis0Dir); onStep.commandBlind(c); axis0Dir = 0; }
@@ -547,6 +702,7 @@ void AlpacaTelescope::handleRequest(int deviceNumber, const String &method, int 
   }
 
   if (method == "pulseguide") {
+    if (rejectIfParked(resp)) return;
     // confirmed against OnStepX src/telescope/mount/guide/Guide.command.cpp: ":Mgd[n]#" where d
     // is lowercase 'w','e','n', or 's' (uppercase falls through to CE_CMD_UNKNOWN there) and n is
     // a plain (not zero-padded) millisecond count parsed with convert.atoi2(); "g" (vs. "G") means
