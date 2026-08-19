@@ -13,7 +13,7 @@ void pageHeader(int selected) {
   if (strlen(status.configName) > 0) data.concat(status.configName); else data.concat(F("OnStep"));
   data.concat(FPSTR(html_onstep_header_title));
   data.concat(firmwareVersion.str);
-  data.concat(F(" (OnStep"));
+  data.concat(F(" (OnStep "));
   if (status.getVersionStr(temp)) data.concat(temp); else data.concat("?");
   www.sendContentAndClear(data);
 
