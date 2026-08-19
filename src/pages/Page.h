@@ -15,7 +15,7 @@
 
 void pageHeader(int selected);
 
-const char html_onstep_header_begin[] PROGMEM = "<div class='t'><table width='100%%'><tr><td><b><font size='5'>";
+const char html_onstep_header_begin[] PROGMEM = "<div class='t'><table width='100%'><tr><td><b><font size='5'>";
 const char html_onstep_header_title[] PROGMEM = "</font></b></td><td align='right'><b>Smart Web Server ";
 const char html_onstep_header_links[] PROGMEM = ")</b></td></tr></table>";
 const char html_onstep_header_end[] PROGMEM = "</div>\n";
