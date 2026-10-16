@@ -5,6 +5,53 @@
 #include "../KeyValue.h"
 #include "../Pages.common.h"
 
+#include <cmath>
+#include <stdlib.h>
+
+namespace {
+const char syncLimitArgs[3][10] PROGMEM = {"syncPolar", "syncAxis1", "syncAxis2"};
+const uint8_t syncLimitMin[] = {60, 0, 0};
+const uint8_t syncLimitMax[] = {90, 30, 30};
+
+// Runtime limits use degrees: polar 90 and axis 0 disable the respective limit.
+bool parseSyncLimit(int index, const char* text, double &value) {
+  char* end;
+  value = strtod(text, &end);
+  if (end == text || !std::isfinite(value)) return false;
+  return *end == 0 && value >= syncLimitMin[index] && value <= syncLimitMax[index];
+}
+
+bool readSyncLimit(int index, double &value) {
+  if (!status.hasSyncLimits()) return false;
+  char command[16], reply[120] = "";
+  snprintf_P(command, sizeof(command), PSTR(":GXE%c#"), 'H' + index);
+  return onStep.command(command, reply) && parseSyncLimit(index, reply, value);
+}
+
+void formatSyncLimit(double value, char* valueText, size_t valueTextSize) {
+  snprintf_P(valueText, valueTextSize, PSTR("%.3f"), value == 0.0 ? 0.0 : value);
+  char* end = valueText + strlen(valueText) - 1;
+  while (*end == '0') *end-- = 0;
+  if (*end == '.') *end = 0;
+}
+
+void showSyncLimit(String &data, int index, bool supported, const char* valueText) {
+  char temp[240];
+  char arg[10];
+  strcpy_P(arg, syncLimitArgs[index]);
+  if (supported) snprintf_P(temp, sizeof(temp), html_syncLimitInput, arg, arg, syncLimitMin[index], syncLimitMax[index], valueText);
+  else snprintf_P(temp, sizeof(temp), html_syncLimitUnavailable, arg);
+  data.concat(temp);
+  snprintf_P(temp, sizeof(temp), html_syncLimitLabel, arg);
+  data.concat(temp);
+  if (index == 0) data.concat(F(L_SYNC_LIMIT_POLAR));
+  else if (index == 1) data.concat(F(L_SYNC_LIMIT_AXIS1));
+  else data.concat(F(L_SYNC_LIMIT_AXIS2));
+  data.concat(F("</label><br />"));
+  www.sendContentAndClear(data);
+}
+}
+
 // create the related webpage tile
 void limitsTile(String &data)
 {
@@ -37,6 +84,18 @@ void limitsTile(String &data)
   int degPastMerW = (int)strtol(&reply[0], NULL, 10);
   degPastMerW = round((degPastMerW * 15.0) / 60.0);
 
+  // Share the mount values between the summary and settings controls.
+  char syncLimitValues[3][16];
+  bool syncLimitSupported[3] = {false, false, false};
+  if (status.hasSyncLimits()) {
+    for (int i = 0; i < 3; i++) {
+      double value;
+      syncLimitSupported[i] = readSyncLimit(i, value);
+      if (syncLimitSupported[i]) formatSyncLimit(value, syncLimitValues[i], sizeof(syncLimitValues[i]));
+      else strcpy_P(syncLimitValues[i], PSTR("?"));
+    }
+  }
+
   // show values
   snprintf(temp, sizeof(temp), "Backlash, Axis1 <span id='limBl1' class='c'>%d</span> arc-sec<br />", backlashAxis1);
   data.concat(temp);
@@ -46,10 +105,14 @@ void limitsTile(String &data)
   data.concat(temp);
   snprintf(temp, sizeof(temp), "Limit Overhead, max altitude <span id='limAltMax' class='c'>%d</span>&deg;<br />", maxAlt);
   data.concat(temp);
-  snprintf(temp, sizeof(temp), "Limit past Meridian, East <span id='limMerE' class='c'>%d</span>&deg;<br />", degPastMerE);
+  snprintf_P(temp, sizeof(temp), html_limitsMeridianSummary, degPastMerE, degPastMerW);
   data.concat(temp);
-  snprintf(temp, sizeof(temp), "Limit past Meridian, West <span id='limMerW' class='c'>%d</span>&deg;<br />", degPastMerW);
-  data.concat(temp);
+  if (status.hasSyncLimits()) {
+    snprintf_P(temp, sizeof(temp), html_limitsPolarSummary, syncLimitValues[0]);
+    data.concat(temp);
+    snprintf_P(temp, sizeof(temp), html_limitsOffsetSummary, syncLimitValues[1], syncLimitValues[2]);
+    data.concat(temp);
+  }
 
   data.concat(F("<hr>"));
 
@@ -69,7 +132,7 @@ void limitsTile(String &data)
   snprintf_P(temp, sizeof(temp), html_configBlAxis2, backlashAxis2);
   data.concat(temp);
 
-  data.concat(F("<br />Limits:<br />"));
+  data.concat(F("<br />General Limits:<br />"));
 
   // Overhead and Horizon Limits
   snprintf_P(temp, sizeof(temp), html_configMinAlt, minAlt);
@@ -87,9 +150,15 @@ void limitsTile(String &data)
     snprintf_P(temp, sizeof(temp), html_configPastMerW, degPastMerW);
     data.concat(temp);
   }
-  else
-    data.concat(F("<br />\n"));
 
+  if (status.hasSyncLimits()) {
+    data.concat(F("<br />" L_SYNC_LIMITS_TITLE ":<br />"));
+    for (int i = 0; i < 3; i++) showSyncLimit(data, i, syncLimitSupported[i], syncLimitValues[i]);
+  }
+
+  data.concat(F("<br />" L_SYNC_LIMIT_POLAR_OFF));
+  if (status.hasSyncLimits()) data.concat(F("; " L_SYNC_LIMIT_OFFSET_OFF));
+  data.concat(F("<br /><br />\n"));
   data.concat(F("<button type='submit'>" L_UPLOAD "</button>\n"));
 
   data.concat(FPSTR(html_form_end));
@@ -111,6 +180,21 @@ extern void limitsTileGet()
 {
   String v;
   char temp[80];
+
+  for (int i = 0; i < 3; i++) {
+    if (!status.hasSyncLimits()) continue;
+    char arg[10];
+    strcpy_P(arg, syncLimitArgs[i]);
+    v = www.arg(arg);
+    if (v.equals(EmptyStr)) continue;
+    double value;
+    if (!parseSyncLimit(i, v.c_str(), value)) continue;
+    double current;
+    if (!readSyncLimit(i, current) || current == value) continue;
+    // Preserve the validated decimal text rather than rounding small fractions to zero.
+    String command = String(F(":SXE")) + char('H' + i) + ',' + v + '#';
+    onStep.commandBool(command.c_str());
+  }
 
   // Overhead limit
   v = www.arg("ol");

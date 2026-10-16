@@ -354,6 +354,17 @@
 #define L_LIMITS_RANGE_MERIDIAN_E "如果将望远镜放在坐骑的东侧，则指向子午线，以+/- 270度为单位"
 #define L_LIMITS_RANGE_MERIDIAN_W "如果将望远镜放在坐骑西侧，则指向子午线，以+/- 270度为单位"
 
+// runtime sync limits
+#define L_SYNC_LIMITS_TITLE "同步/校准限制"
+#define L_SYNC_LIMIT_SUMMARY_POLAR "天极限制"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET1 "偏移限制，轴1"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET2 "轴2"
+#define L_SYNC_LIMIT_POLAR "天极，60至90&deg;"
+#define L_SYNC_LIMIT_AXIS1 "轴1偏移，0至30&deg;"
+#define L_SYNC_LIMIT_AXIS2 "轴2偏移，0至30&deg;"
+#define L_SYNC_LIMIT_POLAR_OFF "天极 90 = OFF"
+#define L_SYNC_LIMIT_OFFSET_OFF "偏移 0 = OFF"
+
 // location
 #define L_LOCATION_TITLE "时间地点"
 #define L_LOCATION_LONG "经度，以度和分钟为单位。+/-180，W为+"

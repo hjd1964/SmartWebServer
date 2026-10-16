@@ -353,6 +353,17 @@
 #define L_LIMITS_RANGE_MERIDIAN_E "Oltre meridiano, Est del pier &pm;270&deg;"
 #define L_LIMITS_RANGE_MERIDIAN_W "Oltre meridiano, Ovest del pier &pm;270&deg;"
 
+// runtime sync limits
+#define L_SYNC_LIMITS_TITLE "Limiti di sincronizzazione/allineamento"
+#define L_SYNC_LIMIT_SUMMARY_POLAR "Limite polare"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET1 "Limite offset, Asse1"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET2 "Asse2"
+#define L_SYNC_LIMIT_POLAR "Polare, 60 a 90&deg;"
+#define L_SYNC_LIMIT_AXIS1 "Offset asse 1, 0 a 30&deg;"
+#define L_SYNC_LIMIT_AXIS2 "Offset asse 2, 0 a 30&deg;"
+#define L_SYNC_LIMIT_POLAR_OFF "Polare 90 = OFF"
+#define L_SYNC_LIMIT_OFFSET_OFF "Offset 0 = OFF"
+
 // location
 #define L_LOCATION_TITLE "Ora e posizione"
 #define L_LOCATION_LONG "Longitudine gr. min. sec. &pm;180, W = +"

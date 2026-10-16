@@ -49,6 +49,9 @@ class Status {
     inline int  getVersionMinor() { return ver_min; }
     inline char getVersionPatch() { return ver_patch; }
     inline bool hasMeridianFlipHomeModes() { return ver_maj > 10 || (ver_maj == 10 && ver_min >= 28); }
+    inline bool hasSyncLimits() {
+      return ver_maj > 10 || (ver_maj == 10 && (ver_min > 29 || (ver_min == 29 && ver_patch >= 'a')));
+    }
 
     bool getLastErrorMessage(char message[], size_t messageSize);
 

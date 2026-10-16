@@ -353,6 +353,17 @@
 #define L_LIMITS_RANGE_MERIDIAN_E "子午線越え, ピアの東側 &pm;270&deg;"
 #define L_LIMITS_RANGE_MERIDIAN_W "子午線越え, ピアの西側 &pm;270&deg;"
 
+// runtime sync limits
+#define L_SYNC_LIMITS_TITLE "同期・アライメントリミット"
+#define L_SYNC_LIMIT_SUMMARY_POLAR "極付近のリミット"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET1 "オフセットリミット、軸1"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET2 "軸2"
+#define L_SYNC_LIMIT_POLAR "極付近、60～90&deg;"
+#define L_SYNC_LIMIT_AXIS1 "軸1オフセット、0～30&deg;"
+#define L_SYNC_LIMIT_AXIS2 "軸2オフセット、0～30&deg;"
+#define L_SYNC_LIMIT_POLAR_OFF "極付近 90 = OFF"
+#define L_SYNC_LIMIT_OFFSET_OFF "オフセット 0 = OFF"
+
 // location
 #define L_LOCATION_TITLE "時刻と場所"
 #define L_LOCATION_LONG "経度 度 分 秒 &pm;180, 西経は+（日本は-）"

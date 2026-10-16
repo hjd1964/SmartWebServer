@@ -353,6 +353,17 @@
 #define L_LIMITS_RANGE_MERIDIAN_E "Depășire Meridian, Est pivot &pm;270&deg;"
 #define L_LIMITS_RANGE_MERIDIAN_W "Depășire Meridian, Vest pivot &pm;270&deg;"
 
+// runtime sync limits
+#define L_SYNC_LIMITS_TITLE "Limite de sincronizare/aliniere"
+#define L_SYNC_LIMIT_SUMMARY_POLAR "Limită polară"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET1 "Limită de decalaj, Axa1"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET2 "Axa2"
+#define L_SYNC_LIMIT_POLAR "Polar, 60 la 90&deg;"
+#define L_SYNC_LIMIT_AXIS1 "Decalaj axa 1, 0 la 30&deg;"
+#define L_SYNC_LIMIT_AXIS2 "Decalaj axa 2, 0 la 30&deg;"
+#define L_SYNC_LIMIT_POLAR_OFF "Polar 90 = OFF"
+#define L_SYNC_LIMIT_OFFSET_OFF "Decalaj 0 = OFF"
+
 // location
 #define L_LOCATION_TITLE "Oră și Locație"
 #define L_LOCATION_LONG "Longitudine grad. min. sec. &pm;180, V este +"

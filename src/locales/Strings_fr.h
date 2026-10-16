@@ -353,6 +353,17 @@
 #define L_LIMITS_RANGE_MERIDIAN_E "Au-dela du meridien, Est du pied &pm;270&deg;"
 #define L_LIMITS_RANGE_MERIDIAN_W "Au-dela du meridien, Ouest du pied &pm;270&deg;"
 
+// runtime sync limits
+#define L_SYNC_LIMITS_TITLE "Limites de synchro/alignement"
+#define L_SYNC_LIMIT_SUMMARY_POLAR "Limite polaire"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET1 "Limite de décalage, Axe1"
+#define L_SYNC_LIMIT_SUMMARY_OFFSET2 "Axe2"
+#define L_SYNC_LIMIT_POLAR "Polaire, 60 à 90&deg;"
+#define L_SYNC_LIMIT_AXIS1 "Décalage de l'axe 1, 0 à 30&deg;"
+#define L_SYNC_LIMIT_AXIS2 "Décalage de l'axe 2, 0 à 30&deg;"
+#define L_SYNC_LIMIT_POLAR_OFF "Polaire 90 = OFF"
+#define L_SYNC_LIMIT_OFFSET_OFF "Décalage 0 = OFF"
+
 // location
 #define L_LOCATION_TITLE "Heure et lieu"
 #define L_LOCATION_LONG "Longitude deg. min. sec. &pm;180, Ouest = +"
