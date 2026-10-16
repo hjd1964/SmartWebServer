@@ -3,12 +3,7 @@
 
 #if OPERATIONAL_MODE == WIFI
 
-#include "../tasks/OnTask.h"
 #include "../nv/Nv.h"
-
-#if STA_AUTO_RECONNECT == true
-  void reconnectStationWrapper() { wifiManager.reconnectStation(); }
-#endif
 
 bool WifiManager::init() {
   if (!active) {
@@ -64,6 +59,10 @@ bool WifiManager::init() {
       #endif
       WiFi.mode(WIFI_AP_STA);
     }
+
+    #if STA_AUTO_RECONNECT == true
+      if (settings.stationEnabled) WiFi.setAutoReconnect(true);
+    #endif
 
     // Keep command links responsive; ESP cores may enable modem sleep by default.
     #if defined(ESP32)
@@ -145,28 +144,11 @@ bool WifiManager::init() {
           VF("MSG: WiFi, using gateway as target "); VL(IPAddress(wifiManager.sta->target).toString().c_str());
         }
       }
-
-      #if STA_AUTO_RECONNECT == true
-        if (settings.stationEnabled) {
-          VF("MSG: WiFi, start connection check task (rate 8s priority 7)... ");
-          if (tasks.add(8000, 0, true, 7, reconnectStationWrapper, "WifiChk")) { VLF("success"); } else { VLF("FAILED!"); }
-        }
-      #endif
     }
   }
 
   return active;
 }
-
-#if STA_AUTO_RECONNECT == true
-  void WifiManager::reconnectStation() {
-    if (WiFi.status() != WL_CONNECTED) {
-      VLF("MSG: WiFi, attempting reconnect");
-      WiFi.disconnect();
-      WiFi.reconnect();
-    }
-  }
-#endif
 
 void WifiManager::setStation(int number) {
   if (number >= 1 && number <= WifiStationCount) stationNumber = number;
