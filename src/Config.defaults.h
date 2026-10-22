@@ -64,6 +64,13 @@
 #define COMMAND_SERVER                 BOTH      // BOTH, for STANDARD (port 9999) and PERSISTENT (ports 9996 to 9998)
 #endif                                           // or disable with OFF
 
+#ifndef ALPACA_SERVER
+#define ALPACA_SERVER                  OFF       // OFF, ON to enable the ASCOM Alpaca REST/JSON device server + discovery
+#endif
+#ifndef ALPACA_DISCOVERY_PORT
+#define ALPACA_DISCOVERY_PORT          32227     // standard ASCOM Alpaca UDP discovery port, don't change unless you must
+#endif
+
 #ifndef STA_AP_FALLBACK
 #define STA_AP_FALLBACK                true      // activate SoftAP if station fails to connect
 #endif

@@ -63,6 +63,9 @@ bool otaEnabled = false;
 
 #include "src/pages/Pages.h"
 
+#include "src/libApp/alpaca/Alpaca.h"
+#include "src/libApp/alpaca/AlpacaDiscovery.h"
+
 #if DEBUG == PROFILER
   extern void profiler();
 #endif
@@ -82,6 +85,12 @@ bool otaEnabled = false;
 void pollWebSvr() {
   www.handleClient();
 }
+
+#if ALPACA_SERVER == ON
+  void pollAlpacaDiscovery() {
+    alpacaDiscovery.poll();
+  }
+#endif
 
 void pollCmdSvr() {
   if (otaEnabled) return;
@@ -310,8 +319,12 @@ Again:
   www.on("/net.htm", handleNetwork);
 
   www.on("/", handleRoot);
-  
-  www.onNotFound(handleNotFound);
+
+  #if ALPACA_SERVER == ON
+    www.onNotFound(alpacaOrNotFound);
+  #else
+    www.onNotFound(handleNotFound);
+  #endif
 
   #ifdef OTA_PRESENT
     OtaSettings otaSettings = {"", false};
@@ -360,6 +373,13 @@ Again:
   VLF("MSG: Starting port 80 web server");
   www.begin();
 
+  #if ALPACA_SERVER == ON
+    VLF("MSG: Starting ASCOM Alpaca server");
+    alpaca.init();
+    VF("MSG: Starting ASCOM Alpaca UDP discovery on port "); VL((long)ALPACA_DISCOVERY_PORT);
+    alpacaDiscovery.init();
+  #endif
+
   // allow time for the background servers to come up
   delay(2000);
 
@@ -380,6 +400,12 @@ Again:
   VF("MSG: Setup, starting web server polling");
   VF(" task (rate 20ms priority 3)... ");
   if (tasks.add(20, 0, true, 3, pollWebSvr, "webPoll")) { VL("success"); } else { VL("FAILED!"); }
+
+  #if ALPACA_SERVER == ON
+    VF("MSG: Setup, starting Alpaca discovery polling");
+    VF(" task (rate 200ms priority 6)... ");
+    if (tasks.add(200, 0, true, 6, pollAlpacaDiscovery, "alpcDsc")) { VL("success"); } else { VL("FAILED!"); }
+  #endif
 
   // start task manager debug events
   #if DEBUG == PROFILER

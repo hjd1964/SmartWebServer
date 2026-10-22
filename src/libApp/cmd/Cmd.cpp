@@ -141,7 +141,12 @@ bool OnStepCmd::processCommand(const char* cmd, char* response, long timeOutMs) 
       if (strchr("AEGCMS0123456789", cmd[2])) noResponse = true;
     } else
     if (cmd[1] == 'S') {
-      if (strchr("CLSGtgMNOPrdhoTBXza", cmd[2])) shortResponse = true;
+      // "v" (":Sv#" set site elevation) added after confirming against real hardware: its reply
+      // is a bare, unterminated "0"/"1" like the rest of this set, not '#'-framed -- without this
+      // classification the default full-frame-wait path in the else branch below always times
+      // out waiting for a '#' that never arrives, reporting failure even when OnStep accepted
+      // the value (used by src/libApp/alpaca/AlpacaTelescope.cpp; no existing page used ":Sv#" before)
+      if (strchr("CLSGtgMNOPrdhoTBXzav", cmd[2])) shortResponse = true;
     } else
     if (cmd[1] == 'L') {
       if (strchr("BNCDL!",cmd[2])) noResponse = true;
