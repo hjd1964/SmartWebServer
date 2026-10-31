@@ -57,7 +57,7 @@
 
       // send cmd and pickup the response
       if (c == '#' || (strlen(cmdBuffer) == 1 && c == (char)6)) {
-        char result[40] = "";
+        char result[80] = "";
 
         onStep.processCommand(cmdBuffer, result, cmdTimeout);
 
