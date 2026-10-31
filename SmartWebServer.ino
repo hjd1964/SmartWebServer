@@ -76,7 +76,7 @@ bool otaEnabled = false;
 #endif
 
 #if COMMAND_SERVER == STANDARD || COMMAND_SERVER == BOTH
-  CmdServer cmdSvr(9999, 1L*1000L);
+  CmdServer cmdSvr(9999, 10L*1000L, true);
 #endif
 
 void pollWebSvr() {
