@@ -23,7 +23,7 @@ IRAM_ATTR void moveODriveMotorAxis2() { odriveMotorInstance[1]->move(); }
 #endif
 
 // constructor
-ODriveMotor::ODriveMotor(uint8_t axisNumber, int8_t reverse, const ODriveDriverSettings *Settings, float radsPerCount, bool useFastHardwareTimers)
+ODriveMotor::ODriveMotor(uint8_t axisNumber, int8_t reverse, const ODriveDriverSettings *Settings, float countsPerRad, bool useFastHardwareTimers)
                          :Motor(axisNumber, reverse) {
   if (axisNumber < 1 || axisNumber > 2) return;
 
@@ -50,7 +50,7 @@ ODriveMotor::ODriveMotor(uint8_t axisNumber, int8_t reverse, const ODriveDriverS
   }
 
   // set parameter default values during object creation
-  radsPerCount.valueDefualt = radsPerCount;
+  this->countsPerRad.valueDefault = countsPerRad;
 
   // attach the function pointers to the callbacks
   odriveMotorInstance[this->axisNumber - 1] = this;
@@ -135,14 +135,13 @@ void ODriveMotor::enable(bool state) {
 void ODriveMotor::setInstrumentCoordinateSteps(long value) {
   if (!ready) return;
 
-  #if ODRIVE_ABSOLUTE == ON && ODRIVE_SYNC_LIMIT != OFF
+  // Absolute feedback is relative to Home, like Servo absolute encoder counts.
+  if (hasAbsoluteEncoder() && !homeSet) {
     noInterrupts();
-    long index = value - motorSteps;
+    indexSteps = value;
+    homeSet = true;
     interrupts();
-    float indexDeg = index/radsPerCount.value;
-    if (indexDeg >= -degToRadF(ODRIVE_SYNC_LIMIT/3600.0F) && indexDeg <= degToRadF(ODRIVE_SYNC_LIMIT/3600.0F))
-  #endif
-  Motor::setInstrumentCoordinateSteps(value);
+  } else Motor::setInstrumentCoordinateSteps(value);
 }
 
 // resets motor and target angular position in steps, also zeros backlash and index
@@ -157,11 +156,11 @@ void ODriveMotor::resetPositionSteps(long value) {
   // if (axisNumber - 1 == 0) oPosition = o_position0;
   // if (axisNumber - 1 == 1) oPosition = o_position1;
 
-  // get ODrive position in fractionial Turns
+  // Convert ODrive position in fractional turns to internal counts.
   #if ODRIVE_COMM_MODE == OD_UART
-    oPosition = _oDriveDriver->GetPosition(axisNumber - 1)*TWO_PI*radsPerCount.value; // axis1/2 are in steps per radian
+    oPosition = _oDriveDriver->GetPosition(axisNumber - 1)*TWO_PI*countsPerRad.value;
   #elif ODRIVE_COMM_MODE == OD_CAN
-    oPosition = _oDriveDriver->GetPosition(axisNumber - 1)*TWO_PI*radsPerCount.value; // axis1/2 are in steps per radian
+    oPosition = _oDriveDriver->GetPosition(axisNumber - 1)*TWO_PI*countsPerRad.value;
   #endif
 
   noInterrupts();
@@ -191,7 +190,7 @@ void ODriveMotor::setFrequencySteps(float frequency) {
   if (inBacklash)
     frequency = backlashFrequency;
 
-  if (frequency != currentFrequency) {
+  if (frequency != lastFrequency) {
     lastFrequency = frequency;
 
     // if slewing has a larger step size divide the frequency to account for it
@@ -253,9 +252,9 @@ void ODriveMotor::poll() {
   #endif
   interrupts();
   #if ODRIVE_COMM_MODE == OD_UART
-    setPosition(axisNumber -1, target/(TWO_PI*radsPerCount.value));
+    setPosition(axisNumber -1, target/(TWO_PI*countsPerRad.value));
   #elif ODRIVE_COMM_MODE == OD_CAN
-    _oDriveDriver->SetPosition(axisNumber -1, target/(TWO_PI*radsPerCount.value));
+    _oDriveDriver->SetPosition(axisNumber -1, target/(TWO_PI*countsPerRad.value));
   #endif
 }
 

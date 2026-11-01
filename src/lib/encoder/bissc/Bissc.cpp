@@ -33,6 +33,11 @@ bool Bissc::init() {
   // get the counts/mask ready
   encoderCounts = (uint32_t)(1UL << encoderBits);
   encoderHalfCounts = (int32_t)(encoderCounts >> 1);
+  encoderCountsPerTurn = encoderCounts;
+  #ifdef BISSC_RESOLUTION_DIVISOR
+    encoderCountsPerTurn /= BISSC_RESOLUTION_DIVISOR;
+  #endif
+  encoderHalfCountsPerTurn = encoderCountsPerTurn >> 1;
 
   const uint8_t lowTurnBits = (encoderBits >= 32) ? 0 : (uint8_t)(32U - encoderBits);
   encoderMultiTurnMask = (lowTurnBits >= 32) ? 0xFFFFFFFFUL : ((1UL << lowTurnBits) - 1UL);
@@ -83,6 +88,11 @@ void Bissc::setOrigin(int32_t counts) {
   }
   VLF("----------------------------------------------------------------------------------------");
 
+  // origin changes establish a new absolute range
+  countTurns = 0;
+  firstCall = true;
+  lastValidTime = millis() - 3U;
+
   index = temp;
 }
 
@@ -118,6 +128,32 @@ int32_t Bissc::getCountWithErrorRecovery(bool immediate) {
   if (immediate || now - lastValidTime > 2) {
     uint32_t newCount = 0;
     if (getCount(newCount)) {
+
+      if (BISSC_SINGLE_TURN == ON || encoderMultiTurnBits == 0) {
+
+        // count wraps forward and reverse
+        int32_t countSingleTurn = (int32_t)newCount;
+        if (!firstCall) {
+          if (countSingleTurn < lastCountSingleTurn) {
+            uint32_t delta = (uint32_t)lastCountSingleTurn - (uint32_t)countSingleTurn;
+            if (delta > encoderHalfCountsPerTurn) countTurns++;
+          } else
+          if (countSingleTurn > lastCountSingleTurn) {
+            uint32_t delta = (uint32_t)countSingleTurn - (uint32_t)lastCountSingleTurn;
+            if (delta > encoderHalfCountsPerTurn) countTurns--;
+          }
+        }
+        firstCall = false;
+
+        lastCountSingleTurn = countSingleTurn;
+        newCount = (uint32_t)countSingleTurn + (uint32_t)countTurns*encoderCountsPerTurn;
+
+        #if BISSC_SINGLE_TURN_STRICT == ON
+          // flag error if encoder is outside absolute range
+          if (countTurns != 0) error = ENCODER_ERROR_COUNT_THRESHOLD + 1;
+        #endif
+      }
+
       lastValidTime = now;
       lastValidCount = newCount;
 

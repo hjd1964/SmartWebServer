@@ -11,6 +11,13 @@
 #include "../../../gpioEx/GpioEx.h"
 
 #include "ODriveCanPlus.h"
+#include "../../../canPlus/CanPlusBase.h"
+
+namespace {
+  ODriveMotor *odriveMotorInstance[2];
+  void IRAM_ATTR moveODriveMotorAxis1() { odriveMotorInstance[0]->move(); }
+  void IRAM_ATTR moveODriveMotorAxis2() { odriveMotorInstance[1]->move(); }
+}
 
 // constructor
 ODriveMotor::ODriveMotor(uint8_t axisNumber, int8_t reverse, const ODriveDriverSettings *Settings, float countsPerRad, bool useFastHardwareTimers)
@@ -79,8 +86,9 @@ bool ODriveMotor::init() {
 
       VF("MSG:"); V(axisPrefix); VF("ODrive version raw: ");
       for (int i = 0; i < 8; i++) {
-        if (raw[i] < 16) V("0");
-        VH(raw[i]);
+        char hexByte[3];
+        snprintf(hexByte, sizeof(hexByte), "%02X", (unsigned)raw[i]);
+        V(hexByte);
         if (i != 7) V(" ");
       }
       VLF("");
@@ -88,7 +96,10 @@ bool ODriveMotor::init() {
   }
 
   // idle the ODrive
-  odriveCan.setAxisState(oDriveNode, AXIS_STATE_IDLE);
+  if (!odriveCan.setAxisState(oDriveNode, ODriveCanPlus::STATE_IDLE)) {
+    status.fault = true;
+    return false;
+  }
 
   // request an encoder position update and
   // let CAN poll task (priority 3) run to deliver the reply
@@ -96,9 +107,10 @@ bool ODriveMotor::init() {
   lastEncoderUpdateRequestTime = millis();
   tasks.yield(250);
 
-  // require an encoder sample
-  if (!odriveCan.hasFreshTurns(oDriveNode, 250)) {
-    VF("MSG:"); V(axisPrefix); VLF("no encoder reply at startup");
+  // require a usable encoder sample before declaring the motor ready
+  long positionSteps;
+  if (!readEncoderPositionSteps(positionSteps)) {
+    VF("MSG:"); V(axisPrefix); VLF("no valid encoder position at startup");
     ready = false;
     return false;
   }
@@ -149,29 +161,22 @@ void ODriveMotor::setReverse(bool state) {
 void ODriveMotor::enable(bool state) {
   if (!ready) return;
 
-  // If we're already in the requested steady-state AND no transition is pending, do nothing.
-  if (!enablePending && (state == enabled)) return;
+  // Complete an outstanding stop before permitting another enable request.
+  if (enablePending && !enableTarget) return;
+  if (state && (enabled || enablePending)) return;
 
   // Always reset local motion first
   if (!state) enabled = false;
   stopSyntheticMotion();
   resetToTrackingBaseline();
 
-  const uint32_t requestedState = state ? AXIS_STATE_CLOSED_LOOP_CONTROL
-                                        : AXIS_STATE_IDLE;
-
-  if (!odriveCan.setAxisState(oDriveNode, requestedState)) {
-    enabled = false;
-    enablePending = false;
+  if (!state) {
+    requestIdle();
     return;
   }
 
-  if (!state) {
-    // disable: treat as immediate locally; no need to wait for heartbeats/encoder
-    enabled = false;
-    enablePending = false;
-    enableTarget = false;
-    enableDeadlineMs = 0;
+  if (!odriveCan.setAxisState(oDriveNode, ODriveCanPlus::STATE_CLOSED_LOOP_CONTROL)) {
+    faultStop();
     return;
   }
 
@@ -184,31 +189,39 @@ void ODriveMotor::enable(bool state) {
 void ODriveMotor::setInstrumentCoordinateSteps(long value) {
   if (!ready) return;
 
-  #if ODRIVE_ABSOLUTE == ON && ODRIVE_SYNC_LIMIT != OFF
-    long index = value - ATOMIC_LOAD(motorSteps);
-    float indexRad = index/countsPerRad.value;
-    if (indexRad >= -degToRadF(ODRIVE_SYNC_LIMIT/3600.0F) && indexRad <= degToRadF(ODRIVE_SYNC_LIMIT/3600.0F))
-  #endif
+  // Absolute feedback is relative to Home, like Servo absolute encoder counts.
+  if (hasAbsoluteEncoder() && !homeSet) {
+    noInterrupts();
+    indexSteps = value;
+    homeSet = true;
+    interrupts();
+  } else Motor::setInstrumentCoordinateSteps(value);
+}
 
-  Motor::setInstrumentCoordinateSteps(value);
+// Read a recent encoder position that can be represented by the motor counters.
+bool ODriveMotor::readEncoderPositionSteps(long& positionSteps, uint32_t maxAgeMs) {
+  if (!odriveCan.hasFreshTurns(oDriveNode, maxAgeMs)) return false;
+
+  const float steps = odriveCan.getPosTurns(oDriveNode) * TWO_PI * countsPerRad.value;
+  // INT32_MAX rounds up to 2^31 as a float, so the upper bound is exclusive.
+  if (isnan(steps) || isinf(steps) || steps < (float)INT32_MIN || steps >= -(float)INT32_MIN) return false;
+
+  positionSteps = lroundf(steps);
+  return true;
 }
 
 // resets motor and target angular position in steps, also zeros backlash and index
 void ODriveMotor::resetPositionSteps(long value) {
   if (!ready) return;
 
-  // make sure we have a recent encoder reading
-  if (!odriveCan.hasFreshTurns(oDriveNode, 250)) {
+  // A stopped axis can use a valid cached position up to one second old.
+  long oPositionSteps;
+  if (!readEncoderPositionSteps(oPositionSteps, 1000)) {
     status.fault = true;
     odriveCan.requestTurns(oDriveNode);
     return;
-  } else {
-    status.fault = false;
   }
-
-  // Convert turns -> steps (countsPerRad is counts-per-radian)
-  const float posTurns = odriveCan.getPosTurns(oDriveNode);
-  const long  oPositionSteps = lroundf(posTurns * TWO_PI * countsPerRad.value);
+  if (!odriveCan.hasFreshTurns(oDriveNode, 250)) odriveCan.requestTurns(oDriveNode);
 
   noInterrupts();
   motorSteps  = oPositionSteps;
@@ -311,38 +324,39 @@ void ODriveMotor::poll() {
   // handle enable/disable handshake (async confirmation)
   // -------------------------
   if (enablePending) {
+    if (!enableTarget) {
+      // A queued CAN transmission is not confirmation that the drive stopped.
+      if (odriveCan.hasHeartbeat(oDriveNode, 250) &&
+          odriveCan.lastHeartbeatMs(oDriveNode) != idleHeartbeatMs &&
+          odriveCan.axisState(oDriveNode) == ODriveCanPlus::STATE_IDLE) {
+        enablePending = false;
+      } else if ((int32_t)(now - enableDeadlineMs) >= 0) {
+        status.fault = true;
+        requestIdle();
+      }
+      return;
+    }
+
     // snapshot ODrive status
     const uint8_t  st  = odriveCan.axisState(oDriveNode);
     const uint32_t err = odriveCan.lastError(oDriveNode);
 
     // hard faults during transition: lose heartbeat or error latched
     if (!odriveCan.hasHeartbeat(oDriveNode, 250) || (err != 0)) {
-      enabled = false;
-      enablePending = false;
-      stopSyntheticMotion();
-      resetToTrackingBaseline();
+      faultStop();
       return;
     }
 
     // commit when we observe the desired steady state
-    if (enableTarget) {
-      if (st == AXIS_STATE_CLOSED_LOOP_CONTROL) {
-        enabled = true;
-        enablePending = false;
-      }
-    } else {
-      if (st == AXIS_STATE_IDLE) {
-        enabled = false;
-        enablePending = false;
-      }
+    if (st == ODriveCanPlus::STATE_CLOSED_LOOP_CONTROL) {
+      enabled = true;
+      enablePending = false;
+      status.fault = false;
     }
 
     // deadline: if still pending after the window, fail closed
     if (enablePending && (int32_t)(now - enableDeadlineMs) >= 0) {
-      enabled = false;
-      enablePending = false;
-      stopSyntheticMotion();
-      resetToTrackingBaseline();
+      faultStop();
       return;
     }
   }
@@ -352,32 +366,51 @@ void ODriveMotor::poll() {
   // -------------------------
   if (!ready || !enabled) return;
 
-  // fail closed if we lose comms or an error appears while running
+  // Stop if communications fail, the drive reports an error, or it leaves closed loop.
   // (no encoder freshness requirement in this variant)
-  if (!odriveCan.hasHeartbeat(oDriveNode, 250) || (odriveCan.lastError(oDriveNode) != 0)) {
-    enabled = false;
-    enablePending = false;
-    stopSyntheticMotion();
-    resetToTrackingBaseline();
+  if (!odriveCan.hasHeartbeat(oDriveNode, 250) || (odriveCan.lastError(oDriveNode) != 0) ||
+      odriveCan.axisState(oDriveNode) != ODriveCanPlus::STATE_CLOSED_LOOP_CONTROL ||
+      odriveCan.inputPosFailed(oDriveNode)) {
+    faultStop();
     return;
   }
 
-  // rate-limit position commands
-  if (now - lastSetPositionTime < ODRIVE_UPDATE_MS) return;
-  lastSetPositionTime = now;
+  // Rate-limit new samples, but service pending sends on every poll.
+  if (now - lastSetPositionTime >= ODRIVE_UPDATE_MS) {
+    lastSetPositionTime = now;
 
-  long target;
-  noInterrupts();
-  #if ODRIVE_SLEW_DIRECT == ON
-    target = targetSteps + backlashSteps;
-  #else
-    target = motorSteps + backlashSteps;
-  #endif
-  interrupts();
+    long target;
+    noInterrupts();
+    #if ODRIVE_SLEW_DIRECT == ON
+      target = targetSteps + backlashSteps;
+    #else
+      target = motorSteps + backlashSteps;
+    #endif
+    interrupts();
 
-  float vel_ff_turns_s = feedForwardVelocity/(TWO_PI*countsPerRad.value);
+    float vel_ff_turns_s = feedForwardVelocity/(TWO_PI*countsPerRad.value);
 
-  odriveCan.setInputPos(oDriveNode, target/(TWO_PI*countsPerRad.value), vel_ff_turns_s);
+    odriveCan.setInputPos(oDriveNode, target/(TWO_PI*countsPerRad.value), vel_ff_turns_s);
+  }
+  odriveCan.pollInputPos();
+  if (odriveCan.inputPosFailed(oDriveNode)) faultStop();
+}
+
+void ODriveMotor::requestIdle() {
+  enabled = false;
+  enableTarget = false;
+  enablePending = true;
+  idleHeartbeatMs = odriveCan.lastHeartbeatMs(oDriveNode);
+  enableDeadlineMs = millis() + 500;
+  if (!odriveCan.setAxisState(oDriveNode, ODriveCanPlus::STATE_IDLE)) status.fault = true;
+}
+
+void ODriveMotor::faultStop() {
+  enabled = false;
+  status.fault = true;
+  stopSyntheticMotion();
+  resetToTrackingBaseline();
+  requestIdle();
 }
 
 void ODriveMotor::stopSyntheticMotion() {

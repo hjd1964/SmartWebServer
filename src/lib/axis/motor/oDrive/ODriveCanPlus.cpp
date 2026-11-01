@@ -6,7 +6,6 @@
 #ifdef ODRIVE_NEW_MOTOR_PRESENT
 #ifdef ODRIVE_MOTOR_PRESENT
 
-#include "../../../tasks/OnTask.h"
 #include "../../../canPlus/CanPlus.h"
 
 static void odHb0(uint8_t d[8])  { odriveCan.onHeartbeat(0, d); }
@@ -74,12 +73,16 @@ bool ODriveCanPlus::hasFreshVersion(uint8_t node, uint32_t max_age_ms) const {
 }
 
 bool ODriveCanPlus::setAxisState(uint8_t node, uint32_t requested_state) {
-  if (!canPlus.ready || node >= MaxNodes) return false;
+  if (node >= MaxNodes) return false;
+  // A state change invalidates any queued position for this node.
+  inputPos_[node].pending = false;
+  if (requested_state == STATE_CLOSED_LOOP_CONTROL) inputPos_[node].failed = false;
+  if (!canPlus.ready) return false;
 
   uint8_t d[8] = {0};
   put_le32(&d[0], requested_state);
 
-  canPlus.txWait();
+  // Infrequent state commands bypass position pacing; never wait or yield here.
   return canPlus.writePacket(makeId(node, CMD_SET_AXIS_STATE), d, 8) == 1;
 }
 
@@ -92,9 +95,9 @@ uint8_t ODriveCanPlus::axisState(uint8_t node) const {
 }
 
 void ODriveCanPlus::setInputPos(uint8_t node, float pos_turns, float vel_ff_turns_s , float tq_ff_nm) {
-  if (!canPlus.ready || node >= MaxNodes) return;
-
-  uint8_t d[8] = {0};
+  if (node >= MaxNodes || inputPos_[node].failed) return;
+  InputPos &position = inputPos_[node];
+  uint8_t *d = position.data;
 
   const int32_t vel_i = lroundf(vel_ff_turns_s  * 1000.0F);
   const int32_t tq_i  = lroundf(tq_ff_nm        * 1000.0F);
@@ -103,8 +106,28 @@ void ODriveCanPlus::setInputPos(uint8_t node, float pos_turns, float vel_ff_turn
   put_le16(&d[4], clamp_i16(vel_i));
   put_le16(&d[6], clamp_i16(tq_i));
   
-  if (canPlus.txTryLock()) {
-    canPlus.writePacket(makeId(node, CMD_SET_INPUT_POS), d, 8);
+  // Replace the pending value without extending its delivery deadline.
+  if (!position.pending) position.pendingSince = millis();
+  position.pending = true;
+}
+
+void ODriveCanPlus::pollInputPos() {
+  // Both motors service this queue; give each pending node its turn.
+  for (uint8_t i = 0; i < MaxNodes; i++) {
+    const uint8_t node = (nextInputPos + i) % MaxNodes;
+    InputPos &position = inputPos_[node];
+    if (!position.pending) continue;
+    if (!canPlus.ready || (uint32_t)(millis() - position.pendingSince) >= 250U) {
+      position.pending = false;
+      position.failed = true;
+      continue;
+    }
+    if (!canPlus.txTryLock()) return;
+    nextInputPos = (node + 1) % MaxNodes;
+    if (canPlus.writePacket(makeId(node, CMD_SET_INPUT_POS), position.data, 8) == 1)
+      position.pending = false;
+    // A failed write keeps the latest position pending for a bounded retry.
+    return;
   }
 }
 
@@ -206,8 +229,14 @@ void ODriveCanPlus::onGetVersion(uint8_t node, const uint8_t* d, uint8_t len) {
 void ODriveCanPlus::onFeedbackPosVel(uint8_t node, const uint8_t* d, uint8_t len) {
   if (node >= MaxNodes || len < 8) return;
 
-  // Example: pos_turns (f32) + vel_turns/s (f32)
-  cache_[node].pos_turns   = get_f32(d + 0);
+  // An unknown absolute position can be reported as NaN.
+  const float position = get_f32(d + 0);
+  if (isnan(position) || isinf(position)) {
+    ATOMIC_AND(cache_[node].seen, (uint8_t)~SEEN_ENC);
+    return;
+  }
+
+  cache_[node].pos_turns   = position;
   cache_[node].vel_turns_s = get_f32(d + 4);
   cache_[node].last_enc_ms = millis();
 

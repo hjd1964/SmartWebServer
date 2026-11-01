@@ -17,6 +17,12 @@
     #define BISSC_SINGLE_TURN ON
   #endif
 
+  // flag error if encoder is outside absolute range
+  // this applies to forced single turn mode and encoders that are inherently single turn
+  #ifndef BISSC_SINGLE_TURN_STRICT
+    #define BISSC_SINGLE_TURN_STRICT ON
+  #endif
+
   // default sync phase
   #ifndef BISSC_SYNC_PHASE
     #define BISSC_SYNC_PHASE 20
@@ -109,11 +115,17 @@
 
       uint32_t turns = 0;
 
+      int32_t lastCountSingleTurn = 0;
+      int32_t countTurns = 0;
+      bool firstCall = true;
+
       // this design allows for 8 to 31 bit encoders
       char encoderName[16] = {0};
       uint8_t encoderBits = 0;
       uint32_t encoderCounts = 0;
       int32_t encoderHalfCounts = 0;
+      uint32_t encoderCountsPerTurn = 0;
+      uint32_t encoderHalfCountsPerTurn = 0;
       uint8_t encoderMultiTurnBits = 0;
       uint32_t encoderMultiTurnMask = 0;
       bool encoderWrnInvert = true;

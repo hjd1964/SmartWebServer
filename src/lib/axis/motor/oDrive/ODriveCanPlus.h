@@ -8,6 +8,8 @@
 
 class ODriveCanPlus {
 public:
+  static constexpr uint32_t STATE_IDLE = 1;
+  static constexpr uint32_t STATE_CLOSED_LOOP_CONTROL = 8;
   bool init(uint8_t node);
   
   bool getVersionSnapshot(uint8_t node,
@@ -23,6 +25,8 @@ public:
   uint8_t axisState(uint8_t node) const;
  
   void setInputPos(uint8_t node, float pos_turns, float vel_ff_turns_s = 0.0F, float tq_ff_nm = 0.0F);
+  void pollInputPos();
+  bool inputPosFailed(uint8_t node) const { return node >= MaxNodes || inputPos_[node].failed; }
   float getPosTurns(uint8_t node) const; // cached feedback
   bool hasFreshTurns(uint8_t node, uint32_t max_age_ms = 250U) const;
 
@@ -42,7 +46,7 @@ public:
 private:
 
   // helpers
-  constexpr uint8_t CmdBits = 5;
+  static constexpr uint8_t CmdBits = 5;
   static inline uint16_t makeId(uint8_t node, uint8_t cmd) { return (uint16_t(node) << CmdBits) | (cmd & 0x1F); }
   
   static inline void put_le16(uint8_t* p, int16_t v) { p[0] = uint8_t(v & 0xFF); p[1] = uint8_t((v >> 8) & 0xFF); }
@@ -105,6 +109,14 @@ private:
 
   static constexpr uint8_t MaxNodes = 2;
   AxisCache cache_[MaxNodes];
+  struct InputPos {
+    uint8_t data[8] = {0};
+    bool pending = false;
+    bool failed = false;
+    uint32_t pendingSince = 0;
+  };
+  InputPos inputPos_[MaxNodes];
+  uint8_t nextInputPos = 0;
 };
 
 extern ODriveCanPlus odriveCan;
