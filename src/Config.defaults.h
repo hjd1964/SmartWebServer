@@ -24,6 +24,7 @@
 #define DRIVE_CONFIGURATION            ON        // display/modify axis settings 
 #endif
 
+// gamepad
 #ifndef BLE_GAMEPAD
 #define BLE_GAMEPAD                   OFF        // allow BLE gamepad connection for ESP32 only
 #endif
