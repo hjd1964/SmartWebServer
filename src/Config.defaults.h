@@ -24,6 +24,20 @@
 #define DRIVE_CONFIGURATION            ON        // display/modify axis settings 
 #endif
 
+#ifndef BLE_GAMEPAD
+#define BLE_GAMEPAD                   OFF        // allow BLE gamepad connection for ESP32 only
+#endif
+#ifndef BLE_GP_ADDR
+#define BLE_GP_ADDR   "ff:ff:de:09:f5:cf"        // f5:cf", GamePad MAC address #1
+#endif
+#ifndef BLE_GP_ADDR1
+#define BLE_GP_ADDR1  "ff:ff:ff:ff:ff:ff"        // ff:ff", GamePad MAC address #2
+#endif
+#if BLE_GAMEPAD == ON
+#define WIFI_MANAGER_ALLOW_SLEEP
+#endif
+
+// status led
 #ifndef LED_STATUS_ON_STATE
 #define LED_STATUS_ON_STATE            LOW       // use HIGH so indicator stays on when connected as needed
 #endif
