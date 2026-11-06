@@ -79,10 +79,6 @@ class WifiManager {
     // stops WiFi
     void disconnect();
 
-    #if STA_AUTO_RECONNECT == true
-      void reconnectStation();
-    #endif
-
     // set the currently active station
     // \param number from 1 to WifiStationCount
     void setStation(int number);
